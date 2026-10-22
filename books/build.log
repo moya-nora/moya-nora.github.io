@@ -1,0 +1,36 @@
+0. Проверка связи
+  пинг: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  пинг: 1 строк за 1 с (qlever.dev)
+    [['роман']]
+1. Произведения
+  статьи в Википедиях: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  статьи в Википедиях: 447172 строк за 8 с (qlever.dev)
+   всего произведений: 447172
+   по числу статей: [(0, 429247), (5, 10542), (10, 3311), (15, 1525), (20, 842), (25, 553), (30, 344), (35, 196), (40, 145), (45, 111), (50, 356)]
+  type: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  type: 462555 строк за 13 с (qlever.dev)
+  auth: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  auth: 491971 строк за 15 с (qlever.dev)
+  cty: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  cty: 102926 строк за 18 с (qlever.dev)
+  genre: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  genre: 110125 строк за 12 с (qlever.dev)
+  subj: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  subj: 177981 строк за 10 с (qlever.dev)
+  award: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  award: 6765 строк за 7 с (qlever.dev)
+  date: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  date: 170690 строк за 13 с (qlever.dev)
+  inc: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  inc: 13295 строк за 8 с (qlever.dev)
+  pages: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  pages: 8355 строк за 21 с (qlever.dev)
+  title: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  title: 187360 строк за 20 с (qlever.dev)
+  названия ru: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  названия ru: 44504 строк за 20 с (qlever.dev)
+  названия en: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  названия en: 272274 строк за 17 с (qlever.dev)
+  статьи рувики: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
+  статьи рувики: 13372 строк за 18 с (qlever.dev)
+  лишние типы: ошибка <HTTPError 308: 'Permanent Redirect'> (https://qlever.cs.uni-freiburg.de/api/wikidata), повтор
