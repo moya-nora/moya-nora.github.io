@@ -47,13 +47,13 @@ def unq(v):
 def sparql(q, what):
     body = urllib.parse.urlencode({"query": PFX + q}).encode()
     last = None
-    for attempt in range(6):
+    for attempt in range(4):
         url = ENDPOINTS[attempt % len(ENDPOINTS)]
         t0 = time.time()
         try:
             req = urllib.request.Request(url, data=body, headers={**UA, "Accept": "text/tab-separated-values",
                                                                   "Content-Type": "application/x-www-form-urlencoded"})
-            with urllib.request.urlopen(req, timeout=1800) as r:
+            with urllib.request.urlopen(req, timeout=900) as r:
                 text = r.read().decode("utf-8")
             lines = text.split("\n")
             rows = [[unq(x) for x in ln.split("\t")] for ln in lines[1:] if ln]
@@ -82,6 +82,8 @@ def year_of(v):
     return int(m.group(1)) if m else None
 
 
+print("0. Проверка связи", flush=True)
+print("   ", sparql("SELECT ?l WHERE { wd:Q8261 rdfs:label ?l . FILTER(LANG(?l) = \"ru\") }", "пинг"))
 print("1. Произведения", flush=True)
 SL = {w: int(float(v)) for w, v in per_work("?w wikibase:sitelinks ?v .", "статьи в Википедиях") if v}
 print("   всего произведений:", len(SL), flush=True)

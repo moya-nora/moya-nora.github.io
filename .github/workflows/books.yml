@@ -17,11 +17,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - run: python tools/build_books.py
+      - name: Сборка
+        run: |
+          mkdir -p books
+          set -o pipefail
+          python -u tools/build_books.py 2>&1 | tee books/build.log
       - name: Сохранить
+        if: always()
         run: |
           git config user.name "Mayorov-Vlad"
           git config user.email "vladislav15333@gmail.com"
-          git add books/books.json
+          git add books/build.log
+          if [ -f books/books.json ]; then git add books/books.json; fi
           git diff --cached --quiet || git commit -m "Книжный каталог: обновление $(date +%Y-%m-%d)"
           git pull --rebase -q && git push
