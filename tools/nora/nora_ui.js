@@ -20,6 +20,38 @@ const LENPG={short:220,mid:380,long:650};
 const catOf=x=>{const c=CATT[norm(x.t)];return c&&(!x.a||!c.a||norm(c.a).includes(norm(String(x.a).split(" ").slice(-1)[0])))?c:null};
 const palOf=t=>PAL[hsh(String(t))%PAL.length];
 
+// ---------- большой каталог: books/books.json (Викиданные, обновляется ежемесячно) ----------
+// Подборки Шуршуни, фильтры, лента и поиск работают по всему каталогу: ручные карточки + большой каталог.
+let BIGP=null,BIGMETA=null;
+function loadBig(){if(BIGP)return BIGP;
+  BIGP=fetch("books/books.json").then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>new Promise(res=>{
+    const C=d.c,G=d.g,TGS=d.tg,AW=d.aw,A=d.a,R=d.b,tc=new Map(),ac=new Map(),E=[],out=[];let i=0;
+    const arr=(cache,ix,src)=>{if(!ix||!ix.length)return E;const k=ix.join(",");let v=cache.get(k);if(!v){v=ix.map(j=>src[j]).filter(Boolean);cache.set(k,v)}return v};
+    const CYR=/[а-яё]/i,HV2=new Set(["мрачное","война","хоррор","грустное","жутковатое","антиутопия","постапокалипсис"]),HV0=new Set(["юмор","смешное","сказка","уют","светлое","тёплое"]);
+    const step=()=>{const end=Math.min(R.length,i+6000);
+      for(;i<end;i++){const [w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o]=R[i],au=A[ai]||["",-1],a=au[0],n=norm(t);
+        const ex=CATT[n];if(ex&&(!ex.big)&&(!ex.a||norm(ex.a).includes(norm(String(a).split(" ").slice(-1)[0]))))continue;
+        const tags=arr(tc,tg,TGS),g=G[gi]||"modern",p=PAL[hsh(t)%PAL.length];
+        const b={id:"q"+w,t,a,c:ci>=0?C[ci]:(au[1]>=0?C[au[1]]:""),y:y||null,g,tags,heavy:g==="kids"||tags.some(x=>HV0.has(x))?0:tags.some(x=>HV2.has(x))?2:1,
+          len:pg?(pg<260?"short":pg>520?"long":"mid"):undefined,q,acclaim:arr(ac,aw,AW),ann:"",when:"",f:E,big:1,sl,bg:p[0],fg:p[1]};
+        if(pg)b.pg=pg;if(rw)b.rw=rw;if(o)b.o=o;if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
+      if(i<R.length){setTimeout(step,0);return}
+      BIGL=out;_allb=null;BIGMETA=d.meta||{};res(out);try{dispatchEvent(new Event("bigcat"))}catch(e){}};step()}));
+  BIGP.catch(()=>{BIGP=null});return BIGP}
+// быстрый поиск по большому каталогу (ключи считаются один раз)
+let BIGK=null;
+function bigHits(q,n){if(!BIGL.length)return [];const v=norm(q);if(v.length<2)return [];
+  if(!BIGK){BIGK=BIGL.map(b=>b._n+"\u0001"+norm(b.a||"")+"\u0001"+(b.o?norm(b.o):""))}
+  const ws=String(q).toLowerCase().replace(/ё/g,"е").split(/[^a-zа-я0-9]+/).filter(x=>x.length>1).map(norm);const hits=[];
+  for(let i=0;i<BIGL.length;i++){const k=BIGK[i];if(k.indexOf(ws[0]||v)<0)continue;const b=BIGL[i];if(READ.has(b._n))continue;const [t,a,o]=k.split("\u0001");
+    let r=null;if(t.startsWith(v)||(o&&o.startsWith(v)))r=0;else if(t.includes(v)||(o&&o.includes(v)))r=1;else if(ws.length&&ws.every(w=>k.includes(w)))r=ws.some(w=>t.includes(w))?2:3;
+    if(r!=null)hits.push({b,r})}
+  return hits.sort((x,y)=>x.r-y.r||y.b.sl-x.b.sl).slice(0,n).map(x=>x.b)}
+// лучшие k без полной сортировки сотен тысяч записей
+function topK(list,k,fs){const best=[];let min=-Infinity;for(const b of list){const s=fs(b);if(s==null||(best.length>=k&&s<=min))continue;
+    best.push({b,s});if(best.length>k*2){best.sort((x,y)=>y.s-x.s);best.length=k;min=best[k-1].s}}
+  return best.sort((x,y)=>y.s-x.s).slice(0,k)}
+
 // ---------- обложки: настоящие (Фантлаб/Википедия) поверх рисованных ----------
 const IMG=LS.get("zal.img2",{});let imgT=0;const imgSave=()=>{clearTimeout(imgT);imgT=setTimeout(()=>LS.set("zal.img2",IMG),500)};
 try{localStorage.removeItem("zal.img")}catch(e){}
@@ -98,10 +130,18 @@ const dClean=d=>{d=String(d||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,""
 const DQ=[],DX={};let dqn=0;
 function wantDesc(x,cb){if(!x||x._f)return;const k=ikey(x);if(DESC[k]!==undefined){if(cb)cb();return}if(DX[k]){(DX[k].cbs=DX[k].cbs||[]).push(cb);return}DX[k]={cbs:cb?[cb]:[]};DQ.push({x,k});dpump()}
 function dpump(){while(dqn<3&&DQ.length){const {x,k}=DQ.shift();dqn++;
-  (async()=>{const s=await flj("/search-works?q="+encodeURIComponent(x.t)+"&page=1&onlymatches=1");const sur=norm(String(x.a||"").split(" ").slice(-1)[0]);const L=Array.isArray(s)?s:[];
-    const w=L.find(w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur))||L.find(w=>norm(w.rusname||w.name||"")===norm(x.t));if(!w)return "";
-    const j=await flj("/work/"+w.work_id);return dClean(j.work_description||"")})()
+  (async()=>{let d="",err=null;try{d=await flDesc(x)}catch(e){err=e}
+    if(!d){const c=x.src&&x.src.big?x.src:catOf(x);if(c&&c.big&&c.rw){const wd=await wikiDesc(c.rw===1?c.t:c.rw).catch(()=>null);if(wd)return wd;if(wd===null&&err)throw err}}
+    if(err)throw err;return d})()
   .then(d=>{DESC[k]=d||"";descSave()}).catch(()=>{}).finally(()=>{const cbs=(DX[k]||{}).cbs||[];delete DX[k];dqn--;cbs.forEach(f=>{try{f&&f()}catch(e){}});dpump()})}}
+// описание с Фантлаба
+async function flDesc(x){const s=await flj("/search-works?q="+encodeURIComponent(x.t)+"&page=1&onlymatches=1");const sur=norm(String(x.a||"").split(" ").slice(-1)[0]);const L=Array.isArray(s)?s:[];
+  const w=L.find(w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur))||L.find(w=>norm(w.rusname||w.name||"")===norm(x.t));if(!w)return "";
+  const j=await flj("/work/"+w.work_id);return dClean(j.work_description||"")}
+// описание из русской Википедии — для книг большого каталога, которых нет на Фантлабе
+async function wikiDesc(title){const r=await fetch("https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=extracts&exintro=1&explaintext=1&exsentences=5&redirects=1&titles="+encodeURIComponent(title));
+  if(!r.ok)throw new Error("HTTP "+r.status);const j=await r.json(),p=Object.values((j.query||{}).pages||{})[0];
+  return p&&p.extract?dClean(p.extract.replace(/\s*\([^()]*(?:\([^()]*\)[^()]*)*\)/g,"").replace(/\s+([,.])/g,"$1")):""}
 
 
 // ---------- адаптер данных: книги ----------
@@ -159,7 +199,7 @@ let FSHOWN=new Set();
 function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;
   (b.tags||[]).forEach(t=>{s+=2*(q.tags[t]||0)+1.4*(TASTE.t[t]||0)});s+=1.2*(TASTE.g[b.g]||0)+1.5*(TASTE.a[b.a]||0);return s+Math.random()*2.2}
 function bookFeed(){FSHOWN=new Set();const q=tasteQ();
-  feedMore=()=>{const sc=CAT.filter(b=>!FSHOWN.has(b.id)).map(b=>({b,s:feedScore(b,q)})).filter(x=>x.s!=null).sort((a,b)=>b.s-a.s);
+  feedMore=()=>{const sc=topK(ALLB(),160,b=>FSHOWN.has(b.id)?null:feedScore(b,q));
     const out=[],au=new Set();for(const {b} of sc){if(au.has(b.a))continue;au.add(b.a);out.push(b);if(out.length>=8)break}
     out.forEach(b=>FSHOWN.add(b.id));return out.map(b=>{const it=bItem(b,"feed");it.why=whyBook(b);return it})};return feedMore()}
 function shareBook(x){learn(x,2.2);shareSheet("Переслать книгу",`«${x.t}»${x.a?" — "+x.a:""}. Нашлось в Норе`,`https://t.me/${SHARE_BOT}?startapp`,"https://moya-nora.github.io/")}
@@ -366,7 +406,8 @@ function popBooks(){return POPB.map(t=>{const c=catOf({t,a:POPBA[t]});return c?b
 function popFilms(){return POPF.map(([t,y,s])=>{if(FILMS&&!s){const f=toFilm({t,y});if(f&&FILMS_MAP&&FILMS_MAP.get(f.id))return fItem(f,"pop")}return {_f:1,t,y,s:s?1:undefined,id:"w"+hsh(norm(t)+y).toString(36),kind:"pop"}})}
 function localFind(q){if(SX.k==="films"){const own=[...FSEEN,...FWANT].filter(f=>nameMatches(q,fTitle(f),f.o||"")).map(f=>fItem(f,"own"));const arch=FILMS?filmSearch(q,20).map(f=>fItem(f,"arch")):[];
     const seen=new Set(),out=[];[...own,...arch].forEach(x=>{if(seen.has(x.id))return;seen.add(x.id);out.push(x)});return out.slice(0,20)}
-  return bookHits(q,[...BOOKS,...want,...CAT],8).map(b=>bItem(b,"hit"))}
+  const own=bookHits(q,[...BOOKS,...want,...CAT],8),seen=new Set(own.map(b=>norm(b.t)+"|"+norm(b.a||"")));
+  return [...own,...bigHits(q,14).filter(b=>!seen.has(b._n+"|"+norm(b.a||"")))].slice(0,16).map(b=>bItem(b,"hit"))}
 async function onlineBooks(q){const [w,a]=await Promise.all([libWorks(q).catch(()=>[]),libAuthors(q).catch(()=>[])]);
   return {works:(w||[]).slice(0,16).map(x=>({t:x.t,a:x.a,y:x.y,kind:"fl",_fl:x._fl})),au:(a||[]).slice(0,4).map(x=>({id:x.id,name:x.name}))}}
 async function onlineSeries(q){const j=await (await fetch("https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=10&gsrsearch="+encodeURIComponent(q+" сериал")+"&prop=pageimages&piprop=thumbnail&pithumbsize=400&pilicense=any")).json();
@@ -596,7 +637,8 @@ const B_PACE=[["slow","Неспешные",b=>has(b,"медленное","атм
 const B_ERA=[["old","Классика до XX века",b=>b.y&&b.y<1900],["xx","XX век",b=>b.y>=1900&&b.y<2000],["now","Современные",b=>b.y>=2000],["new","Новинки",b=>b.y>=YNOW-2]];
 const B_ACC=[["prize","С премиями",b=>(b.acclaim||[]).length>0],["nobel","Нобелевские лауреаты",b=>(b.acclaim||[]).some(a=>/нобел/i.test(a))]];
 const B_GEN=["classic","modern","detective","fantasy","scifi","kids","nonfic"];
-const B_CTY=(()=>{const c={};CAT.forEach(b=>{if(b.c)c[b.c]=(c[b.c]||0)+1});return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,18).map(x=>x[0])})();
+const ctyTop=()=>{const c={};CAT.forEach(b=>{if(b.c)c[b.c]=(c[b.c]||0)+30});BIGL.forEach(b=>{if(b.c)c[b.c]=(c[b.c]||0)+1});return Object.entries(c).filter(x=>!NOCOUNTRY.has(x[0])).sort((a,b)=>b[1]-a[1]).slice(0,24).map(x=>x[0])};
+let B_CTY=ctyTop();
 const B_SET=[["evening","На один вечер",b=>b.len==="short"],["calm","Если на душе неспокойно",b=>has(b,"тёплое","светлое","уют")&&!has(b,"мрачное","жутковатое","война")&&b.heavy<2],
   ["away","Чтобы отвлечься",b=>has(b,"напряжённое","динамичное","смешное","приключения")&&b.heavy<2],["road","В дорогу",b=>has(b,"приключения","путешествия","динамичное","детектив")&&b.len!=="long"],
   ["night","Перед сном",b=>has(b,"уют","тёплое","светлое","сказка")&&!has(b,"жутковатое","хоррор","напряжённое")],["weekend","Для долгих выходных",b=>b.len==="long"],
@@ -612,7 +654,7 @@ function bookPass(b,skip){const F=NF,find=(L,id)=>(L.find(x=>x[0]===id)||[])[2];
   if(skip!=="hide"&&F.hide.length&&F.hide.includes(b.g))return false;
   if(skip!=="set"&&F.set&&!find(B_SET,F.set)(b))return false;return true}
 const bookMoodHits=b=>NF.mood.filter(m=>(B_MOOD.find(x=>x[0]===m)||[])[2](b)).length;
-const bookPool=()=>CAT.filter(b=>score(b,{tags:{},says:[]})!=null);
+const EMPTYQ={tags:{},says:[]};const bookPool=()=>ALLB().filter(b=>score(b,EMPTYQ)!=null);
 
 // кино: настроение и подборки — из жанров IMDb (номера как в FG_RU)
 const G=n=>1<<n,GA=(f,...n)=>n.some(i=>f.g&G(i)),GN=(f,...n)=>!n.some(i=>f.g&G(i));
@@ -1117,6 +1159,9 @@ if(VIEW){const sp=$("#splash");if(sp)sp.remove()}else splashStart();
 // заранее подтягиваем обложки всего, что лежит на полках (обеих)
 setTimeout(()=>{try{[BK,FM].forEach(D=>{D.want().forEach(wantImg);D.read().forEach(wantImg)})}catch(e){}},1200);
 moveLens();document.fonts&&document.fonts.ready.then(moveLens);
+addEventListener("bigcat",()=>{B_CTY=ctyTop();BIGK=null;
+  if($("#vsheet.filters #fwrap"))redrawFilters();else if($("#fres")&&SX.mode==="q"){if(norm(SX.q).length>=2){const extra=SX.list.filter(x=>x.kind!=="hit");SX.list=[...localFind(SX.q),...extra];sxDraw("done")}else sxDraw()}});
+setTimeout(()=>{const go=()=>loadBig().catch(()=>setTimeout(go,30000));(window.requestIdleCallback||(f=>setTimeout(f,0)))(go)},700);
 if(REALM==="films")loadFilms().then(()=>{if(isF()){buildFeed();refresh()}}).catch(()=>{});
 const emptyAll=()=>!BOOKS.length&&!want.length&&!FSEEN.length&&!FWANT.length&&!nowBook;
 if(!VIEW&&!LS.get("zal.onb",0)){if(!emptyAll())LS.set("zal.onb",1);else setTimeout(()=>{if(emptyAll()&&!LS.get("zal.onb",0))introShow()},900)}

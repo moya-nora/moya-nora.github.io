@@ -1214,6 +1214,9 @@ function bookHits(q,pool,n=6){const v=norm(q);if(v.length<2)return [];const ws=S
 function suggHTML(hits){return hits.map((b,i)=>`<button type="button" data-s="${i}">${cover(b,26)}<span><b>${esc(b.t)}</b><small>${esc(b.a||"")}${b.y?", "+b.y:""}</small></span></button>`).join("")}
 CAT.forEach(b=>{b.id="c"+hsh(b.t+b.a).toString(36);const p=PAL[hsh(b.t)%PAL.length];b.bg=p[0];b.fg=p[1]});
 const CATMAP=Object.fromEntries(CAT.map(b=>[b.id,b]));
+CAT.forEach(b=>Object.defineProperty(b,"_n",{value:norm(b.t)}));
+// большой каталог (books/books.json, сотни тысяч книг) догружается после запуска — loadBig в слое интерфейса
+let BIGL=[],_allb=null;const ALLB=()=>BIGL.length?(_allb||(_allb=CAT.concat(BIGL))):CAT;
 
 const LIB={...WANT,...CATMAP};
 const NEWSHELF="Новые поступления",NOCOUNTRY=new Set(["Неразобранное",NEWSHELF,"Без страны"]);
@@ -2083,8 +2086,11 @@ function parse(text){
   return q;
 }
 let dismissed=new Set(LS.get("zal.skip",[]));
+let _wa=null,_wl=-1,_wn=new Set();
+const wantNorms=()=>{if(_wa!==want||_wl!==want.length){_wa=want;_wl=want.length;_wn=new Set(want.map(w=>norm(w.t)))}return _wn};
 function score(b,q){
-  if(READ.has(norm(b.t))||dismissed.has(b.id)||want.some(w=>norm(w.t)===norm(b.t)))return null;
+  const nt=b._n||norm(b.t);
+  if(READ.has(nt)||dismissed.has(b.id)||wantNorms().has(nt))return null;
   if(q.g&&b.g!==q.g&&!(q.g==="fantasy"&&b.tags.includes("магия")))return null;
   if(q.c&&!q.c.includes(b.c))return null;
   if(q.yMin&&b.y<q.yMin)return null; if(q.yMax&&b.y>q.yMax)return null;
@@ -2092,11 +2098,11 @@ function score(b,q){
   if(q.qMin&&b.q<q.qMin)return null; if(q.newCountry&&shelfCountries.has(b.c))return null;
   let m=0;Object.entries(q.tags).forEach(([t,w])=>{if(b.tags.includes(t))m+=2*w});
   if(Object.keys(q.tags).length&&m===0&&!q.g&&!q.c)return null;
-  let s=m+b.q*1.6+(b.acclaim.length?0.6:0);
+  let s=m+b.q*1.6+(b.acclaim.length?0.6:0)+(b.big?(b.ru?0:-1.2):0.8);
   return s;
 }
 function pickFor(q,n=3,shuffle=0){
-  const scored=CAT.map(b=>({b,s:score(b,q)})).filter(x=>x.s!=null).map(x=>({...x,s:x.s+Math.random()*shuffle})).sort((a,b)=>b.s-a.s);
+  const scored=ALLB().map(b=>({b,s:score(b,q)})).filter(x=>x.s!=null);if(shuffle)scored.forEach(x=>x.s+=Math.random()*shuffle);scored.sort((a,b)=>b.s-a.s);
   const out=[],authors=new Set();
   for(const x of scored){if(authors.has(x.b.a))continue;out.push(x.b);authors.add(x.b.a);if(out.length===n)break}
   if(out.length<n&&q.must){const more=pickFor({...q,must:null},n,shuffle).filter(b=>!out.some(o=>o.id===b.id));out.push(...more.slice(0,n-out.length))}
@@ -2127,7 +2133,7 @@ const MOOD_POOL=[
 let moods=[],activeMood=null,picks={},flipOpen=null;
 const inWant=r=>want.some(s=>norm(s.t)===norm(r.t));
 function shuffleMoods(){const p=[...MOOD_POOL].sort(()=>Math.random()-.5);moods=p.slice(0,14);picks={};flipOpen=null;renderMoods()}
-function rankFor(q){return CAT.map(b=>({b,s:score(b,q)})).filter(x=>x.s!=null).sort((a,b)=>b.s-a.s).map(x=>x.b)}
+function rankFor(q){return ALLB().map(b=>({b,s:score(b,q)})).filter(x=>x.s!=null).sort((a,b)=>b.s-a.s).map(x=>x.b)}
 function nextPick(st){
   if(!st.rank){st.rank=rankFor(st.q);if(!st.rank.length)st.rank=rankFor({...st.q,len:null,heavyMax:null,yMin:null,yMax:null,qMin:null,must:null,c:null})}
   let pool=st.rank.filter(b=>!st.seen.has(b.id)&&!inWant(b));
