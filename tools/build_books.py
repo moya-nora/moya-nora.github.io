@@ -18,10 +18,11 @@
 import collections, json, os, re, sys, time, urllib.parse, urllib.request
 
 MIN_SL = int(os.environ.get("MIN_SL", "1"))          # минимум статей в Википедиях
+MAX_BOOKS = int(os.environ.get("MAX_BOOKS", "160000"))  # потолок размера файла; книги с русским названием — в первую очередь
 SOFT_SL = int(os.environ.get("SOFT_SL", "12"))       # стихи/рассказы/эссе — только очень известные
 OUT = os.path.join(os.path.dirname(__file__), "..", "books", "books.json")
 UA = {"User-Agent": "moya-nora-books/1.0 (https://github.com/moya-nora/moya-nora.github.io)"}
-ENDPOINTS = ["https://qlever.cs.uni-freiburg.de/api/wikidata", "https://qlever.dev/api/wikidata"]
+ENDPOINTS = ["https://qlever.dev/api/wikidata", "https://qlever.cs.uni-freiburg.de/api/wikidata"]
 PFX = """PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX wikibase: <http://wikiba.se/ontology#>
@@ -108,16 +109,26 @@ for w, v in per_work("?art schema:about ?w ; schema:isPartOf <https://ru.wikiped
         RW[w] = v
 
 # ---------- типы, которые не нужны ----------
-def subclasses(roots, what):
-    vals = " ".join("wd:" + r for r in roots)
-    return {r[0] for r in sparql(f"SELECT DISTINCT ?c WHERE {{ VALUES ?root {{ {vals} }} ?c wdt:P279* ?root }}", what) if r[0]}
-
-HARD = subclasses(["Q13442814", "Q191067", "Q8274", "Q14406742", "Q838795", "Q1004", "Q7366", "Q482994",
-                   "Q1980247", "Q1266946", "Q2188189", "Q105543609", "Q1172284", "Q732577", "Q871232"], "лишние типы")
-SOFT = subclasses(["Q5185279", "Q49084", "Q35760", "Q133492", "Q1318295", "Q699", "Q12131"], "стихи и рассказы")
-KEEP = {"Q8261", "Q7725634", "Q571", "Q149537", "Q1279564", "Q47461344", "Q25379", "Q12106333", "Q37484"}
-HARD -= KEEP
-SOFT -= KEEP | HARD
+TYPES = {t for w in multi for t in multi[w]["type"]}
+TYPE_EN = {}
+for i0 in range(0, len(TYPES), 4000):
+    part = sorted(TYPES)[i0:i0 + 4000]
+    vals = " ".join("wd:" + x for x in part if re.match(r"^Q\d+$", x))
+    for e, v in sparql(f'SELECT ?e ?v WHERE {{ VALUES ?e {{ {vals} }} ?e rdfs:label ?v . FILTER(LANG(?v) = "en") }}', "типы"):
+        TYPE_EN[e] = (v or "").lower()
+RX_KEEP = re.compile(r"collection|anthology|novel|book|cycle|series of|literary work|written work|play|drama|epic")
+RX_HARD = re.compile(r"scholarly|scientific|article|manga|comic|webcomic|song|chapter|episode|issue|magazine|newspaper|"
+                     r"periodical|journal|thesis|dissertation|patent|\blaw\b|edition|version|translation|manuscript|codex|"
+                     r"letter|speech|sermon|hymn|psalm|liturgic|lyrics|libretto|screenplay|film|video game|anime|map|atlas|"
+                     r"dictionary|encyclopedia|database|website|blog|report|standard|catalog|treaty|constitution|charter|"
+                     r"religious text|scripture|sutra|prayer|inscription|document")
+RX_SOFT = re.compile(r"poem|poetry|short story|essay|fairy tale|folk tale|fable|sonnet|\bode\b|ballad|haiku|novelette|"
+                     r"vignette|parable|aphorism|tale")
+HARD = {t for t, l in TYPE_EN.items() if RX_HARD.search(l) and not RX_KEEP.search(l)}
+SOFT = {t for t, l in TYPE_EN.items() if RX_SOFT.search(l) and not RX_KEEP.search(l)} - HARD
+print("   типов:", len(TYPES), "лишних:", len(HARD), "стихи/рассказы:", len(SOFT), flush=True)
+print("   лишние (частые):", collections.Counter(TYPE_EN.get(t) for w in multi for t in multi[w]["type"] if t in HARD).most_common(25), flush=True)
+print("   стихи/рассказы (частые):", collections.Counter(TYPE_EN.get(t) for w in multi for t in multi[w]["type"] if t in SOFT).most_common(15), flush=True)
 
 # ---------- авторы ----------
 print("2. Авторы", flush=True)
@@ -366,7 +377,11 @@ for r in recs:
 recs = list(best.values())
 # качество 1–3: известность в Википедиях и премии, на русском — чуть выше
 for r in recs:
-    r["s"] = r["sl"] + 4 * len(r["aw"]) + (6 if r["rw"] else 0)
+    r["s"] = r["sl"] + 4 * len(r["aw"]) + (6 if r["rw"] else 0) + (30 if r["ru"] else 0) + (3 if alab["ru"].get(r["a"]) else 0) + \
+        (2 if r["tags"] else 0) + (1 if r["y"] else 0)
+print("   до отбора:", len(recs), "с русским названием:", sum(r["ru"] for r in recs), flush=True)
+recs.sort(key=lambda r: -r["s"])
+recs = recs[:MAX_BOOKS]
 srt = sorted(r["s"] for r in recs)
 p70, p93 = srt[int(len(srt) * .70)], srt[int(len(srt) * .93)]
 for r in recs:
