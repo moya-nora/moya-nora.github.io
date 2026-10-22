@@ -86,7 +86,12 @@ def year_of(v):
 print("0. Проверка связи", flush=True)
 print("   ", sparql("SELECT ?l WHERE { wd:Q8261 rdfs:label ?l . FILTER(LANG(?l) = \"ru\") }", "пинг"))
 print("1. Произведения", flush=True)
-SL = {w: int(float(v)) for w, v in per_work("?w wikibase:sitelinks ?v .", "статьи в Википедиях") if v}
+ALLSL = {w: int(float(v)) for w, v in per_work("?w wikibase:sitelinks ?v .", "все ссылки") if v}
+print("   элементов с любыми ссылками:", len(ALLSL), flush=True)
+# считаем только статьи в Википедиях (Викитека с отдельными стихами — не повод попадать в каталог)
+SL = {r[0]: int(float(r[1])) for r in sparql(f"""SELECT ?w (COUNT(DISTINCT ?art) AS ?v) WHERE {{ {WORKSET}
+  ?art schema:about ?w ; schema:isPartOf ?site . FILTER(CONTAINS(STR(?site), ".wikipedia.org")) }} GROUP BY ?w""", "статьи в Википедиях")
+      if r[0] in ALLSL and r[1]}
 print("   всего произведений:", len(SL), flush=True)
 hist = collections.Counter(min(v, 50) // 5 * 5 for v in SL.values())
 print("   по числу статей:", sorted(hist.items()), flush=True)
@@ -116,6 +121,8 @@ for i0 in range(0, len(TYPES), 4000):
     vals = " ".join("wd:" + x for x in part if re.match(r"^Q\d+$", x))
     for e, v in sparql(f'SELECT ?e ?v WHERE {{ VALUES ?e {{ {vals} }} ?e rdfs:label ?v . FILTER(LANG(?v) = "en") }}', "типы"):
         TYPE_EN[e] = (v or "").lower()
+RX_RELIG = re.compile(r"religious|scripture|sacred|biblical|bible|gospel|testament|epistle|quran|sura|sutra|veda|upanishad|"
+                      r"talmud|torah|canonical|apocrypha|liturg|catechism|prayer|creed|hagiograph")
 RX_KEEP = re.compile(r"collection|anthology|novel|book|cycle|series of|literary work|written work|play|drama|epic")
 RX_HARD = re.compile(r"scholarly|scientific|article|manga|comic|webcomic|song|chapter|episode|issue|magazine|newspaper|"
                      r"periodical|journal|thesis|dissertation|patent|\blaw\b|edition|version|translation|manuscript|codex|"
@@ -124,6 +131,7 @@ RX_HARD = re.compile(r"scholarly|scientific|article|manga|comic|webcomic|song|ch
                      r"religious text|scripture|sutra|prayer|inscription|document")
 RX_SOFT = re.compile(r"poem|poetry|short story|essay|fairy tale|folk tale|fable|sonnet|\bode\b|ballad|haiku|novelette|"
                      r"vignette|parable|aphorism|tale")
+RELIG = {t for t, l in TYPE_EN.items() if RX_RELIG.search(l)}
 HARD = {t for t, l in TYPE_EN.items() if RX_HARD.search(l) and not RX_KEEP.search(l)}
 SOFT = {t for t, l in TYPE_EN.items() if RX_SOFT.search(l) and not RX_KEEP.search(l)} - HARD
 print("   типов:", len(TYPES), "лишних:", len(HARD), "стихи/рассказы:", len(SOFT), flush=True)
@@ -204,11 +212,36 @@ CMAP = {
 }
 
 
+CMAPL = {k.lower(): v for k, v in CMAP.items()}
+CRX = [(re.compile(r, re.I), v) for r, v in (
+    (r"герман|пруссия|бавар|саксон|гессен|вюртемберг|ганновер|рейх", "Германия"), (r"^франц|французск", "Франция"),
+    (r"испан|кастил|арагон", "Испания"), (r"^итал|итальянск|флорент|венецианск|папская|неаполит|сардин|милан|тоскан|генуэз", "Италия"),
+    (r"^росси|российск|ссср|советск|московск", "Россия"), (r"польск|речь посполит", "Польша"),
+    (r"^австрия$|австрийск|австро-|габсбург", "Австрия"),
+    (r"^англ|великобритан|соединённое королевство|соединенное королевство", "Англия"), (r"шотланд", "Шотландия"),
+    (r"ирланд", "Ирландия"), (r"шведск|^швеция", "Швеция"), (r"датск|^дания", "Дания"), (r"норвеж|^норвегия", "Норвегия"),
+    (r"япон|сёгунат|сегунат", "Япония"), (r"кита|империя (тан|сун|мин|хань|юань|цин)|династия (тан|сун|мин|хань|юань|цин)", "Китай"),
+    (r"^коре|корейск", "Корея"), (r"визант", "Византия"), (r"афин|спарт|эллин|древн\w* греци", "Древняя Греция"),
+    (r"^греци|греческ", "Греция"), (r"римск|^древний рим", "Древний Рим"),
+    (r"нидерланд|голланд", "Нидерланды"), (r"османск|^турц|турецк", "Турция"), (r"персид|^иран|сефевид", "Иран"),
+    (r"^индия$|британская индия|могол", "Индия"), (r"^чех|богем", "Чехия"), (r"венгер|^венгр", "Венгрия"), (r"португал", "Португалия"),
+    (r"бразил", "Бразилия"), (r"мексик", "Мексика"), (r"аргентин", "Аргентина"), (r"соединённые штаты", "США"))]
+_CN = {}
+
+
 def cname(q):
+    if q in _CN:
+        return _CN[q]
     s = CTY_RU.get(q)
-    if not s:
-        return None
-    return CMAP.get(s, s)
+    v = None
+    if s:
+        v = CMAPL.get(s.lower())
+        if not v:
+            v = next((n for rx, n in CRX if rx.search(s)), None)
+        if not v:
+            v = s[:1].upper() + s[1:]
+    _CN[q] = v
+    return v
 
 # ---------- жанры и теги ----------
 TAGS = ["грустное", "атмосферное", "любовь", "интеллектуальное", "психологический роман", "мрачное", "юмор", "напряжённое",
@@ -314,6 +347,9 @@ recs, skipped = [], collections.Counter()
 for w, sl in SL.items():
     m = multi[w]
     types = set(m["type"])
+    if types & RELIG:
+        skipped["религиозный текст"] += 1
+        continue
     if types and types <= HARD | SOFT:
         if types & HARD and not (types - HARD):
             skipped["тип"] += 1
@@ -388,11 +424,24 @@ for r in recs:
     r["q"] = 3 if r["s"] >= p93 else 2 if r["s"] >= p70 else 1
 recs.sort(key=lambda r: -r["s"])
 
+ANON = re.compile(r"^(различные|разные|неизвестн|various|anonymous|unknown)", re.I)
+
+
+def aname(a):
+    n = alab["ru"].get(a) or alab["en"].get(a) or ""
+    if ANON.match(n):
+        return "Разные авторы"
+    p = n.split()
+    if len(p) == 3 and re.search(r"(вич|вна|ична|инична|ич)$", p[1]) and re.match(r"^[А-ЯЁ]", p[0]):
+        n = p[0] + " " + p[2]
+    return n
+
+
 AU, AUI = [], {}
 def auix(a, ac):
     if a not in AUI:
         AUI[a] = len(AU)
-        AU.append([alab["ru"].get(a) or alab["en"].get(a), cix(ac)])
+        AU.append([aname(a), cix(ac)])
     return AUI[a]
 
 rows = []
