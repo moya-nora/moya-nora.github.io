@@ -1,0 +1,27 @@
+name: Книжный каталог
+on:
+  schedule:
+    - cron: "41 3 2 * *"   # 2-го числа каждого месяца
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [tools/build_books.py, .github/workflows/books.yml]
+permissions:
+  contents: write
+concurrency: { group: books, cancel-in-progress: false }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python tools/build_books.py
+      - name: Сохранить
+        run: |
+          git config user.name "Mayorov-Vlad"
+          git config user.email "vladislav15333@gmail.com"
+          git add books/books.json
+          git diff --cached --quiet || git commit -m "Книжный каталог: обновление $(date +%Y-%m-%d)"
+          git pull --rebase -q && git push
