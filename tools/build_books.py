@@ -69,7 +69,7 @@ def sparql(q, what):
 
 WORKSET = f"""{{ SELECT DISTINCT ?w WHERE {{
   {{ ?w wdt:P31/wdt:P279* wd:Q7725634 }} UNION {{ ?w wdt:P31/wdt:P279* wd:Q571 }}
-  ?w wdt:P50 ?anyAuthor .
+  {{ ?w wdt:P50 ?anyAuthor }} UNION {{ ?w wdt:P2093 ?anyAuthor }}
   ?w wikibase:sitelinks ?wsl . FILTER(?wsl >= {MIN_SL})
 }} }}"""
 
@@ -99,7 +99,7 @@ print("   по числу статей:", sorted(hist.items()), flush=True)
 multi = collections.defaultdict(lambda: collections.defaultdict(list))
 for prop, key in (("wdt:P31", "type"), ("wdt:P50", "auth"), ("wdt:P495", "cty"), ("wdt:P136", "genre"),
                   ("wdt:P921", "subj"), ("wdt:P166", "award"), ("wdt:P577", "date"), ("wdt:P571", "inc"),
-                  ("wdt:P1104", "pages"), ("wdt:P1476", "title")):
+                  ("wdt:P1104", "pages"), ("wdt:P1476", "title"), ("wdt:P2093", "authstr")):
     for w, v in per_work(f"?w {prop} ?v .", key):
         if w in SL and v:
             multi[w][key].append(v)
@@ -359,10 +359,12 @@ for w, sl in SL.items():
             continue
     ru, en = lab["ru"].get(w), lab["en"].get(w)
     title = ru or en or (m["title"][0] if m["title"] else None)
-    if not title or re.match(r"^Q\d+$", title):
+    if not title or re.match(r"^Q\d+$", title) or len(title) > 110:
         skipped["без названия"] += 1
         continue
     auth = [a for a in m["auth"] if alab["ru"].get(a) or alab["en"].get(a)]
+    if not auth and m["authstr"]:
+        auth = ["s:" + m["authstr"][0].strip()]
     if not auth:
         skipped["без автора"] += 1
         continue
@@ -441,7 +443,7 @@ AU, AUI = [], {}
 def auix(a, ac):
     if a not in AUI:
         AUI[a] = len(AU)
-        AU.append([aname(a), cix(ac)])
+        AU.append([a[2:] if a.startswith("s:") else aname(a), cix(ac)])
     return AUI[a]
 
 rows = []
