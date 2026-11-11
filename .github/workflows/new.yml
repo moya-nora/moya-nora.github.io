@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [tools/build_new.py, .github/workflows/new.yml]
+    paths: [tools/build_new.py, tools/build_seo.py, .github/workflows/new.yml]
 permissions:
   contents: write
 concurrency: { group: books-new, cancel-in-progress: false }
@@ -22,6 +22,9 @@ jobs:
           mkdir -p books
           set -o pipefail
           python -u tools/build_new.py 2>&1 | tee books/new.log
+      - name: Страницы для поисковиков
+        if: always()
+        run: python -u tools/build_seo.py
       - name: Сохранить
         if: always()
         run: |
@@ -29,5 +32,6 @@ jobs:
           git config user.email "vladislav15333@gmail.com"
           git add books/new.log
           if [ -f books/new.json ]; then git add books/new.json; fi
+          git add k c sitemap.xml robots.txt 2>/dev/null || true
           git diff --cached --quiet || git commit -m "Книжные новинки: обновление $(date +%Y-%m-%d)"
           git pull --rebase -X theirs -q && git push   # при одновременных сборках побеждает свежая
