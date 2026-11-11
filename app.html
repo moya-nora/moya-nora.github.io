@@ -3642,14 +3642,22 @@ const palOf=t=>PAL[hsh(String(t))%PAL.length];
 // ---------- большой каталог: books/books.json (Викиданные, обновляется ежемесячно) ----------
 // Подборки Шуршуни, фильтры, лента и поиск работают по всему каталогу: ручные карточки + большой каталог.
 let BIGP=null,BIGMETA=null;
+// новинки (books/new.json, Фантлаб, ежемесячно) дописываются в конец большого каталога: свои списки авторов, жанров и тегов переводим в общие
+function catMerge(d,n){if(!n||!Array.isArray(n.b)||!n.b.length)return d;d.nBig=d.b.length;
+  const ix=(L,v)=>{let j=L.indexOf(v);if(j<0){L.push(v);j=L.length-1}return j};
+  const cm=(n.c||[]).map(c=>ix(d.c,c)),gm=(n.g||[]).map(g=>ix(d.g,g)),tm=(n.tg||[]).map(t=>ix(d.tg,t)),wm=(n.aw||[]).map(a=>ix(d.aw,a));
+  const a0=d.a.length;(n.a||[]).forEach(([nm,c])=>d.a.push([nm,c>=0?cm[c]:-1]));
+  n.b.forEach(([w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o])=>d.b.push([w,t,a0+ai,y,gm[gi]??0,(tg||[]).map(j=>tm[j]),q,sl,ci>=0?cm[ci]:-1,(aw||[]).map(j=>wm[j]),pg,rw,o]));
+  d.meta=Object.assign({},d.meta,{new:n.meta});return d}
 function loadBig(){if(BIGP)return BIGP;
-  BIGP=fetch("books/books.json").then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>new Promise(res=>{
-    const C=d.c,G=d.g,TGS=d.tg,AW=d.aw,A=d.a,R=d.b,tc=new Map(),ac=new Map(),E=[],out=[];let i=0;
+  const nw=fetch("books/new.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
+  BIGP=fetch("books/books.json").then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>nw.then(n=>catMerge(d,n))).then(d=>new Promise(res=>{
+    const C=d.c,G=d.g,TGS=d.tg,AW=d.aw,A=d.a,R=d.b,NB=d.nBig||R.length,tc=new Map(),ac=new Map(),E=[],out=[];let i=0;
     const arr=(cache,ix,src)=>{if(!ix||!ix.length)return E;const k=ix.join(",");let v=cache.get(k);if(!v){v=ix.map(j=>src[j]).filter(Boolean);cache.set(k,v)}return v};
     const CYR=/[а-яё]/i,HV2=new Set(["мрачное","война","хоррор","грустное","жутковатое","антиутопия","постапокалипсис"]),HV0=new Set(["юмор","смешное","сказка","уют","светлое","тёплое"]);
     const step=()=>{const end=Math.min(R.length,i+6000);
       for(;i<end;i++){const [w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o]=R[i],au=A[ai]||["",-1],a=au[0],n=norm(t);
-        const ex=CATT[n];if(ex&&(!ex.big)&&(!ex.a||norm(ex.a).includes(norm(String(a).split(" ").slice(-1)[0]))))continue;
+        const ex=CATT[n];if(ex&&(i>=NB||!ex.big)&&(!ex.a||norm(ex.a).includes(norm(String(a).split(" ").slice(-1)[0]))))continue;
         const tags=arr(tc,tg,TGS),g=G[gi]||"modern",p=PAL[hsh(t)%PAL.length];
         const b={id:"q"+w,t,a,c:ci>=0?C[ci]:(au[1]>=0?C[au[1]]:""),y:y||null,g,tags,heavy:g==="kids"||tags.some(x=>HV0.has(x))?0:tags.some(x=>HV2.has(x))?2:1,
           len:pg?(pg<260?"short":pg>520?"long":"mid"):undefined,q,acclaim:arr(ac,aw,AW),ann:"",when:"",f:E,big:1,sl,bg:p[0],fg:p[1]};
@@ -3835,6 +3843,7 @@ function drawDots(){return;const n=$("#feed").children.length;$("#dots").innerHT
 function fbarDraw(){const el=$("#gbar");if(!el)return;if(isF()||VIEW){el.hidden=true;return}el.hidden=false;const act=activeList(),keep=el.scrollLeft;
   el.innerHTML=`<button class="fc gl main${act.length?" on":""}" data-ffopen><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Фильтры${act.length?` <i>${act.length}</i>`:""}</button>`+
     act.map(([k,l])=>`<button class="fc gl on" data-ffdrop="${esc(k)}">${esc(l)}<svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></button>`).join("")+
+    (NF.era==="new"?"":`<button class="fc gl gen" data-ffera="new">Новинки</button>`)+
     B_GEN.filter(g=>!NF.gen.includes(g)).map(g=>`<button class="fc gl gen" data-ffgen="${g}">${GEN[g]}</button>`).join("")+
     B_MOOD.filter(m=>!NF.mood.includes(m[0])).map(m=>`<button class="fc gl" data-ffmood="${m[0]}">${m[1]}</button>`).join("");el.scrollLeft=keep}
 function buildFeed(){acts=[];const f=$("#feed");$("#ffil").hidden=true;fbarDraw();
@@ -4335,6 +4344,7 @@ function applyFilters(){vDirty=false;if(FCTX==="feed"||SCREEN==="feed"){FCTX="";
 $("#gbar").addEventListener("click",e=>{const t=e.target;tgHaptic();
   if(t.closest("[data-ffopen]")){FCTX="feed";openFilters();return}
   const d=t.closest("[data-ffdrop]");if(d){dropFilter(d.dataset.ffdrop);buildFeed();return}
+  const er=t.closest("[data-ffera]");if(er){NF.era=er.dataset.ffera;saveNF();buildFeed();$("#gbar").scrollLeft=0;return}
   const g=t.closest("[data-ffgen]");if(g){NF.gen.push(g.dataset.ffgen);saveNF();buildFeed();$("#gbar").scrollLeft=0;return}
   const m=t.closest("[data-ffmood]");if(m){NF.mood.push(m.dataset.ffmood);saveNF();buildFeed();$("#gbar").scrollLeft=0}});
 fbar.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;tgHaptic();

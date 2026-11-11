@@ -47,3 +47,134 @@ if os.environ.get("PROBE"):
                 show(w, 4000)
             break_after = True
     sys.exit(0)
+
+import re
+YNOW = time.gmtime().tm_year
+MAX_PAGES = int(os.environ.get("MAX_PAGES", "60"))
+OUT = os.path.join(os.path.dirname(__file__), "..", "books", "new.json")
+CYR = re.compile(r"[а-яё]", re.I)
+BOOKISH = re.compile(r"авторская книга|сборник|антология|роман|повесть|книга", re.I)
+GENRE_RX = [(r"детск|подростк|young adult|ya\b", "kids"), (r"детектив|триллер|нуар", "detective"),
+            (r"научн|космос|киберпанк|антиутоп|постапокалип|твёрдая|социальная фантастика|альтернативная история", "scifi"),
+            (r"фэнтези|магия|сказ|мистик|хоррор|ужас|городское", "fantasy"), (r"реализм|современн|историческ", "modern")]
+GENRE_RX = [(re.compile(r, re.I), g) for r, g in GENRE_RX]
+TAGS = ["хоррор", "мистика", "любовь", "приключения", "антиутопия", "постапокалипсис", "юмор", "напряжённое", "мрачное", "детектив"]
+TAG_RX = [(re.compile(r, re.I), t) for r, t in [(r"хоррор|ужас", "хоррор"), (r"мистик", "мистика"), (r"любов|роман[ст]", "любовь"),
+          (r"приключ", "приключения"), (r"антиутоп", "антиутопия"), (r"постапокалип", "постапокалипсис"), (r"юмор|ирони", "юмор"),
+          (r"триллер|напряж", "напряжённое"), (r"мрачн|тёмн|темн|готик", "мрачное"), (r"детектив", "детектив")]]
+
+
+def strip_tags(s):
+    return re.sub(r"\[/?[a-z]+(=\d+)?\]", "", s or "").strip()
+
+
+def labels_of(cls):
+    """все текстовые подписи из классификатора Фантлаба (жанры, места, время…)"""
+    out = []
+    def walk(x):
+        if isinstance(x, dict):
+            for k, v in x.items():
+                if k in ("label", "name", "title") and isinstance(v, str):
+                    out.append(v)
+                else:
+                    walk(v)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v)
+    walk(cls)
+    return out
+
+
+def pages_of(w):
+    for blk in (w.get("editions_blocks") or {}).values():
+        for e in blk.get("list") or []:
+            if e.get("pages"):
+                return int(e["pages"])
+    return 0
+
+
+print("1. Фантлаб: новинки издательств", flush=True)
+seen, cand = set(), []
+for lang in (0, 1):
+    for page in range(1, MAX_PAGES + 1):
+        d = get(f"{FL}/pubnews?lang={lang}&sort=popularity&page={page}")
+        objs = (d or {}).get("objects") or []
+        if not objs:
+            break
+        for o in objs:
+            w = o.get("the_only_work") or {}
+            wid, name = w.get("work_id"), (o.get("name") or "").strip()
+            if not wid or wid in seen or not CYR.search(name) or not BOOKISH.search((o.get("type_name") or "") + " " + (w.get("name_show_im") or "")):
+                continue
+            seen.add(wid)
+            cand.append({"w": wid, "t": name, "a": strip_tags(o.get("autors")).split(",")[0].strip(), "pop": o.get("popularity") or 0,
+                         "y": int((o.get("release_date") or o.get("approx_release_date") or "0")[:4] or 0), "ser": o.get("series") or "",
+                         "lang": lang})
+        print(f"   lang={lang} стр. {page}: всего {len(cand)}", flush=True)
+        if page >= (d.get("page_count") or 0):
+            break
+        time.sleep(0.4)
+print("   кандидатов:", len(cand), flush=True)
+
+print("2. Подробности произведений", flush=True)
+recs = []
+for k, c in enumerate(cand):
+    w = get(f"{FL}/work/{c['w']}/extended") or {}
+    time.sleep(0.25)
+    if w.get("work_type_name") and not BOOKISH.search(w.get("work_type_name") + " роман"):
+        continue
+    au = (w.get("authors") or [{}])[0]
+    a = au.get("pseudoname") if au.get("real_name") == 0 and au.get("pseudoname") else au.get("name")
+    a = strip_tags(a or c["a"]) or "Разные авторы"
+    labs = " ".join(labels_of(w.get("classificatory")) + [c["ser"], w.get("work_description") or ""])
+    g = next((g for rx, g in GENRE_RX if rx.search(labs)), "fantasy")
+    tags = [t for rx, t in TAG_RX if rx.search(labs)][:4]
+    y = int(w.get("work_year") or 0) or c["y"] or YNOW
+    if y < YNOW - 3:
+        continue  # переиздание старой книги — в большом каталоге она и так есть
+    voters = int(w.get("val_voters") or 0)
+    s = (c["pop"] or 0) + voters * 2
+    recs.append({"w": "f%d" % c["w"], "t": (w.get("work_name") or c["t"]).strip(), "a": a, "y": y, "g": g, "tags": tags,
+                 "s": s, "pg": pages_of(w), "o": (w.get("work_name_orig") or "").strip(), "c": "Россия" if c["lang"] == 0 else ""})
+    if k % 100 == 0:
+        print(f"   {k}/{len(cand)}", flush=True)
+# прошлые новинки не теряем: Фантлаб показывает только последние ~150 дней, а «Норе» нужна история за 3 года
+try:
+    prev = json.load(open(OUT, encoding="utf-8"))
+    have = {r["w"] for r in recs}
+    kept = 0
+    for w, t, ai, y, gi, tg, q, sl, ci, aw, pg, rw, o in prev["b"]:
+        if w in have or (y and y < YNOW - 3):
+            continue
+        au = prev["a"][ai]
+        recs.append({"w": w, "t": t, "a": au[0], "y": y, "g": prev["g"][gi], "tags": [prev["tg"][j] for j in tg if prev["tg"][j] in TAGS],
+                     "s": -1 + q, "pg": pg, "o": o or "", "c": prev["c"][au[1]] if au[1] >= 0 else "", "q0": q})
+        kept += 1
+    print("   из прошлых сборок сохранено:", kept, flush=True)
+except FileNotFoundError:
+    pass
+recs.sort(key=lambda r: -r["s"])
+if recs:
+    srt = sorted(r["s"] for r in recs)
+    p60, p90 = srt[int(len(srt) * .6)], srt[int(len(srt) * .9)]
+    for r in recs:
+        r["q"] = r["q0"] if "q0" in r else 3 if r["s"] >= p90 and r["s"] > 0 else 2 if r["s"] >= p60 and r["s"] > 0 else 1
+
+GEN = ["classic", "modern", "detective", "fantasy", "scifi", "kids", "nonfic"]
+CT = ["Россия"]
+AU, AUI, rows = [], {}, []
+for r in recs:
+    if r["a"] not in AUI:
+        AUI[r["a"]] = len(AU)
+        AU.append([r["a"], 0 if r["c"] else -1])
+    rows.append([r["w"], r["t"], AUI[r["a"]], r["y"], GEN.index(r["g"]), [TAGS.index(t) for t in r["tags"]], r["q"], 0, -1,
+                 [], r["pg"], 0, r["o"] or 0])
+out = {"meta": {"source": "Фантлаб: новинки издательств", "built": time.strftime("%Y-%m-%d"), "n": len(rows)},
+       "c": CT, "g": GEN, "tg": TAGS, "aw": [], "a": AU, "b": rows}
+print("   новинок:", len(rows), "первые:", [(r["t"], r["a"], r["y"]) for r in recs[:25]], flush=True)
+if len(rows) < 50:
+    raise SystemExit(f"Подозрительно мало новинок ({len(rows)}) — файл не перезаписан")
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
+with open(OUT, "w", encoding="utf-8") as f:
+    json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
+print("   записано:", OUT, os.path.getsize(OUT) // 1024, "КБ", flush=True)
