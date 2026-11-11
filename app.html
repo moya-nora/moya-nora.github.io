@@ -2779,7 +2779,7 @@ function openEdit(b){haptic();
    <div><label for="eY">Год издания</label><input id="eY" inputmode="numeric" maxlength="5" value="${b.y||""}"></div></div>
    <label for="eG">Жанр</label><select id="eG">${genres.map(([k,v])=>`<option value="${k}"${k===b.g?" selected":""}>${v}</option>`).join("")}</select>
    <label>Оценка</label>${ratingPicker(b.r??null)}
-   <label for="eN">Отзыв</label><textarea id="eN" placeholder="Что понравилось, что нет — Нора учтёт это в советах">${esc(b.n||"")}</textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Для себя</button><button type="button" data-nv="1" class="${PUB?"on":""}">Для других читателей</button></div><p class="nvis-h" id="nVisH">${PUB?"Его увидят другие читатели — пока твои друзья в Норе.":"Нора учтёт отзыв в советах. Никто, кроме тебя, его не увидит."}</p>`)(!!b.pub)}
+   <label for="eN">Отзыв</label><textarea id="eN" placeholder="Что понравилось, что нет — Нора учтёт это в советах">${esc(b.n||"")}</textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Для себя</button><button type="button" data-nv="1" class="${PUB?"on":""}">Для других читателей</button></div>`)(!!b.pub)}
    <div class="sheet-actions"><button class="btn btn-main" id="eSave" style="margin-top:0">Сохранить</button></div>
    <button class="btn btn-ghost btn-wide danger" id="eDel">Убрать с полки</button></div>`);
   const getR=bindRating();
@@ -2894,7 +2894,7 @@ function openAddBook(target,pre){const toW=target==="want";
    <label for="bT">Или впиши название</label><input id="bT" autocomplete="off" placeholder="Например, Мастер и Маргарита"><div class="sugg" id="bSugg"></div>
    <label for="bA">Автор (необязательно)</label><input id="bA" autocomplete="off">
    <div id="bOne"${toW?" hidden":""}><label>Оценка</label>${ratingPicker(null)}
-   <label for="bN">Отзыв (необязательно)</label><textarea id="bN" placeholder="Что понравилось, что нет — Нора учтёт это в советах"></textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Для себя</button><button type="button" data-nv="1" class="${PUB?"on":""}">Для других читателей</button></div><p class="nvis-h" id="nVisH">${PUB?"Его увидят другие читатели — пока твои друзья в Норе.":"Нора учтёт отзыв в советах. Никто, кроме тебя, его не увидит."}</p>`)(false)}</div>
+   <label for="bN">Отзыв (необязательно)</label><textarea id="bN" placeholder="Что понравилось, что нет — Нора учтёт это в советах"></textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Для себя</button><button type="button" data-nv="1" class="${PUB?"on":""}">Для других читателей</button></div>`)(false)}</div>
    <div class="sheet-actions"><button class="btn btn-main" id="bSave" style="margin-top:0" disabled>${toW?"В «Хочу прочитать»":"Поставить на полку"}</button></div></div>`);
   const getR=bindRating(),T=$("#bT"),sv=$("#bSave");let picked=pre||null,found=[];if(pre){T.value=pre.t;$("#bA").value=pre.a||"";if(pre._fl)flEnrich(pre);setTimeout(()=>upd(),0)}
   const upd=()=>{sv.disabled=!T.value.trim()&&!found.length;$("#bOne").hidden=toW||found.length>0;const n=found.length+(T.value.trim()?1:0),nw=found.filter(b=>b._w).length+(T.value.trim()&&toW?1:0);sv.textContent=nw===0?"Поставить на полку":nw===n?"В «Хочу прочитать»":"Разложить книги"};
@@ -4563,7 +4563,7 @@ function syncClick(t){
   if(t.closest("[data-sy-login]")){loginSheet();return true}
   return false}
 function mailSheet(mode){const L=mode==="link";
-  vOpen(`<h3 class="vh">${L?"Привязать почту":"Войти по почте"}</h3><p class="sy-note">${L?"Придумай пароль — с почтой и паролем Нору можно открыть в любом браузере, даже без Telegram.":"Имя, почта и пароль, привязанные к Норе."}</p>
+  vOpen(`<h3 class="vh">${L?"Привязать почту":"Войти по почте"}</h3><p class="sy-note">${L?"Придумай пароль — с почтой и паролем Нору можно открыть в любом браузере, даже без Telegram.":"Почта и пароль, привязанные к Норе."}</p>
    <input class="sy-in" id="syE" type="email" autocomplete="email" placeholder="Почта" inputmode="email">
    <input class="sy-in" id="syP" type="password" autocomplete="${L?"new-password":"current-password"}" placeholder="${L?"Пароль, от 6 символов":"Пароль"}">
    <p class="sy-msg" id="syM"></p><div class="one"><button class="btn w" id="syGo">${L?"Привязать":"Войти"}</button></div>${L?"":`<button class="sy-link" id="syR">Забыли пароль?</button>`}`);
@@ -4774,8 +4774,8 @@ const signInK=async(e,p)=>{if(authCtx==="onb"&&NS.yieldLocal)NS.yieldLocal();ret
 function authShow(next,ctx){authNext=next||null;authCtx=ctx||"";if(NS.email&&authMode==="up")authMode="in";authDraw();authEl.classList.add("on")}
 function authDraw(){const up=authMode==="up";
   const ob=authCtx==="onb";
-  authEl.innerHTML=`<div class="au-in"><h1>${up?(ob?"Сохрани свою Нору":"Создай аккаунт"):"Вход"}</h1><p>${up?(ob?"Полки готовы! Почта и пароль нужны, чтобы они не потерялись и открывались везде — в Telegram, в браузере и на телефоне. Имя увидят друзья.":"Имя — для друзей. Почта и пароль нужны, чтобы полки не потерялись и открывались на любом устройстве — в Telegram, в браузере, на телефоне и компьютере."):"Имя, почта и пароль, привязанные к Норе."}</p>
-   <input class="sy-in" id="auN" autocomplete="given-name" placeholder="Имя — так тебя увидят друзья" value="${esc(LS.get("zal.name",""))}">
+  authEl.innerHTML=`<div class="au-in"><h1>${up?(ob?"Сохрани свою Нору":"Создай аккаунт"):"Вход"}</h1><p>${up?(ob?"Полки готовы! Почта и пароль нужны, чтобы они не потерялись и открывались везде — в Telegram, в браузере и на телефоне. Имя увидят друзья.":"Имя — для друзей. Почта и пароль нужны, чтобы полки не потерялись и открывались на любом устройстве — в Telegram, в браузере, на телефоне и компьютере."):"Почта и пароль, привязанные к Норе."}</p>
+   ${up?`<input class="sy-in" id="auN" autocomplete="given-name" placeholder="Имя — так тебя увидят друзья" value="${esc(LS.get("zal.name",""))}">`:""}
    <input class="sy-in" id="auE" type="email" autocomplete="email" inputmode="email" placeholder="Почта" value="${esc(up?"":NS.email||"")}">
    <input class="sy-in" id="auP" type="password" autocomplete="${up?"new-password":"current-password"}" placeholder="${up?"Пароль, от 6 символов":"Пароль"}">
    <p class="sy-msg" id="auM"></p><button class="btn w" id="auGo">${up?"Создать аккаунт":"Войти"}</button>
@@ -4783,10 +4783,10 @@ function authDraw(){const up=authMode==="up";
   const go=$("#auGo"),msg=$("#auM");
   $("#auSw").onclick=()=>{authMode=up?"in":"up";authDraw();tgHaptic()};
   const r=$("#auR");if(r)r.onclick=async()=>{const e=$("#auE").value.trim();if(!e){msg.textContent="Впиши почту — придёт ссылка для нового пароля";return}try{await NS.reset(e);msg.textContent="Письмо отправлено. Задай новый пароль по ссылке и возвращайся."}catch(x){msg.textContent=x.message}};
-  go.onclick=async()=>{const e=$("#auE").value.trim(),p=$("#auP").value;const nv=$("#auN").value.trim();if(!nv){msg.textContent="Впиши имя — так тебя увидят друзья";$("#auN").focus();return}if(!e||!p){msg.textContent="Заполни почту и пароль";return}go.disabled=true;go.textContent=up?"Создаю…":"Вхожу…";msg.textContent="";
+  go.onclick=async()=>{const e=$("#auE").value.trim(),p=$("#auP").value;const nv=up?$("#auN").value.trim():"";if(up&&!nv){msg.textContent="Впиши имя — так тебя увидят друзья";$("#auN").focus();return}if(!e||!p){msg.textContent="Заполни почту и пароль";return}go.disabled=true;go.textContent=up?"Создаю…":"Вхожу…";msg.textContent="";
     const nm=$("#auN");if(nm&&nm.value.trim())LS.set("zal.name",nm.value.trim().slice(0,40));
     try{if(up){try{await NS.signUp(e,p)}catch(x){if(/уже есть Нора/.test(x.message)){await signInK(e,p)}else throw x}}else await signInK(e,p);
-      LS.set("zal.name",nv.slice(0,40));authEl.classList.remove("on");tgHaptic("medium");toast(up?"Аккаунт создан":"Вход выполнен");const n=authNext;authNext=null;if(n)n();setTimeout(()=>{pubCheck();inviteCheck()},800)}
+      if(nv)LS.set("zal.name",nv.slice(0,40));else if(!LS.get("zal.name","")&&NS.getProfile){try{const pf=await NS.getProfile(NS.uid());if(pf&&pf.n)LS.set("zal.name",String(pf.n).slice(0,40))}catch(x){}}authEl.classList.remove("on");tgHaptic("medium");toast(up?"Аккаунт создан":"Вход выполнен");const n=authNext;authNext=null;if(n)n();setTimeout(()=>{pubCheck();inviteCheck()},800)}
     catch(x){msg.textContent=x.message;go.disabled=false;go.textContent=up?"Создать аккаунт":"Войти"}};
   $("#auP").onkeydown=e=>{if(e.key==="Enter")go.click()}}
 function afterSplash(){setTimeout(inviteCheck,300);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0))authShow()}
