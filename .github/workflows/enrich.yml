@@ -1,0 +1,32 @@
+name: Настроения книг по отзывам
+on:
+  schedule:
+    - cron: "23 6 6 * *"   # 6-го числа каждого месяца — следующая порция книг
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [tools/enrich_books.py, .github/workflows/enrich.yml]
+permissions:
+  contents: write
+concurrency: { group: books-enrich, cancel-in-progress: false }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 230
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Разметка
+        run: |
+          set -o pipefail
+          python -u tools/enrich_books.py 2>&1 | tee books/enrich.log
+      - name: Сохранить
+        if: always()
+        run: |
+          git config user.name "Mayorov-Vlad"
+          git config user.email "vladislav15333@gmail.com"
+          git add books/enrich.log
+          if [ -f books/tags.json ]; then git add books/tags.json; fi
+          git diff --cached --quiet || git commit -m "Настроения книг: обновление $(date +%Y-%m-%d)"
+          git pull --rebase -X theirs -q && git push

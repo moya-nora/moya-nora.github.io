@@ -3666,9 +3666,12 @@ function catMerge(d,n){if(!n||!Array.isArray(n.b)||!n.b.length)return d;d.nBig=d
   const a0=d.a.length;(n.a||[]).forEach(([nm,c])=>d.a.push([nm,c>=0?cm[c]:-1]));
   n.b.forEach(([w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o])=>d.b.push([w,t,a0+ai,y,gm[gi]??0,(tg||[]).map(j=>tm[j]),q,sl,ci>=0?cm[ci]:-1,(aw||[]).map(j=>wm[j]),pg,rw,o]));
   d.meta=Object.assign({},d.meta,{new:n.meta});return d}
+// настроения по отзывам и голосам читателей Фантлаба (books/tags.json, пополняется ежемесячно) — дописываем к тегам книг
+function tagMerge(d,t){if(!t||!t.m||!Array.isArray(t.tg))return d;const tm=t.tg.map(x=>{let j=d.tg.indexOf(x);if(j<0){d.tg.push(x);j=d.tg.length-1}return j});
+  d.b.forEach(r=>{const e=t.m[r[0]];if(e&&e[2]&&e[2].length){const add=e[2].map(j=>tm[j]).filter(j=>j!=null&&!r[5].includes(j));if(add.length)r[5]=r[5].concat(add)}});return d}
 function loadBig(){if(BIGP)return BIGP;
-  const nw=fetch("books/new.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
-  BIGP=fetch("books/books.json").then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>nw.then(n=>catMerge(d,n))).then(d=>new Promise(res=>{
+  const nw=fetch("books/new.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),tgs=fetch("books/tags.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
+  BIGP=fetch("books/books.json").then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>tgs.then(t=>tagMerge(d,t))).then(d=>nw.then(n=>catMerge(d,n))).then(d=>new Promise(res=>{
     const C=d.c,G=d.g,TGS=d.tg,AW=d.aw,A=d.a,R=d.b,NB=d.nBig||R.length,tc=new Map(),ac=new Map(),E=[],out=[];let i=0;
     const arr=(cache,ix,src)=>{if(!ix||!ix.length)return E;const k=ix.join(",");let v=cache.get(k);if(!v){v=ix.map(j=>src[j]).filter(Boolean);cache.set(k,v)}return v};
     const CYR=/[а-яё]/i,HV2=new Set(["мрачное","война","хоррор","грустное","жутковатое","антиутопия","постапокалипсис"]),HV0=new Set(["юмор","смешное","сказка","уют","светлое","тёплое"]);
