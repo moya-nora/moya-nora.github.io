@@ -8,7 +8,7 @@ on:
     paths: [tools/build_new.py, .github/workflows/new.yml]
 permissions:
   contents: write
-concurrency: { group: books, cancel-in-progress: false }
+concurrency: { group: books-new, cancel-in-progress: false }
 jobs:
   build:
     runs-on: ubuntu-latest
