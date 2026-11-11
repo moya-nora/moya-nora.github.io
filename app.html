@@ -1195,9 +1195,26 @@ body.viewing #app .fbar{display:none}
 .L .qform .nvis button.on{background:#F5F5F7;color:#0B0C11}
 .L .qform .nvis-h{color:rgba(255,255,255,.45)}
 .L .qform .btn-main{background:#F5F5F7;color:#0B0C11;border-radius:26px;height:52px;font-weight:600;margin-top:26px}
-.L .qform .btn-main:disabled{opacity:.45}
+.L .qform .btn-main:disabled{opacity:1;background:#3A3A46;color:rgba(255,255,255,.45)}.L .qform textarea{resize:none}
 .L .qform .btn-ghost{background:rgba(255,255,255,.08);color:#fff;border-radius:26px}
 .L .qform .danger{color:#FF7A85}
+/* плавающий лист, как остальные окна приложения */
+.legacy-over .sheet:has(.qform){width:calc(100% - 16px);max-width:560px;margin:0 8px calc(8px + env(safe-area-inset-bottom,0px));border-radius:36px;padding:8px 18px 20px;max-height:calc(100dvh - 70px);
+  background:linear-gradient(180deg,rgba(38,38,50,.92),rgba(16,16,24,.96));-webkit-backdrop-filter:blur(40px) saturate(1.8);backdrop-filter:blur(40px) saturate(1.8);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.1),0 30px 80px -20px rgba(0,0,0,.9)}
+.legacy-over .sheet:has(.qform) .grab{width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);margin:4px auto 10px}
+.legacy-over .sheet:has(.qform)>.sheet-h,.L .qform .qh{font-family:'Cormorant Garamond',Georgia,serif;font-size:30px;font-weight:600;line-height:1.05;margin:2px 2px 16px;color:#fff}
+.L .qform label{text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:rgba(255,255,255,.6);margin:22px 2px 0}
+/* фото и перенос — одна сгруппированная карточка со строками, как в настройках */
+.L .qform .photo-btn{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:20px 20px 0 0;box-shadow:none;background:rgba(255,255,255,.08);padding:15px 40px 15px 16px;position:relative;margin:0}
+.L .qform .photo-btn:only-of-type,.L .qform .photo-btn:not(:has(+.imp-link)){border-radius:20px}
+.L .qform .photo-btn b{font-size:15px;font-weight:600;line-height:1.3}
+.L .qform .photo-btn svg{flex:none;width:24px;height:24px;stroke-width:1.7}
+.L .qform .imp-link{display:flex;align-items:center;gap:14px;width:100%;text-align:left;margin:1px 0 0;border-radius:0 0 20px 20px;background:rgba(255,255,255,.08);color:#fff;padding:15px 40px 15px 54px;font-size:15px;position:relative;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E2B66B' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v11M7 10l5 5 5-5M5 19h14'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:16px center;background-size:24px}
+.L .qform .photo-btn::after,.L .qform .imp-link::after{content:"";position:absolute;right:18px;top:50%;width:8px;height:8px;border:solid rgba(255,255,255,.4);border-width:1.8px 1.8px 0 0;transform:translateY(-50%) rotate(45deg)}
+.L .qform .nvis{margin-top:12px}
+.L .qform .sheet-actions{position:sticky;bottom:-20px;margin:0 -18px -20px;padding:14px 18px 20px;background:linear-gradient(180deg,rgba(16,16,24,0),rgba(16,16,24,.96) 35%)}
 /* ---------- экраны разных размеров ---------- */
 #app .grain:not(.L *){z-index:52}
 @media (max-width:370px){#app .dock button[data-s]{min-width:0;padding:0 6px;font-size:9.5px}#app .dock:not(.L *){gap:0;padding:5px}#app .dock svg:not(.L *){width:20px;height:20px}}
@@ -2886,15 +2903,15 @@ function matchBooks(text){
   return out.filter(x=>!toks(x.b.t).filter(w=>w.length>=3).every(w=>authTok.has(w))||toks(x.b.a||"").some(w=>toks(x.b.t).includes(w))===false&&false).sort((x,y)=>y.score-x.score).slice(0,24).map(x=>x.b);
 }
 function openAddBook(target,pre){const toW=target==="want";
-  openSheet(`<div class="qform">
+  openSheet(`<div class="qform"><h3 class="qh">${toW?"Хочу прочитать":"Новая книга"}</h3>
    <input type="file" id="bPhoto" accept="image/*" multiple hidden>
    <button type="button" class="photo-btn" id="bPhotoBtn"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span><b>Сфотографируй книгу или сразу книжный шкаф</b></span></button>
    <div class="ocr" id="bOcr" hidden></div>
    <div class="found" id="bFound"></div><div id="bUnk"></div>
    <label for="bT">Или впиши название</label><input id="bT" autocomplete="off" placeholder="Например, Мастер и Маргарита"><div class="sugg" id="bSugg"></div>
-   <label for="bA">Автор (необязательно)</label><input id="bA" autocomplete="off">
+   <label for="bA">Автор</label><input id="bA" autocomplete="off" placeholder="Если знаешь">
    <div id="bOne"${toW?" hidden":""}><label>Оценка</label>${ratingPicker(null)}
-   <label for="bN">Отзыв (необязательно)</label><textarea id="bN" placeholder="Что понравилось, что нет — Нора учтёт это в советах"></textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Для себя</button><button type="button" data-nv="1" class="${PUB?"on":""}">Для других читателей</button></div>`)(false)}</div>
+   <label for="bN">Отзыв</label><textarea id="bN" placeholder="Что понравилось, что нет — по желанию"></textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Для себя</button><button type="button" data-nv="1" class="${PUB?"on":""}">Для других читателей</button></div>`)(false)}</div>
    <div class="sheet-actions"><button class="btn btn-main" id="bSave" style="margin-top:0" disabled>${toW?"В «Хочу прочитать»":"Поставить на полку"}</button></div></div>`);
   const getR=bindRating(),T=$("#bT"),sv=$("#bSave");let picked=pre||null,found=[];if(pre){T.value=pre.t;$("#bA").value=pre.a||"";if(pre._fl)flEnrich(pre);setTimeout(()=>upd(),0)}
   const upd=()=>{sv.disabled=!T.value.trim()&&!found.length;$("#bOne").hidden=toW||found.length>0;const n=found.length+(T.value.trim()?1:0),nw=found.filter(b=>b._w).length+(T.value.trim()&&toW?1:0);sv.textContent=nw===0?"Поставить на полку":nw===n?"В «Хочу прочитать»":"Разложить книги"};
@@ -4789,7 +4806,7 @@ function authDraw(){const up=authMode==="up";
       if(nv)LS.set("zal.name",nv.slice(0,40));else if(!LS.get("zal.name","")&&NS.getProfile){try{const pf=await NS.getProfile(NS.uid());if(pf&&pf.n)LS.set("zal.name",String(pf.n).slice(0,40))}catch(x){}}authEl.classList.remove("on");tgHaptic("medium");toast(up?"Аккаунт создан":"Вход выполнен");const n=authNext;authNext=null;if(n)n();setTimeout(()=>{pubCheck();inviteCheck()},800)}
     catch(x){msg.textContent=x.message;go.disabled=false;go.textContent=up?"Создать аккаунт":"Войти"}};
   $("#auP").onkeydown=e=>{if(e.key==="Enter")go.click()}}
-function afterSplash(){setTimeout(inviteCheck,300);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0))authShow()}
+function afterSplash(){setTimeout(inviteCheck,300);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&!NS.email)authShow()}
 
 
 // ---------- смена обложки вручную: фото / рисунок / другое издание ----------

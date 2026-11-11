@@ -6,7 +6,7 @@ HTML-страницы, которые поисковик читает целик
   /k/<книга>.html — книга из ручного каталога: описание, жанр, страна и «похожие книги»;
   /c/<подборка>.html — подборки по жанрам, настроениям, странам и новинки;
   sitemap.xml и robots.txt.
-Каждая страница ведёт в приложение. Запуск: python3 tools/build_seo.py (GitHub Actions — после сборки новинок)."""
+Главная index.html тоже собирается здесь. Каждая страница ведёт в приложение. Запуск: python3 tools/build_seo.py (GitHub Actions — после сборки новинок)."""
 import html, json, os, re, time
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -34,7 +34,8 @@ CAT, _ = json.JSONDecoder().raw_decode(app[i:])
 books = []
 for b in CAT:
     books.append({"t": b["t"], "a": b.get("a", ""), "y": b.get("y"), "g": b.get("g", "modern"), "c": b.get("c", ""), "tags": b.get("tags", []),
-                  "q": b.get("q", 1) + 1, "ann": b.get("ann", ""), "acc": b.get("acclaim", []), "cat": True})
+                  "q": b.get("q", 1) + 1, "ann": b.get("ann", ""), "acc": b.get("acclaim", []), "cat": True,
+                  "when": b.get("when", ""), "f": b.get("f", [])})
 
 
 def load(name):
@@ -91,7 +92,7 @@ COLL = [  # (адрес, заголовок, вступление, отбор)
      lambda b: has(b, "интеллектуальное", "философский роман", "психологический роман", "антиутопия")),
     ("trogatelnye", "Трогательные книги", "Истории, которые трогают до слёз.", lambda b: has(b, "грустное", "взросление")),
     ("antiutopii", "Антиутопии: лучшие книги", "Миры, в которые не хочется попасть, — и от которых не оторваться.", lambda b: has(b, "антиутопия")),
-    ("novinki", f"Книжные новинки {YNOW - 1}–{YNOW}", "Новые книги последних двух лет — каталог обновляется каждый месяц.", lambda b: y(b) >= YNOW - 1),
+    ("novinki", f"Книжные новинки {YNOW - 1}–{YNOW}", "Новые книги последних двух лет — каталог обновляется каждый месяц.", lambda b: y(b) >= YNOW - 1 and not notnovel(b)),
     ("s-premiyami", "Книги с литературными премиями", "Книги, получившие главные литературные премии.", lambda b: len(b["acc"]) > 0),
 ]
 cty = {}
@@ -107,25 +108,53 @@ for c, n in sorted(cty.items(), key=lambda x: -x[1]):
         COLL.append((f"strana-{slug(c)}", f"Лучшие книги {CTY_RP[c]} авторов", f"Самые известные книги {CTY_RP[c]} писателей.", (lambda c: lambda b: b["c"] == c)(c)))
 
 # ---------- страницы ----------
-CSS = """body{margin:0;background:#05060A;color:#fff;font:16px/1.55 -apple-system,system-ui,'Segoe UI',sans-serif}
-main{max-width:680px;margin:0 auto;padding:28px 20px 60px}a{color:#E2B66B}h1{font:600 32px/1.15 Georgia,serif;margin:8px 0 12px}
-.lead{color:rgba(255,255,255,.75)}.cta{display:inline-block;margin:18px 10px 0 0;padding:12px 20px;border-radius:24px;background:#F5F5F7;color:#0B0C11;text-decoration:none;font-weight:600}
-.cta.tg{background:none;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}ol{padding-left:22px}li{margin:10px 0}li small{color:rgba(255,255,255,.55)}
-.meta{color:rgba(255,255,255,.6);font-size:14px}nav{font-size:14px;color:rgba(255,255,255,.55)}h2{font:600 22px/1.2 Georgia,serif;margin:34px 0 8px}
-footer{margin-top:40px;font-size:13px;color:rgba(255,255,255,.45)}"""
+VER = time.strftime("%Y%m%d")
+PAL = {"fantasy": ["#2E2450", "#1F3A3A", "#4A2140", "#263552"], "scifi": ["#142B3D", "#1E2C4F", "#2A2A2A"], "detective": ["#2B2B30", "#3A1F1F", "#1C2630"],
+       "classic": ["#5A2232", "#22344A", "#2F3B2A", "#E8DDC8"], "modern": ["#C9B79A", "#2D3A4A", "#6B3A2E", "#E3D6C1"], "kids": ["#2F5A4A", "#7A4A2A", "#3B4F7A"],
+       "nonfic": ["#E8E1D3", "#23303A", "#3D2F25"]}
 
 
-def page(path, title, desc, body):
-    canon = f"{SITE}/{path}"
-    doc = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{esc(title)} — Нора</title><meta name="description" content="{esc(desc[:200])}"><link rel="canonical" href="{canon}">
+def hsh(t):
+    h = 0
+    for ch in t:
+        h = (h * 31 + ord(ch)) & 0xFFFFFFFF
+    return h
+
+
+def cv(b):
+    pal = PAL.get(b["g"], PAL["modern"])
+    c = pal[hsh(b["t"]) % len(pal)]
+    light = int(c[1:3], 16) + int(c[3:5], 16) + int(c[5:7], 16) > 450
+    f = "#3A2A1C" if light else ("#F1E2C2" if hsh(b["a"]) % 2 else "#E2B66B")
+    return f'<div class="cv" style="--c:{c};--f:{f}"><b>{esc(b["t"])}</b><i>{esc(b["a"])}</i></div>'
+
+
+HEAD = f"""<link rel="icon" href="/icons/icon-192.png"><link rel="apple-touch-icon" href="/icons/icon-180.png"><meta name="theme-color" content="#08080D">
+<link rel="preload" href="/fonts/cormorant-garamond-cyrillic-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/site.css?v={VER}">"""
+NAV = [("/c/romantezi.html", "Ромэнтези"), ("/c/novinki.html", "Новинки"), ("/c/zhanr-fantasy.html", "Фэнтези"), ("/c/", "Все подборки"), ("/#kak", "Как это работает")]
+HDR = ('<header class="hd"><div class="wrap"><a class="logo" href="/"><img src="/icons/icon-192.png" alt="">Нора</a><nav class="nav">'
+       + "".join(f'<a href="{u}">{t}</a>' for u, t in NAV)
+       + '</nav><a class="btn sm open" id="openNora" href="/app.html">Открыть Нору</a></div></header>')
+MINE = """<script>try{if(localStorage.getItem("zal.onb"))document.querySelectorAll("#openNora").forEach(function(a){a.textContent="Моя Нора"})}catch(e){}</script>"""
+
+
+def footer(colls):
+    pick = colls[:8]
+    return (f'<footer class="ft"><div class="wrap"><div><div class="logo">Нора</div><p>Все твои книги в одном месте — бумажные, из Литрес, Яндекс Книг и LiveLib. '
+            f'Шуршуня подскажет, что читать дальше.</p></div><div><h4>Подборки</h4>' + "".join(f'<a href="/c/{p}.html">{esc(t.split(":")[0])}</a>' for p, t in pick)
+            + f'</div><div><h4>Нора</h4><a href="/app.html">Открыть в браузере</a><a href="{BOT}">Открыть в Telegram</a><a href="/c/">Все подборки</a></div></div></footer>')
+
+
+FOOT = ""  # заполняется после сборки подборок
+
+
+def page(path, title, desc, body, full_title=None):
+    canon = f"{SITE}/{path}".replace("/index.html", "/")
+    doc = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{esc(full_title or title + " — Нора")}</title><meta name="description" content="{esc(desc[:200])}"><link rel="canonical" href="{canon}">
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc[:200])}"><meta property="og:url" content="{canon}">
-<meta property="og:image" content="{SITE}/icons/icon-512.png"><meta property="og:type" content="website"><meta property="og:site_name" content="Нора">
-<link rel="icon" href="/icons/icon-192.png"><style>{CSS}</style></head><body><main>
-<nav><a href="/">Нора</a> · <a href="/c/">подборки</a></nav>{body}
-<p><a class="cta" href="/">Собрать свою полку в Норе</a><a class="cta tg" href="{BOT}">Открыть в Telegram</a></p>
-<footer>Нора — все твои книги в одном месте: бумажные, из Литрес, Яндекс Книг и LiveLib. Шуршуня подскажет, что читать дальше.</footer>
-</main></body></html>"""
+<meta property="og:image" content="{SITE}/icons/icon-512.png"><meta property="og:type" content="website"><meta property="og:site_name" content="Нора">{HEAD}</head><body>
+{HDR}<main>{body}</main>{FOOT}{MINE}</body></html>"""
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
     open(full, "w", encoding="utf-8").write(doc)
@@ -133,7 +162,7 @@ def page(path, title, desc, body):
 
 
 rank = lambda b: (-(b["q"] or 0), -(b.get("sl") or 0), not b["cat"])
-urls = [SITE + "/"]
+urls = []
 cat_books = [b for b in books if b["cat"]]
 BOOK_URL = {}
 used = set()
@@ -145,41 +174,94 @@ for b in cat_books:
     BOOK_URL[id(b)] = f"k/{s}.html"
 
 
-def item(b):
+def card(b, n=None, ann=False):
     u = BOOK_URL.get(id(b))
-    name = f'<a href="/{u}">{esc(b["t"])}</a>' if u else esc(b["t"])
     meta = ", ".join(x for x in [b["a"], str(b["y"]) if b["y"] and b["y"] > 0 else ""] if x)
-    ann = f"<br><small>{esc(b['ann'])}</small>" if b["ann"] else ""
-    return f"<li>{name} <small>— {esc(meta)}</small>{ann}</li>"
+    inner = (cv(b) + (f'<div class="num">{n}</div>' if n else "") + f'<div class="t">{esc(b["t"])}</div><div class="a">{esc(meta)}</div>'
+             + (f'<p>{esc(b["ann"])}</p>' if ann and b["ann"] else ""))
+    return f'<a class="bk" href="/{u}">{inner}</a>' if u else f'<div class="bk">{inner}</div>'
 
 
-coll_links = []
+CTA = f'<div class="ctas"><a class="btn" href="/app.html">Собрать свою полку</a><a class="btn ghost" href="{BOT}">Открыть в Telegram</a></div>'
+coll_data = []
 for path, title, lead, pred in COLL:
     L = sorted([b for b in books if pred(b)], key=rank)[:60]
     if len(L) < 8:
         continue
-    urls.append(page(f"c/{path}.html", title, lead + " " + ", ".join(b["t"] for b in L[:5]) + ".",
-                     f"<h1>{esc(title)}</h1><p class='lead'>{esc(lead)}</p><ol>{''.join(item(b) for b in L)}</ol>"))
-    coll_links.append((path, title))
+    # книги с описанием — вперёд, чтобы витрина подборки была живой
+    L = sorted(L, key=lambda b: (not b["ann"], L.index(b)))
+    coll_data.append((path, title, lead, L))
+FOOT = footer([(p, t) for p, t, _, _ in coll_data])
+for path, title, lead, L in coll_data:
+    body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a> · <a href="/c/">Подборки</a></div><div class="ph"><h1>{esc(title)}</h1><p class="lead">{esc(lead)}</p></div>'
+            f'<div class="grid">{"".join(card(b, i + 1, True) for i, b in enumerate(L))}</div>'
+            f'<section class="final"><h2>Отмечай прочитанное —<br>Нора подберёт следующее</h2><p>Собери все свои книги на одной полке и получай советы по своему вкусу.</p>{CTA}</section></div>')
+    urls.append(page(f"c/{path}.html", title, lead + " " + ", ".join(b["t"] for b in L[:5]) + ".", body))
+
+
+def coll_card(p, t, L):
+    return (f'<a class="coll" href="/c/{p}.html"><div class="st">{"".join(cv(b) for b in L[:3])}</div><h3>{esc(t.split(":")[0])}</h3>'
+            f'<small>{len(L)} книг</small></a>')
+
+
 urls.append(page("c/index.html", "Подборки книг", "Подборки книг по жанрам, настроениям и странам — от ромэнтези до классики.",
-                 "<h1>Подборки книг</h1><ul>" + "".join(f'<li><a href="/c/{p}.html">{esc(t)}</a></li>' for p, t in coll_links) + "</ul>"))
+                 '<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><h1>Подборки книг</h1>'
+                 '<p class="lead">По жанрам, настроениям и странам — от ромэнтези до классики.</p></div><div class="colls" style="padding-bottom:70px">'
+                 + "".join(coll_card(p, t, L) for p, t, _, L in coll_data) + "</div></div>"))
 
 pool = {}
 for b in cat_books:
     pool.setdefault(b["g"], []).append(b)
 for b in cat_books:
     tg = set(b["tags"])
-    sim = sorted((x for x in pool.get(b["g"], []) if x is not b), key=lambda x: (-len(tg & set(x["tags"])), -(x["q"] or 0)))[:8]
-    facts = " · ".join(x for x in [b["a"], GEN.get(b["g"], ""), b["c"], str(b["y"]) if b["y"] and b["y"] > 0 else ""] if x)
+    sim = sorted((x for x in pool.get(b["g"], []) if x is not b), key=lambda x: (-len(tg & set(x["tags"])), -(x["q"] or 0)))[:6]
+    facts = [x for x in [GEN.get(b["g"], ""), b["c"], str(b["y"]) if b["y"] and b["y"] > 0 else ""] + b["tags"][:4] if x]
     desc = b["ann"] or f"«{b['t']}» — {b['a']}."
-    body = (f"<h1>{esc(b['t'])}</h1><p class='meta'>{esc(facts)}</p><p class='lead'>{esc(b['ann'])}</p>"
-            + (f"<p class='meta'>Премии: {esc(', '.join(b['acc']))}</p>" if b["acc"] else "")
-            + (f"<h2>Похожие книги</h2><ol>{''.join(item(x) for x in sim)}</ol>" if sim else ""))
+    body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a> · <a href="/c/zhanr-{b["g"]}.html">{esc(GEN.get(b["g"], "Книги"))}</a></div>'
+            f'<article class="book">{cv(b)}<div><h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>'
+            f'<div class="facts">{"".join(f"<span>{esc(x)}</span>" for x in facts)}</div>'
+            + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "")
+            + (f'<p class="when">{esc(b["when"])}</p>' if b.get("when") else "")
+            + "".join(f'<div class="fact"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>' for f in b.get("f", [])[:3] if len(f) > 1)
+            + (f'<p class="acc">Признание: {esc(", ".join(b["acc"]))}</p>' if b["acc"] else "")
+            + CTA + "</div></article>"
+            + (f'<section class="sec"><h2>Похожие книги</h2><p class="sub">Если понравилась «{esc(b["t"])}», попробуй эти.</p>'
+               f'<div class="row">{"".join(card(x) for x in sim)}</div></section>' if sim else "")
+            + "</div>")
     urls.append(page(BOOK_URL[id(b)], f"«{b['t']}», {b['a']}: о чём книга и что почитать похожее", desc, body))
+
+# ---------- главная ----------
+get = lambda p: next((L for q, _, _, L in coll_data if q == p), [])
+hero = [b for b in get("romantezi") if b["ann"]][:5] or cat_books[:5]
+show = [p for p in ("romantezi", "dark-roman", "lyubovnye-romany", "zhanr-fantasy", "young-adult", "zahvatyvayuschie", "uyutnye", "zhanr-detective") if get(p)]
+TG_REDIRECT = """<script>(function(){try{var s=location.search,h=location.hash,sa=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;
+if(/tgWebApp/.test(h+s)||sa||/[?&]app(=|&|$)/.test(s)){location.replace("app.html?v="+Math.floor(Date.now()/6e5)+(s?"&"+s.slice(1):"")+h)}}catch(e){}})()</script>"""
+home = f"""<div class="wrap"><section class="hero"><div><div class="kick">Книжная полка с советником</div><h1>Все твои книги —<br>в одной <em>Норе</em></h1>
+<p>Бумажные, из Литрес, Яндекс Книг и LiveLib — на одной полке. Сфотографируй шкаф, и полка соберётся сама. А Шуршуня подскажет, что читать дальше.</p>{CTA}
+<div class="where">Бесплатно · в браузере, в Telegram и на экране телефона</div></div><div class="fan">{"".join(cv(b) for b in hero)}</div></section>
+<section class="sec" id="kak"><div class="kick">Как это работает</div><h2>Три шага до своей библиотеки</h2><p class="sub">Никаких таблиц и ручного ввода — Нора делает скучную часть за тебя.</p>
+<div class="steps"><div class="step"><div class="n">1</div><h3>Сфотографируй шкаф</h3><p>Нора узнает книги по корешкам и поставит их на полку. Или отметь прочитанное в ленте — одним свайпом.</p></div>
+<div class="step"><div class="n">2</div><h3>Оцени и напиши отзыв</h3><p>Для себя или для друзей. Чем больше оценок, тем точнее Нора понимает твой вкус.</p></div>
+<div class="step"><div class="n">3</div><h3>Получи совет</h3><p>Шуршуня подберёт следующую книгу — по настроению, жанру, тропам и тому, что ты любишь.</p></div></div></section>
+<section class="sec"><div class="shead"><div><div class="kick">Подборки</div><h2>Что почитать</h2><p class="sub">Ромэнтези, дарк роман, фэнтези и книги на любое настроение.</p></div><a class="more" href="/c/">Все подборки →</a></div>
+<div class="colls">{"".join(coll_card(p, next(t for q, t, _, _ in coll_data if q == p), get(p)) for p in show)}</div></section>
+<section class="sec"><div class="shead"><div><div class="kick">Новинки</div><h2>Новые книги</h2><p class="sub">Каталог обновляется каждый месяц.</p></div><a class="more" href="/c/novinki.html">Все новинки →</a></div>
+<div class="row">{"".join(card(b) for b in get("novinki")[:6])}</div></section>
+<section class="sec"><div class="shur"><div class="ava">Ш</div><div><p class="q">«Знаю, что ты прочитала прошлым летом. И что тебе понравится этой осенью».</p>
+<p>Шуршуня — хранительница Норы. Она помнит каждую твою книгу и советует новые без занудства.</p></div></div></section>
+<section class="final"><h2>Собери свою Нору</h2><p>Это бесплатно и занимает пару минут.</p>{CTA}</section></div>"""
+home_path = page("index.html", "Нора — твоя книжная библиотека", "Нора — личная книжная полка в Telegram и браузере: собери все прочитанные книги (бумажные, из Литрес, Яндекс Книг и LiveLib), "
+                 "сфотографируй шкаф, получай советы, что читать дальше, — ромэнтези, фэнтези, детективы, классика.", home,
+                 full_title="Нора — твоя книжная библиотека: все книги в одном месте и советы, что почитать")
+idx = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+idx = idx.replace('<meta charset="utf-8">', '<meta charset="utf-8"><meta name="google-site-verification" content="s2CdXU7z22CJQ7fqwqJNwf2nyq4VN3Jk2UEHofqjoXc">'
+                  '<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Моя Нора">' + TG_REDIRECT, 1)
+open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(idx)
+urls.insert(0, home_path)
 
 now = time.strftime("%Y-%m-%d")
 open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8").write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     + "".join(f"<url><loc>{u}</loc><lastmod>{now}</lastmod></url>\n" for u in urls) + "</urlset>\n")
 open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8").write(f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n")
-print("страниц:", len(urls), "подборок:", len(coll_links))
+print("страниц:", len(urls), "подборок:", len(coll_data))

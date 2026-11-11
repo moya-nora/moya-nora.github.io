@@ -3,7 +3,7 @@
   "short_name": "Моя Нора",
   "description": "Книжная нора: полки, лента находок и статистика прочитанного",
   "lang": "ru",
-  "start_url": "/",
+  "start_url": "/app.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
