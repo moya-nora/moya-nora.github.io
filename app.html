@@ -703,7 +703,7 @@ body.films #app .seg i:not(.L *){transform:translateX(100%)}
 #app .flow .cv:not(.L *){position:absolute;left:50%;top:30px;width:176px;margin-left:-88px;border-radius:9px;transform-origin:50% 50%;cursor:pointer;transition:transform .9s cubic-bezier(.25,.8,.25,1),opacity .6s,filter .9s;box-shadow:0 30px 50px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.08)}
 #app transition:transform .9s cubic-bezier(.2,.8,.2,1):not(.L *),#app opacity .6s:not(.L *),#app filter .9s;box-shadow:0 30px 50px -20px rgba(0,0,0,.85):not(.L *),#app 0 0 0 1px rgba(255,255,255,.08)}
 .flow .cv.mid:not(.L *){box-shadow:0 40px 70px -24px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.16)}
-#app .flow-cap:not(.L *){text-align:left;padding:0 22px;margin-top:6px;height:172px;overflow:hidden}
+#app .flow-cap:not(.L *){text-align:left;padding:0 22px;margin-top:6px;height:194px;overflow:hidden}
 #app .flow-cap b:not(.L *){display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-family:var(--serif);font-size:36px;font-weight:600;line-height:1;letter-spacing:-.01em}
 #app .flow-cap .fm:not(.L *){display:block;color:var(--ink3);font-size:13px;margin-top:8px}
 #app .flow-cap p:not(.L *){margin:8px 0 0;color:var(--ink2);font-size:14px;line-height:1.45;max-width:46ch;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -711,7 +711,10 @@ body.films #app .seg i:not(.L *){transform:translateX(100%)}
 @keyframes capIn{from{opacity:0}}
 #app .grain:not(.L *){position:fixed;inset:-50%;z-index:15;pointer-events:none;opacity:.07;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");animation:gr 1s steps(4) infinite}
 @keyframes gr{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-1%)}}
-#app .pills:not(.L *){display:flex;gap:6px;margin:22px 20px 0;overflow-x:auto;scrollbar-width:none}
+#app .shelf-h:not(.L *){margin:30px 22px 0;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
+body.viewing #app .shelf-h{display:none}
+#app .flow-cap .kick:not(.L *){display:block;margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#E2B66B}
+#app .pills:not(.L *){display:flex;gap:6px;margin:10px 20px 0;overflow-x:auto;scrollbar-width:none}
 #app .pills:not(.L *)::-webkit-scrollbar{display:none}
 #app .pills button:not(.L *){flex:none;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600}
 #app .pills button:not(.L *){transition:transform .45s cubic-bezier(.3,1.7,.5,1),color .3s}
@@ -799,7 +802,6 @@ body.films #app .seg i:not(.L *){transform:translateX(100%)}
 #app .dock button.on:not(.L *){color:#fff}
 #app .lens:not(.L *){position:absolute;top:6px;left:0;height:48px;border-radius:25px;z-index:0;transition:transform .6s cubic-bezier(.3,1.3,.5,1),width .4s,scale .35s cubic-bezier(.3,1.6,.5,1)}
 #app .lens.go:not(.L *){scale:1.16 .84}
-body.sum #app #srchB:not(.L *){opacity:0;pointer-events:none}
 #app .srch:not(.L *){transition:opacity .3s;width:44px;height:44px;border-radius:50%;display:grid;place-items:center}
 #app .srch svg:not(.L *){width:19px;height:19px;fill:none;stroke:#fff;stroke-width:1.6;stroke-linecap:round}
 #app .cv:not(.L *){position:relative;aspect-ratio:2/3;overflow:hidden;background:#222}
@@ -927,7 +929,9 @@ body.sum #app #srchB:not(.L *){opacity:0;pointer-events:none}
 #app .sx-au i:not(.L *){width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);font-style:normal;font-family:var(--serif);font-size:15px}
 #app .fr:not(.L *){display:grid;grid-template-columns:48px 1fr auto;gap:0 12px;align-items:center;padding:10px 2px;border-top:1px solid rgba(255,255,255,.07)}
 #app .fr .tx:not(.L *){min-width:0}
-#app .fr .ac:not(.L *){display:flex;gap:6px}
+#app .fr .ac:not(.L *){display:flex;gap:8px;padding-bottom:13px}
+#app .fr .ac .ib[data-lb]:not(.L *){position:relative;overflow:visible}
+#app .fr .ac .ib[data-lb]:not(.L *)::after{content:attr(data-lb);position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:3px;font-size:10px;font-weight:500;line-height:1;white-space:nowrap;color:var(--ink3);background:none;box-shadow:none;border:0;width:auto;height:auto}
 #app .ib:not(.L *){width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1)}
 #app .ib svg:not(.L *){width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 #app .ib.w:not(.L *){background:#F5F5F7}
@@ -1082,6 +1086,14 @@ html[data-theme="light"] #app .sx-clear svg:not(.L *){stroke:#14151B!important}
 /* ---------- фильтры ленты фильмов ---------- */
 #app .ffil{position:absolute;left:50%;transform:translateX(-50%);top:calc(66px + env(safe-area-inset-top,0px));z-index:8;height:34px;padding:0 14px;border-radius:17px;display:flex;align-items:center;gap:6px;font-size:12.5px;white-space:nowrap;max-width:calc(100% - 32px)}
 #app .ffil[hidden]{display:none}
+#app .gbar:not(.L *){position:absolute;left:0;right:0;top:calc(10px + env(safe-area-inset-top,0px));z-index:9;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 16px}
+#app .gbar::-webkit-scrollbar{display:none}
+#app .gbar[hidden]{display:none}
+#app .gbar .fc.gen:not(.L *){color:var(--ink)}
+#app .gbar .fc[data-ffdrop]:not(.L *){background:rgba(255,255,255,.92);color:#0B0C11}
+#app .gbar .fc[data-ffdrop]::before{display:none}
+#app .gbar .fc[data-ffdrop] svg{width:13px;height:13px;opacity:.6}
+#app .slide .why:not(.L *){margin-top:6px;font-size:12.5px;line-height:1.35;color:#E2B66B}
 #app .ffil span{color:var(--ink2);overflow:hidden;text-overflow:ellipsis}
 #app .ffil span::after{content:" ·"}
 #app .ffil b{font-weight:600}
@@ -1123,6 +1135,9 @@ body.viewing #app .dock button[data-s=feed],body.viewing #app #srchB,body.viewin
 .L .rate.r5{display:flex;flex-wrap:wrap;gap:6px}
 .L .rate.r5 button{min-width:40px}
 .L .rate.r5 .none{min-width:auto;padding-inline:12px}
+.L .rate.r5 button.rs{font-size:19px;font-weight:400;color:var(--muted)}
+.L .rate.r5 button.rs.lit{color:var(--gold-deep);border-color:var(--gold)}
+.L .rate.r5 button.rs.on{color:#fff}
 .legacy-over .btn{border-radius:999px;font-weight:600}
 
 /* ---------- строка фильтров над лентой ---------- */
@@ -1566,8 +1581,8 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 <header class="top" id="top"><div class="seg" hidden><button data-realm="books" class="on">Книги</button></div><button class="addb gl press" id="addB" aria-label="Поставить книгу на полку"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Поставить книгу на полку</button>
   </header>
 
-<section class="screen" id="s-feed"><div class="feed" id="feed"></div><button class="ffil gl press" id="ffil" hidden aria-label="Фильтры"></button><div class="dots" id="dots"></div></section>
-<section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><div class="pills" id="pills"></div><div class="grid" id="grid"></div></div></section>
+<section class="screen" id="s-feed"><div class="feed" id="feed"></div><button class="ffil gl press" id="ffil" hidden aria-label="Фильтры"></button><div class="gbar" id="gbar" hidden></div><div class="dots" id="dots"></div></section>
+<section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><h3 class="shelf-h">Мои полки</h3><div class="pills" id="pills"></div><div class="grid" id="grid"></div></div></section>
 <section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
 
 <div class="bottom"><nav class="dock gl" aria-label="Разделы"><i class="lens lensy" id="lens"></i>
@@ -1581,7 +1596,7 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 <div class="toast gl" id="toast"></div>
 <div class="intro" id="intro"><div class="reel" id="reel"></div><div class="flash" id="flash"></div>
   <h1>Добро пожаловать в&nbsp;Нору</h1>
-  <p>Прежде чем войти, отметь несколько книг, которые уже прочитаны. По ним я подберу первые рекомендации, а твои полки сразу будут заполнены.</p>
+  <p>Все твои книги в одном месте — бумажные, из Литрес, Яндекс Книг и LiveLib. Сфотографируй шкаф — полка соберётся сама. А Шуршуня подскажет, что читать дальше: без попсы и без повторов.</p>
   <button class="btn w" id="introGo">Начать</button></div>
 <div class="onb" id="onb"><div class="onb-top"><div class="stp" id="onbStep" hidden></div><h1 id="onbH">Выбери хотя бы две прочитанные книги</h1><p id="onbP">Нажми на книгу и поставь оценку.</p></div>
   <div class="onb-grid" id="onbGrid"></div><div class="onb-bar"><button class="btn w" id="onbNext" disabled>Выбери хотя бы две</button><button class="onb-skip" id="onbSkip" hidden>пропустить</button></div></div>
@@ -1734,6 +1749,7 @@ const keep=email=>{S.email=email;_set.call(ls,"zal.sync.email",email);ls.setItem
 S.signUp=async(email,pw)=>{if(!key)setKey(gen());const j=await idt("signUp",{email,password:pw,returnSecureToken:true});keepTok(j);await userDoc(j,"PATCH",key);keep(email);ready=true;await sync()};
 S.signIn=async(email,pw)=>{const j=await idt("signInWithPassword",{email,password:pw,returnSecureToken:true});keepTok(j);const k=await userDoc(j,"GET");
   if(k){if(k!==key)setKey(k)}else{if(!key)setKey(gen());await userDoc(j,"PATCH",key)}keep(email);ready=true;booting=false;await sync();emit()};
+S.yieldLocal=()=>{for(const k in T)T[k]=0;jset("zal.sync.t",T)};
 S.reset=email=>idt("sendOobCode",{requestType:"PASSWORD_RESET",email});
 
 // ---- друзья: поиск по почте/нику и заявки ----
@@ -3801,8 +3817,8 @@ function learn(x,w){if(!x||x._f)return;const c=catOf(x)||x.src||{},tags=c.tags||
 let FSHOWN=new Set();
 function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;
   (b.tags||[]).forEach(t=>{s+=2*(q.tags[t]||0)+1.4*(TASTE.t[t]||0)});s+=1.2*(TASTE.g[b.g]||0)+1.5*(TASTE.a[b.a]||0);return s+Math.random()*2.2}
-function bookFeed(){FSHOWN=new Set();const q=tasteQ();
-  feedMore=()=>{const sc=topK(ALLB(),160,b=>FSHOWN.has(b.id)?null:feedScore(b,q));
+function bookFeed(){FSHOWN=new Set();const q=tasteQ(),fOn=activeList().length>0;
+  feedMore=()=>{const sc=topK(ALLB(),160,b=>FSHOWN.has(b.id)||(fOn&&!bookPass(b))?null:feedScore(b,q));
     const out=[],au=new Set();for(const {b} of sc){if(au.has(b.a))continue;au.add(b.a);out.push(b);if(out.length>=8)break}
     out.forEach(b=>FSHOWN.add(b.id));return out.map(b=>{const it=bItem(b,"feed");it.why=whyBook(b);return it})};return feedMore()}
 function shareBook(x){learn(x,2.2);shareSheet("Переслать книгу",`«${x.t}»${x.a?" — "+x.a:""}. Нашлось в Норе`,`https://t.me/${SHARE_BOT}?startapp`,"https://moya-nora.github.io/")}
@@ -3810,13 +3826,18 @@ const SHR='<svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M6 
 function filmFeed(){if(!FILMS)return [];const res=filmList();let i=0;
   feedMore=()=>{const chunk=res.slice(i,i+25);i+=25;return chunk.map(f=>fItem(f,"feed"))};return feedMore()}
 function slideHTML(x,j){const meta=x.a||"";
-  return `<article class="slide" data-j="${j}"><div class="wrap"><div class="fly gl"><div class="bg"></div><button class="shr press" data-shareb="${j}" aria-label="Переслать">${SHR}</button><div class="lean r"><i>${IC.v}</i><b>Добавить</b></div><div class="lean l"><i>${IC.x}</i><b>Не предлагать</b></div><div class="obj">${cv(x,220)}</div><div class="info"><h2>${esc(x.t)}</h2><div class="meta">${esc(meta)}</div><p class="ds">${esc(descOf(x))}</p>
+  return `<article class="slide" data-j="${j}"><div class="wrap"><div class="fly gl"><div class="bg"></div><button class="shr press" data-shareb="${j}" aria-label="Переслать">${SHR}</button><div class="lean r"><i>${IC.v}</i><b>Добавить</b></div><div class="lean l"><i>${IC.x}</i><b>Не предлагать</b></div><div class="obj">${cv(x,220)}</div><div class="info"><h2>${esc(x.t)}</h2><div class="meta">${esc(meta)}</div>${x.why?`<div class="why">Шуршуня: ${esc(x.why[0].toLowerCase()+x.why.slice(1))}</div>`:""}<p class="ds">${esc(descOf(x))}</p>
   <div class="acts3"><button class="rb gl press" data-skip="${j}" aria-label="Не предлагать">${IC.x}</button><button class="rb sm gl press" data-undo aria-label="Отменить действие">${IC.u}</button><button class="rb w press" data-want="${j}" aria-label="Добавить">${IC.v}</button></div></div></div></div></article>`}
 function slideDesc(el,x){const upd=()=>{const p=el.querySelector(".info p.ds");if(p)p.textContent=descOf(x)};upd();wantDesc(x,upd);const nx=el.nextElementSibling;if(nx&&nx.dataset.j!=null){const y=slides[+nx.dataset.j];if(y)wantDesc(y,()=>{const p=nx.querySelector(".info p.ds");if(p)p.textContent=descOf(y)})}}
 function bgFill(sl,x){const u=imgOf(x),bg=sl.querySelector(".bg");if(u&&bg&&!bg.firstChild)bg.innerHTML=`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer">`}
 function endInner(){return `<h2>Пока всё</h2><p>Шуршуня подберёт новое, как только ты что-нибудь отметишь. А пока можно поискать через лупу.</p><div class="acts"><button class="btn w" data-find>Найти через поиск</button></div>`}
 function drawDots(){return;const n=$("#feed").children.length;$("#dots").innerHTML=Array.from({length:Math.min(n,30)},(_,k)=>`<i class="${k===Math.max(0,cur)?"on":""}"></i>`).join("")}
-function buildFeed(){acts=[];const f=$("#feed");$("#ffil").hidden=true;
+function fbarDraw(){const el=$("#gbar");if(!el)return;if(isF()||VIEW){el.hidden=true;return}el.hidden=false;const act=activeList(),keep=el.scrollLeft;
+  el.innerHTML=`<button class="fc gl main${act.length?" on":""}" data-ffopen><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Фильтры${act.length?` <i>${act.length}</i>`:""}</button>`+
+    act.map(([k,l])=>`<button class="fc gl on" data-ffdrop="${esc(k)}">${esc(l)}<svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></button>`).join("")+
+    B_GEN.filter(g=>!NF.gen.includes(g)).map(g=>`<button class="fc gl gen" data-ffgen="${g}">${GEN[g]}</button>`).join("")+
+    B_MOOD.filter(m=>!NF.mood.includes(m[0])).map(m=>`<button class="fc gl" data-ffmood="${m[0]}">${m[1]}</button>`).join("");el.scrollLeft=keep}
+function buildFeed(){acts=[];const f=$("#feed");$("#ffil").hidden=true;fbarDraw();
   if(isF()&&!FILMS){f.innerHTML=`<article class="slide end" data-end><div class="card gl"><h2>Достаю плёнку…</h2><p>Загружаю киноархив.</p></div></article>`;loadFilms().then(()=>{if(isF())buildFeed()}).catch(()=>{f.innerHTML=`<article class="slide end" data-end><div class="card gl"><h2>Архив не загрузился</h2><p>Проверь интернет и открой ленту ещё раз.</p></div></article>`});return}
   slides=isF()?filmFeed():bookFeed();
   f.innerHTML=slides.map(slideHTML).join("")+`<article class="slide end" data-end><div class="card gl">${slides.length?endInner():emptyInner()}</div></article>`;
@@ -3888,8 +3909,8 @@ function layoutFlow(first){const L=flowList().slice(0,60),n=L.length;if($("#flow
     else{c.style.transform=tf;c.style.opacity=op}
     c.style.zIndex=50-a;c.style.pointerEvents=a>2?"none":"";c.style.filter=o===0?"none":`brightness(${1-a*.25})`;c.classList.toggle("mid",o===0)});
   const x=L[fi],cap=$("#flowCap");
-  cap.innerHTML=x?`${x.now?`<span class="fm" style="margin:0 0 6px">Сейчас читаю</span>`:""}<b>${esc(x.t)}</b><span class="fm">${esc(x.a||"")}</span><p>${esc(hookOf(x))}</p>`
-    :`<span class="fm">${VIEW?"Здесь пусто.":colF==="want"?"Здесь пока пусто — добавь что-нибудь из ленты или через лупу вверху.":isF()&&!FILMS?"Загружаю киноархив…":"Здесь пока пусто."}</span>`;
+  cap.innerHTML=x?`${!VIEW&&colF!=="want"&&!x.now?`<span class="kick">Шуршуня советует</span>`:""}${x.now?`<span class="fm" style="margin:0 0 6px">Сейчас читаю</span>`:""}<b>${esc(x.t)}</b><span class="fm">${esc(x.a||"")}</span><p>${esc(hookOf(x))}</p>`
+    :`<span class="fm">${VIEW?"Здесь пусто.":colF==="want"?"Здесь пока пусто — добавь что-нибудь из ленты или через лупу внизу.":isF()&&!FILMS?"Загружаю киноархив…":"Здесь пока пусто."}</span>`;
   if(!first){cap.classList.remove("sw");void cap.offsetWidth;cap.classList.add("sw")}
   if(x&&!x.ds)wantDesc(x,()=>{if(flowList()[fi]===x){const p=cap.querySelector("p");if(p)p.textContent=hookOf(x)}});
   ambFor(x)}
@@ -3998,7 +4019,7 @@ const sxHas=x=>(SX.k==="films"?FM:BK).has(x);
 function hl(t,q){const s=String(t||""),nq=String(q||"").trim().toLowerCase().replace(/ё/g,"е");if(nq.length<2)return esc(s);const i=s.toLowerCase().replace(/ё/g,"е").indexOf(nq);
   return i<0?esc(s):esc(s.slice(0,i))+"<mark>"+esc(s.slice(i,i+nq.length))+"</mark>"+esc(s.slice(i+nq.length))}
 function sxRow(x,i){const st=sxHas(x),F=SX.k==="films";
-  return `<div class="fr" data-i="${i}">${cv(x,48)}<div class="tx"><b>${hl(x.t,SX.q)}</b><span>${hl([x.a,x.y,x.c,x.s?"сериал":"",F&&x.src&&x.src.hr===0?"не выходил в РФ":""].filter(Boolean).join(" · "),SX.q)}</span></div><div class="ac">${st?`<em>${st==="read"?(F?"Просмотрено":"Прочитано"):"В избранном"}</em>`:`<button class="ib" data-sx="want" aria-label="В избранное">${PLUS}</button><button class="ib w" data-sx="read" aria-label="Прочитано">${IC.v}</button>`}</div></div>`}
+  return `<div class="fr" data-i="${i}">${cv(x,48)}<div class="tx"><b>${hl(x.t,SX.q)}</b><span>${hl([x.a,x.y,x.c,x.s?"сериал":"",F&&x.src&&x.src.hr===0?"не выходил в РФ":""].filter(Boolean).join(" · "),SX.q)}</span></div><div class="ac">${st?`<em>${st==="read"?(F?"Просмотрено":"Прочитано"):(F?"Хочу посмотреть":"Хочу прочитать")}</em>`:`<button class="ib" data-sx="want" data-lb="хочу" aria-label="${F?"Хочу посмотреть":"Хочу прочитать"}">${PLUS}</button><button class="ib w" data-sx="read" data-lb="${F?"смотрел":"прочитано"}" aria-label="${F?"Просмотрено":"Прочитано"}">${IC.v}</button>`}</div></div>`}
 const POPF=[["Интерстеллар",2014],["Во все тяжкие",2008,1],["Друзья",1994,1],["Форрест Гамп",1994],["Побег из Шоушенка",1994],["Шерлок",2010,1],["Зелёная миля",1999],["Начало",2010],["Игра престолов",2011,1],["Титаник",1997],
   ["Бойцовский клуб",1999],["Чернобыль",2019,1],["Криминальное чтиво",1994],["Матрица",1999],["Очень странные дела",2016,1],["1+1",2011],["Амели",2001],["Унесённые призраками",2001],["Паразиты",2019],["Ла-Ла Ленд",2016],
   ["Остров проклятых",2010],["Тьма",2017,1],["Брат",1997],["Москва слезам не верит",1979],["Король Лев",1994],["Аркейн",2021,1],["Властелин колец: Братство Кольца",2001],["Отступники",2006],["Джентльмены",2019],["Иван Васильевич меняет профессию",1973],["Достучаться до небес",1997],["Амадей",1984]];
@@ -4157,11 +4178,13 @@ function introShow(){const L=popBooks(),cells=12,reel=$("#reel");
     setTimeout(tick,t>2600?1400:delay)};
   setTimeout(tick,200)}
 if(window.NSYNC&&NSYNC.on){$("#introGo").insertAdjacentHTML("afterend",`<button class="intro-login" id="introLogin">Уже есть аккаунт? Войти</button>`);$("#introLogin").onclick=()=>{authMode="in";authShow(()=>{$("#intro").classList.remove("on");if(emptyAll()){$("#onb").classList.add("on");onbDraw()}})}}
-$("#introGo").onclick=()=>{const go=()=>{$("#intro").classList.remove("on");$("#onb").classList.add("on");onbDraw()};tgHaptic("medium");if(needAuth()){authMode="up";authShow(go)}else go()};
+$("#introGo").onclick=()=>{$("#intro").classList.remove("on");$("#onb").classList.add("on");onbDraw();tgHaptic("medium")};
+// аккаунт просим уже после выбора книг — когда есть что сохранять
+const onbDone=()=>{if(needAuth()){authMode="up";authShow(onbFinish,"onb")}else onbFinish()};
 function onbSave(){const list=$("#onbGrid")._l,D=onbK==="films"?FM:BK,cs=checkStamps;checkStamps=()=>{};try{Object.entries(onbPick).forEach(([i,n])=>{const x=list[+i];if(!D.has(x))D.markRead(x,n*2,true)})}finally{checkStamps=cs}checkStamps(true)}
 function onbFinish(){setTimeout(inviteCheck,1200);LS.set("zal.onb",1);$("#onb").classList.remove("on");setRealmUI("books");checkStamps(true);pickCol();fi=0;buildFeed();show("col");toast("Полки готовы")}
-$("#onbNext").onclick=()=>{onbSave();tgHaptic("medium");onbFinish()};
-$("#onbSkip").onclick=()=>onbFinish();
+$("#onbNext").onclick=()=>{onbSave();tgHaptic("medium");onbDone()};
+$("#onbSkip").onclick=()=>onbDone();
 
 // ---------- обучение в ленте: по шагам, с настоящими действиями ----------
 // 1) светится правая половина карточки — смахни вправо или ✓; 2) левая — влево или ✕; 3) кнопка отмены — только нажатие.
@@ -4170,7 +4193,7 @@ let CO=null;
 const coEl=document.createElement("div");coEl.className="co";coEl.innerHTML=`<div class="co-hole"></div><div class="co-b"></div><div class="co-b"></div><div class="co-b"></div><div class="co-b"></div><div class="co-txt"><b></b><small></small></div>`;
 $("#app").appendChild(coEl);
 const CO_TXT={1:["Добавить","смахни вправо или нажми ✓"],2:["Не предлагать","смахни влево или нажми ✕"],3:["Отменить действие","нажми — и книга вернётся"]};
-function coRect(){const el=$("#feed").children[Math.max(0,cur)],fl=el&&el.querySelector(".fly");if(!fl)return null;const r0=fl.getBoundingClientRect(),fb=$("#fbar"),top=Math.max(r0.top,fb&&fb.offsetHeight?fb.getBoundingClientRect().bottom+8:0),r={left:r0.left,right:r0.right,top,bottom:r0.bottom,width:r0.width},cx=r.left+r.width/2;
+function coRect(){const el=$("#feed").children[Math.max(0,cur)],fl=el&&el.querySelector(".fly");if(!fl)return null;const r0=fl.getBoundingClientRect(),fb=$("#gbar"),top=Math.max(r0.top,fb&&fb.offsetHeight?fb.getBoundingClientRect().bottom+8:0),r={left:r0.left,right:r0.right,top,bottom:r0.bottom,width:r0.width},cx=r.left+r.width/2;
   if(CO.step===1)return {l:cx+26,t:r.top,r:r.right,b:r.bottom};
   if(CO.step===2)return {l:r.left,t:r.top,r:cx-26,b:r.bottom};
   const u=el.querySelector("[data-undo]");if(!u)return null;const q=u.getBoundingClientRect();return {l:q.left-10,t:q.top-10,r:q.right+10,b:q.bottom+10}}
@@ -4217,7 +4240,8 @@ setRealm=(r)=>{setRealmUI(r);pickCol();buildFeed();show(SCREEN)};
 syncBack=function(){if(!TG||!TG.BackButton)return;(story||sheetOpen||disc||tevScope||$("#vsheet").classList.contains("on")||($("#bkc")&&$("#bkc").classList.contains("on")))?TG.BackButton.show():TG.BackButton.hide()};
 if(TG&&TG.BackButton)try{TG.BackButton.onClick(()=>{if($("#vsheet").classList.contains("on")&&!sheetOpen&&!disc&&!story&&!tevScope)vClose()})}catch(e){}
 // оценки везде от 0 до 5 (хранятся как раньше, 0–10)
-ratingPicker=function(cur){const c=cur==null?null:Math.round(cur/2);return `<div class="rate r5" id="rate">${[0,1,2,3,4,5].map(n=>`<button type="button" data-r="${n*2}" class="${c===n?"on":""}">${n}</button>`).join("")}<button type="button" data-r="" class="none${cur==null?" on":""}">без оценки</button></div>`};
+ratingPicker=function(cur){const c=cur==null?null:Math.max(1,Math.round(cur/2));return `<div class="rate r5" id="rate">${[1,2,3,4,5].map(n=>`<button type="button" data-r="${n*2}" class="rs${c===n?" on":""}${c!=null&&n<=c?" lit":""}" aria-label="${n} из 5">★</button>`).join("")}<button type="button" data-r="" class="none${cur==null?" on":""}">без оценки</button></div>`};
+document.addEventListener("click",e=>{const b=e.target.closest("#rate.r5 button");if(!b)return;const v=b.dataset.r===""?0:+b.dataset.r;b.parentNode.querySelectorAll("button.rs").forEach(y=>y.classList.toggle("lit",+y.dataset.r<=v))});
 applyTheme=function(){const dk=true;document.documentElement.setAttribute("data-theme",dk?"dark":"light");
   const bg=dk?"#05060A":"#F3F1EC";if(TG){try{TG.setHeaderColor(bg);TG.setBackgroundColor(bg);TG.setBottomBarColor&&TG.setBottomBarColor(bg)}catch(e){}}};
 applyTheme();
@@ -4306,7 +4330,13 @@ function drawFbar(){const act=activeList(),moods=isF()?F_MOOD:B_MOOD,sel=isF()?T
   fbar.innerHTML=`<button class="fc gl main${act.length?" on":""}" data-fopen><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Фильтры${act.length?` <i>${act.length}</i>`:""}</button>`+
     act.map(([k,l])=>`<button class="fc gl on" data-fdrop="${esc(k)}">${esc(l)}<svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></button>`).join("")+
     moods.filter(m=>!sel.includes(m[0])).map(m=>`<button class="fc gl" data-fmood="${m[0]}">${m[1]}</button>`).join("")}
-function applyFilters(){vDirty=false}
+let FCTX="";
+function applyFilters(){vDirty=false;if(FCTX==="feed"||SCREEN==="feed"){FCTX="";if(!isF())buildFeed()}}
+$("#gbar").addEventListener("click",e=>{const t=e.target;tgHaptic();
+  if(t.closest("[data-ffopen]")){FCTX="feed";openFilters();return}
+  const d=t.closest("[data-ffdrop]");if(d){dropFilter(d.dataset.ffdrop);buildFeed();return}
+  const g=t.closest("[data-ffgen]");if(g){NF.gen.push(g.dataset.ffgen);saveNF();buildFeed();$("#gbar").scrollLeft=0;return}
+  const m=t.closest("[data-ffmood]");if(m){NF.mood.push(m.dataset.ffmood);saveNF();buildFeed();$("#gbar").scrollLeft=0}});
 fbar.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;tgHaptic();
   if(t.dataset.fopen!=null){openFilters();return}
   if(t.dataset.fdrop){dropFilter(t.dataset.fdrop);applyFilters();return}
@@ -4346,7 +4376,7 @@ $("#vshBody").addEventListener("input",e=>{if(e.target.id!=="fAsk")return;NF.ask
 $("#vshBody").addEventListener("keydown",e=>{if(e.target.id==="fAsk"&&e.key==="Enter")e.target.blur()});
 $("#vshBody").addEventListener("click",e=>{
   if(e.target.closest("[data-freset]")){resetAll();redrawFilters();tgHaptic();return}
-  if(e.target.closest("[data-fshow]")){$("#vsheet").classList.remove("filters");openSearch(true);return}
+  if(e.target.closest("[data-fshow]")){$("#vsheet").classList.remove("filters");if(FCTX==="feed"){FCTX="";vClose();buildFeed();return}openSearch(true);return}
   const t=e.target.closest("[data-fg]");if(!t)return;tgHaptic();const g=t.dataset.fg,v=t.dataset.fv;
   const tog=(arr,x)=>arr.includes(x)?arr.filter(y=>y!==x):[...arr,x];
   if(isF()){const T=TF;
@@ -4561,7 +4591,7 @@ addEventListener("appinstalled",()=>HS.set("done",1));
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent),isAndroid=/Android/.test(navigator.userAgent);
 function hsDue(){if(VIEW||HS.get("done")||HS.get("never"))return false;if((HS.get("shows")||0)>=3)return false;
   const days=(Date.now()-HS.get("first"))/864e5;
-  if(!TG){if((HS.get("opens")||0)<2)return false}   // без Telegram установка особенно нужна — предлагаем уже со второго захода
+  if(!TG){if((HS.get("opens")||0)<2)return false;try{const D=DATA();if(D.read().length+D.want().length<5)return false}catch(e){return false}}   // без Telegram установка особенно нужна — предлагаем уже со второго захода
   else if(days<7||(HS.get("opens")||0)<4)return false;if(Date.now()-(HS.get("last")||0)<21*864e5)return false;return true}
 function hsCheck(){if(!hsDue())return;if(standalone()){HS.set("done",1);return}
   if(TG&&TG.checkHomeScreenStatus){try{TG.checkHomeScreenStatus(st=>{if(st==="added"){HS.set("done",1);return}if(st==="missed")hsShow("tg");else if(st==="unsupported")return;else hsShow("tg")})}catch(e){}return}
@@ -4585,10 +4615,13 @@ hsEl.addEventListener("click",async e=>{const t=e.target;
 // ---------- обязательная регистрация ----------
 const needAuth=()=>!!(NS.on&&!VIEW&&!(NS.hasTok&&NS.hasTok()));
 const authEl=document.createElement("div");authEl.className="auth";authEl.id="auth";$("#app").appendChild(authEl);
-let authNext=null,authMode="up";
-function authShow(next){authNext=next||null;if(NS.email&&authMode==="up")authMode="in";authDraw();authEl.classList.add("on")}
+let authNext=null,authMode="up",authCtx="";
+// вход в уже существующую Нору после онбординга: облачные полки важнее только что отмеченных книг
+const signInK=async(e,p)=>{if(authCtx==="onb"&&NS.yieldLocal)NS.yieldLocal();return NS.signIn(e,p)};
+function authShow(next,ctx){authNext=next||null;authCtx=ctx||"";if(NS.email&&authMode==="up")authMode="in";authDraw();authEl.classList.add("on")}
 function authDraw(){const up=authMode==="up";
-  authEl.innerHTML=`<div class="au-in"><h1>${up?"Создай аккаунт":"Вход"}</h1><p>${up?"Имя — для друзей. Почта и пароль нужны, чтобы полки не потерялись и открывались на любом устройстве — в Telegram, в браузере, на телефоне и компьютере.":"Имя, почта и пароль, привязанные к Норе."}</p>
+  const ob=authCtx==="onb";
+  authEl.innerHTML=`<div class="au-in"><h1>${up?(ob?"Сохрани свою Нору":"Создай аккаунт"):"Вход"}</h1><p>${up?(ob?"Полки готовы! Почта и пароль нужны, чтобы они не потерялись и открывались везде — в Telegram, в браузере и на телефоне. Имя увидят друзья.":"Имя — для друзей. Почта и пароль нужны, чтобы полки не потерялись и открывались на любом устройстве — в Telegram, в браузере, на телефоне и компьютере."):"Имя, почта и пароль, привязанные к Норе."}</p>
    <input class="sy-in" id="auN" autocomplete="given-name" placeholder="Имя — так тебя увидят друзья" value="${esc(LS.get("zal.name",""))}">
    <input class="sy-in" id="auE" type="email" autocomplete="email" inputmode="email" placeholder="Почта" value="${esc(up?"":NS.email||"")}">
    <input class="sy-in" id="auP" type="password" autocomplete="${up?"new-password":"current-password"}" placeholder="${up?"Пароль, от 6 символов":"Пароль"}">
@@ -4599,7 +4632,7 @@ function authDraw(){const up=authMode==="up";
   const r=$("#auR");if(r)r.onclick=async()=>{const e=$("#auE").value.trim();if(!e){msg.textContent="Впиши почту — придёт ссылка для нового пароля";return}try{await NS.reset(e);msg.textContent="Письмо отправлено. Задай новый пароль по ссылке и возвращайся."}catch(x){msg.textContent=x.message}};
   go.onclick=async()=>{const e=$("#auE").value.trim(),p=$("#auP").value;const nv=$("#auN").value.trim();if(!nv){msg.textContent="Впиши имя — так тебя увидят друзья";$("#auN").focus();return}if(!e||!p){msg.textContent="Заполни почту и пароль";return}go.disabled=true;go.textContent=up?"Создаю…":"Вхожу…";msg.textContent="";
     const nm=$("#auN");if(nm&&nm.value.trim())LS.set("zal.name",nm.value.trim().slice(0,40));
-    try{if(up){try{await NS.signUp(e,p)}catch(x){if(/уже есть Нора/.test(x.message)){await NS.signIn(e,p)}else throw x}}else await NS.signIn(e,p);
+    try{if(up){try{await NS.signUp(e,p)}catch(x){if(/уже есть Нора/.test(x.message)){await signInK(e,p)}else throw x}}else await signInK(e,p);
       LS.set("zal.name",nv.slice(0,40));authEl.classList.remove("on");tgHaptic("medium");toast(up?"Аккаунт создан":"Вход выполнен");const n=authNext;authNext=null;if(n)n();setTimeout(()=>{pubCheck();inviteCheck()},800)}
     catch(x){msg.textContent=x.message;go.disabled=false;go.textContent=up?"Создать аккаунт":"Войти"}};
   $("#auP").onkeydown=e=>{if(e.key==="Enter")go.click()}}
@@ -4685,8 +4718,11 @@ async function reviewsOpen(x){const m=META[ikey(x)]||{};if(!m.w)return;tgHaptic(
   catch(e){const box=$("#rvList");if(box)box.innerHTML=`<p class="sy-note">Отзывы не загрузились — проверь интернет.</p>`}}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-rvmore]");if(!b)return;b.closest(".rv").classList.add("open");b.remove()});
 const openLink=u=>{try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(e){window.open(u,"_blank")}};
+// партнёрские ссылки: после подключения к партнёрке Литрес впиши шаблон, например "https://.../?url={url}"
+const PARTNER={litres:""};
+const pLink=(k,u)=>PARTNER[k]?PARTNER[k].replace("{url}",encodeURIComponent(u)):u;
 function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).split(" ").slice(-1)[0]:"")),qt=encodeURIComponent(x.t);
-  const ON=[["ЛитРес","электронная и аудиокнига",`https://www.litres.ru/search/?q=${q}`],["Яндекс Книги","читать по подписке",`https://books.yandex.ru/search?text=${q}`],
+  const ON=[["ЛитРес","электронная и аудиокнига",pLink("litres",`https://www.litres.ru/search/?q=${q}`)],["Яндекс Книги","читать по подписке",`https://books.yandex.ru/search?text=${q}`],
     ["Ozon","бумажная книга с доставкой",`https://www.ozon.ru/search/?text=${q}&category=16500`],["Google Книги","фрагменты и издания",`https://www.google.com/search?tbm=bks&q=${q}`]];
   const OFF=[["Читай-город","наличие в магазинах и самовывоз",`https://www.chitai-gorod.ru/search?phrase=${qt}`],["Буквоед","наличие в магазинах",`https://www.bookvoed.ru/search?q=${qt}`],
     ["Книжные рядом","на карте",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],["Библиотеки рядом","на карте",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
