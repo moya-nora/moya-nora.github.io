@@ -1164,6 +1164,18 @@ body.viewing #app .dock button[data-s=feed],body.viewing #app #srchB,body.viewin
 #app .fc[data-fdrop] svg{width:13px;height:13px;opacity:.6}
 #app .fc.main i{font-style:normal;min-width:18px;height:18px;border-radius:9px;background:#fff;color:#0B0C11;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 5px}
 body.viewing #app .fbar{display:none}
+
+/* ---------- экраны разных размеров ---------- */
+#app .grain:not(.L *){z-index:52}
+@media (max-width:370px){#app .dock button[data-s]{min-width:0;padding:0 6px;font-size:9.5px}#app .dock:not(.L *){gap:0;padding:5px}#app .dock svg:not(.L *){width:20px;height:20px}}
+@media (min-width:700px){
+  #app #colScroll>*:not(.flow){max-width:600px;margin-left:auto!important;margin-right:auto!important}
+  #app #colScroll>.flow-cap,#app #colScroll>.shelf-h,#app #colScroll>.pills{padding-left:22px;padding-right:22px;box-sizing:border-box}
+  #app .wrap:not(.L *){left:max(10px,calc(50% - 280px));right:max(10px,calc(50% - 280px))}
+  #app #sumScroll>*,#app #frScroll>*{max-width:640px;margin-left:auto;margin-right:auto}
+  #app .top:not(.L *){padding-left:max(16px,calc(50% - 300px));padding-right:max(16px,calc(50% - 300px))}
+  #app .gbar:not(.L *){padding-left:max(16px,calc(50% - 280px))}
+}
 /* ---------- лист фильтров ---------- */
 #app .fsec{margin:18px 0 0}
 #app .fsec h4{margin:0 0 9px;font-size:13px;font-weight:600;color:var(--ink2);display:flex;align-items:baseline;gap:8px}
