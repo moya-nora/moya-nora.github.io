@@ -1173,6 +1173,31 @@ body.viewing #app .fbar{display:none}
 .L .nvis button.on{background:var(--gold);color:#fff}
 .L .nvis-h{margin:6px 2px 0;font-size:12px;color:var(--muted)}
 #app .wh-l .frv{display:block;flex-basis:100%;margin-top:4px;font-style:italic;font-size:13px;line-height:1.4;color:var(--ink2);white-space:normal}
+/* ---------- окно «Поставить книгу на полку» в стиле приложения ---------- */
+.legacy-over .sheet:has(.qform){background:rgba(17,17,25,.97);-webkit-backdrop-filter:blur(30px) saturate(1.6);backdrop-filter:blur(30px) saturate(1.6);padding-top:10px}
+.L .qform{font-family:'Inter Tight',-apple-system,system-ui,sans-serif;color:#fff}
+.L .qform label{font-size:11.5px;font-weight:600;letter-spacing:.09em;color:rgba(255,255,255,.5);margin-top:24px}
+.L .qform input,.L .qform textarea,.L .qform select{border:0;background:rgba(255,255,255,.08);border-radius:14px;padding:13px 15px;color:#fff;margin-top:10px}
+.L .qform input::placeholder,.L .qform textarea::placeholder{color:rgba(255,255,255,.38)}
+.L .qform input:focus,.L .qform textarea:focus{outline:0;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)}
+.L .qform textarea{font-family:inherit;font-style:normal;min-height:96px;line-height:1.45}
+.L .qform .photo-btn{border:0;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);border-radius:18px;padding:16px;margin-top:6px;color:#fff}
+.L .qform .photo-btn svg{stroke:#E2B66B;width:28px;height:28px}
+.L .qform .photo-btn b{font-size:15px;font-weight:600}
+.L .qform .imp-link{border:0;border-radius:14px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.75);padding:13px}
+.L .qform .rate.r5{gap:2px;align-items:center}
+.L .qform .rate.r5 button.rs{border:0;background:none;min-width:44px;height:44px;font-size:30px;line-height:1;color:rgba(255,255,255,.2);padding:0}
+.L .qform .rate.r5 button.rs.lit,.L .qform .rate.r5 button.rs.on{background:none;color:#E2B66B}
+.L .qform .rate.r5 .none{margin-left:auto;border:0;height:34px;border-radius:17px;padding:0 14px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:13px;font-weight:500}
+.L .qform .rate.r5 .none.on{background:#F5F5F7;color:#0B0C11}
+.L .qform .nvis{border:0;background:rgba(255,255,255,.07);border-radius:14px;margin-top:10px}
+.L .qform .nvis button{border-radius:11px;color:rgba(255,255,255,.6);font-weight:500}
+.L .qform .nvis button.on{background:#F5F5F7;color:#0B0C11}
+.L .qform .nvis-h{color:rgba(255,255,255,.45)}
+.L .qform .btn-main{background:#F5F5F7;color:#0B0C11;border-radius:26px;height:52px;font-weight:600;margin-top:26px}
+.L .qform .btn-main:disabled{opacity:.45}
+.L .qform .btn-ghost{background:rgba(255,255,255,.08);color:#fff;border-radius:26px}
+.L .qform .danger{color:#FF7A85}
 /* ---------- экраны разных размеров ---------- */
 #app .grain:not(.L *){z-index:52}
 @media (max-width:370px){#app .dock button[data-s]{min-width:0;padding:0 6px;font-size:9.5px}#app .dock:not(.L *){gap:0;padding:5px}#app .dock svg:not(.L *){width:20px;height:20px}}
@@ -2356,7 +2381,7 @@ function rerenderAll(){renderShelves();renderTime();renderWant()}
 // заметка к книге — сигнал для советов: слова из неё (настроения, темы, жанры) двигают вкус в сторону оценки
 function noteLearn(n,r){try{window.noteLearn2&&window.noteLearn2(n,r)}catch(e){}}
 const nVisPub=()=>{const o=document.querySelector("#nVis .on");return !!o&&o.dataset.nv==="1"};
-document.addEventListener("click",e=>{const b=e.target.closest("#nVis [data-nv]");if(!b)return;document.querySelectorAll("#nVis [data-nv]").forEach(x=>x.classList.toggle("on",x===b));const h=document.getElementById("nVisH");if(h)h.textContent=b.dataset.nv==="1"?"Друзья увидят отзыв в карточке книги.":"Нора учтёт заметку в советах. Никто, кроме тебя, её не увидит."});
+document.addEventListener("click",e=>{const b=e.target.closest("#nVis [data-nv]");if(!b)return;document.querySelectorAll("#nVis [data-nv]").forEach(x=>x.classList.toggle("on",x===b));const h=document.getElementById("nVisH");if(h)h.textContent=b.dataset.nv==="1"?"Его увидят другие читатели — пока твои друзья в Норе.":"Нора учтёт отзыв в советах. Никто, кроме тебя, его не увидит."});
 let _uid=0;function addBook(b){const rec={id:"u"+Date.now()+"_"+(_uid++),rd:new Date().toISOString().slice(0,7),...b};if(b.n)noteLearn(b.n,b.r);mine.push(rec);BOOKS.push(prepUser(rec));READ.add(norm(rec.t));saveMine();rerenderAll();setTimeout(checkStamps,1600);return rec}
 const haptic=(t="light")=>{try{TG&&TG.HapticFeedback&&(t==="ok"?TG.HapticFeedback.notificationOccurred("success"):TG.HapticFeedback.impactOccurred(t))}catch(e){}};
 
@@ -2754,7 +2779,7 @@ function openEdit(b){haptic();
    <div><label for="eY">Год издания</label><input id="eY" inputmode="numeric" maxlength="5" value="${b.y||""}"></div></div>
    <label for="eG">Жанр</label><select id="eG">${genres.map(([k,v])=>`<option value="${k}"${k===b.g?" selected":""}>${v}</option>`).join("")}</select>
    <label>Оценка</label>${ratingPicker(b.r??null)}
-   <label for="eN">Заметка или отзыв</label><textarea id="eN" placeholder="Что понравилось, что нет — Нора учтёт это в советах">${esc(b.n||"")}</textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Только мне и Норе</button><button type="button" data-nv="1" class="${PUB?"on":""}">Отзыв для друзей</button></div><p class="nvis-h" id="nVisH">${PUB?"Друзья увидят отзыв в карточке книги.":"Нора учтёт заметку в советах. Никто, кроме тебя, её не увидит."}</p>`)(!!b.pub)}
+   <label for="eN">Отзыв</label><textarea id="eN" placeholder="Что понравилось, что нет — Нора учтёт это в советах">${esc(b.n||"")}</textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Для себя</button><button type="button" data-nv="1" class="${PUB?"on":""}">Для других читателей</button></div><p class="nvis-h" id="nVisH">${PUB?"Его увидят другие читатели — пока твои друзья в Норе.":"Нора учтёт отзыв в советах. Никто, кроме тебя, его не увидит."}</p>`)(!!b.pub)}
    <div class="sheet-actions"><button class="btn btn-main" id="eSave" style="margin-top:0">Сохранить</button></div>
    <button class="btn btn-ghost btn-wide danger" id="eDel">Убрать с полки</button></div>`);
   const getR=bindRating();
@@ -2869,7 +2894,7 @@ function openAddBook(target,pre){const toW=target==="want";
    <label for="bT">Или впиши название</label><input id="bT" autocomplete="off" placeholder="Например, Мастер и Маргарита"><div class="sugg" id="bSugg"></div>
    <label for="bA">Автор (необязательно)</label><input id="bA" autocomplete="off">
    <div id="bOne"${toW?" hidden":""}><label>Оценка</label>${ratingPicker(null)}
-   <label for="bN">Заметка или отзыв (необязательно)</label><textarea id="bN" placeholder="Что понравилось, что нет — Нора учтёт это в советах"></textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Только мне и Норе</button><button type="button" data-nv="1" class="${PUB?"on":""}">Отзыв для друзей</button></div><p class="nvis-h" id="nVisH">${PUB?"Друзья увидят отзыв в карточке книги.":"Нора учтёт заметку в советах. Никто, кроме тебя, её не увидит."}</p>`)(false)}</div>
+   <label for="bN">Отзыв (необязательно)</label><textarea id="bN" placeholder="Что понравилось, что нет — Нора учтёт это в советах"></textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Для себя</button><button type="button" data-nv="1" class="${PUB?"on":""}">Для других читателей</button></div><p class="nvis-h" id="nVisH">${PUB?"Его увидят другие читатели — пока твои друзья в Норе.":"Нора учтёт отзыв в советах. Никто, кроме тебя, его не увидит."}</p>`)(false)}</div>
    <div class="sheet-actions"><button class="btn btn-main" id="bSave" style="margin-top:0" disabled>${toW?"В «Хочу прочитать»":"Поставить на полку"}</button></div></div>`);
   const getR=bindRating(),T=$("#bT"),sv=$("#bSave");let picked=pre||null,found=[];if(pre){T.value=pre.t;$("#bA").value=pre.a||"";if(pre._fl)flEnrich(pre);setTimeout(()=>upd(),0)}
   const upd=()=>{sv.disabled=!T.value.trim()&&!found.length;$("#bOne").hidden=toW||found.length>0;const n=found.length+(T.value.trim()?1:0),nw=found.filter(b=>b._w).length+(T.value.trim()&&toW?1:0);sv.textContent=nw===0?"Поставить на полку":nw===n?"В «Хочу прочитать»":"Разложить книги"};
