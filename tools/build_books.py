@@ -15,7 +15,7 @@
           оригинальное название или 0], ...]}
 Описания и обложки приложение подтягивает само (Фантлаб, Википедия), когда книгу открывают.
 Запуск: python3 tools/build_books.py  (GitHub Actions — .github/workflows/books.yml, ежемесячно)."""
-import collections, json, os, re, sys, time, urllib.parse, urllib.request
+import collections, json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
 
 MIN_SL = int(os.environ.get("MIN_SL", "1"))          # минимум статей в Википедиях
 MAX_BOOKS = int(os.environ.get("MAX_BOOKS", "160000"))  # потолок размера файла; книги с русским названием — в первую очередь
@@ -45,25 +45,43 @@ def unq(v):
     return v
 
 
+def _post(url, body, hops=3):
+    """POST с переходом по редиректам 307/308 (urllib сам их для POST не выполняет)."""
+    req = urllib.request.Request(url, data=body, headers={**UA, "Accept": "text/tab-separated-values",
+                                                          "Content-Type": "application/x-www-form-urlencoded"})
+    try:
+        with urllib.request.urlopen(req, timeout=900) as r:
+            return r.read().decode("utf-8")
+    except urllib.error.HTTPError as e:
+        loc = e.headers.get("Location")
+        if e.code in (301, 302, 303, 307, 308) and loc and hops:
+            return _post(urllib.parse.urljoin(url, loc), body, hops - 1)
+        raise
+
+
 def sparql(q, what):
     body = urllib.parse.urlencode({"query": PFX + q}).encode()
     last = None
-    for attempt in range(4):
+    for attempt in range(8):
         url = ENDPOINTS[attempt % len(ENDPOINTS)]
         t0 = time.time()
         try:
-            req = urllib.request.Request(url, data=body, headers={**UA, "Accept": "text/tab-separated-values",
-                                                                  "Content-Type": "application/x-www-form-urlencoded"})
-            with urllib.request.urlopen(req, timeout=900) as r:
-                text = r.read().decode("utf-8")
+            text = _post(url, body)
             lines = text.split("\n")
             rows = [[unq(x) for x in ln.split("\t")] for ln in lines[1:] if ln]
             print(f"  {what}: {len(rows)} строк за {time.time() - t0:.0f} с ({url.split('/')[2]})", flush=True)
+            time.sleep(3)  # бережём общий сервер — между запросами пауза
             return rows
         except Exception as e:  # noqa
             last = e
-            print(f"  {what}: ошибка {e!r} ({url}), повтор", flush=True)
-            time.sleep(20 * (attempt + 1))
+            wait = 30 * 2 ** min(attempt, 4)  # 30 с … 8 мин; на «слишком много запросов» ждём по Retry-After
+            if isinstance(e, urllib.error.HTTPError) and e.code == 429:
+                try:
+                    wait = max(wait, int(e.headers.get("Retry-After") or 0))
+                except ValueError:
+                    pass
+            print(f"  {what}: ошибка {e!r} ({url}), повтор через {wait} с", flush=True)
+            time.sleep(wait)
     raise SystemExit(f"Не удалось выполнить запрос «{what}»: {last!r}")
 
 

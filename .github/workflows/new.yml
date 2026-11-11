@@ -1,0 +1,34 @@
+name: Книжные новинки
+on:
+  schedule:
+    - cron: "17 5 4 * *"   # 4-го числа каждого месяца, после большого каталога
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [tools/build_new.py, .github/workflows/new.yml]
+permissions:
+  contents: write
+concurrency: { group: books, cancel-in-progress: false }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Сборка
+        env: { PROBE: "1" }
+        run: |
+          mkdir -p books
+          set -o pipefail
+          python -u tools/build_new.py 2>&1 | tee books/new.log
+      - name: Сохранить
+        if: always()
+        run: |
+          git config user.name "Mayorov-Vlad"
+          git config user.email "vladislav15333@gmail.com"
+          git add books/new.log
+          if [ -f books/new.json ]; then git add books/new.json; fi
+          git diff --cached --quiet || git commit -m "Книжные новинки: обновление $(date +%Y-%m-%d)"
+          git pull --rebase -q && git push
