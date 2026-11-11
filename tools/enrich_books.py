@@ -50,6 +50,20 @@ REVIEW_RX = [(re.compile(r, re.I), t) for r, t in [
     (r"уютн|тёпл|тепл[аоы][яеи] книг|светл", "тёплое"), (r"заставля\w* задуматься|философ|глубок\w* книг|пища для ума", "интеллектуальное"),
     (r"романтик|романтичн|любовн\w* лини", "романтичное")]]
 
+# тропы — по описанию книги и отзывам читателей
+TROPE_RX = [(re.compile(r, re.I), "троп:" + t) for r, t in [
+    (r"от врагов к (возлюбленн|любовник|любв)|enemies to lovers|из врагов в (любовник|возлюбленн)", "enemies"),
+    (r"академи\w* (магии|драконов|ведьм|магов)|магическ\w* академи|магическ\w* (школ|университет)", "academy"),
+    (r"сло[уо]?б[её]рн|slow ?burn|медленн\w* (сближен|разгора)", "slow"),
+    (r"фиктивн\w* (брак|отношен|помолвк|невест)|фальшив\w* (отношен|свидан|помолвк|невест)|притвор\w* (пар|влюбл)", "fake"),
+    (r"истинн\w* пар|предназначен\w* (друг другу|судьбой)|связь душ", "fated"),
+    (r"морально сер|антигеро", "gray"), (r"grumpy|хмур\w* и солнечн|ворчун", "grumpy"),
+    (r"запретн\w* (любов|чувств|страст|роман)", "forbid"), (r"любовн\w* треугольник", "triangle"),
+    (r"избранн(ая|ой|ую|ица)|древн\w* пророчеств", "chosen")]]
+EXTRA_LABEL = [(re.compile(r, re.I), t) for r, t in [
+    (r"любовн\w* фэнтези|романтическ\w* фэнтези|ромэнтези|ромфант", "любовное фэнтези"),
+    (r"подростк|young adult|юношеск|молод[её]жн", "young adult"), (r"любовн\w* роман|женский роман", "любовный роман")]]
+
 
 def labels_of(x, out):
     if isinstance(x, dict):
@@ -84,11 +98,13 @@ def tags_for(fid):
     w = get(f"{FL}/work/{fid}/extended") or {}
     time.sleep(0.2)
     labs = " ".join(labels_of(w.get("classificatory") or {}, []))
-    tags = [t for rx, t in LABEL_RX if rx.search(labs)]
+    tags = [t for rx, t in LABEL_RX if rx.search(labs)] + [t for rx, t in EXTRA_LABEL if rx.search(labs)]
+    revtxt = ""
     if int(w.get("val_responsecount") or 0) >= 2:
         d = get(f"{FL}/work/{fid}/responses?page=1&sort=rating") or {}
         time.sleep(0.2)
         items = (d.get("items") or [])[:20]
+        revtxt = " ".join((it.get("response_text") or "")[:1500] for it in items)
         cnt = {}
         for it in items:
             for rx, t in REVIEW_RX:
@@ -96,7 +112,9 @@ def tags_for(fid):
                     cnt[t] = cnt.get(t, 0) + 1
         n = len(items)
         tags += [t for t, k in sorted(cnt.items(), key=lambda x: -x[1]) if n and k >= 2 and k >= n / 3 and t not in tags]
-    return tags[:8]
+    tags = tags[:8]
+    desc = w.get("work_description") or ""
+    return tags + [t for rx, t in TROPE_RX if rx.search(desc + " " + revtxt)][:4]
 
 
 cat = json.load(open(os.path.join(ROOT, "books.json"), encoding="utf-8"))

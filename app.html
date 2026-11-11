@@ -1172,6 +1172,21 @@ body.viewing #app .fbar{display:none}
 #app .fk{font-size:13.5px;padding:8px 13px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--ink);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.12);transition:background .2s,color .2s}
 #app .fk.on{background:#F5F5F7;color:#0B0B10;box-shadow:none}
 #app .fwrap{padding-bottom:84px}
+#app .fwrap .fsec{margin:22px 0 0}
+#app .fwrap .fsec:first-child{margin-top:8px}
+#app .fwrap .fsec h4{font-size:11.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px}
+#app .fwrap .fsec h4 small{letter-spacing:0;text-transform:none}
+#app .fwrap .fk{font-size:13.5px;padding:8px 13px}
+#app .fwrap .fk.more{background:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);color:var(--ink2)}
+#app .fmore-h{margin:30px 0 4px;font-size:11.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
+#app .facc{border-bottom:1px solid rgba(255,255,255,.08)}
+#app .facc summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 0;cursor:pointer}
+#app .facc summary::-webkit-details-marker{display:none}
+#app .facc summary b{font-size:15px;font-weight:500;color:var(--ink)}
+#app .facc summary span{flex:1;min-width:0;text-align:right;font-size:13px;color:#E2B66B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#app .facc summary svg{width:16px;height:16px;flex:none;fill:none;stroke:var(--ink3);stroke-width:2;stroke-linecap:round;transition:transform .2s}
+#app .facc[open] summary svg{transform:rotate(90deg)}
+#app .facc .fch{padding:0 0 16px}
 #app .ffoot{position:sticky;bottom:-20px;margin:0 -18px -20px;padding:12px 18px calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;background:linear-gradient(transparent,rgba(16,16,24,.96) 30%)}
 #app .ffoot .btn{flex:1}
 #app .ffoot .btn.w{flex:2}
@@ -1616,7 +1631,7 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 <div class="toast gl" id="toast"></div>
 <div class="intro" id="intro"><div class="reel" id="reel"></div><div class="flash" id="flash"></div>
   <h1>Добро пожаловать в&nbsp;Нору</h1>
-  <p>Все твои книги в одном месте — бумажные, из Литрес, Яндекс Книг и LiveLib. Сфотографируй шкаф — полка соберётся сама. А Шуршуня подскажет, что читать дальше: без попсы и без повторов.</p>
+  <p>Все твои книги в одном месте — бумажные, из Литрес, Яндекс Книг и LiveLib. Сфотографируй шкаф — полка соберётся сама. А Шуршуня подскажет, что читать дальше — без повторов и точно под твой вкус.</p>
   <button class="btn w" id="introGo">Начать</button></div>
 <div class="onb" id="onb"><div class="onb-top"><div class="stp" id="onbStep" hidden></div><h1 id="onbH">Выбери хотя бы две прочитанные книги</h1><p id="onbP">Нажми на книгу и поставь оценку.</p></div>
   <div class="onb-grid" id="onbGrid"></div><div class="onb-bar"><button class="btn w" id="onbNext" disabled>Выбери хотя бы две</button><button class="onb-skip" id="onbSkip" hidden>пропустить</button></div></div>
@@ -3866,9 +3881,9 @@ function drawDots(){return;const n=$("#feed").children.length;$("#dots").innerHT
 // жанры ленты хранятся отдельно от фильтров лупы
 const FG=(()=>{try{const o=JSON.parse(localStorage.getItem("zal.fgen")||"{}");return {gen:Array.isArray(o.gen)?o.gen:[]}}catch(e){return {gen:[]}}})();
 const fgSave=()=>{try{localStorage.setItem("zal.fgen",JSON.stringify(FG))}catch(e){}};
-const FG_OPT=()=>[["new","Новинки"],...B_GEN.map(g=>[g,GEN[g]])];
+const FG_OPT=()=>[["new","Новинки"],...B_GEN.map(g=>[g,GEN[g]]),...B_SUBG.map(x=>[x[0],x[1]])];
 // «Новинки» сужают выбор (новинки в выбранных жанрах), жанры между собой — «или»
-const fgPass=b=>{const nw=FG.gen.includes("new"),G=FG.gen.filter(g=>g!=="new");if(nw&&!(b.y>=YNOW-2))return false;return !G.length||G.includes(b.g)};
+const fgPass=b=>{const nw=FG.gen.includes("new"),G=FG.gen.filter(g=>g!=="new");if(nw&&!(b.y>=YNOW-2))return false;return !G.length||G.some(g=>genPass(b,g))};
 function fbarDraw(){const el=$("#gbar");if(!el)return;if(isF()||VIEW){el.hidden=true;return}el.hidden=false;
   const L=FG_OPT().filter(([k])=>FG.gen.includes(k)).map(x=>x[1]);
   el.innerHTML=`<button class="fc gl gpick${L.length?" on":""}" data-ffopen>${L.length?esc(L.join(", ")):"Все жанры"}<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg></button>`+
@@ -4294,7 +4309,7 @@ const _closeSheet=closeSheet;closeSheet=function(){_closeSheet();setTimeout(refr
 
 // ---------- фильтры ленты: книги и кино ----------
 // Внутри одной группы — «или», между группами — «и». Настроение, подборки, «не показывать» — у книг и у кино.
-const NF=Object.assign({mood:[],len:"",pace:"",era:"",cty:[],acc:"",gen:[],hide:[],set:"",ask:""},LS.get("zal.nfb",{}));
+const NF=Object.assign({mood:[],len:"",pace:"",era:"",cty:[],acc:"",gen:[],hide:[],set:"",ask:"",trope:[]},LS.get("zal.nfb",{}));if(!Array.isArray(NF.trope))NF.trope=[];
 const saveNF=()=>LS.set("zal.nfb",NF);
 TF=Object.assign({kind:"",mood:[],hide:[],set:""},TF);
 const has=(b,...t)=>t.some(x=>(b.tags||[]).includes(x));
@@ -4314,6 +4329,20 @@ const lenIs=(b,L)=>!b.len||b.len===L,lenNot=(b,L)=>b.len!==L;
 const B_ERA=[["old","Классика до XX века",b=>b.y&&b.y<1900],["xx","XX век",b=>b.y>=1900&&b.y<2000],["now","Современные",b=>b.y>=2000],["new","Новинки",b=>b.y>=YNOW-2]];
 const B_ACC=[["prize","С премиями",b=>(b.acclaim||[]).length>0],["nobel","Нобелевские лауреаты",b=>(b.acclaim||[]).some(a=>/нобел/i.test(a))]];
 const B_GEN=["classic","modern","detective","fantasy","scifi","kids","nonfic"];
+// поджанры — по тегам (из Фантлаба, отзывов и Википедии), а не отдельным полем каталога
+const LOVE=b=>has(b,"любовь","романтичное","любовный роман","любовное фэнтези");
+const NOTNOVEL=b=>b.g==="nonfic"||has(b,"мифология","наука","история","биография","мемуары","психология");
+const B_SUBG=[["romantasy","Ромэнтези",b=>!NOTNOVEL(b)&&(has(b,"любовное фэнтези")||(b.g==="fantasy"&&LOVE(b)&&b.y>=2000))],
+  ["romance","Любовные романы",b=>!NOTNOVEL(b)&&(has(b,"любовный роман")||(LOVE(b)&&!["fantasy","scifi","detective","kids"].includes(b.g)&&b.y>=1990))],
+  ["darkrom","Дарк роман",b=>!NOTNOVEL(b)&&LOVE(b)&&has(b,"мрачное","жутковатое","хоррор","готика")&&b.y>=1990],
+  ["ya","Young adult",b=>has(b,"young adult")||(has(b,"взросление")&&b.y>=1995)]];
+const genLabel=g=>GEN[g]||(B_SUBG.find(x=>x[0]===g)||[])[1]||g;
+const genPass=(b,g)=>{const sg=B_SUBG.find(x=>x[0]===g);return sg?sg[2](b):b.g===g};
+const B_TROPE=[["enemies","От врагов к возлюбленным"],["academy","Академия магии"],["slow","Медленное сближение"],["fake","Фиктивные отношения"],
+  ["fated","Истинная пара"],["gray","Морально серый герой"],["grumpy","Хмурый и солнечная"],["forbid","Запретная любовь"],["triangle","Любовный треугольник"],["chosen","Избранная"]];
+const tropeTag=t=>"троп:"+t;
+// в фильтре показываем только те тропы, у которых уже есть книги (метки копятся ежемесячно)
+let TROPE_N=null,TROPE_K=-1;const tropeCount=()=>{const L=ALLB();if(TROPE_K!==L.length){TROPE_K=L.length;TROPE_N={};L.forEach(b=>(b.tags||[]).forEach(t=>{if(t.startsWith("троп:"))TROPE_N[t]=(TROPE_N[t]||0)+1}))}return TROPE_N};
 const ctyTop=()=>{const c={};CAT.forEach(b=>{if(b.c)c[b.c]=(c[b.c]||0)+30});BIGL.forEach(b=>{if(b.c)c[b.c]=(c[b.c]||0)+1});return Object.entries(c).filter(x=>!NOCOUNTRY.has(x[0])).sort((a,b)=>b[1]-a[1]).slice(0,24).map(x=>x[0])};
 let B_CTY=ctyTop();
 const B_SET=[["evening","На один вечер",b=>lenIs(b,"short")&&!has(b,"эпическое фэнтези")],["calm","Если на душе неспокойно",b=>has(b,"тёплое","светлое","уют")&&!has(b,"мрачное","жутковатое","война")&&b.heavy<2],
@@ -4327,7 +4356,8 @@ function bookPass(b,skip){const F=NF,find=(L,id)=>(L.find(x=>x[0]===id)||[])[2];
   if(skip!=="era"&&F.era&&!find(B_ERA,F.era)(b))return false;
   if(skip!=="cty"&&F.cty.length&&!F.cty.includes(b.c))return false;
   if(skip!=="acc"&&F.acc&&!find(B_ACC,F.acc)(b))return false;
-  if(skip!=="gen"&&F.gen.length&&!F.gen.includes(b.g))return false;
+  if(skip!=="gen"&&F.gen.length&&!F.gen.some(g=>genPass(b,g)))return false;
+  if(skip!=="trope"&&F.trope.length&&!F.trope.some(t=>has(b,tropeTag(t))))return false;
   if(skip!=="hide"&&F.hide.length&&F.hide.includes(b.g))return false;
   if(skip!=="set"&&F.set&&!find(B_SET,F.set)(b))return false;return true}
 const bookMoodHits=b=>NF.mood.filter(m=>(B_MOOD.find(x=>x[0]===m)||[])[2](b)).length;
@@ -4358,17 +4388,17 @@ function activeList(){const out=[];
     if(T.fame!=="any")out.push(["fame",{hit:"Хиты",known:"Известные",rare:"Малоизвестные"}[T.fame]]);if(T.len!=="any")out.push(["len",{short:"До 90 минут",mid:"90–150 минут",long:"Дольше 150 минут"}[T.len]]);
     if(T.lang)out.push(["lang",lName(T.lang)]);if(T.ru!=="any")out.push(["ru",T.ru==="yes"?"Выходили в России":"Не выходили в России"]);T.hide.forEach(i=>out.push(["hide:"+i,"Без: "+FG_RU[i].toLowerCase()]))}
   else{const F=NF,lab=(L,id)=>(L.find(x=>x[0]===id)||[])[1];
-    if(F.ask)out.push(["ask","«"+F.ask+"»"]);if(F.set)out.push(["set",lab(B_SET,F.set)]);F.mood.forEach(m=>out.push(["mood:"+m,lab(B_MOOD,m)]));F.gen.forEach(g=>out.push(["gen:"+g,GEN[g]]));
+    if(F.ask)out.push(["ask","«"+F.ask+"»"]);if(F.set)out.push(["set",lab(B_SET,F.set)]);F.mood.forEach(m=>out.push(["mood:"+m,lab(B_MOOD,m)]));F.gen.forEach(g=>out.push(["gen:"+g,genLabel(g)]));F.trope.forEach(t=>out.push(["trope:"+t,(B_TROPE.find(x=>x[0]===t)||[])[1]||t]));
     if(F.len)out.push(["len",lab(B_LEN,F.len)]);if(F.pace)out.push(["pace",lab(B_PACE,F.pace)]);if(F.era)out.push(["era",lab(B_ERA,F.era)]);
     F.cty.forEach(c=>out.push(["cty:"+c,c]));if(F.acc)out.push(["acc",lab(B_ACC,F.acc)]);F.hide.forEach(g=>out.push(["hide:"+g,"Без: "+GEN[g].toLowerCase()]))}
   return out}
 function dropFilter(key){const [k,v]=key.split(":");
   if(isF()){const T=TF;if(k==="mood")T.mood=T.mood.filter(x=>x!==v);else if(k==="tg")T.genres=T.genres.filter(x=>x!==+v);else if(k==="tc")T.countries=T.countries.filter(x=>x!==v);
     else if(k==="hide")T.hide=T.hide.filter(x=>x!==+v);else if(k==="years")T.years=null;else if(k==="rating")T.rating=0;else if(["fame","len","ru"].includes(k))T[k]="any";else T[k]="";saveTF()}
-  else{const F=NF;if(k==="mood")F.mood=F.mood.filter(x=>x!==v);else if(k==="gen")F.gen=F.gen.filter(x=>x!==v);else if(k==="cty")F.cty=F.cty.filter(x=>x!==v);
+  else{const F=NF;if(k==="mood")F.mood=F.mood.filter(x=>x!==v);else if(k==="gen")F.gen=F.gen.filter(x=>x!==v);else if(k==="trope")F.trope=F.trope.filter(x=>x!==v);else if(k==="cty")F.cty=F.cty.filter(x=>x!==v);
     else if(k==="hide")F.hide=F.hide.filter(x=>x!==v);else F[k]="";saveNF()}}
 function resetAll(){if(isF()){Object.assign(TF,{genres:[],countries:[],years:null,rating:0,fame:"any",len:"any",lang:"",ru:"any",kind:"",mood:[],hide:[],set:""});saveTF()}
-  else{Object.assign(NF,{mood:[],len:"",pace:"",era:"",cty:[],acc:"",gen:[],hide:[],set:"",ask:""});saveNF()}}
+  else{Object.assign(NF,{mood:[],len:"",pace:"",era:"",cty:[],acc:"",gen:[],hide:[],set:"",ask:"",trope:[]});saveNF()}}
 function countNow(){return isF()?filmCount():bookPool().filter(b=>bookPass(b)).length}
 // какой один фильтр снять, чтобы нашлось больше всего
 function bestDrop(){let best=null,bn=0;activeList().forEach(([key,label])=>{const saveB=JSON.stringify(NF),saveT=JSON.stringify(TF);dropFilter(key);const n=countNow();
@@ -4407,16 +4437,26 @@ function filtersHTML(){if(isF()){const T=TF;
    fsec("Прокат в России",[["any","Неважно"],["yes","Выходили"],["no","Не выходили"]].map(([v,l])=>fchip("tru",v,T.ru===v,l)).join(""))+
    fsec("Не показывать",FG_RU.map((g,i)=>fchip("hide",i,T.hide.includes(i),g)).join(""))+
    fsec("Сортировка",[["pop","Популярные"],["rating","По рейтингу"],["new","Новые"],["old","Старые"],["rnd","Вперемешку"]].map(([v,l])=>fchip("ts",v,T.sort===v,l)).join(""))}
-  const F=NF;
-  return `<div class="fsec"><h4>Своими словами<small>Шуршуня поймёт</small></h4><input class="sy-in fask" id="fAsk" value="${esc(F.ask)}" placeholder="Например: короткое и смешное про Японию" enterkeyhint="done"></div>`+fsec("Подборки",B_SET.map(([id,l])=>fchip("set",id,F.set===id,l)).join(""))+
-   fsec("Настроение",B_MOOD.map(([id,l])=>fchip("mood",id,F.mood.includes(id),l)).join(""),"можно несколько")+
-   fsec("Жанр",B_GEN.map(g=>fchip("gen",g,F.gen.includes(g),GEN[g])).join(""),"можно несколько")+
-   fsec("Объём",B_LEN.map(([id,l])=>fchip("len",id,F.len===id,l)).join(""))+
-   fsec("Темп",B_PACE.map(([id,l])=>fchip("pace",id,F.pace===id,l)).join(""))+
-   fsec("Эпоха",B_ERA.map(([id,l])=>fchip("era",id,F.era===id,l)).join(""))+
-   fsec("Страна автора",B_CTY.map(c=>fchip("cty",c,F.cty.includes(c),c)).join(""))+
-   fsec("Признание",B_ACC.map(([id,l])=>fchip("acc",id,F.acc===id,l)).join(""))+
-   fsec("Не показывать",B_GEN.map(g=>fchip("hide",g,F.hide.includes(g),GEN[g])).join(""))}
+  const F=NF,lab=(L,id)=>(L.find(x=>x[0]===id)||[])[1];
+  const acc=(key,title,sel,html)=>`<details class="facc" data-facc="${key}"${FOPEN.has(key)?" open":""}><summary><b>${title}</b><span>${sel?esc(sel):""}</span><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></summary><div class="fch">${html}</div></details>`;
+  const genChips=[...B_GEN.map(g=>[g,GEN[g]]),...B_SUBG.map(x=>[x[0],x[1]])];
+  const tc=tropeCount(),tAll=B_TROPE.filter(([id])=>tc[tropeTag(id)]||F.trope.includes(id)),tShow=FOPEN.has("tropes-all")?tAll:tAll.slice(0,6);
+  const mShow=FOPEN.has("moods-all")?B_MOOD:B_MOOD.filter((m,i)=>i<6||F.mood.includes(m[0]));
+  return `<div class="fsec"><input class="sy-in fask" id="fAsk" value="${esc(F.ask)}" placeholder="Своими словами: «короткое и смешное про Японию»" enterkeyhint="done"></div>`+
+   fsec("Жанр",genChips.map(([id,l])=>fchip("gen",id,F.gen.includes(id),l)).join(""))+
+   fsec("Настроение",mShow.map(([id,l])=>fchip("mood",id,F.mood.includes(id),l)).join("")+(mShow.length<B_MOOD.length?`<button type="button" class="fk more" data-fmore="moods-all">ещё ${B_MOOD.length-mShow.length}</button>`:""))+
+   (tAll.length?fsec("Тропы",tShow.map(([id,l])=>fchip("trope",id,F.trope.includes(id),l)).join("")+(tShow.length<tAll.length?`<button type="button" class="fk more" data-fmore="tropes-all">ещё ${tAll.length-tShow.length}</button>`:""),"для ромэнтези и любовных романов"):"")+
+   `<div class="fmore-h">Уточнить</div>`+
+   acc("set","Подборки",lab(B_SET,F.set)||"",B_SET.map(([id,l])=>fchip("set",id,F.set===id,l)).join(""))+
+   acc("len","Объём и темп",[lab(B_LEN,F.len),lab(B_PACE,F.pace)].filter(Boolean).join(", "),B_LEN.map(([id,l])=>fchip("len",id,F.len===id,l)).join("")+B_PACE.map(([id,l])=>fchip("pace",id,F.pace===id,l)).join(""))+
+   acc("era","Эпоха",lab(B_ERA,F.era)||"",B_ERA.map(([id,l])=>fchip("era",id,F.era===id,l)).join(""))+
+   acc("cty","Страна автора",F.cty.join(", "),B_CTY.map(c=>fchip("cty",c,F.cty.includes(c),c)).join(""))+
+   acc("acc","Признание",lab(B_ACC,F.acc)||"",B_ACC.map(([id,l])=>fchip("acc",id,F.acc===id,l)).join(""))+
+   acc("hide","Не показывать",F.hide.map(g=>GEN[g]).join(", "),B_GEN.map(g=>fchip("hide",g,F.hide.includes(g),GEN[g])).join(""))}
+// раскрытые разделы помнятся, пока открыт лист
+const FOPEN=new Set();
+$("#vshBody").addEventListener("toggle",e=>{const d=e.target;if(!d.matches||!d.matches("details[data-facc]"))return;d.open?FOPEN.add(d.dataset.facc):FOPEN.delete(d.dataset.facc)},true);
+$("#vshBody").addEventListener("click",e=>{const m=e.target.closest("[data-fmore]");if(!m)return;FOPEN.add(m.dataset.fmore);redrawFilters()},true);
 function filtersFoot(){const n=countNow();return `<div class="ffoot"><button class="btn" data-freset>Сбросить</button><button class="btn w" data-fshow${n?"":" disabled"}>${n?"Показать":"Ничего не нашлось"}</button></div>`}
 function openFilters(){vOpen(`<h3 class="vh">Фильтры</h3><div class="fwrap" id="fwrap">${filtersHTML()}</div>${filtersFoot()}`,true);vDirty=false;$("#vsheet").classList.add("filters")}
 function redrawFilters(){const w=$("#fwrap");if(!w)return;const top=$("#vsh").scrollTop;w.innerHTML=filtersHTML();$("#vshBody .ffoot").outerHTML=filtersFoot();$("#vsh").scrollTop=top}
