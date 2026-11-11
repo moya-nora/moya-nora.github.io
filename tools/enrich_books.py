@@ -15,6 +15,7 @@ OUT = os.path.join(ROOT, "tags.json")
 FL = "https://api.fantlab.ru"
 UA = {"User-Agent": "moya-nora-books/1.0 (https://github.com/moya-nora/moya-nora.github.io)", "Accept": "application/json"}
 YM = time.strftime("%Y-%m")
+VER = 2  # версия разметки: при новых метках (например, тропы) книги перепроверяются
 T0 = time.time()
 
 
@@ -132,7 +133,7 @@ for r in cat["b"]:  # каталог уже отсортирован: снача
     q, t = str(r[0]), r[1]
     if not CYR.search(t):
         continue
-    if q in M and M[q][1] >= year_ago:
+    if q in M and M[q][1] >= year_ago and len(M[q]) > 3 and M[q][3] >= VER:
         continue
     todo.append(r)
     if len(todo) >= N:
@@ -150,7 +151,7 @@ for k, r in enumerate(todo):
     tags = tags_for(fid) if fid else []
     found += bool(fid)
     tagged += bool(tags)
-    M[q] = [fid or 0, YM, [tix(x) for x in tags]]
+    M[q] = [fid or 0, YM, [tix(x) for x in tags], VER]
     if k % 100 == 0:
         print(f"  {k}/{len(todo)}: найдено на Фантлабе {found}, с метками {tagged} — «{t}»: {tags}", flush=True)
         json.dump({"meta": {"built": time.strftime("%Y-%m-%d"), "n": len(M)}, "tg": TG, "m": M},
