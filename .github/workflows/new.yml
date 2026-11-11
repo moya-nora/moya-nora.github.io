@@ -30,4 +30,4 @@ jobs:
           git add books/new.log
           if [ -f books/new.json ]; then git add books/new.json; fi
           git diff --cached --quiet || git commit -m "Книжные новинки: обновление $(date +%Y-%m-%d)"
-          git pull --rebase -q && git push
+          git pull --rebase -X theirs -q && git push   # при одновременных сборках побеждает свежая
