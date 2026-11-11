@@ -55,7 +55,7 @@ OUT = os.path.join(os.path.dirname(__file__), "..", "books", "new.json")
 CYR = re.compile(r"[а-яё]", re.I)
 BOOKISH = re.compile(r"авторская книга|сборник|антология|роман|повесть|книга", re.I)
 GENRE_RX = [(r"детск|подростк|young adult|ya\b", "kids"), (r"детектив|триллер|нуар", "detective"),
-            (r"научн|космос|киберпанк|антиутоп|постапокалип|твёрдая|социальная фантастика|альтернативная история", "scifi"),
+            (r"^фантастика|научн|космос|киберпанк|антиутоп|постапокалип|твёрдая|социальная фантастика|альтернативная история", "scifi"),
             (r"фэнтези|магия|сказ|мистик|хоррор|ужас|городское", "fantasy"), (r"реализм|современн|историческ", "modern")]
 GENRE_RX = [(re.compile(r, re.I), g) for r, g in GENRE_RX]
 TAGS = ["хоррор", "мистика", "любовь", "приключения", "антиутопия", "постапокалипсис", "юмор", "напряжённое", "мрачное", "детектив"]
@@ -126,8 +126,17 @@ for k, c in enumerate(cand):
     au = (w.get("authors") or [{}])[0]
     a = au.get("pseudoname") if au.get("real_name") == 0 and au.get("pseudoname") else au.get("name")
     a = strip_tags(a or c["a"]) or "Разные авторы"
-    labs = " ".join(labels_of(w.get("classificatory")) + [c["ser"], w.get("work_description") or ""])
-    g = next((g for rx, g in GENRE_RX if rx.search(labs)), "fantasy")
+    cls = w.get("classificatory") or {}
+    labs = " ".join(labels_of(cls) + [c["ser"], w.get("work_description") or ""])
+    # жанр: главный жанр по голосам читателей Фантлаба, затем серия и подписи, в последнюю очередь — описание
+    main = ""
+    for grp in (cls.get("genre_group") or []) if isinstance(cls, dict) else []:
+        if str(grp.get("label", "")).startswith("Жанры"):
+            top = sorted(grp.get("genre") or [], key=lambda x: -(x.get("percent") or 0))
+            main = top[0].get("label", "") if top else ""
+            break
+    g = next((g for txt in (main, " ".join(labels_of(cls)) + " " + c["ser"], w.get("work_description") or "")
+              for rx, g in GENRE_RX if txt and rx.search(txt)), "fantasy")
     tags = [t for rx, t in TAG_RX if rx.search(labs)][:4]
     y = int(w.get("work_year") or 0) or c["y"] or YNOW
     if y < YNOW - 3:
