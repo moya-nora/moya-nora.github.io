@@ -199,6 +199,70 @@ for k, c in enumerate(cand):
                  "s": s, "pg": pages_of(w), "o": (w.get("work_name_orig") or "").strip(), "c": "Россия" if c["lang"] == 0 else ""})
     if k % 100 == 0:
         print(f"   {k}/{len(cand)}", flush=True)
+# ---------- новинки не-фантастики: Викиданные (книги последних лет с русским названием) ----------
+WD_ENDPOINTS = ["https://qlever.dev/api/wikidata", "https://qlever.cs.uni-freiburg.de/api/wikidata"]
+WD_Q = """PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?w ?t ?a ?d (GROUP_CONCAT(DISTINCT ?gl; separator="|") AS ?g) WHERE {
+  { ?w wdt:P31/wdt:P279* wd:Q7725634 } UNION { ?w wdt:P31/wdt:P279* wd:Q47461344 }
+  ?w wdt:P577 ?d . FILTER(YEAR(?d) >= %d)
+  ?w rdfs:label ?t . FILTER(LANG(?t) = "ru")
+  ?w wdt:P50 ?au . ?au rdfs:label ?a . FILTER(LANG(?a) = "ru")
+  OPTIONAL { ?w wdt:P136 ?ge . ?ge rdfs:label ?gl . FILTER(LANG(?gl) = "ru") }
+} GROUP BY ?w ?t ?a ?d LIMIT 5000""" % (YNOW - 2)
+
+
+def wd_rows():
+    body = urllib.parse.urlencode({"query": WD_Q}).encode()
+    for k in range(4):
+        url = WD_ENDPOINTS[k % 2]
+        try:
+            req = urllib.request.Request(url, data=body, headers={**UA, "Accept": "text/tab-separated-values", "Content-Type": "application/x-www-form-urlencoded"})
+            try:
+                r = urllib.request.urlopen(req, timeout=300)
+            except urllib.error.HTTPError as e:
+                if e.code in (307, 308) and e.headers.get("Location"):
+                    req = urllib.request.Request(urllib.parse.urljoin(url, e.headers["Location"]), data=body, headers=req.headers)
+                    r = urllib.request.urlopen(req, timeout=300)
+                else:
+                    raise
+            lines = r.read().decode("utf-8").split("\n")[1:]
+            def cell(x):
+                x = x.strip()
+                if x.startswith("<"):
+                    return x[1:-1].rsplit("/", 1)[-1]
+                if x.startswith('"'):
+                    return x[1:x.rfind('"')]
+                return x
+            return [[cell(x) for x in ln.split("\t")] for ln in lines if ln]
+        except Exception as e:  # noqa
+            print("   Викиданные:", repr(e), "— повтор", flush=True)
+            time.sleep(30 * (k + 1))
+    return []
+
+
+print("3. Викиданные: книги последних лет", flush=True)
+have_t = {re.sub(r"[^0-9a-zа-я]+", "", r["t"].lower().replace("ё", "е")) + "|" + r["a"] for r in recs}
+wd_n = 0
+for row in wd_rows():
+    if len(row) < 4:
+        continue
+    qid, t, a, d = row[:4]
+    glab = row[4] if len(row) > 4 else ""
+    if not CYR.search(t) or not a:
+        continue
+    key = re.sub(r"[^0-9a-zа-я]+", "", t.lower().replace("ё", "е")) + "|" + a
+    if key in have_t:
+        continue
+    have_t.add(key)
+    g = next((g for rx, g in GENRE_RX if rx.search(glab)), "modern")
+    tags = [x for rx, x in TAG_RX if rx.search(glab)] + [x for rx, x in EXTRA_LABEL if rx.search(glab)]
+    recs.append({"w": "w" + qid.lstrip("Q"), "t": t, "a": a, "y": int(d[:4]) if d[:4].isdigit() else YNOW, "g": g, "tags": tags[:6],
+                 "s": 0, "pg": 0, "o": "", "c": ""})
+    wd_n += 1
+print("   добавлено из Викиданных:", wd_n, flush=True)
+
 # прошлые новинки не теряем: Фантлаб показывает только последние ~150 дней, а «Норе» нужна история за 3 года
 try:
     prev = json.load(open(OUT, encoding="utf-8"))
