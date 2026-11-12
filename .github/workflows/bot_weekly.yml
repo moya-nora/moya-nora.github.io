@@ -16,6 +16,8 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           ONLY: ${{ github.event.inputs.only }}
+          BOT_FB_PASS: ${{ secrets.BOT_FB_PASS }}
+          CREATE: "1"
         run: python3 -u tools/bot_weekly.py
       - name: Запомнить отправленное
         run: |

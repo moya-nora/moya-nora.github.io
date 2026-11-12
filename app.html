@@ -1706,6 +1706,7 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .lv-nx em{font-style:normal;font-size:12.5px;color:var(--ink3)}#app .lv-nx .em{width:42px;height:42px;flex:none;opacity:.6}#app .lv-nx .em svg{width:100%;height:100%}
 #app .stp.new{animation:achPop 1s cubic-bezier(.2,1.4,.4,1) both}@keyframes achPop{0%{transform:scale(.4);opacity:0;filter:brightness(2)}60%{transform:scale(1.12);opacity:1}100%{transform:none;filter:none}}
 html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
+#app .sy-ntf{display:block;width:100%;margin:18px 0 0;padding:14px;border-radius:16px;background:rgba(255,255,255,.06);font-size:14px;color:var(--ink);text-align:center}
 #app .wh-sh{margin-top:6px}#app .wh-sh b{flex:1}
 #app .wh-ic{flex:none;width:34px;height:34px;border-radius:10px;object-fit:contain;display:grid;place-items:center}#app span.wh-ic{background:rgba(255,255,255,.08)}#app img.wh-ic.rd{border-radius:50%;transform:scale(1.08)}
 #app .wh-hd{display:flex;align-items:center;justify-content:space-between;margin:2px 0 4px}#app .wh-hd b{font-size:17px}#app .wh-hd .vx{position:static}
@@ -2034,6 +2035,10 @@ S.reset=email=>idt("sendOobCode",{requestType:"PASSWORD_RESET",email});
 const sha=async s=>{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return Array.from(new Uint8Array(b),x=>x.toString(16).padStart(2,"0")).join("")};
 const hkey=h=>{h=String(h||"").trim().toLowerCase();if(!h)return "";if(h.includes("@")&&!h.startsWith("@"))return "e:"+h;return "t:"+h.replace(/^@/,"").replace(/^https?:\/\/t\.me\//,"")};
 async function authed(path,opt={}){const t=await S.token();if(!t)throw new Error("noauth");const r=await fetch((path[0]===":"?base().slice(0,-1):base())+path,{...opt,headers:{"Content-Type":"application/json",Authorization:"Bearer "+t,...(opt.headers||{})}});return r}
+// уведомления в Telegram (по согласию): короткий список для бота — избранное, любимые авторы, друзья. Читает только бот.
+S.notifyPut=async d=>{const t=await S.token();if(!t||!tok.uid)return false;const body=JSON.stringify({fields:{d:{stringValue:JSON.stringify(d)},u:{integerValue:String(Date.now())}}});
+  const r=await fetch(base()+"notify/"+tok.uid,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},body});return r.ok};
+S.notifyDel=async()=>{const t=await S.token();if(!t||!tok.uid)return false;const r=await fetch(base()+"notify/"+tok.uid,{method:"DELETE",headers:{Authorization:"Bearer "+t}});return r.ok};
 S.lookupPut=async handles=>{if(!tok.uid)return;for(const h of handles){const k=hkey(h);if(!k||k==="t:")continue;const id=await sha(k);
   await authed("lookup/"+id,{method:"PATCH",body:JSON.stringify({fields:{u:{stringValue:tok.uid}}})}).catch(()=>{})}};
 S.lookup=async h=>{const k=hkey(h);if(!k)return null;const r=await fetch(base()+"lookup/"+(await sha(k))+"?key="+FB.apiKey,{cache:"no-store"});if(r.status===404)return null;if(!r.ok)throw new Error("HTTP "+r.status);const j=await r.json();return j.fields&&j.fields.u&&j.fields.u.stringValue||null};
@@ -4561,6 +4566,7 @@ $("#vshBody").addEventListener("click",e=>{const t=e.target;if(t.closest("[data-
 $("#sumMore").addEventListener("click",e=>{const t=e.target;
   if(syncClick(t))return;
   if(t.closest("[data-goal]")){goalOpen();return}
+  if(t.closest("[data-ntf]")){if(LS.get("zal.ntf",0))notifySet(false);else notifyAsk();return}
   {const c=t.closest("[data-chgo]");if(c){const [k,v]=c.dataset.chgo.split(":");resetAll();if(k==="gen"&&v!=="new")NF.gen=[v];else if(k==="len")NF.len=v;else if(k==="cty")NF.cty=["Япония","Южная Корея","Китай","Индия"];saveNF();if(v==="new"){FG.gen=["new"];fgSave();show("feed");return}SX.picks=true;openSearch(true);return}}
   if(t.closest("[data-import]")){importOpen();return}
   if(t.closest("[data-qadd]")){openQuoteForm();return}if(t.closest("[data-qall]")){openSheet(`<h3 class="sheet-h">Цитаты</h3><div class="qlist" id="qlist">${quotesListHTML()}</div>`);return}
@@ -4871,7 +4877,19 @@ $("#feed").addEventListener("click",e=>{const d=e.target.closest("[data-fdrop2]"
 const NS=window.NSYNC||{on:false};
 const agoTxt=t=>{if(!t)return "ещё не было";const m=Math.round((Date.now()-t)/60000);return m<1?"только что":m<60?m+" мин назад":Math.round(m/60)<24?Math.round(m/60)+" ч назад":new Date(t).toLocaleDateString("ru-RU")};
 function accCard(){if(!NS.on||VIEW)return "";const k=NS.key();if(!k&&!NS.email)return "";
-  return `<div class="sy-foot"><a href="https://t.me/Wonderbookworld_bot" data-ext target="_blank" rel="noopener">Поддержка</a><span>·</span><button data-sy-out>Выйти</button><span>·</span><a href="https://moya-nora.github.io/privacy.html" data-ext target="_blank" rel="noopener">Конфиденциальность</a></div>`}
+  const tgu=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user,nt=tgu&&NS.email?`<button class="sy-ntf" data-ntf>${LS.get("zal.ntf",0)?"🔔 Новости о моих книгах в Telegram: включены":"🔕 Присылать в Telegram новости о моих книгах"}</button>`:"";
+  return nt+`<div class="sy-foot"><a href="https://t.me/Wonderbookworld_bot" data-ext target="_blank" rel="noopener">Поддержка</a><span>·</span><button data-sy-out>Выйти</button><span>·</span><a href="https://moya-nora.github.io/privacy.html" data-ext target="_blank" rel="noopener">Конфиденциальность</a></div>`}
+// ---------- новости о книгах в Telegram (по согласию) ----------
+function notifyData(){const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(!u)return null;
+  const fav=[...new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a&&b.a!=="Автор не указан").map(b=>b.a))].slice(0,60);
+  return {tg:u.id,n:myName(),want:want.slice(0,200).map(w=>({t:w.t,a:w.a||""})),read:BOOKS.slice(-400).map(b=>norm(b.t)),fav,fr:FRIENDS.map(f=>f.uid).filter(Boolean).slice(0,100)}}
+function notifySync(force){if(!LS.get("zal.ntf",0)||!NS.notifyPut||!(NS.hasTok&&NS.hasTok()))return;const d=notifyData();if(!d)return;const sig=JSON.stringify(d);
+  if(!force&&localStorage.getItem("zal.ntf.sig")===sig)return;NS.notifyPut(d).then(ok=>{if(ok)localStorage.setItem("zal.ntf.sig",sig)}).catch(()=>{})}
+function notifyAsk(){if(!(NS.hasTok&&NS.hasTok())||!NS.email)return;vOpen(`<h3 class="vh">Новости о твоих книгах</h3><p class="sy-note">Бот раз в неделю напишет, если книга из избранного подешевела или появилась в подписке, вышла новинка любимого автора или друг дочитал книгу из твоего избранного.<br><br>Для этого мы сохраним для бота только названия из избранного, любимых авторов и список друзей в Норе. Выключить можно в любой момент внизу «Статистики».</p>
+  <div class="ffoot"><button class="btn" data-ntf-no>Не сейчас</button><button class="btn w" data-ntf-yes>Включить</button></div>`)}
+function notifySet(on){LS.set("zal.ntf",on?1:0);localStorage.removeItem("zal.ntf.sig");if(on){if(TG&&TG.requestWriteAccess)try{TG.requestWriteAccess(()=>{})}catch(e){}notifySync(true);toast("Включено: новости придут в бот Норы")}
+  else{NS.notifyDel&&NS.notifyDel().catch(()=>{});toast("Новости в Telegram выключены")}if(SCREEN==="sum")drawSum()}
+$("#vshBody").addEventListener("click",e=>{if(e.target.closest("[data-ntf-yes]")){vClose();notifySet(true)}else if(e.target.closest("[data-ntf-no]"))vClose()});
 function syncCard(){if(!NS.on)return "";const k=NS.key();
   const st=NS.err?`<span class="sy-err">Не синхронизировано: ${esc(NS.err)}</span>`:k?`Синхронизировано ${agoTxt(NS.last)}`:"Пока только на этом устройстве";
   return `<div class="sc gl sy"><h3>Синхронизация</h3><p class="sy-st">${st}</p>
@@ -4939,7 +4957,7 @@ const FRP={};   // загруженные профили друзей
 const hueOf=s=>hsh(String(s))%360;
 const avatar=(n,uid,cls="")=>`<i class="ava ${cls}" style="--h:${hueOf(uid)}">${esc((n||"?").trim().charAt(0).toUpperCase())}</i>`;
 function snapNow(){return {read:BOOKS.map(b=>({t:b.t,a:b.a||"",r:b.r??null,rd:b.rd||"",ds:(b.ann||"").slice(0,300),...(b.pub&&b.n?{rv:String(b.n).slice(0,600)}:{})})),want:want.map(w=>({t:w.t,a:w.a||""})),now:nowBook&&nowBook.t?{t:nowBook.t,a:nowBook.a||""}:null}}
-function pubCheck(){if(!NS.on||VIEW||!(NS.hasTok&&NS.hasTok()))return;
+function pubCheck(){if(!NS.on||VIEW||!(NS.hasTok&&NS.hasTok()))return;try{notifySync()}catch(e){}
   {const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user,hs=[NS.email,u&&u.username?"@"+u.username:""].filter(Boolean),sig=hs.join("|")+"|"+NS.uid();if(hs.length&&NS.lookupPut&&localStorage.getItem("zal.sync.lk")!==sig)NS.lookupPut(hs).then(()=>localStorage.setItem("zal.sync.lk",sig)).catch(()=>{})}const cur=snapNow(),name=myName(),sig=JSON.stringify([name,cur]);const prev=LS.get("zal.sync.pub",null);
   if(prev&&prev.sig===sig)return;const ev=prev?prev.ev||[]:[],now=Date.now(),add=[];
   if(prev&&prev.snap){const pr=new Map(prev.snap.read.map(b=>[norm(b.t),b])),pw=new Set(prev.snap.want.map(w=>norm(w.t)));
@@ -5134,7 +5152,7 @@ function bkParam(){try{const v=new URLSearchParams(location.search).get("bk");if
   if(b)bkcOpen(bItem(b,"rec"),"rec");history.replaceState(null,"",location.pathname+"?app=1")}catch(e){}}
 // разрешение боту писать раз в неделю: спрашиваем один раз, когда на полке уже есть книги
 function askWrite(){try{if(!TG||!TG.requestWriteAccess||LS.get("zal.wa",0)||!BOOKS.length)return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#bkc.on"))return setTimeout(askWrite,20000);
-  LS.set("zal.wa",1);TG.requestWriteAccess(()=>{})}catch(e){}}
+  LS.set("zal.wa",1);TG.requestWriteAccess(ok=>{if(ok&&!LS.get("zal.ntf",0))setTimeout(notifyAsk,600)})}catch(e){}}
 function afterSplash(){setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&!NS.email)authShow()}
 
 
