@@ -254,7 +254,7 @@ home_path = page("index.html", "Нора — твоя книжная библи�
                  "сфотографируй шкаф, получай советы, что читать дальше, — ромэнтези, фэнтези, детективы, классика.", home,
                  full_title="Нора — твоя книжная библиотека: все книги в одном месте и советы, что почитать")
 idx = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
-idx = idx.replace('<meta charset="utf-8">', '<meta charset="utf-8"><meta name="google-site-verification" content="s2CdXU7z22CJQ7fqwqJNwf2nyq4VN3Jk2UEHofqjoXc">'
+idx = idx.replace('<meta charset="utf-8">', '<meta charset="utf-8"><meta name="google-site-verification" content="s2CdXU7z22CJQ7fqwqJNwf2nyq4VN3Jk2UEHofqjoXc"><meta name="yandex-verification" content="6a85060ff8390b92">'
                   '<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Моя Нора">' + TG_REDIRECT, 1)
 open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(idx)
 urls.insert(0, home_path)
