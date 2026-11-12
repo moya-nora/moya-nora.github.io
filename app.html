@@ -3946,28 +3946,28 @@ const palOf=t=>PAL[hsh(String(t))%PAL.length];
 // Подборки Шуршуни, фильтры, лента и поиск работают по всему каталогу: ручные карточки + большой каталог.
 let BIGP=null,BIGMETA=null;
 // новинки (books/new.json, Фантлаб, ежемесячно) дописываются в конец большого каталога: свои списки авторов, жанров и тегов переводим в общие
-function catMerge(d,n){if(!n||!Array.isArray(n.b)||!n.b.length)return d;d.nBig=d.b.length;
+function catMerge(d,n){if(!n||!Array.isArray(n.b)||!n.b.length)return d;d.nBig=d.nBig||d.b.length;
   const ix=(L,v)=>{let j=L.indexOf(v);if(j<0){L.push(v);j=L.length-1}return j};
   const cm=(n.c||[]).map(c=>ix(d.c,c)),gm=(n.g||[]).map(g=>ix(d.g,g)),tm=(n.tg||[]).map(t=>ix(d.tg,t)),wm=(n.aw||[]).map(a=>ix(d.aw,a));
   const a0=d.a.length;(n.a||[]).forEach(([nm,c])=>d.a.push([nm,c>=0?cm[c]:-1]));
-  n.b.forEach(([w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o])=>d.b.push([w,t,a0+ai,y,gm[gi]??0,(tg||[]).map(j=>tm[j]),q,sl,ci>=0?cm[ci]:-1,(aw||[]).map(j=>wm[j]),pg,rw,o]));
-  d.meta=Object.assign({},d.meta,{new:n.meta});return d}
+  n.b.forEach(([w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o,im,an])=>d.b.push([w,t,a0+ai,y,gm[gi]??0,(tg||[]).map(j=>tm[j]),q,sl,ci>=0?cm[ci]:-1,(aw||[]).map(j=>wm[j]),pg,rw,o,im,an]));
+  d.meta=Object.assign({},d.meta,{[n.meta&&n.meta.source==="ЛитРес"?"litres":"new"]:n.meta});return d}
 // настроения по отзывам и голосам читателей Фантлаба (books/tags.json, пополняется ежемесячно) — дописываем к тегам книг
 function tagMerge(d,t){if(!t||!t.m||!Array.isArray(t.tg))return d;const tm=t.tg.map(x=>{let j=d.tg.indexOf(x);if(j<0){d.tg.push(x);j=d.tg.length-1}return j});
   d.b.forEach(r=>{const e=t.m[r[0]];if(e&&e[2]&&e[2].length){const add=e[2].map(j=>tm[j]).filter(j=>j!=null&&!r[5].includes(j));if(add.length)r[5]=r[5].concat(add)}});return d}
 function loadBig(){if(BIGP)return BIGP;
-  const nw=fetch("books/new.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),tgs=fetch("books/tags.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
-  BIGP=fetch("books/books.json").then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>tgs.then(t=>tagMerge(d,t))).then(d=>nw.then(n=>catMerge(d,n))).then(d=>new Promise(res=>{
+  const lr=fetch("books/litres.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),nw=fetch("books/new.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),tgs=fetch("books/tags.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
+  BIGP=fetch("books/books.json").then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>tgs.then(t=>tagMerge(d,t))).then(d=>nw.then(n=>catMerge(d,n))).then(d=>lr.then(n=>catMerge(d,n))).then(d=>new Promise(res=>{
     const C=d.c,G=d.g,TGS=d.tg,AW=d.aw,A=d.a,R=d.b,NB=d.nBig||R.length,tc=new Map(),ac=new Map(),E=[],out=[];let i=0;
     const arr=(cache,ix,src)=>{if(!ix||!ix.length)return E;const k=ix.join(",");let v=cache.get(k);if(!v){v=ix.map(j=>src[j]).filter(Boolean);cache.set(k,v)}return v};
     const CYR=/[а-яё]/i,HV2=new Set(["мрачное","война","хоррор","грустное","жутковатое","антиутопия","постапокалипсис"]),HV0=new Set(["юмор","смешное","сказка","уют","светлое","тёплое"]);
     const step=()=>{const end=Math.min(R.length,i+6000);
-      for(;i<end;i++){const [w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o]=R[i],au=A[ai]||["",-1],a=au[0],n=norm(t);
+      for(;i<end;i++){const [w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o,im,an]=R[i],au=A[ai]||["",-1],a=au[0],n=norm(t);
         const ex=CATT[n];if(ex&&(i>=NB||!ex.big)&&(!ex.a||norm(ex.a).includes(norm(String(a).split(" ").slice(-1)[0]))))continue;
         const tags=arr(tc,tg,TGS),g=G[gi]||"modern",p=PAL[hsh(t)%PAL.length];
         const b={id:"q"+w,t,a,c:ci>=0?C[ci]:(au[1]>=0?C[au[1]]:""),y:y||null,g,tags,heavy:g==="kids"||tags.some(x=>HV0.has(x))?0:tags.some(x=>HV2.has(x))?2:1,
           len:pg?(pg<260?"short":pg>520?"long":"mid"):undefined,q,acclaim:arr(ac,aw,AW),ann:"",when:"",f:E,big:1,sl,bg:p[0],fg:p[1]};
-        if(pg)b.pg=pg;if(rw)b.rw=rw;if(o)b.o=o;if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
+        if(pg)b.pg=pg;if(rw)b.rw=rw;if(o)b.o=o;if(im)b.img=im;if(an)b.ann=an;if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
       if(i<R.length){setTimeout(step,0);return}
       BIGL=out;_allb=null;BIGMETA=d.meta||{};res(out);try{dispatchEvent(new Event("bigcat"))}catch(e){}};step()}));
   BIGP.catch(()=>{BIGP=null});return BIGP}
@@ -4053,7 +4053,7 @@ new MutationObserver(()=>fitCovers($("#app"))).observe(document.getElementById("
 // ---------- единый вид записи для интерфейса ----------
 function bItem(b,kind){const c=catOf(b)||{};
   return {t:b.t,a:b.a||c.a||"",y:b.y||c.y||null,c:b.c||c.c||"",g:b.g||c.g||"modern",pg:b.pg||LENPG[c.len]||null,rd:b.rd,r:b.r,
-    ds:b.ann||c.ann||"",wy:b.why||b.when||c.when||"",tags:b.tags||c.tags||[],src:b,kind,id:b.id||c.id,bg:b.bg||c.bg,fg:b.fg||c.fg}}
+    ds:b.ann||c.ann||"",wy:b.why||b.when||c.when||"",tags:b.tags||c.tags||[],src:b,kind,id:b.id||c.id,bg:b.bg||c.bg,fg:b.fg||c.fg,...(b.img?{img:b.img}:{})}}
 function fItem(f,kind){return {s:f.s||undefined,_f:1,t:fTitle(f),a:f.o&&f.o!==fTitle(f)?f.o:"",y:f.y||null,c:(f.c||[]).map(cName)[0]||"",cs:f.c||[],g:f.g||0,m:f.m||0,
     rd:f.d,r:f.r,ds:f.ds||"",wy:f.wy||"",s:f.s,src:f,kind,id:f.id,img:f.img}}
 // ---------- описания: подробное с Фантлаба (у каждой книги своё), иначе аннотация каталога ----------
@@ -4408,7 +4408,7 @@ function sxRefilter(){tgHaptic();SX.fn=40;const b=$("#sxf");if(b)b.innerHTML=sxF
 const GSYN=[["nonfic","нонфикшн нонфикшен нонфик nonfiction научпоп научнопопулярное научнопопулярные"],["fantasy","фэнтези фентези фэнтэзи fantasy"],
   ["romantasy","ромэнтези ромэнтэзи ромфант романтическоефэнтези любовноефэнтези romantasy"],["romance","любовныйроман любовныероманы романтика любовныйроманы"],
   ["darkrom","даркроман даркромансы darkromance"],["ya","youngadult янгэдалт подростковое подростковые"],["detective","детектив детективы триллер триллеры"],
-  ["scifi","фантастика научнаяфантастика scifi"],["classic","классика классическаялитература"],["kids","детские детскиекниги длядетей"],["modern","современнаяпроза"]];
+  ["scifi","фантастика научнаяфантастика scifi"],["classic","классика классическаялитература"],["kids","детские детскиекниги длядетей"],["modern","современнаяпроза"],["samizdat","самиздат сетеваялитература черновики литнет автортудей"]];
 function genreHit(q){const n=norm(q);if(n.length<4)return null;
   for(const [g,w] of GSYN)if(w.split(" ").includes(n))return ["gen",g];
   const t=B_TROPE.find(([id,l])=>norm(l)===n||norm(l).startsWith(n)&&n.length>=8);return t?["trope",t[0]]:null}
@@ -4691,7 +4691,8 @@ const NOTNOVEL=b=>b.g==="nonfic"||has(b,"мифология","наука","ис�
 const B_SUBG=[["romantasy","Ромэнтези",b=>!NOTNOVEL(b)&&b.g!=="kids"&&(has(b,"любовное фэнтези")||(b.g==="fantasy"&&b.y>=2000&&(ROMT(b)||(has(b,"любовь")&&has(b,"романтичное")&&!has(b,"дружба","приключения","эпическое фэнтези","уют")))))],
   ["romance","Любовные романы",b=>!NOTNOVEL(b)&&(has(b,"любовный роман")||(LOVE(b)&&!["fantasy","scifi","detective","kids"].includes(b.g)&&b.y>=1990))],
   ["darkrom","Дарк роман",b=>!NOTNOVEL(b)&&LOVE(b)&&has(b,"мрачное","жутковатое","хоррор","готика")&&b.y>=1990],
-  ["ya","Young adult",b=>has(b,"young adult")||(has(b,"взросление")&&b.y>=1995)]];
+  ["ya","Young adult",b=>has(b,"young adult")||(has(b,"взросление")&&b.y>=1995)],
+  ["samizdat","Самиздат",b=>has(b,"самиздат")]];
 const genLabel=g=>GEN[g]||(B_SUBG.find(x=>x[0]===g)||[])[1]||g;
 const genPass=(b,g)=>{const sg=B_SUBG.find(x=>x[0]===g);return sg?sg[2](b):b.g===g};
 const B_TROPE=[["enemies","От врагов к возлюбленным"],["academy","Академия магии"],["slow","Медленное сближение"],["fake","Фиктивные отношения"],
