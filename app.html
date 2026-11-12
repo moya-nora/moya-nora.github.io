@@ -4196,7 +4196,13 @@ document.addEventListener("change",e=>{if(e.target.id==="tHide"&&e.target.closes
 let fi=0,colF="want",flowHold=0;
 const pickCol=()=>{colF=VIEW?"read":DATA().want().length?"want":"read"};
 function recList(){if(isF()){if(!FILMS)return [];if(!recList._f||recList._v!==FSEEN.length+FWANT.length+FSKIP.size){recList._f=tevoFilter().filter(f=>!FSKIP.has(f.id)).slice(0,40).map(f=>fItem(f,"rec"));recList._v=FSEEN.length+FWANT.length+FSKIP.size}return recList._f}
-  const key=BOOKS.length+"|"+want.length+"|"+dismissed.size;if(recList._k!==key){recList._b=rankFor(tasteQ()).slice(0,40).map(b=>{const x=bItem(b,"rec");x.why=whyBook(b);return x});recList._k=key}return recList._b}
+  // главная — случайные известные книги (подбор по вкусу живёт в ленте); позже сюда встанут книги издательств
+  const day=new Date().toDateString(),key=BOOKS.length+"|"+want.length+"|"+dismissed.size+"|"+day+"|"+ALLB().length;
+  if(recList._k!==key){const W=wantNorms(),pool=ALLB().filter(b=>{const nt=b._n||norm(b.t);return !READ.has(nt)&&!dismissed.has(b.id)&&!W.has(nt)&&(b.q||0)>=3});
+    let h=0;for(const ch of day)h=(h*31+ch.charCodeAt(0))>>>0;const rnd=()=>(h=(h*1664525+1013904223)>>>0)/4294967296;
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+    const au=new Set(),out=[];for(const b of pool){if(au.has(b.a))continue;au.add(b.a);out.push(bItem(b,"rec"));if(out.length>=40)break}
+    recList._b=out;recList._k=key}return recList._b}
 const flowList=()=>VIEW?(DATA().want().length?DATA().want():DATA().read().filter(x=>x.r!=null).sort((a,b)=>b.r-a.r).slice(0,20)):recList();
 const gridList=()=>colF==="want"?DATA().want():DATA().read();
 function drawFlow(){const L=flowList();fi=L.length?((fi%L.length)+L.length)%L.length:0;
