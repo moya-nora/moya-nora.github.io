@@ -38,8 +38,8 @@ if(tg)document.write('<script src="https://telegram.org/js/telegram-web-app.js">
 @font-face{font-family:'Playfair Display';font-style:italic;font-weight:600;font-display:swap;src:url(fonts/playfair-display-latin-600-italic.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:'Onest';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/onest-cyrillic-400-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
 @font-face{font-family:'Onest';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/onest-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Nunito';font-style:normal;font-weight:900;font-display:block;src:url(fonts/nunito-cyrillic-900-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
-@font-face{font-family:'Nunito';font-style:normal;font-weight:900;font-display:block;src:url(fonts/nunito-latin-900-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Unbounded';font-style:normal;font-weight:800;font-display:block;src:url(fonts/unbounded-cyrillic-800-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:'Unbounded';font-style:normal;font-weight:800;font-display:block;src:url(fonts/unbounded-latin-800-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:'Oswald';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/oswald-cyrillic-600-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
 @font-face{font-family:'Oswald';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/oswald-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:'Oswald';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/oswald-cyrillic-700-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
@@ -1453,8 +1453,8 @@ html[data-theme="light"] #app .bottom::before{background:linear-gradient(180deg,
 html[data-theme="light"] #app .dock{background:rgba(250,249,246,.86)}
 body:not(.col) #app .bottom::before{opacity:0}
 /* заставка: логотип плашкой, как у Marvel */
-#app .sp-logo{font-family:'Nunito',ui-rounded,'SF Pro Rounded',-apple-system,system-ui,sans-serif;font-size:0;transform:translateY(-50%) scale(1.6)}
-#app .sp-logo b{display:inline-block;padding:6px 24px 10px;border-radius:14px;background:#A3142B;color:#fff;font-weight:900;font-size:82px;line-height:1;letter-spacing:.06em;box-shadow:0 24px 60px -18px rgba(0,0,0,.8)}
+#app .sp-logo{font-family:'Unbounded',-apple-system,system-ui,sans-serif;font-size:0;transform:translateY(-50%) scale(1.6)}
+#app .sp-logo b{display:inline-block;padding:6px 24px 10px;border-radius:14px;background:#A3142B;color:#fff;font-weight:800;font-size:60px;line-height:1;letter-spacing:.06em;box-shadow:0 24px 60px -18px rgba(0,0,0,.8)}
 #app .sp-logo small{display:block;margin:0 0 12px;font-family:var(--f);font-size:13px;font-weight:600;letter-spacing:.42em;text-transform:uppercase;color:rgba(255,255,255,.8);padding-left:.42em}
 #app .splash.frozen .sp-logo{transform:translateY(-50%) scale(1)}
 /* описание в ленте — длиннее, обычным шрифтом */
@@ -1600,7 +1600,7 @@ body[data-cap="c"] #app .flow-cap p:not(.L *){order:4;position:relative;display:
 #app .rec-h{display:flex;gap:10px;align-items:baseline;padding:10px 22px 0;font-family:var(--serif);font-weight:600;font-size:36px;line-height:1;color:#F3D19A}
 #app .rec-h i{font-style:normal}
 #app .rec-h[hidden]{display:none}
-body[data-font="1"] #app .rec-h{font-family:'Caveat',cursive;font-weight:700;font-size:50px;line-height:.9}
+body[data-font="1"] #app .rec-h{font-family:'Caveat',cursive;font-weight:700;font-variant-ligatures:none;font-feature-settings:'calt' 0,'liga' 0,'clig' 0;font-size:50px;line-height:.9}
 body[data-font="1"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,sans-serif!important;font-style:normal;font-size:16.5px!important;line-height:1.5}
 body[data-font="2"] #app .rec-h{font-family:'Yeseva One',Georgia,serif;font-weight:400;font-size:33px;letter-spacing:.01em}
 body[data-font="2"] #app .flow-cap p:not(.L *){font-family:'Lora',Georgia,serif!important;font-size:17px!important;line-height:1.5}
@@ -4755,7 +4755,7 @@ function splashReady(){const imgs=[...document.querySelectorAll("#flow .cv.mid i
   return Promise.all([document.fonts?document.fonts.ready:0,...imgs.map(one)])}
 function splashEnd(){const sp=$("#splash");if(!sp||SPL.done)return;SPL.done=true;SPL.stop=true;sp.classList.add("frozen");tgHaptic("medium");
   setTimeout(()=>sp.classList.add("out"),450);setTimeout(()=>{sp.classList.remove("on");sp.remove();afterSplash()},1000)}
-function splashStart(){splashRun();const t0=performance.now();{const sp=$("#splash"),ok=()=>sp&&sp.classList.add("fontok");try{document.fonts.load("900 82px Nunito").then(ok,ok)}catch(e){ok()}setTimeout(ok,1200)}
+function splashStart(){splashRun();const t0=performance.now();{const sp=$("#splash"),ok=()=>sp&&sp.classList.add("fontok");try{document.fonts.load("800 82px Unbounded").then(ok,ok)}catch(e){ok()}setTimeout(ok,1200)}
   Promise.race([new Promise(r=>setTimeout(r,700)).then(splashReady),new Promise(r=>setTimeout(r,2600))]).then(()=>{const wait=Math.max(0,1100-(performance.now()-t0));setTimeout(splashEnd,wait)})}
 
 
