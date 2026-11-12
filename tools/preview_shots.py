@@ -49,7 +49,7 @@ async def main():
     fp=await b.new_page(viewport={"width":1080,"height":1920})
     for i,(img,k,h,pp,a,bb) in enumerate(SLIDES):
       q={"k":k,"h":h,"p":pp,"img":"../out/"+img+".png","a":a,"b":bb}
-      await fp.goto("http://localhost:8766/tools/frame.html#"+urllib.parse.quote(json.dumps(q)));await fp.wait_for_timeout(1500)
+      await fp.goto("http://localhost:8766/tools/frame.html?i="+str(i)+"#"+urllib.parse.quote(json.dumps(q)));await fp.wait_for_timeout(1500)
       await fp.screenshot(path=O+f"nora_preview_{i+1}.png")
     await b.close()
 asyncio.run(main())
