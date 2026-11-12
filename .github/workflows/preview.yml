@@ -14,4 +14,4 @@ jobs:
       - run: |
           git config user.email noreply@anthropic.com; git config user.name Claude
           git checkout -B preview-shots
-          git add -f out/*.png && git commit -qm "preview shots" && git push -f origin preview-shots
+          git add -f out/*.png tools/frame.html && git commit -qm "preview shots" && git push -f origin preview-shots

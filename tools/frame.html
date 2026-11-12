@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Cormorant;font-weight:600;src:url(../fonts/cormorant-garamond-cyrillic-600-normal.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Cormorant;font-weight:600;src:url(../fonts/cormorant-garamond-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:Cormorant;font-weight:600;font-style:italic;src:url(../fonts/cormorant-garamond-cyrillic-600-italic.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Cormorant;font-weight:600;font-style:italic;src:url(../fonts/cormorant-garamond-latin-600-italic.woff2) format('woff2')}
+@font-face{font-family:Caveat;font-weight:700;src:url(../fonts/caveat-cyrillic-700-normal.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Caveat;font-weight:700;src:url(../fonts/caveat-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:Onest;font-weight:400;src:url(../fonts/onest-cyrillic-400-normal.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Onest;font-weight:400;src:url(../fonts/onest-latin-400-normal.woff2) format('woff2')}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#06050A}
+body{position:relative;font-family:Onest,system-ui,sans-serif;color:#FFF3E0;font-variant-numeric:lining-nums}
+.g1,.g2,.g3{position:absolute;border-radius:50%;filter:blur(120px)}
+.g1{width:900px;height:900px;left:-300px;top:-260px;background:var(--a,#7A2E4A);opacity:.75}
+.g2{width:800px;height:800px;right:-320px;top:420px;background:var(--b,#C98A3A);opacity:.45}
+.g3{width:1000px;height:700px;left:40px;bottom:-380px;background:#3C2A6E;opacity:.55}
+.grain{position:absolute;inset:0;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.top{position:absolute;left:84px;right:84px;top:118px}
+.k{font-family:Caveat;font-size:62px;color:#E9B866;line-height:1;margin-bottom:18px}
+h1{margin:0;font-family:Cormorant;font-weight:600;font-size:104px;line-height:.98;letter-spacing:-.01em}
+h1 em{font-style:italic;color:#F2C77B}
+p{margin:26px 0 0;font-size:38px;line-height:1.36;color:rgba(255,243,224,.78)}
+.ph{position:absolute;left:50%;top:var(--top,640px);width:740px;transform:translateX(-50%) rotate(var(--rot,0deg));border-radius:92px;padding:16px;background:linear-gradient(160deg,#2B2733,#121016);box-shadow:0 0 0 2px rgba(255,255,255,.12),0 60px 140px -20px rgba(0,0,0,.9),0 0 160px -30px var(--b,#C98A3A)}
+.ph img{display:block;width:100%;border-radius:78px}
+</style></head><body>
+<div class="g1"></div><div class="g2"></div><div class="g3"></div><div class="grain"></div>
+<div class="top"><div class="k" id="k"></div><h1 id="h"></h1><p id="p"></p></div>
+<div class="ph"><img id="img" alt=""></div>
+<script>
+const q=JSON.parse(decodeURIComponent(location.hash.slice(1)));
+document.getElementById("k").textContent=q.k||"";document.getElementById("h").innerHTML=q.h;document.getElementById("p").textContent=q.p;
+document.getElementById("img").src=q.img;
+if(q.a)document.body.style.setProperty("--a",q.a);if(q.b)document.body.style.setProperty("--b",q.b);
+if(q.top)document.body.style.setProperty("--top",q.top+"px");
+</script></body></html>
