@@ -8,7 +8,8 @@ if(tg)document.write('<script src="https://telegram.org/js/telegram-web-app.js">
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png?v=4"><link rel="icon" href="icons/icon-192.png?v=4"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Моя Нора"><meta name="theme-color" content="#05060A"><title>Моя Нора</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<style>@font-face{font-family:'Literata';font-style:normal;font-weight:200 900;font-display:swap;src:url(fonts/literata-cyrillic-wght-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+<style>@font-face{font-family:'NoraStar';src:url(fonts/norastar.woff2) format('woff2');unicode-range:U+2605-2606}
+@font-face{font-family:'Literata';font-style:normal;font-weight:200 900;font-display:swap;src:url(fonts/literata-cyrillic-wght-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
 @font-face{font-family:'Literata';font-style:normal;font-weight:200 900;font-display:swap;src:url(fonts/literata-latin-wght-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:'Literata';font-style:italic;font-weight:200 900;font-display:swap;src:url(fonts/literata-cyrillic-wght-italic.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
 @font-face{font-family:'Literata';font-style:italic;font-weight:200 900;font-display:swap;src:url(fonts/literata-latin-wght-italic.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
@@ -50,8 +51,8 @@ if(tg)document.write('<script src="https://telegram.org/js/telegram-web-app.js">
   color-scheme: light;
   --paper:#FAF9F6; --card:#FFFFFF; --ink:#1D2320; --muted:#6A706B; --line:#E7E3DB;
   --green:#21493B; --green-soft:#E6EEEA; --oak:#D8BF9A; --oak-dark:#B4936A; --gold:#B5843A; --gold-deep:#8E6326; --gold-soft:#F6EBDA; --slip:#FFFDF7;
-  --serif:"Literata", Georgia, "Times New Roman", serif;
-  --sans:"Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --serif:"NoraStar","Literata", Georgia, "Times New Roman", serif;
+  --sans:'NoraStar',"Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
   --warm-line:#EAD8B6; --dash:#CDBF9F; --ink-2:#3E4541; --env:linear-gradient(160deg,#FFFBF1,#F5EAD5); --lair:radial-gradient(90% 120% at 50% 0%,#FFF4DD 0%,#F8EBD3 55%,#F1E2C7 100%);
   --nav-bg:rgba(255,255,255,.95); --shelf:linear-gradient(#F3EEE6,#F7F4EE); --danger-line:#E3B9B4; --glow:rgba(255,236,190,.9); --nav-on:#21493B; --label:#21493B; --map0:#E6E0D4; --map1:#A9C2B3; --map2:#5E8C75; --map3:#21493B; --map-line:#FAF9F6; --scrim:var(--scrim);
   --r:14px;
@@ -620,8 +621,8 @@ if(tg)document.write('<script src="https://telegram.org/js/telegram-web-app.js">
 </style>
 <style>
 /* ===== новый вид (изолирован под #app) ===== */
-:root{--ink:#FFFFFF;--ink2:rgba(255,255,255,.72);--ink3:rgba(255,255,255,.5);--glass:rgba(255,255,255,.12);--glass2:rgba(255,255,255,.2);--edge:rgba(255,255,255,.22);--acc:#FFFFFF;--f:'Inter Tight',-apple-system,system-ui,sans-serif;--serif:'Cormorant Garamond',Georgia,serif}
-#app{--ink:#FFFFFF;--ink2:rgba(255,255,255,.72);--ink3:rgba(255,255,255,.5);--glass:rgba(255,255,255,.12);--glass2:rgba(255,255,255,.2);--edge:rgba(255,255,255,.22);--acc:#FFFFFF;--f:'Inter Tight',-apple-system,system-ui,sans-serif;--serif:'Cormorant Garamond',Georgia,serif}
+:root{--ink:#FFFFFF;--ink2:rgba(255,255,255,.72);--ink3:rgba(255,255,255,.5);--glass:rgba(255,255,255,.12);--glass2:rgba(255,255,255,.2);--edge:rgba(255,255,255,.22);--acc:#FFFFFF;--f:'NoraStar','Inter Tight',-apple-system,system-ui,sans-serif;--serif:'NoraStar','Cormorant Garamond',Georgia,serif}
+#app{--ink:#FFFFFF;--ink2:rgba(255,255,255,.72);--ink3:rgba(255,255,255,.5);--glass:rgba(255,255,255,.12);--glass2:rgba(255,255,255,.2);--edge:rgba(255,255,255,.22);--acc:#FFFFFF;--f:'NoraStar','Inter Tight',-apple-system,system-ui,sans-serif;--serif:'NoraStar','Cormorant Garamond',Georgia,serif}
 *{box-sizing:border-box}
 html{font-variant-numeric:lining-nums}
 html,body{margin:0;height:100%;background:#05060A;color:var(--ink);overflow:hidden}
@@ -1071,7 +1072,7 @@ html[data-theme="light"] #app .sx-clear svg:not(.L *){stroke:#14151B!important}
   --warm-line:rgba(255,255,255,.14); --dash:rgba(255,255,255,.25); --env:linear-gradient(160deg,#1C1D26,#14151C); --lair:radial-gradient(90% 120% at 50% 0%,#23242E 0%,#15161D 55%,#0E0F14 100%);
   --nav-bg:rgba(20,21,28,.94); --shelf:linear-gradient(#17181F,#121319); --danger-line:#6B2E28; --glow:rgba(255,255,255,.2); --nav-on:#fff; --label:#F3F1EC;
   --map0:#22232B; --map1:#4A4C58; --map2:#8A8C99; --map3:#E8E6E0; --map-line:#0B0C11; --scrim:rgba(3,4,8,.72);
-  --serif:'Cormorant Garamond',Georgia,serif; --sans:'Inter Tight',-apple-system,system-ui,sans-serif;
+  --serif:'NoraStar','Cormorant Garamond',Georgia,serif; --sans:'NoraStar','Inter Tight',-apple-system,system-ui,sans-serif;
 }
 :root[data-theme="light"] .L{
   color-scheme:light;
@@ -1080,7 +1081,7 @@ html[data-theme="light"] #app .sx-clear svg:not(.L *){stroke:#14151B!important}
   --warm-line:rgba(0,0,0,.1); --dash:rgba(0,0,0,.25); --env:linear-gradient(160deg,#FFFFFF,#F4F2EE); --lair:radial-gradient(90% 120% at 50% 0%,#FFFFFF 0%,#F4F2EE 100%);
   --nav-bg:rgba(255,255,255,.95); --shelf:linear-gradient(#F0EEE9,#F6F5F1); --glow:rgba(0,0,0,.08); --nav-on:#16171C; --label:#16171C;
   --map0:#E3E1DC; --map1:#B5B3AD; --map2:#77756F; --map3:#16171C; --map-line:#F3F1EC; --scrim:rgba(20,20,25,.45);
-  --serif:'Cormorant Garamond',Georgia,serif; --sans:'Inter Tight',-apple-system,system-ui,sans-serif;
+  --serif:'NoraStar','Cormorant Garamond',Georgia,serif; --sans:'NoraStar','Inter Tight',-apple-system,system-ui,sans-serif;
 }
 .legacy-over{font-family:var(--sans);font-size:15px;line-height:1.5;color:var(--ink);-webkit-font-smoothing:antialiased;font-variant-numeric:lining-nums}
 .legacy-over .scrim{z-index:55}
@@ -1685,7 +1686,8 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .wh-l b{font-size:15.5px}#app .wh-l small{flex:1;font-size:13px;color:var(--ink3)}#app .wh-l i{font-style:normal;color:var(--ink3);font-size:20px}
 #app .wh-l .ava{width:36px;height:36px;font-size:16px}
 #app .wh-sh{margin-top:6px}#app .wh-sh b{flex:1}
-#app .wh-ic{flex:none;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.08);object-fit:cover;display:grid;place-items:center}
+#app .wh-ic{flex:none;width:34px;height:34px;border-radius:10px;object-fit:contain;display:grid;place-items:center}#app span.wh-ic{background:rgba(255,255,255,.08)}#app img.wh-ic.rd{border-radius:50%;transform:scale(1.08)}
+#app .wh-hd{display:flex;align-items:center;justify-content:space-between;margin:2px 0 4px}#app .wh-hd b{font-size:17px}#app .wh-hd .vx{position:static}
 #app .wh-ic.sv svg{width:19px;height:19px;fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 #app .wh-sw{display:block;margin:14px auto 2px;padding:8px 12px;font-size:13.5px;color:var(--ink3)}
 #app .wh-ch button{padding:22px 12px;text-align:center}
@@ -2533,6 +2535,8 @@ const TROPE_M=(()=>{const m={};"Четвёртое крыло|Яррос|academy
 const tropeApply=L=>{L.forEach(b=>{if(b._tm)return;Object.defineProperty(b,"_tm",{value:1});const sur=norm(String(b.a||"").split(" ").slice(-1)[0]),l=TROPE_M[norm(b.t)+"|"+sur];
   if(l){b.tags=(b.tags||[]).slice();l.forEach(t=>{if(!b.tags.includes("троп:"+t))b.tags.push("троп:"+t)})}})};
 let BIGL=[],_allb=null;const ALLB=()=>{if(BIGL.length){if(!_allb){_allb=CAT.concat(BIGL);tropeApply(_allb)}return _allb}if(!CAT._tm){Object.defineProperty(CAT,"_tm",{value:1});tropeApply(CAT)}return CAT};
+// демо-подборка для скриншотов магазина: localStorage zal.demo = {"rec":["Название|Фамилия",…],"feed":[…]}
+function demoPick(k){try{const D=JSON.parse(localStorage.getItem("zal.demo")||"null");if(!D||!D[k])return [];return D[k].map(s=>{const [t,a]=s.split("|");return ALLB().find(b=>norm(b.t)===norm(t)&&(!a||norm(b.a||"").includes(norm(a))))}).filter(Boolean)}catch(e){return []}}
 
 const LIB={...WANT,...CATMAP};
 const NEWSHELF="Новые поступления",NOCOUNTRY=new Set(["Неразобранное",NEWSHELF,"Без страны"]);
@@ -4110,6 +4114,7 @@ let FSHOWN=new Set();
 function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;
   (b.tags||[]).forEach(t=>{s+=2*(q.tags[t]||0)+1.4*(TASTE.t[t]||0)});s+=1.2*(TASTE.g[b.g]||0)+1.5*(TASTE.a[b.a]||0);return s+Math.random()*2.2}
 function bookFeed(){FSHOWN=new Set();const q=tasteQ();
+  {const D=demoPick("feed");if(D.length){D.forEach(b=>FSHOWN.add(b.id));const it=D.map(b=>{const x=bItem(b,"feed");x.why=whyBook(b);return x});const fm=()=>{const sc=topK(ALLB(),160,b=>FSHOWN.has(b.id)||!fgPass(b)?null:feedScore(b,q));const out=sc.slice(0,8).map(z=>z.b);out.forEach(b=>FSHOWN.add(b.id));return out.map(b=>bItem(b,"feed"))};feedMore=fm;return it}}
   feedMore=()=>{const sc=topK(ALLB(),160,b=>FSHOWN.has(b.id)||!fgPass(b)?null:feedScore(b,q));
     const out=[],au=new Set();for(const {b} of sc){if(au.has(b.a))continue;au.add(b.a);out.push(b);if(out.length>=8)break}
     out.forEach(b=>FSHOWN.add(b.id));return out.map(b=>{const it=bItem(b,"feed");it.why=whyBook(b);return it})};return feedMore()}
@@ -4208,6 +4213,7 @@ const pickCol=()=>{colF=VIEW?"read":DATA().want().length?"want":"read"};
 function recList(){if(isF()){if(!FILMS)return [];if(!recList._f||recList._v!==FSEEN.length+FWANT.length+FSKIP.size){recList._f=tevoFilter().filter(f=>!FSKIP.has(f.id)).slice(0,40).map(f=>fItem(f,"rec"));recList._v=FSEEN.length+FWANT.length+FSKIP.size}return recList._f}
   // главная — случайные известные книги (подбор по вкусу живёт в ленте); позже сюда встанут книги издательств
   const day=new Date().toDateString(),key=BOOKS.length+"|"+want.length+"|"+dismissed.size+"|"+day+"|"+ALLB().length;
+  {const D=demoPick("rec");if(D.length)return D.map(b=>bItem(b,"rec"))}
   if(recList._k!==key){const W=wantNorms(),pool=ALLB().filter(b=>{const nt=b._n||norm(b.t);return !READ.has(nt)&&!dismissed.has(b.id)&&!W.has(nt)&&(b.q||0)>=3});
     let h=0;for(const ch of day)h=(h*31+ch.charCodeAt(0))>>>0;const rnd=()=>(h=(h*1664525+1013904223)>>>0)/4294967296;
     for(let i=pool.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
@@ -4628,9 +4634,9 @@ const B_ERA=[["old","Классика до XX века",b=>b.y&&b.y<1900],["xx",
 const B_ACC=[["prize","С премиями",b=>(b.acclaim||[]).length>0],["nobel","Нобелевские лауреаты",b=>(b.acclaim||[]).some(a=>/нобел/i.test(a))]];
 const B_GEN=["classic","modern","detective","fantasy","scifi","kids","nonfic"];
 // поджанры — по тегам (из Фантлаба, отзывов и Википедии), а не отдельным полем каталога
-const LOVE=b=>has(b,"любовь","романтичное","любовный роман","любовное фэнтези");
+const ROMT=b=>has(b,"троп:enemies","троп:slow","троп:fake","троп:fated","троп:grumpy","троп:forbid","троп:triangle");const LOVE=b=>has(b,"любовь","романтичное","любовный роман","любовное фэнтези");
 const NOTNOVEL=b=>b.g==="nonfic"||has(b,"мифология","наука","история","биография","мемуары","психология");
-const B_SUBG=[["romantasy","Ромэнтези",b=>!NOTNOVEL(b)&&(has(b,"любовное фэнтези")||(b.g==="fantasy"&&LOVE(b)&&b.y>=2000))],
+const B_SUBG=[["romantasy","Ромэнтези",b=>!NOTNOVEL(b)&&b.g!=="kids"&&(has(b,"любовное фэнтези")||(b.g==="fantasy"&&b.y>=2000&&(ROMT(b)||(has(b,"любовь")&&has(b,"романтичное")&&!has(b,"дружба","приключения","эпическое фэнтези","уют")))))],
   ["romance","Любовные романы",b=>!NOTNOVEL(b)&&(has(b,"любовный роман")||(LOVE(b)&&!["fantasy","scifi","detective","kids"].includes(b.g)&&b.y>=1990))],
   ["darkrom","Дарк роман",b=>!NOTNOVEL(b)&&LOVE(b)&&has(b,"мрачное","жутковатое","хоррор","готика")&&b.y>=1990],
   ["ya","Young adult",b=>has(b,"young adult")||(has(b,"взросление")&&b.y>=1995)]];
@@ -5137,9 +5143,7 @@ const openLink=u=>{try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):w
 const PARTNER={litres:""};
 const pLink=(k,u)=>PARTNER[k]?PARTNER[k].replace("{url}",encodeURIComponent(u)):u;
 function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).split(" ").slice(-1)[0]:"")),qt=encodeURIComponent(x.t);
-  // выбор «онлайн/офлайн» показываем один раз, дальше сразу открываем запомненный список
-  if(!mode)mode=LS.get("zal.whm","");if(mode)LS.set("zal.whm",mode);
-  const ic=d=>`<img class="wh-ic" src="img/where/${d}.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'wh-ic'}))">`,
+  const ic=d=>`<img class="wh-ic${d==="books.yandex.ru"?" rd":""}" src="img/where/${d}.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'wh-ic'}))">`,
     PIN='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg></span>',
     LIB='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M4 20h16M5 9h14M12 4l8 5H4l8-5zM7 9v8M12 9v8M17 9v8"/></svg></span>';
   const ON=[[ic("litres.ru"),"ЛитРес",pLink("litres",`https://www.litres.ru/search/?q=${q}`)],[ic("books.yandex.ru"),"Яндекс Книги",`https://books.yandex.ru/search?text=${q}`],
@@ -5148,8 +5152,8 @@ function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).s
   const OFF=[[PIN,"Книжные рядом",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],[ic("chitai-gorod.ru"),"Читай-город",`https://www.chitai-gorod.ru/search?phrase=${qt}`],
     [ic("bookvoed.ru"),"Буквоед",`https://www.bookvoed.ru/search?q=${qt}`],[LIB,"Библиотеки рядом",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
   const choose=`<div class="wh-ch"><button data-wh="on"><b>Онлайн</b></button><button data-wh="off"><b>Офлайн</b></button></div>`;
-  const list=mode?`<div class="wh-l wh-sh">${(mode==="on"?ON:OFF).map(([i,n,u])=>`<button data-whu="${esc(u)}">${i}<b>${n}</b><i>›</i></button>`).join("")}</div><button class="wh-sw" data-wh="${mode==="on"?"off":"on"}">${mode==="on"?"Офлайн: магазины и библиотеки":"Онлайн: приложения и маркетплейсы"} ›</button>`:"";
-  vOpen(mode?list:choose);$("#vsheet").classList.add("ontop");$("#vshBody")._wx=x}
+  const list=mode?`<div class="wh-l wh-sh">${(mode==="on"?ON:OFF).map(([i,n,u])=>`<button data-whu="${esc(u)}">${i}<b>${n}</b><i>›</i></button>`).join("")}</div>`:"";
+  vOpen(mode?`<div class="wh-hd"><b>${mode==="on"?"Онлайн":"Офлайн"}</b><button class="vx" data-wh="" aria-label="Назад к выбору"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`+list:choose);$("#vsheet").classList.add("ontop");$("#vshBody")._wx=x}
 bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");if(t.closest("[data-bkc-rv]")){reviewsOpen(BKC.x);return}if(t.closest("[data-bkc-fr]")){const fr=frReaders(BKC.x);
     vOpen(`<h3 class="vh">Читали «${esc(BKC.x.t)}»</h3><div class="wh-l">${fr.map(({f,b})=>`<button data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid)}<b>${esc(f.n||"Друг")}</b><small>${b.r!=null?"★ "+r5(b.r):"без оценки"}</small>${b.rv?`<em class="frv">«${esc(b.rv)}»</em>`:""}<i>›</i></button>`).join("")}</div>`);$("#vsheet").classList.add("ontop");return}
   if(!b||!BKC)return;const {x,L}=BKC,a=b.dataset.bkc;tgHaptic();
@@ -5161,7 +5165,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");if
   if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
   if(a==="read"){bkcClose();rmAsk(x,null,n=>{BK.markRead(x,n*2);refresh()},"Без оценки",()=>{BK.markRead(x,null);refresh()})}});
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody"))return;
-  const w=t.closest("[data-wh]");if(w){whereOpen($("#vshBody")._wx,w.dataset.wh);tgHaptic();return}
+  const w=t.closest("[data-wh]");if(w){e.stopPropagation&&e.stopPropagation();whereOpen($("#vshBody")._wx,w.dataset.wh);tgHaptic();return}
   const u=t.closest("[data-whu]");if(u){openLink(u.dataset.whu);return}});
 (function(){let y0=null,dy=0;bkcEl.addEventListener("touchstart",e=>{y0=null;if(e.target.closest("button"))return;{const d=e.target.closest("#bkcDw");if(d&&(d.scrollTop>0||d.scrollHeight>d.clientHeight+2))return}y0=e.touches[0].clientY;dy=0},{passive:true});
   bkcEl.addEventListener("touchmove",e=>{if(y0==null)return;dy=Math.max(0,e.touches[0].clientY-y0);bkcEl.firstElementChild.style.transform=`translateY(${dy*.6}px)`},{passive:true});
