@@ -37,6 +37,8 @@ me = api("getMe") or {}
 wh = api("getWebhookInfo") or {}
 print("бот:", "@" + str(me.get("username")), "| вебхук:", "есть — сообщения забирает другая система" if wh.get("url") else "нет", "| ждут:", wh.get("pending_update_count"))
 ups = api("getUpdates", timeout=0, allowed_updates=["message"]) or []
+if not ups and os.environ.get("LONGPOLL"):
+    ups = api("getUpdates", timeout=40, allowed_updates=["message"]) or []
 print("новых сообщений:", len(ups))
 last, acked, changed = None, set(), False
 for u in ups:

@@ -16,6 +16,7 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           OWNER_USERNAME: ${{ vars.OWNER_USERNAME }}
+          LONGPOLL: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
         run: python3 -u tools/bot_relay.py
       - name: Запомнить владелицу
         run: |
