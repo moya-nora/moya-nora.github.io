@@ -7,7 +7,7 @@
   • /start от обычного человека → приветствие и кнопка «Открыть Нору».
 Владелица — тот, кто пишет боту /start с ником из OWNER_USERNAME (по умолчанию из настроек ниже).
 Её chat id хранится в tools/bot_state.json. Нужен секрет репозитория BOT_TOKEN."""
-import json, os, re, sys, urllib.request
+import json, os, re, sys, time, urllib.request
 
 TOKEN = os.environ.get("BOT_TOKEN", "").strip()
 OWNER = os.environ.get("OWNER_USERNAME", "").strip().lstrip("@").lower() or "stanislava_kurdina"
@@ -36,25 +36,25 @@ owner_id = state.get("owner")
 me = api("getMe") or {}
 wh = api("getWebhookInfo") or {}
 print("бот:", "@" + str(me.get("username")), "| вебхук:", "есть — сообщения забирает другая система" if wh.get("url") else "нет", "| ждут:", wh.get("pending_update_count"))
-ups = api("getUpdates", timeout=0, allowed_updates=["message"]) or []
-if not ups and os.environ.get("LONGPOLL"):
-    ups = api("getUpdates", timeout=40, allowed_updates=["message"]) or []
-print("новых сообщений:", len(ups))
-last, acked, changed = None, set(), False
-for u in ups:
-    last = u["update_id"]
-    m = u.get("message")
-    if not m:
-        continue
+acked = set()
+
+
+def save():
+    json.dump(state, open(STATE, "w", encoding="utf-8"))
+    print("сохранён chat id владелицы", flush=True)
+
+
+def handle(m):
+    """Одно сообщение. Возвращает False, если его пока нельзя обработать (владелица ещё не известна)."""
+    global owner_id
     fr, chat = m.get("from", {}), m["chat"]["id"]
     if m["chat"].get("type") != "private":
-        continue
+        return True
     text = m.get("text") or m.get("caption") or ""
-    is_owner = (fr.get("username") or "").lower() == OWNER
-    if is_owner:
+    if (fr.get("username") or "").lower() == OWNER:
         if owner_id != chat:
-            owner_id, changed = chat, True
-            state["owner"] = chat
+            owner_id = state["owner"] = chat
+            save()
         rep = m.get("reply_to_message")
         tag = re.search(r"#u(\d+)", (rep or {}).get("text") or (rep or {}).get("caption") or "")
         if rep and tag:
@@ -62,14 +62,13 @@ for u in ups:
             api("sendMessage", chat_id=chat, text="✓ Отправлено" if ok else "Не получилось отправить — человек мог остановить бота.", reply_to_message_id=m["message_id"])
         elif text.startswith("/start"):
             api("sendMessage", chat_id=chat, text="Готово! Сюда будут приходить вопросы читателей. Чтобы ответить, смахни сообщение влево и нажми «Ответить».")
-        continue
+        return True
     if text.startswith("/start"):
         api("sendMessage", chat_id=chat, text="Привет! Это Нора — все твои книги в одном месте и советы, что читать дальше.\n\nЕсли есть вопрос или идея — просто напиши сюда, мы ответим.",
             reply_markup={"inline_keyboard": [[{"text": "Открыть Нору", "web_app": {"url": APP}}]]})
-        continue
-    if not owner_id:  # владелица ещё не написала боту /start — сообщения подождут (Telegram хранит их сутки)
-        last = None
-        break
+        return True
+    if not owner_id:
+        return False
     who = " ".join(x for x in [fr.get("first_name"), fr.get("last_name")] if x) or "Читатель"
     head = f"✉️ {who}{' @' + fr['username'] if fr.get('username') else ''} · #u{chat}"
     if text and not any(k in m for k in ("photo", "document", "video", "voice")):
@@ -80,8 +79,23 @@ for u in ups:
     if chat not in acked:
         acked.add(chat)
         api("sendMessage", chat_id=chat, text="Спасибо! Передали в команду Норы — ответим здесь же.")
-if last is not None:
-    api("getUpdates", offset=last + 1, timeout=0)  # подтверждаем: эти сообщения обработаны
-if changed:
-    json.dump(state, open(STATE, "w", encoding="utf-8"))
-    print("сохранён chat id владелицы")
+    return True
+
+
+# LOOP=секунды: дежурим всё это время с долгим ожиданием — ответы почти мгновенные; иначе один проход
+end = time.time() + int(os.environ.get("LOOP") or 0)
+offset, n = None, 0
+while True:
+    wait = 50 if time.time() < end - 60 else 0
+    ups = api("getUpdates", offset=offset, timeout=wait, allowed_updates=["message"]) or []
+    stop = False
+    for u in ups:
+        if u.get("message") and not handle(u["message"]):
+            stop = True
+            break
+        offset, n = u["update_id"] + 1, n + 1
+    if stop or time.time() >= end - 60:
+        break
+if offset:
+    api("getUpdates", offset=offset, timeout=0)  # подтверждаем обработанные
+print("обработано сообщений:", n)

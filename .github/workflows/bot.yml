@@ -1,26 +1,35 @@
 name: Бот — вопросы читателей
+# Дежурство: одно задание слушает бота ~5 ч 45 мин (ответы почти сразу), потом само запускает следующее.
+# Расписание раз в час — запасной перезапуск, если цепочка оборвалась.
 on:
   schedule:
-    - cron: "4,14,24,34,44,54 * * * *"   # каждые 10 минут (GitHub может задерживать на несколько минут)
+    - cron: "17 * * * *"
   workflow_dispatch:
 permissions:
   contents: write
+  actions: write
 concurrency: { group: bot, cancel-in-progress: false }
 jobs:
   relay:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 355
     steps:
       - uses: actions/checkout@v4
-      - name: Переслать вопросы и ответы
+      - name: Слушать бота
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           OWNER_USERNAME: ${{ vars.OWNER_USERNAME }}
-          LONGPOLL: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
+          LOOP: "20700"
         run: python3 -u tools/bot_relay.py
       - name: Запомнить владелицу
+        if: always()
         run: |
           git config user.name "Mayorov-Vlad"
           git config user.email "vladislav15333@gmail.com"
           git add tools/bot_state.json 2>/dev/null || true
           git diff --cached --quiet || (git commit -m "Бот: chat id владелицы" && git pull --rebase -X theirs -q && git push)
+      - name: Следующее дежурство
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST repos/${{ github.repository }}/actions/workflows/bot.yml/dispatches -f ref=main
