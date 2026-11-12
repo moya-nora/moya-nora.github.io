@@ -8,7 +8,7 @@ on:
     paths: [tools/build_covers.py, .github/workflows/covers.yml]
 permissions:
   contents: write
-concurrency: { group: books-new, cancel-in-progress: false }
+concurrency: { group: covers, cancel-in-progress: false }
 jobs:
   build:
     runs-on: ubuntu-latest
