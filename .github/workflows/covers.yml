@@ -29,7 +29,7 @@ jobs:
         run: |
           git config user.name "Mayorov-Vlad"
           git config user.email "vladislav15333@gmail.com"
-          git add books/covers.json books/covers.log 2>/dev/null || true
+          git add books/covers.json books/covers.log books/covers_want.json 2>/dev/null || true
           git add k c index.html privacy.html sitemap.xml robots.txt 2>/dev/null || true
           git diff --cached --quiet || git commit -m "Обложки для сайта: $(date +%Y-%m-%d)"
           git pull --rebase -X theirs -q && git push

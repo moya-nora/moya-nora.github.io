@@ -64,6 +64,10 @@ def find(t, a):
 app = open(os.path.join(ROOT, "app.html"), encoding="utf-8").read()
 i = app.index("const CAT=") + len("const CAT=")
 CAT, _ = json.JSONDecoder().raw_decode(app[i:])
+try:  # плюс книги из подборок сайта, которых нет в ручном каталоге (список готовит build_seo.py)
+    CAT += [{"t": t, "a": a} for t, a in json.load(open(os.path.join(ROOT, "books", "covers_want.json"), encoding="utf-8"))]
+except FileNotFoundError:
+    pass
 try:
     have = json.load(open(OUT, encoding="utf-8"))
 except FileNotFoundError:

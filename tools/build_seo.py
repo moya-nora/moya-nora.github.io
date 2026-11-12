@@ -234,6 +234,15 @@ for path, title, lead, pred in COLL:
     L = sorted(L, key=lambda b: (not (b["ann"] or img_of(b)), L.index(b)))  # с описанием и обложкой — вперёд
     coll_data.append((path, title, lead, L))
 FOOT = footer([(p, t) for p, t, _, _ in coll_data])
+# книги из подборок без обложки — их обложки найдёт tools/build_covers.py в следующий раз
+want, seenw = [], set()
+for _, _, _, L in coll_data:
+    for b in L:
+        k = nk(b["t"]) + "|" + nk(str(b["a"] or "").split(" ")[-1])
+        if not b["cat"] and k not in COVERS and k not in seenw:
+            seenw.add(k)
+            want.append([b["t"], b["a"]])
+json.dump(want[:4000], open(os.path.join(ROOT, "books", "covers_want.json"), "w", encoding="utf-8"), ensure_ascii=False)
 QUICK = [p for p in ("romantezi", "dark-roman", "lyubovnye-romany", "young-adult", "zhanr-fantasy", "uyutnye", "zahvatyvayuschie", "strashnye", "smeshnye", "novinki", "zhanr-classic", "zhanr-detective")
          if any(q == p for q, _, _, _ in coll_data)]
 tname = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
