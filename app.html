@@ -4527,13 +4527,13 @@ function sumLive(r,sts,got){const now=new Date(),Y=String(now.getFullYear()),M=n
     ${mo.length?`<div class="mini">${mo.slice(-6).map(x=>`<button data-open="${esc(x.id)}">${cv(x,44)}</button>`).join("")}</div>`:`<p class="lv-note">В этом месяце пока ничего — загляни в ленту, Шуршуня подберёт.</p>`}</div>`;
   const tg={};let tot=0;r.forEach(x=>{const b=x._b||x;(b.tags||x.tags||[]).forEach(t=>{if(t.startsWith("троп:")||/век|страна/.test(t))return;tg[t]=(tg[t]||0)+1;tot++})});
   const top=Object.entries(tg).sort((a,b)=>b[1]-a[1]).slice(0,6),mx=top.length?top[0][1]:1;
-  const tasteC=top.length>=2?`<div class="sc gl lv-taste"><div class="hd"><h3>Твой книжный вкус</h3><span>меняется с каждой книгой</span></div>
+  const tasteC=top.length>=2?`<div class="sc gl lv-taste"><h3>Твой книжный вкус</h3><p class="lv-note" style="margin:4px 0 4px">меняется с каждой прочитанной книгой</p>
     ${top.map(([t,n])=>`<div class="lv-t"><span>${esc(t)}</span><i style="width:${Math.round(n/mx*100)}%"></i><b>${Math.round(n/tot*100)}%</b></div>`).join("")}</div>`:"";
   const seen=new Set(LS.get("zal.achseen",[])),fresh=got.filter(x=>!seen.has(x.t));if(fresh.length)setTimeout(()=>LS.set("zal.achseen",got.map(x=>x.t)),1500);
   const next=sts.filter(x=>!x.ok).sort((a,b)=>b.cur/b.need-a.cur/a.need).slice(0,3);
   const achC=`<div class="sc gl lv-ach"><div class="hd"><h3>Ачивки</h3><span>${got.length} из ${sts.length}</span></div>
     <div class="stamps">${got.map(st=>`<div class="stp${fresh.includes(st)?" new":""}">${stampEm(st)}<b>${esc(st.t)}</b><small>${esc(st.h)}</small></div>`).join("")}</div>
-    ${next.length?`<h4 class="lv-h4">Скоро откроются</h4>${next.map(st=>`<div class="lv-nx">${stampEm(st)}<div><b>${esc(st.t)}</b><small>${esc(st.h)}</small><i><s style="width:${Math.round(st.cur/st.need*100)}%"></s></i></div><em>${st.cur}/${st.need}</em></div>`).join("")}`:""}</div>`;
+    ${next.length?`<h4 class="lv-h4">Скоро откроются</h4>${next.map(st=>`<div class="lv-nx"><div><b>${esc(st.t)}</b><small>${esc(st.h)}</small><i><s style="width:${Math.round(st.cur/st.need*100)}%"></s></i></div><em>${st.cur}/${st.need}</em></div>`).join("")}`:""}</div>`;
   return goalC+monthC+achC+tasteC}
 function goalOpen(){const g=LS.get("zal.goal",24);vOpen(`<h3 class="vh">Цель на год</h3><p class="sy-note">Сколько книг хочешь прочитать в ${new Date().getFullYear()} году?</p><div class="fgl">${[6,12,24,36,52,100].map(n=>`<button class="fgc${n===g?" on":""}" data-goalset="${n}">${n}</button>`).join("")}</div>`)}
 $("#vshBody").addEventListener("click",e=>{const b=e.target.closest("[data-goalset]");if(!b)return;LS.set("zal.goal",+b.dataset.goalset);tgHaptic("medium");vClose();drawSum()});
