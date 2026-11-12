@@ -1685,6 +1685,22 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .wh-l button{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
 #app .wh-l b{font-size:15.5px}#app .wh-l small{flex:1;font-size:13px;color:var(--ink3)}#app .wh-l i{font-style:normal;color:var(--ink3);font-size:20px}
 #app .wh-l .ava{width:36px;height:36px;font-size:16px}
+#app .lv-goal{display:flex;align-items:center;gap:16px;position:relative;cursor:pointer}
+#app .lv-goal svg{width:108px;height:108px;flex:none;transform:rotate(-90deg)}
+#app .lv-goal circle{fill:none;stroke-width:9;stroke-linecap:round}#app .lv-goal .tr{stroke:rgba(255,255,255,.1)}#app .lv-goal .pr{stroke:#E9B866;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.9,.3,1)}
+#app .lv-g{display:flex;flex-direction:column;gap:3px;min-width:0}#app .lv-g small{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+#app .lv-g b{font-family:var(--serif);font-size:44px;line-height:1;font-weight:600}#app .lv-g b i{font-style:normal;font-size:20px;color:var(--ink3)}
+#app .lv-g span{font-size:14px;color:var(--ink)}#app .lv-g em{font-style:normal;font-size:12.5px;color:var(--ink3)}
+#app .lv-goal u{position:absolute;right:14px;top:12px;font-size:12px;color:var(--ink3);text-decoration:none}
+#app .lv-mo .mini{margin-top:14px}#app .lv-note{margin:12px 0 0;font-size:13.5px;color:var(--ink3)}
+#app .lv-t{display:grid;grid-template-columns:120px 1fr 42px;align-items:center;gap:10px;margin-top:10px;font-size:14px}
+#app .lv-t span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#app .lv-t i{height:8px;border-radius:4px;background:linear-gradient(90deg,#E9B866,#C9708A)}#app .lv-t b{text-align:right;font-weight:600;color:var(--ink2)}
+#app .lv-h4{margin:18px 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+#app .lv-nx{display:flex;align-items:center;gap:12px;padding:8px 0}#app .lv-nx>div{flex:1;min-width:0}#app .lv-nx b{display:block;font-size:14px}#app .lv-nx small{display:block;font-size:12px;color:var(--ink3)}
+#app .lv-nx i{display:block;height:5px;margin-top:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}#app .lv-nx i s{display:block;height:100%;background:#E9B866}
+#app .lv-nx em{font-style:normal;font-size:12.5px;color:var(--ink3)}#app .lv-nx .em{width:42px;height:42px;flex:none;opacity:.6}#app .lv-nx .em svg{width:100%;height:100%}
+#app .stp.new{animation:achPop 1s cubic-bezier(.2,1.4,.4,1) both}@keyframes achPop{0%{transform:scale(.4);opacity:0;filter:brightness(2)}60%{transform:scale(1.12);opacity:1}100%{transform:none;filter:none}}
+html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .wh-sh{margin-top:6px}#app .wh-sh b{flex:1}
 #app .wh-ic{flex:none;width:34px;height:34px;border-radius:10px;object-fit:contain;display:grid;place-items:center}#app span.wh-ic{background:rgba(255,255,255,.08)}#app img.wh-ic.rd{border-radius:50%;transform:scale(1.08)}
 #app .wh-hd{display:flex;align-items:center;justify-content:space-between;margin:2px 0 4px}#app .wh-hd b{font-size:17px}#app .wh-hd .vx{position:static}
@@ -4485,19 +4501,46 @@ function drawSum(){const F=isF(),r=DATA().read(),u=T[REALM].u,known=r.filter(x=>
     return `<div class="yr"><div><b>${y}</b><small>${bs.length} ${plural(bs.length,...u)}</small></div>${fav?`<div class="fav"><div><span>Любим${F?"ый":"ая"}</span><em>${esc(fav.t)}</em></div>${cv(fav,34)}</div>`:""}</div>`}).join("");
   const third=F?["жанр","жанра","жанров",gens.length]:["автор","автора","авторов",au.length];
   const qs=F?[]:quotes.slice(-2).reverse(),discN=F?0:BOOKS.filter(b=>Object.keys(discGet(b.id)).length).length;
-  $("#sumMore").innerHTML=`${head}
+  const live=F?"":sumLive(r,sts,got);
+  $("#sumMore").innerHTML=`${live}${head}
    <div class="sc gl s2"><div class="row3"><div><b>${cs.length}</b><span>${plural(cs.length,"страна","страны","стран")}</span></div><div><b>${eras.length}</b><span>${F?plural(eras.length,"десятилетие","десятилетия","десятилетий"):plural(eras.length,"век","века","веков")}</span></div><div><b>${third[3]}</b><span>${plural(third[3],third[0],third[1],third[2])}</span></div></div><div class="chips">${cs.map(([c])=>`<span>${esc(c)}</span>`).join("")}</div></div>
    ${best.length?`<div class="sc gl"><h3>Любимые</h3><div class="mini">${best.map(x=>`<button data-open="${esc(x.id)}">${cv(x,52)}</button>`).join("")}</div></div>`:""}
    ${yrs?`<div class="sc gl"><h3>Год за годом</h3><div class="yrs">${yrs}</div></div>`:""}
-   <div class="sc gl"><div class="hd"><h3>${F?"Паспорт зрителя":"Читательский паспорт"}</h3><span>${got.length} из ${sts.length}</span></div><div class="stamps">${shown.map(st=>`<div class="stp${st.ok?"":" off"}">${stampEm(st)}<b>${esc(st.t)}</b><small>${esc(st.h)}</small>${st.ok?"":`<i>${st.cur} из ${st.need}</i>`}</div>`).join("")}</div></div>
+   ${!F?"":`<div class="sc gl"><div class="hd"><h3>Паспорт зрителя</h3><span>${got.length} из ${sts.length}</span></div><div class="stamps">${shown.map(st=>`<div class="stp${st.ok?"":" off"}">${stampEm(st)}<b>${esc(st.t)}</b><small>${esc(st.h)}</small>${st.ok?"":`<i>${st.cur} из ${st.need}</i>`}</div>`).join("")}</div></div>`}
+   ${F?"":"<!--"}<div class="sc gl"><div class="hd"><h3>${F?"Паспорт зрителя":"Читательский паспорт"}</h3><span>${got.length} из ${sts.length}</span></div><div class="stamps">${shown.map(st=>`<div class="stp${st.ok?"":" off"}">${stampEm(st)}<b>${esc(st.t)}</b><small>${esc(st.h)}</small>${st.ok?"":`<i>${st.cur} из ${st.need}</i>`}</div>`).join("")}</div></div>${F?"":"-->"}
    ${!F?`<div class="sc gl"><div class="hd"><h3>Цитаты</h3><span>${quotes.length}${discN?" · обсуждено книг: "+discN:""}</span></div>${qs.map(q=>`<p class="qt">«${esc(q.text)}»<small>${esc((BOOKS.find(b=>b.id===q.book)||{}).t||"")}</small></p>`).join("")}<div class="qbtns">${quotes.length?`<button class="btn" data-qall>Все цитаты</button>`:""}<button class="btn" data-qadd>Добавить цитату</button></div></div>`:""}
    ${eras.length?`<div class="sc gl"><h3>${F?"По десятилетиям":"По векам"}</h3>${bars(F?eras.sort((a,b)=>parseInt(b[0])-parseInt(a[0])):eras)}</div>`:""}
    ${gens.length?`<div class="sc gl"><h3>${F?"Что смотришь":"Что читаешь"}</h3>${bars(gens)}</div>`:""}
    ${au.length&&au[0][1]>1?`<div class="sc gl"><h3>${esc(au[0][0])}</h3><p style="margin:8px 0 0;color:var(--ink2);font-size:14px">Главный автор: ${au[0][1]} ${plural(au[0][1],...u)} на полке.</p></div>`:""}
    ${links}${accCard()}`}
+// «живая» статистика: цель года, месяц, вкус, ачивки — её смотрят весь год, а «Распаковку» собираем из неё в декабре
+function sumLive(r,sts,got){const now=new Date(),Y=String(now.getFullYear()),M=now.toISOString().slice(0,7),pm=new Date(now.getFullYear(),now.getMonth()-1,1),PM=pm.getFullYear()+"-"+String(pm.getMonth()+1).padStart(2,"0");
+  const goal=LS.get("zal.goal",24),yr=r.filter(x=>String(x.rd||"").startsWith(Y)),mo=r.filter(x=>x.rd===M),pmo=r.filter(x=>x.rd===PM);
+  const day=(now-new Date(now.getFullYear(),0,1))/864e5+1,plan=goal*day/365,diff=Math.round(yr.length-plan),pct=Math.min(1,yr.length/goal);
+  const C=2*Math.PI*52,pace=yr.length>=goal?"Цель выполнена — можно поднять планку":!yr.length?"Отмечай прочитанное — кольцо будет заполняться":diff>0?`Опережаешь план на ${diff} ${plural(diff,"книгу","книги","книг")}`:diff<0?"Чуть отстаёшь, но всё успеешь":"Идёшь точно по графику";
+  const left=Math.max(0,goal-yr.length),monthsLeft=12-now.getMonth(),perM=left?Math.ceil(left/monthsLeft):0;
+  const goalC=`<div class="sc gl lv-goal" data-goal><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="tr"/><circle cx="60" cy="60" r="52" class="pr" style="stroke-dasharray:${C};stroke-dashoffset:${C*(1-pct)}"/></svg>
+    <div class="lv-g"><small>Цель на ${Y}</small><b>${yr.length}<i> из ${goal}</i></b><span>${pace}</span>${left&&yr.length?`<em>чтобы успеть — по ${perM} ${plural(perM,"книге","книги","книг")} в месяц</em>`:""}</div><u>изменить</u></div>`;
+  const pg=a=>a.reduce((s,x)=>s+(x.pg||0),0),mN=mo.length,pN=pmo.length,MON=["январе","феврале","марте","апреле","мае","июне","июле","августе","сентябре","октябре","ноябре","декабре"][now.getMonth()];
+  const monthC=`<div class="sc gl lv-mo"><div class="hd"><h3>В ${MON}</h3><span>${pN||mN?(mN>pN?"больше, чем в прошлом месяце":mN<pN?`в прошлом месяце: ${pN}`:"как в прошлом месяце"):""}</span></div>
+    <div class="row3"><div><b>${mN}</b><span>${plural(mN,"книга","книги","книг")}</span></div><div><b>${pg(mo).toLocaleString("ru-RU")}</b><span>${plural(pg(mo),"страница","страницы","страниц")}</span></div><div><b>${mo.filter(x=>x.r!=null).length?(mo.filter(x=>x.r!=null).reduce((s,x)=>s+x.r/2,0)/mo.filter(x=>x.r!=null).length).toFixed(1).replace(".",","):"—"}<small>★</small></b><span>средняя оценка</span></div></div>
+    ${mo.length?`<div class="mini">${mo.slice(-6).map(x=>`<button data-open="${esc(x.id)}">${cv(x,44)}</button>`).join("")}</div>`:`<p class="lv-note">В этом месяце пока ничего — загляни в ленту, Шуршуня подберёт.</p>`}</div>`;
+  const tg={};let tot=0;r.forEach(x=>{const b=x._b||x;(b.tags||x.tags||[]).forEach(t=>{if(t.startsWith("троп:")||/век|страна/.test(t))return;tg[t]=(tg[t]||0)+1;tot++})});
+  const top=Object.entries(tg).sort((a,b)=>b[1]-a[1]).slice(0,6),mx=top.length?top[0][1]:1;
+  const tasteC=top.length>=2?`<div class="sc gl lv-taste"><div class="hd"><h3>Твой книжный вкус</h3><span>меняется с каждой книгой</span></div>
+    ${top.map(([t,n])=>`<div class="lv-t"><span>${esc(t)}</span><i style="width:${Math.round(n/mx*100)}%"></i><b>${Math.round(n/tot*100)}%</b></div>`).join("")}</div>`:"";
+  const seen=new Set(LS.get("zal.achseen",[])),fresh=got.filter(x=>!seen.has(x.t));if(fresh.length)setTimeout(()=>LS.set("zal.achseen",got.map(x=>x.t)),1500);
+  const next=sts.filter(x=>!x.ok).sort((a,b)=>b.cur/b.need-a.cur/a.need).slice(0,3);
+  const achC=`<div class="sc gl lv-ach"><div class="hd"><h3>Ачивки</h3><span>${got.length} из ${sts.length}</span></div>
+    <div class="stamps">${got.map(st=>`<div class="stp${fresh.includes(st)?" new":""}">${stampEm(st)}<b>${esc(st.t)}</b><small>${esc(st.h)}</small></div>`).join("")}</div>
+    ${next.length?`<h4 class="lv-h4">Скоро откроются</h4>${next.map(st=>`<div class="lv-nx">${stampEm(st)}<div><b>${esc(st.t)}</b><small>${esc(st.h)}</small><i><s style="width:${Math.round(st.cur/st.need*100)}%"></s></i></div><em>${st.cur}/${st.need}</em></div>`).join("")}`:""}</div>`;
+  return goalC+monthC+achC+tasteC}
+function goalOpen(){const g=LS.get("zal.goal",24);vOpen(`<h3 class="vh">Цель на год</h3><p class="sy-note">Сколько книг хочешь прочитать в ${new Date().getFullYear()} году?</p><div class="fgl">${[6,12,24,36,52,100].map(n=>`<button class="fgc${n===g?" on":""}" data-goalset="${n}">${n}</button>`).join("")}</div>`)}
+$("#vshBody").addEventListener("click",e=>{const b=e.target.closest("[data-goalset]");if(!b)return;LS.set("zal.goal",+b.dataset.goalset);tgHaptic("medium");vClose();drawSum()});
 $("#vshBody").addEventListener("click",e=>{const t=e.target;if(t.closest("[data-sy-out2],[data-sy-del2]"))syncClick(t)});
 $("#sumMore").addEventListener("click",e=>{const t=e.target;
   if(syncClick(t))return;
+  if(t.closest("[data-goal]")){goalOpen();return}
   if(t.closest("[data-import]")){importOpen();return}
   if(t.closest("[data-qadd]")){openQuoteForm();return}if(t.closest("[data-qall]")){openSheet(`<h3 class="sheet-h">Цитаты</h3><div class="qlist" id="qlist">${quotesListHTML()}</div>`);return}
   if(t.closest("[data-share]")){openShare();return}if(t.closest("[data-backup]")){openBackup();return}
