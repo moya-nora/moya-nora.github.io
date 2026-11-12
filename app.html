@@ -1483,7 +1483,8 @@ html[data-theme="light"] #app .dock{background:rgba(250,249,246,.86)}
 body:not(.col) #app .bottom::before{opacity:0}
 /* заставка: логотип плашкой, как у Marvel */
 #app .sp-logo{font-family:'Unbounded',-apple-system,system-ui,sans-serif;font-size:0;transform:translateY(-50%) scale(1.6)}
-#app .sp-logo b{display:inline-block;padding:6px 24px 10px;border-radius:14px;background:#A3142B;color:#fff;font-weight:800;font-size:60px;line-height:1;letter-spacing:.06em;box-shadow:0 24px 60px -18px rgba(0,0,0,.8)}
+#app .sp-ic{display:block;width:96px;height:96px;border-radius:22px;margin:0 auto 22px;box-shadow:0 20px 50px -14px rgba(255,190,110,.4)}
+.sp-logo b{display:inline-block;padding:0;border-radius:0;background:none;color:#FFE9C4;box-shadow:none!important;font-weight:800;font-size:60px;line-height:1;letter-spacing:.06em;box-shadow:0 24px 60px -18px rgba(0,0,0,.8)}
 #app .sp-logo small{display:block;margin:0 0 12px;font-family:var(--f);font-size:13px;font-weight:600;letter-spacing:.42em;text-transform:uppercase;color:rgba(255,255,255,.8);padding-left:.42em}
 #app .splash.frozen .sp-logo{transform:translateY(-50%) scale(1)}
 /* описание в ленте — длиннее, обычным шрифтом */
@@ -1795,7 +1796,7 @@ function check(){if(busy||!mine||location.protocol==="file:")return;busy=1;fetch
 setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!document.hidden)check()})})();</script></head>
 <body>
 <div id="app" lang="ru">
-<div class="splash on" id="splash" aria-hidden="true"><div class="sp-reel" id="spReel"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sp-fade"></div><div class="sp-logo"><small>книжная</small><b>НОРА</b></div><div class="sp-flash"></div></div>
+<div class="splash on" id="splash" aria-hidden="true"><div class="sp-reel" id="spReel"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sp-fade"></div><div class="sp-logo"><img class="sp-ic" src="icons/icon-512.png?v=4" alt=""><small>книжная</small><b>НОРА</b></div><div class="sp-flash"></div></div>
 <div class="aurora"></div><div class="grain" aria-hidden="true"></div>
 <div class="amb" id="amb"><img id="ambA" alt=""><img id="ambB" alt=""></div>
 
@@ -4507,7 +4508,7 @@ const TOURS={
   fr:[[".fr-add","Добавь друзей","По логину или нику в Telegram. Ты увидишь их полки, оценки и отзывы, а они — твои. Делиться можно и ссылкой."]],
   sum:[["#bento","Твоя статистика","Сколько прочитано, любимые авторы, страны и века — обновляется само."],
        ["#sumMore .stamps,#sumMore","Читательский паспорт","Собирай штампы: за классику, книги разных стран и прочитанные полки."]]};
-function tour(name){if(VIEW||LS.get("zal.tour."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
+function tour(name){if(VIEW||!LS.get("zal.onb",0)||emptyAll()||LS.get("zal.tour."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
   if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on"))return;LS.set("zal.tour."+name,1);let k=0;
   const ov=document.createElement("div");ov.className="tour";$("#app").appendChild(ov);
   const draw=()=>{const [sel,h,txt]=steps[k],t=document.querySelector(sel);if(!t){next();return}t.scrollIntoView&&t.scrollIntoView({block:"nearest"});
