@@ -1,0 +1,16 @@
+name: Книги ЛитРес
+on:
+  workflow_dispatch:
+  schedule: [{cron: "23 3 10 * *"}]
+permissions: {contents: write}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -u tools/build_litres.py
+      - run: |
+          git config user.email noreply@anthropic.com; git config user.name Claude
+          git add books/litres.json && git commit -qm "Книги ЛитРес: обновление" || exit 0
+          git pull -q --rebase -X theirs && git push
