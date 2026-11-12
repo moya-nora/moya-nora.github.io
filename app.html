@@ -2519,10 +2519,16 @@ const WHISPERS=GUEST?["Шшш… Я как раз перебирал полки.
 const PAL=[["#2F4A6B","#F3E9D2"],["#5B2333","#F4DCCB"],["#3E5641","#F3E8C8"],["#8C6A3A","#FFF6E2"],["#1F3B4D","#E9D7A6"],["#6B2140","#F7D9C9"],["#2C7C8C","#FFF3DA"],["#C2862E","#2A1A0A"],["#4B3A5E","#F1E4CC"],["#7A2E2A","#F6E7CF"],["#E7DED0","#7A2C24"],["#3B3A36","#E9D9B4"],["#9CC9C2","#1D2E2B"],["#5C7A4A","#FBF3DA"],["#B9B6CF","#2A2740"],["#24384F","#E8C66A"]];
 const hsh=s=>{let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return h};
 const norm=s=>String(s).toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9]/g,"");
+// мягкий поиск: «яблоки» находит «…три яблока», одна опечатка в длинном слове прощается
+const stemRu=w=>{w=norm(w);const m=w.replace(/(ами|ями|ого|его|ому|ему|ыми|ими|ов|ев|ей|ий|ый|ой|ая|яя|ое|ее|ые|ие|ах|ях|ам|ям|ом|ем|ую|юю|а|я|ы|и|о|е|у|ю|ь|й)$/,"");return m.length>=3?m:w};
+const lev1=(a,b)=>{if(a===b)return true;const la=a.length,lb=b.length;if(Math.abs(la-lb)>1)return false;let i=0;while(i<la&&i<lb&&a[i]===b[i])i++;
+  return la===lb?a.slice(i+1)===b.slice(i+1):la>lb?a.slice(i+1)===b.slice(i):a.slice(i)===b.slice(i+1)};
+const fzw=(s,x)=>x.startsWith(s)||(s.length>=5&&s[0]===x[0]&&(lev1(s,x.slice(0,s.length))||lev1(s,x.slice(0,s.length+1))||lev1(s,x.slice(0,s.length-1))));
 function bookHits(q,pool,n=6){const v=norm(q);if(v.length<2)return [];const ws=String(q).toLowerCase().replace(/ё/g,"е").split(/[^a-zа-я0-9]+/).filter(Boolean);
   const seen=new Set(),out=[];
   pool.forEach(b=>{if(!b||!b.t)return;const k=norm(b.t)+"|"+norm(b.a||"");if(seen.has(k))return;const t=norm(b.t),a=norm(b.a||""),tw=String(b.t).toLowerCase().replace(/ё/g,"е").split(/[^a-zа-я0-9]+/).filter(Boolean);
     let r=null;if(t.startsWith(v))r=0;else if(ws.every(w=>tw.some(x=>x.startsWith(w))))r=1;else if(t.includes(v))r=2;else if(a&&(a.includes(v)||ws.every(w=>String(b.a).toLowerCase().replace(/ё/g,"е").split(/\s+/).some(x=>x.startsWith(w)))))r=3;
+    else if(v.length>=4){const aw=String(b.a||"").toLowerCase().replace(/ё/g,"е").split(/[^a-zа-я0-9]+/).filter(Boolean),all=tw.concat(aw);if(ws.every(w=>{const st=stemRu(w);return all.some(x=>fzw(st,x))}))r=4}
     if(r!=null){seen.add(k);out.push({b,r})}});
   return out.sort((x,y)=>x.r-y.r||(y.b.q||0)-(x.b.q||0)||x.b.t.length-y.b.t.length).slice(0,n).map(x=>x.b)}
 function suggHTML(hits){return hits.map((b,i)=>`<button type="button" data-s="${i}">${cover(b,26)}<span><b>${esc(b.t)}</b><small>${esc(b.a||"")}${b.y?", "+b.y:""}</small></span></button>`).join("")}
@@ -3957,6 +3963,7 @@ function bigHits(q,n){if(!BIGL.length)return [];const v=norm(q);if(v.length<2)re
   for(let i=0;i<BIGL.length;i++){const k=BIGK[i];if(k.indexOf(ws[0]||v)<0)continue;const b=BIGL[i];if(READ.has(b._n))continue;const [t,a,o]=k.split("\u0001");
     let r=null;if(t.startsWith(v)||(o&&o.startsWith(v)))r=0;else if(t.includes(v)||(o&&o.includes(v)))r=1;else if(ws.length&&ws.every(w=>k.includes(w)))r=ws.some(w=>t.includes(w))?2:3;
     if(r!=null)hits.push({b,r})}
+  if(hits.length<n&&v.length>=4){const st=ws.map(stemRu).filter(x=>x.length>=3),got=new Set(hits.map(h=>h.b));if(st.length)for(let i=0;i<BIGL.length;i++){const k=BIGK[i];if(k.indexOf(st[0])<0||!st.every(w=>k.includes(w)))continue;const b=BIGL[i];if(READ.has(b._n)||got.has(b))continue;hits.push({b,r:4})}}
   return hits.sort((x,y)=>x.r-y.r||y.b.sl-x.b.sl).slice(0,n).map(x=>x.b)}
 // лучшие k без полной сортировки сотен тысяч записей
 function topK(list,k,fs){const best=[];let min=-Infinity;for(const b of list){const s=fs(b);if(s==null||(best.length>=k&&s<=min))continue;
