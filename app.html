@@ -1353,6 +1353,18 @@ html[data-theme="light"] #app .sy-in{background:rgba(20,21,27,.06)}
 html[data-theme="light"] #app .sy-err,html[data-theme="light"] #app .sy-msg{color:#B3261E}
 #app .intro .intro-login{opacity:0;transition:opacity .7s .36s}#app .intro.ready .intro-login{opacity:1}
 #app #vsheet.ontop{z-index:96}
+#app #vsheet.search .sh-bg{display:none}
+#app #vsheet.search .sh.gl{inset:0;max-height:none;border-radius:0;padding:0 18px calc(28px + env(safe-area-inset-bottom,0px));background:#05060A;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;border:0;transform:translateY(18px);opacity:0;transition:transform .32s cubic-bezier(.2,1,.3,1),opacity .22s}
+#app #vsheet.search.on .sh.gl{transform:none;opacity:1}
+#app #vsheet.search .sh.gl::before,#app #vsheet.search .sh.gl::after{display:none}
+#app #vsheet.search .grab{display:none}
+#app .sx-top{position:sticky;top:0;z-index:3;margin:0 -18px;padding:calc(10px + env(safe-area-inset-top,0px)) 18px 6px;background:#05060A;display:flex;align-items:center;gap:8px}
+#app .sx-top .sbar{flex:1 1 0;min-width:0;width:auto;margin:0}
+#app .sx-back{flex:none;width:40px;height:50px;margin-left:-8px;display:grid;place-items:center;color:var(--ink)}
+#app .sx-back svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#app #vsheet.search .sxf{position:sticky;top:calc(66px + env(safe-area-inset-top,0px));z-index:2;margin:0 -18px;padding:6px 18px 8px;background:#05060A}
+html[data-theme="light"] #app #vsheet.search .sh.gl,html[data-theme="light"] #app .sx-top,html[data-theme="light"] #app #vsheet.search .sxf{background:#F3F1EC}
+
 
 /* ---------- обучение в ленте по шагам ---------- */
 #app .co{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:0;transition:opacity .35s}
@@ -4255,7 +4267,7 @@ $("#grid").addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(
 
 // ---------- карточка ----------
 let cardX=null,cardL=null,vDirty=false;
-function vOpen(html,tall){$("#vshBody").innerHTML=html;const sh=$("#vsheet");sh.classList.toggle("tall",!!tall);sh.classList.add("on");$("#vsh").scrollTop=0;tgHaptic("medium");syncBack()}
+function vOpen(html,tall){$("#vshBody").innerHTML=html;const sh=$("#vsheet");sh.classList.remove("search");sh.classList.toggle("tall",!!tall);sh.classList.add("on");$("#vsh").scrollTop=0;tgHaptic("medium");syncBack()}
 function vClose(){$("#vsheet").classList.remove("on","ontop");document.activeElement&&document.activeElement.blur();syncBack();
   if(vDirty){vDirty=false;setTimeout(refresh,520)}}
 $("#vsheet").addEventListener("click",e=>{if(e.target.closest("[data-close],[data-vclose]"))vClose()});
@@ -4358,8 +4370,8 @@ function sxCoach(){const el=$("#sxFeat");if(!el||$("#sxSpot"))return;LS.set("zal
   $("#app").appendChild(sp);requestAnimationFrame(()=>sp.classList.add("on"));tgHaptic("medium");
   sp.onclick=()=>{sp.classList.remove("on");setTimeout(()=>sp.remove(),300);const f=$("#sxFeat");if(f)f.remove()}}
 function openSearch(keep){if(VIEW)return;if(!keep)SX.picks=false;const q0=keep?SX.q:"";SX.k=REALM;SX.q=q0;SX.mode="q";if(!keep)SX.showRead=false;SX.fn=keep?SX.fn:40;cardX=null;tgHaptic();$("#vsheet").classList.remove("filters");
-  vOpen(`<div class="sbar gl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="fq" type="text" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false"><button class="sx-clear" hidden aria-label="Очистить"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-   <div class="sx-tabs" hidden><button data-sk="books">Книги</button></div><div class="sxf" id="sxf">${sxFbar()}</div><div id="fres"></div>`,true);
+  vOpen(`<div class="sx-top"><button class="sx-back" data-vclose aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div class="sbar gl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="fq" type="text" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false"><button class="sx-clear" hidden aria-label="Очистить"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+   <div class="sx-tabs" hidden><button data-sk="books">Книги</button></div><div class="sxf" id="sxf">${sxFbar()}</div><div id="fres"></div>`,true);$("#vsheet").classList.add("search");
   const upd=()=>{document.querySelectorAll("[data-sk]").forEach(b=>b.classList.toggle("on",b.dataset.sk===SX.k));$("#fq").placeholder=SX.k==="films"?"Фильм или сериал":"Название или автор";{const ph=$("[data-photo]");if(ph)ph.hidden=SX.k==="films"}};upd();
   $("#fq").addEventListener("input",sxRun);$("#fq").addEventListener("keydown",e=>{if(e.key==="Enter"){recentAdd($("#fq").value);$("#fq").blur()}});
   $(".sx-clear").onclick=()=>{$("#fq").value="";sxRun();$("#fq").focus()};
@@ -5110,7 +5122,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");if
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody"))return;
   const w=t.closest("[data-wh]");if(w){whereOpen($("#vshBody")._wx,w.dataset.wh);tgHaptic();return}
   const u=t.closest("[data-whu]");if(u){openLink(u.dataset.whu);return}});
-(function(){let y0=null,dy=0;bkcEl.addEventListener("touchstart",e=>{if(e.target.closest("button"))return;y0=e.touches[0].clientY;dy=0},{passive:true});
+(function(){let y0=null,dy=0;bkcEl.addEventListener("touchstart",e=>{y0=null;if(e.target.closest("button"))return;{const d=e.target.closest("#bkcDw");if(d&&(d.scrollTop>0||d.scrollHeight>d.clientHeight+2))return}y0=e.touches[0].clientY;dy=0},{passive:true});
   bkcEl.addEventListener("touchmove",e=>{if(y0==null)return;dy=Math.max(0,e.touches[0].clientY-y0);bkcEl.firstElementChild.style.transform=`translateY(${dy*.6}px)`},{passive:true});
   bkcEl.addEventListener("touchend",()=>{if(y0==null)return;y0=null;bkcEl.firstElementChild.style.transform="";if(dy>110)bkcClose()})})();
 if(TG&&TG.BackButton)try{TG.BackButton.onClick(()=>{if(bkcEl.classList.contains("on")&&!$("#vsheet").classList.contains("on"))bkcClose()})}catch(e){}
