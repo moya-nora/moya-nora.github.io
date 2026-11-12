@@ -5076,7 +5076,7 @@ function bkcFacts(x){const m=META[ikey(x)],fr=frReaders(x),out=[];
 function bkcActs(x,L){const st=BK.has(x);
   if(L==="top"||L==="want"||st==="want"||x.now)return `<button class="btn w" data-bkc="read">Прочитано</button>${x.now?"":`<button class="btn" data-bkc="rm">Убрать из избранного</button>`}`;
   if(st==="read")return `<button class="btn" disabled>Уже на полке «Прочитано»</button>`;
-  return `<button class="btn w" data-bkc="read">Прочитано</button><button class="btn" data-bkc="want">Добавить в избранное</button>`}
+  return `<button class="btn" data-bkc="read">Прочитано</button><button class="btn w" data-bkc="want">Добавить в избранное</button>`}
 function bkcDraw(){const {x,L}=BKC;
   bkcEl.innerHTML=`<div class="bkc-in"><button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button>
    <div class="bkc-cv">${cv(x,190)}<button class="bkc-cov" data-bkc="cov">${IC2.cov}<span>сменить обложку</span></button></div>
