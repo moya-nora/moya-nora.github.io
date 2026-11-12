@@ -1,0 +1,25 @@
+name: Бот — вопросы читателей
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # каждые 10 минут (GitHub может задерживать на несколько минут)
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: bot, cancel-in-progress: false }
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Переслать вопросы и ответы
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          OWNER_USERNAME: ${{ vars.OWNER_USERNAME }}
+        run: python3 -u tools/bot_relay.py
+      - name: Запомнить владелицу
+        run: |
+          git config user.name "Mayorov-Vlad"
+          git config user.email "vladislav15333@gmail.com"
+          git add tools/bot_state.json 2>/dev/null || true
+          git diff --cached --quiet || (git commit -m "Бот: chat id владелицы" && git pull --rebase -X theirs -q && git push)

@@ -5,7 +5,7 @@ if(/tgWebApp/.test(q+h)||sa||/[?&](app|v)=/.test(q)||/=/.test(h)||ss.getItem("no
 <script>/* Скрипт Telegram нужен только внутри Telegram; в обычном браузере он может грузиться десятки секунд и держать чёрный экран */
 (function(){var tg=/tgWebApp/.test(location.hash)||!!window.TelegramWebviewProxy||!!(window.external&&"notify" in window.external);try{tg=tg||!!sessionStorage.getItem("__telegram__initParams")}catch(e){}
 if(tg)document.write('<script src="https://telegram.org/js/telegram-web-app.js"><\/script>')})();</script>
-<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png?v=2"><link rel="icon" href="icons/icon-192.png?v=2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Моя Нора"><meta name="theme-color" content="#05060A"><title>Моя Нора</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png?v=3"><link rel="icon" href="icons/icon-192.png?v=3"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Моя Нора"><meta name="theme-color" content="#05060A"><title>Моя Нора</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>@font-face{font-family:'Literata';font-style:normal;font-weight:200 900;font-display:swap;src:url(fonts/literata-cyrillic-wght-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
@@ -4612,7 +4612,7 @@ $("#feed").addEventListener("click",e=>{const d=e.target.closest("[data-fdrop2]"
 const NS=window.NSYNC||{on:false};
 const agoTxt=t=>{if(!t)return "ещё не было";const m=Math.round((Date.now()-t)/60000);return m<1?"только что":m<60?m+" мин назад":Math.round(m/60)<24?Math.round(m/60)+" ч назад":new Date(t).toLocaleDateString("ru-RU")};
 function accCard(){if(!NS.on||VIEW)return "";const k=NS.key();if(!k&&!NS.email)return "";
-  return `<div class="sy-foot"><button data-sy-out>Выйти</button><span>·</span><a href="https://moya-nora.github.io/privacy.html" target="_blank" rel="noopener">Политика конфиденциальности</a></div>`}
+  return `<div class="sy-foot"><a href="https://t.me/Wonderbookworld_bot" target="_blank" rel="noopener">Поддержка</a><span>·</span><button data-sy-out>Выйти</button><span>·</span><a href="https://moya-nora.github.io/privacy.html" target="_blank" rel="noopener">Политика конфиденциальности</a></div>`}
 function syncCard(){if(!NS.on)return "";const k=NS.key();
   const st=NS.err?`<span class="sy-err">Не синхронизировано: ${esc(NS.err)}</span>`:k?`Синхронизировано ${agoTxt(NS.last)}`:"Пока только на этом устройстве";
   return `<div class="sc gl sy"><h3>Синхронизация</h3><p class="sy-st">${st}</p>
@@ -4822,7 +4822,7 @@ function hsCheck(){if(!hsDue())return;if(standalone()){HS.set("done",1);return}
   if(TG)return;hsShow("web")}
 const hsEl=document.createElement("div");hsEl.className="hsb";$("#app").appendChild(hsEl);
 function hsShow(mode){HS.set("last",Date.now());HS.set("shows",(HS.get("shows")||0)+1);
-  hsEl.innerHTML=`<img src="icons/icon-192.png?v=2" alt=""><div class="hs-tx"><b>Нора на экране «Домой»</b><span>Открывается в одно касание, как обычное приложение.</span></div>
+  hsEl.innerHTML=`<img src="icons/icon-512.png?v=3" alt=""><div class="hs-tx"><b>Нора на экране «Домой»</b><span>Открывается в одно касание, как обычное приложение.</span></div>
    <div class="hs-acts"><button class="btn w" data-hs-go>${mode==="tg"||bip?"Добавить":"Как добавить"}</button><button class="hs-no" data-hs-later>Не сейчас</button></div><button class="hs-x" data-hs-never aria-label="Больше не показывать">Больше не показывать</button>`;
   hsEl.dataset.mode=mode;setTimeout(()=>hsEl.classList.add("on"),50)}
 const hsHide=()=>hsEl.classList.remove("on");
