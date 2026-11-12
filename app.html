@@ -4193,7 +4193,7 @@ function sxDraw(state){const box=$("#fres");if(!box)return;const q=SX.q,F=SX.k==
     h=`<div class="sx-h">Подобрано по фильтрам</div>`+(all.length?L.map(sxRow).join("")+(all.length>L.length?`<button class="sx-moref" data-sxmore>Показать ещё</button>`:""):`<p class="hint">С такими фильтрами ничего не нашлось.${(()=>{const d=bestDrop();return d?` Попробуй убрать «${esc(d[1])}».`:""})()}</p><button class="sx-moref" data-sxfreset>Сбросить фильтры</button>`);
     box.innerHTML=h;box._l=L;return}
   if(norm(q).length<2){const rec=recentGet(),coach=!LS.get("zal.coachsx",0);SX.list=[];
-    h=(coach?`<div class="sx-feat" id="sxFeat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Нора помнит каждую книгу на полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`:"")+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+
+    h=(coach?`<div class="sx-feat" id="sxFeat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Шуршуня помнит каждую книгу на полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`:"")+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+
       `<div class="fwrap inl" id="fwrap">${filtersHTML()}</div>${filtersFoot(true)}`;box.innerHTML=h;box._l=[];if(coach)setTimeout(sxCoach,450);return}
   if(SX.authors.length)h+=`<div class="sx-h">Авторы</div><div class="sx-au">${SX.authors.map((a,i)=>`<button data-au="${i}"><i>${esc(a.name[0]||"?")}</i>${hl(a.name,q)}</button>`).join("")}</div>`;
   const {vis,hid}=sxVis();
@@ -4223,8 +4223,8 @@ function sxCoach(){const el=$("#sxFeat");if(!el||$("#sxSpot"))return;LS.set("zal
   sp.onclick=()=>{sp.classList.remove("on");setTimeout(()=>sp.remove(),300);const f=$("#sxFeat");if(f)f.remove()}}
 function openSearch(keep){if(VIEW)return;if(!keep)SX.picks=false;const q0=keep?SX.q:"";SX.k=REALM;SX.q=q0;SX.mode="q";if(!keep)SX.showRead=false;SX.fn=keep?SX.fn:40;cardX=null;tgHaptic();$("#vsheet").classList.remove("filters");
   vOpen(`<div class="sbar gl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="fq" type="text" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false"><button class="sx-clear" hidden aria-label="Очистить"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-   <div class="sx-tabs" hidden><button data-sk="books">Книги</button></div><div class="sxf" id="sxf">${sxFbar()}</div><div id="fres"></div><button class="sx-photo" data-photo>Добавить книгу по фото обложки или вручную</button>`,true);
-  const upd=()=>{document.querySelectorAll("[data-sk]").forEach(b=>b.classList.toggle("on",b.dataset.sk===SX.k));$("#fq").placeholder=SX.k==="films"?"Фильм или сериал":"Название или автор";$("[data-photo]").hidden=SX.k==="films"};upd();
+   <div class="sx-tabs" hidden><button data-sk="books">Книги</button></div><div class="sxf" id="sxf">${sxFbar()}</div><div id="fres"></div>`,true);
+  const upd=()=>{document.querySelectorAll("[data-sk]").forEach(b=>b.classList.toggle("on",b.dataset.sk===SX.k));$("#fq").placeholder=SX.k==="films"?"Фильм или сериал":"Название или автор";{const ph=$("[data-photo]");if(ph)ph.hidden=SX.k==="films"}};upd();
   $("#fq").addEventListener("input",sxRun);$("#fq").addEventListener("keydown",e=>{if(e.key==="Enter"){recentAdd($("#fq").value);$("#fq").blur()}});
   $(".sx-clear").onclick=()=>{$("#fq").value="";sxRun();$("#fq").focus()};
   document.querySelector(".sx-tabs").onclick=e=>{const b=e.target.closest("[data-sk]");if(!b||b.dataset.sk===SX.k)return;SX.k=b.dataset.sk;upd();sxRun();tgHaptic()};
