@@ -1288,6 +1288,8 @@ html[data-theme="light"] #app .ffoot{background:linear-gradient(transparent,rgba
 #app .sy-mail b{color:var(--ink);font-weight:500}
 #app .sy-acc{display:flex;gap:8px;margin-top:12px}#app .sy-acc button{flex:1;height:40px;border-radius:20px;border:0;background:rgba(255,255,255,.08);color:var(--ink);font:500 14px/1 var(--f,inherit)}
 #app .sy-acc [data-sy-del]{color:#FF8A8A}
+#app .sy-wide{display:flex!important;align-items:center;justify-content:center;width:100%;height:52px;padding:0;border-radius:26px;margin-top:18px;font-size:16px;line-height:1}
+#app .sy-foot a,#app .sy-foot button,#app .au-legal a,#app .au-sw{text-decoration-skip-ink:none}
 #app .sy-foot{display:flex;justify-content:center;align-items:center;gap:10px;margin:22px 0 6px;font-size:13px;color:var(--ink3)}#app .sy-foot button,#app .sy-foot a{background:none;border:0;padding:6px 2px;color:var(--ink3);font:inherit;text-decoration:underline;text-underline-offset:2px}
 #app .sy-priv{display:block;margin-top:12px;font-size:12.5px;color:var(--ink3);text-decoration:underline;text-underline-offset:2px}
 #app .au-legal{margin:12px 4px 0;font-size:12.5px;line-height:1.45;color:var(--ink3);text-align:center}#app .au-legal a{color:var(--ink2);text-decoration:underline;text-underline-offset:2px}
@@ -4612,7 +4614,7 @@ $("#feed").addEventListener("click",e=>{const d=e.target.closest("[data-fdrop2]"
 const NS=window.NSYNC||{on:false};
 const agoTxt=t=>{if(!t)return "ещё не было";const m=Math.round((Date.now()-t)/60000);return m<1?"только что":m<60?m+" мин назад":Math.round(m/60)<24?Math.round(m/60)+" ч назад":new Date(t).toLocaleDateString("ru-RU")};
 function accCard(){if(!NS.on||VIEW)return "";const k=NS.key();if(!k&&!NS.email)return "";
-  return `<div class="sy-foot"><a href="https://t.me/Wonderbookworld_bot" target="_blank" rel="noopener">Поддержка</a><span>·</span><button data-sy-out>Выйти</button><span>·</span><a href="https://moya-nora.github.io/privacy.html" target="_blank" rel="noopener">Политика конфиденциальности</a></div>`}
+  return `<div class="sy-foot"><a href="https://t.me/Wonderbookworld_bot" data-ext target="_blank" rel="noopener">Поддержка</a><span>·</span><button data-sy-out>Выйти</button><span>·</span><a href="https://moya-nora.github.io/privacy.html" data-ext target="_blank" rel="noopener">Конфиденциальность</a></div>`}
 function syncCard(){if(!NS.on)return "";const k=NS.key();
   const st=NS.err?`<span class="sy-err">Не синхронизировано: ${esc(NS.err)}</span>`:k?`Синхронизировано ${agoTxt(NS.last)}`:"Пока только на этом устройстве";
   return `<div class="sc gl sy"><h3>Синхронизация</h3><p class="sy-st">${st}</p>
@@ -4625,8 +4627,8 @@ function syncClick(t){
   if(t.closest("[data-sy-copy]")){const u=NS.link();(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("Ссылка скопирована — не показывай её чужим")).catch(()=>{vOpen(`<h3 class="vh">Ссылка для входа</h3><p class="sy-note">Скопируй и открой в любом браузере. Не показывай её чужим: по ней открываются твои полки.</p><textarea class="sy-in" readonly rows="3">${esc(u)}</textarea>`)});return true}
   if(t.closest("[data-sy-mail]")){mailSheet("link");return true}
   if(t.closest("[data-sy-login]")){loginSheet();return true}
-  if(t.closest("[data-sy-out]")){vOpen(`<h3 class="vh">Выйти из Норы?</h3><p class="sy-note">Полки останутся в облаке — вернёшься, войдя с ${NS.email?`${NS.email.endsWith(LOGIN_DOM)?"логином":"почтой"} <b>${esc(showId(NS.email))}</b>`:"по ссылке для входа — мы скопируем её, сохрани её в заметках"}. С этого устройства всё сотрётся.</p><div class="one"><button class="btn w" data-sy-out2>Выйти</button></div>`);return true}
-  if(t.closest("[data-sy-out2]")){if(!NS.email&&NS.key()){const u=NS.link();try{navigator.clipboard&&navigator.clipboard.writeText(u)}catch(e){}}NS.signOut();location.replace("app.html?v="+Date.now());return true}
+  if(t.closest("[data-sy-out]")){vOpen(`<h3 class="vh">Выйти из Норы?</h3><p class="sy-note">Все полки, оценки и отзывы сохранены в твоём аккаунте. Чтобы вернуться, войди с ${NS.email?`${NS.email.endsWith(LOGIN_DOM)?"логином":"почтой"} <b>${esc(showId(NS.email))}</b>`:"ссылкой для входа — мы скопируем её, сохрани её в заметках"} — на этом или любом другом устройстве.</p><button class="btn w sy-wide" data-sy-out2>Выйти</button>`);return true}
+  if(t.closest("[data-sy-out2]")){if(!NS.email&&NS.key()){const u=NS.link();try{navigator.clipboard&&navigator.clipboard.writeText(u)}catch(e){}}const b=t.closest("[data-sy-out2]");b.disabled=true;b.textContent="Сохраняю…";Promise.resolve(NS.now&&NS.now()).catch(()=>{}).finally(()=>{NS.signOut();location.replace("app.html?v="+Date.now())});return true}
   if(t.closest("[data-sy-del]")){vOpen(`<h3 class="vh">Удалить аккаунт?</h3><p class="sy-note">Сотрутся аккаунт, все полки, оценки, отзывы и профиль для друзей — в облаке и на этом устройстве. Вернуть их будет нельзя.</p><input class="sy-in" id="syDel" placeholder="Напиши «удалить», чтобы подтвердить" autocomplete="off"><p class="sy-msg" id="syDelM"></p><div class="one"><button class="btn w danger" data-sy-del2>Удалить навсегда</button></div>`);return true}
   if(t.closest("[data-sy-del2]")){const i=$("#syDel"),m=$("#syDelM"),b=t.closest("[data-sy-del2]");if(!i||i.value.trim().toLowerCase()!=="удалить"){m.textContent="Напиши «удалить» — так мы поймём, что это не случайно";return true}
     b.disabled=true;b.textContent="Удаляю…";const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;
@@ -4637,7 +4639,7 @@ function mailSheet(mode){const L=mode==="link";
   vOpen(`<h3 class="vh">${L?"Привязать почту":"Войти по почте"}</h3><p class="sy-note">${L?"Придумай пароль — с почтой и паролем Нору можно открыть в любом браузере, даже без Telegram.":"Почта и пароль, привязанные к Норе."}</p>
    <input class="sy-in" id="syE" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="${L?"Придумай логин — или впиши почту":"Логин или почта"}">
    <input class="sy-in" id="syP" type="password" autocomplete="${L?"new-password":"current-password"}" placeholder="${L?"Пароль, от 6 символов":"Пароль"}">
-   <p class="sy-msg" id="syM"></p><div class="one"><button class="btn w" id="syGo">${L?"Привязать":"Войти"}</button></div>${L?`<p class="au-legal">Привязывая почту, ты соглашаешься с <a href="https://moya-nora.github.io/privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}${L?"":`<button class="sy-link" id="syR">Забыли пароль?</button>`}`);
+   <p class="sy-msg" id="syM"></p><div class="one"><button class="btn w" id="syGo">${L?"Привязать":"Войти"}</button></div>${L?`<p class="au-legal">Привязывая почту, ты соглашаешься с <a href="https://moya-nora.github.io/privacy.html" data-ext target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}${L?"":`<button class="sy-link" id="syR">Забыли пароль?</button>`}`);
   $("#vsheet").classList.toggle("ontop",$("#intro").classList.contains("on")||$("#onb").classList.contains("on"));
   const go=$("#syGo"),msg=$("#syM");
   go.onclick=async()=>{let e=$("#syE").value.trim();const p=$("#syP").value;if(!e||!p){msg.textContent="Впиши логин и пароль";return}try{e=authId(e).e}catch(x){msg.textContent=x.message;return}go.disabled=true;go.textContent=L?"Привязываю…":"Вхожу…";msg.textContent="";
@@ -4836,6 +4838,9 @@ hsEl.addEventListener("click",async e=>{const t=e.target;
     :isAndroid?`<li>Открой меню браузера — три точки вверху справа.</li><li>Выбери «Добавить на главный экран» или «Установить приложение».</li><li>Подтверди — иконка Норы появится на рабочем столе.</li>`
     :`<li>Открой меню браузера.</li><li>Выбери «Установить» или «Добавить на главный экран».</li><li>Подтверди — Нора появится среди приложений.</li>`}</ol>`)});
 
+// внешние ссылки: внутри Telegram обычная ссылка не открывается — открываем через Telegram
+document.addEventListener("click",e=>{const a=e.target.closest("a[data-ext]");if(!a)return;const u=a.href;if(!TG)return;e.preventDefault();
+  try{if(/^https:\/\/t\.me\//.test(u)&&TG.openTelegramLink)TG.openTelegramLink(u);else TG.openLink(u)}catch(x){location.href=u}},true);
 // ---------- логин вместо почты ----------
 // Логин превращается во внутренний адрес вида anya@login.moya-nora.github.io: на него ничего не отправляется, почта не нужна.
 const LOGIN_DOM="@login.moya-nora.github.io",LOGIN_RX=/^[a-z0-9][a-z0-9._-]{2,29}$/;
@@ -4855,7 +4860,7 @@ function authDraw(){const up=authMode==="up";
    ${up?`<input class="sy-in" id="auN" autocomplete="given-name" placeholder="Имя — так тебя увидят друзья" value="${esc(LS.get("zal.name",""))}">`:""}
    <input class="sy-in" id="auE" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="${up?"Придумай логин — или впиши почту":"Логин или почта"}" value="${esc(up?"":showId(NS.email))}">
    <input class="sy-in" id="auP" type="password" autocomplete="${up?"new-password":"current-password"}" placeholder="${up?"Пароль, от 6 символов":"Пароль"}">
-   <p class="sy-msg" id="auM"></p><button class="btn w" id="auGo">${up?"Создать аккаунт":"Войти"}</button>${up?`<p class="au-legal">Создавая аккаунт, ты соглашаешься с <a href="https://moya-nora.github.io/privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}
+   <p class="sy-msg" id="auM"></p><button class="btn w" id="auGo">${up?"Создать аккаунт":"Войти"}</button>${up?`<p class="au-legal">Создавая аккаунт, ты соглашаешься с <a href="https://moya-nora.github.io/privacy.html" data-ext target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}
    <button class="au-sw" id="auSw">${up?"Уже есть аккаунт? Войти":"Нет аккаунта? Создать"}</button>${up?"":`<button class="au-sw" id="auR">Забыли пароль?</button>`}</div>`;
   const go=$("#auGo"),msg=$("#auM");
   $("#auSw").onclick=()=>{authMode=up?"in":"up";authDraw();tgHaptic()};
