@@ -182,3 +182,11 @@ a.bk .cv{transition:transform .25s}a.bk:hover .cv{transform:translateY(-4px)}a.b
 .ft .copy{grid-column:1/-1;border-top:1px solid var(--line);padding-top:20px;font-size:13px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 @media (max-width:760px){.ft .in{grid-template-columns:1fr 1fr;padding:30px 22px 24px;border-radius:28px}.ft .in>div:first-child{grid-column:1/-1}}
 @media (max-width:960px){.stage{margin-top:26px}.stage .cv:nth-of-type(1){left:-2%;top:6%}.stage .cv:nth-of-type(2){display:none}.feat p{font-size:14.5px}}
+
+/* Главные преимущества — подсветка */
+.where{gap:10px;margin-top:22px}
+.where span{padding:8px 14px;border-radius:999px;background:rgba(226,182,107,.12);border:1px solid rgba(226,182,107,.45);color:#F3DDB0;font-weight:600}
+.feat{position:relative;border:1px solid rgba(226,182,107,.35);box-shadow:var(--glass-sh),0 0 40px -12px rgba(226,182,107,.35)}
+.feat .ic{background:rgba(226,182,107,.16);box-shadow:inset 0 0 0 1px rgba(226,182,107,.55),0 0 24px -4px rgba(226,182,107,.5)}
+.feat .ic svg{stroke:var(--gold)}
+.feat h3{color:#F3DDB0}
