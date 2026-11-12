@@ -2971,9 +2971,9 @@ function openBook(id){
   openSheet(`<div class="bk">${cover(b,112)}<div class="bk-meta"><h3>${esc(b.t)}</h3><div class="au">${esc(b.a)}</div><div class="chips"><span class="chip">${esc(b.c)}</span>${b.y?`<span class="chip">${b.y}</span>`:""}<span class="chip">${GEN[b.g]||"Книга"}</span></div>${VIEW?"":`<button class="edit-link" id="editBtn"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Изменить</button>`}</div></div>
    ${b.r!=null?`<div class="rating"><b>${Math.round(b.r/2)}</b><span>/ 5</span></div>`:`<div class="rating"><span>Без оценки</span></div>`}
    ${b.n&&!VIEW?`<div class="note">${esc(b.n)}</div>`:""}
-   ${!VIEW&&(DISC[b.id]||b.user)?`<button class="btn btn-disc" id="discBtn">${discLabel(b.id)}</button>`:""}
    
-   ${VIEW?"":quotesBlock(b)}
+   
+   
    ${VIEW?"":`<button class="btn btn-ghost btn-wide" id="simBtn">Похожие книги</button>`}
    ${b.f.length?`<button class="btn btn-main" id="factsBtn">Интересные факты · ${b.f.length}</button>`:(b.user||VIEW?"":`<p class="status">Автор забылся — и Шуршуня тоже не знает, чья это книга. Если вспомнится, книга переедет на полку своей страны.</p>`)}`);
   const eb=$("#editBtn");if(eb)eb.onclick=()=>openEdit(b);const sb=$("#simBtn");if(sb)sb.onclick=()=>openSimilar(b);const fb=$("#factsBtn");if(fb)fb.onclick=()=>openStories(b);const db=$("#discBtn");if(db)db.onclick=()=>{closeSheet();openDisc(b)};const cb=$("#cmpBtn");if(cb)cb.onclick=()=>openCompare(b);const qb=$("#qAddBook");if(qb)qb.onclick=()=>openQuoteForm(b.id);
