@@ -154,7 +154,7 @@ def page(path, title, desc, body, full_title=None):
 <title>{esc(full_title or title + " — Нора")}</title><meta name="description" content="{esc(desc[:200])}"><link rel="canonical" href="{canon}">
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc[:200])}"><meta property="og:url" content="{canon}">
 <meta property="og:image" content="{SITE}/icons/icon-512.png"><meta property="og:type" content="website"><meta property="og:site_name" content="Нора">{HEAD}</head><body>
-{HDR}<main>{body}</main>{FOOT}{MINE}</body></html>"""
+{HDR}<main>{body}</main>{FOOT}{MINE}<!-- Cloudflare Web Analytics --><script defer type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{{"token": "572d5eebd0c442bda32887c9f80bb139"}}'></script><!-- End Cloudflare Web Analytics --></body></html>"""
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
     open(full, "w", encoding="utf-8").write(doc)
@@ -246,7 +246,7 @@ POLICY = [
      "и чтобы мы могли улучшать сервис по обезличенной статистике посещений."),
     ("Кто ещё участвует", "<ul><li><b>Google Firebase</b> — хранит аккаунты и полки. Серверы находятся за пределами России, поэтому, создавая аккаунт, ты соглашаешься на трансграничную передачу этих данных.</li>"
      "<li><b>Telegram</b> — если пользуешься мини-приложением.</li><li><b>Фантлаб, Википедия и Викиданные</b> — из них приходят описания и обложки; им уходит только поисковый запрос с названием книги.</li>"
-     "<li><b>GitHub Pages</b> — хостинг сайта.</li><li><b>Яндекс Метрика</b> — обезличенная статистика посещений, если она подключена.</li></ul>"),
+     "<li><b>GitHub Pages</b> — хостинг сайта.</li><li><b>Cloudflare Web Analytics</b> — обезличенная статистика посещений: без cookies и без слежки за тобой на других сайтах.</li></ul>"),
     ("Как управлять данными", "Всё, что есть на полках, можно изменить или удалить в приложении. Кнопка «Выйти» внизу раздела «Статистика» стирает данные с этого устройства. "
      "Чтобы удалить аккаунт целиком — вместе с полками и профилем в облаке — или отозвать согласие, напиши нам (контакт ниже): удалим в течение 30 дней."),
     ("Сколько храним", "Пока у тебя есть аккаунт. После удаления данные стираются из облака сразу; резервные копии Google хранит не дольше 30 дней."),
