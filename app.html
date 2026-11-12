@@ -1645,6 +1645,16 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .fly .acts3{gap:22px;margin-top:22px}
 #app .fly .rb{width:68px;height:68px}#app .fly .rb svg{width:27px;height:27px}
 #app .fly .rb.sm{width:50px;height:50px}#app .fly .rb.sm svg{width:20px;height:20px}
+#app .wh-t{position:fixed;left:12px;right:12px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:45;max-width:440px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 10px 10px 12px;border:0;border-radius:24px;text-align:left;color:#fff;
+  background:linear-gradient(180deg,rgba(38,38,50,.94),rgba(16,16,24,.97));-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.08),0 20px 40px -12px rgba(0,0,0,.7);
+  transform:translateY(30px);opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.2,1.2,.4,1),opacity .3s}
+#app .wh-t.on{transform:none;opacity:1;pointer-events:auto}
+#app .wh-ok{flex:none;width:36px;height:36px;border-radius:50%;background:#F5F5F7;display:grid;place-items:center}
+#app .wh-ok svg{width:18px;height:18px;fill:none;stroke:#0B0B10;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+#app .wh-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+#app .wh-tx b{font-size:14px;font-weight:600}
+#app .wh-tx small{font-size:12.5px;line-height:1.3;color:rgba(255,255,255,.6)}
+#app .wh-go{flex:none;height:36px;padding:0 14px;border-radius:18px;background:rgba(243,209,154,.16);color:#F3D19A;font-size:13.5px;font-weight:600;display:flex;align-items:center}
 #app .whw{display:flex;justify-content:center;margin-top:20px}
 #app .whb{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 18px 0 15px;border-radius:19px;border:0;background:rgba(255,255,255,.12);color:#fff;font:600 14px/1 var(--f);box-shadow:inset 0 .5px 0 rgba(255,255,255,.25)}
 #app .whb svg{display:block;flex:none;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;margin-top:-1px}
@@ -4082,7 +4092,7 @@ function filmFeed(){if(!FILMS)return [];const res=filmList();let i=0;
   feedMore=()=>{const chunk=res.slice(i,i+25);i+=25;return chunk.map(f=>fItem(f,"feed"))};return feedMore()}
 function slideHTML(x,j){const meta=x.a||"";
   return `<article class="slide" data-j="${j}"><div class="wrap"><div class="fly gl"><div class="bg"></div><button class="shr press" data-shareb="${j}" aria-label="Переслать">${SHR}</button><div class="lean r"><i>${IC.v}</i><b>Добавить</b></div><div class="lean l"><i>${IC.x}</i><b>Не предлагать</b></div><div class="obj">${cv(x,220)}</div><div class="info"><h2>${esc(x.t)}</h2><div class="meta">${esc(meta)}</div>${x.why?`<div class="why">Шуршуня: ${esc(x.why[0].toLowerCase()+x.why.slice(1))}</div>`:""}<p class="ds">${esc(wholeSent(descOf(x),170))}</p>
-  <div class="acts3"><button class="rb gl press" data-skip="${j}" aria-label="Не предлагать">${IC.x}</button><button class="rb sm gl press" data-undo aria-label="Отменить действие">${IC.u}</button><button class="rb w press" data-want="${j}" aria-label="Добавить">${IC.v}</button></div><div class="whw"><button class="whb press" data-whereb="${j}"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg><span>Где прочитать</span></button></div></div></div></div></article>`}
+  <div class="acts3"><button class="rb gl press" data-skip="${j}" aria-label="Не предлагать">${IC.x}</button><button class="rb sm gl press" data-undo aria-label="Отменить действие">${IC.u}</button><button class="rb w press" data-want="${j}" aria-label="Добавить">${IC.v}</button></div></div></div></div></article>`}
 function slideDesc(el,x){const upd=()=>{const p=el.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(x),170)};upd();wantDesc(x,upd);const nx=el.nextElementSibling;if(nx&&nx.dataset.j!=null){const y=slides[+nx.dataset.j];if(y)wantDesc(y,()=>{const p=nx.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(y),170)})}}
 function bgFill(sl,x){const u=imgOf(x),bg=sl.querySelector(".bg");if(u&&bg&&!bg.firstChild)bg.innerHTML=`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer">`}
 function endInner(){return `<h2>Пока всё</h2><p>Шуршуня подберёт новое, как только ты что-нибудь отметишь. А пока можно поискать через лупу.</p><div class="acts"><button class="btn w" data-find>Найти через поиск</button></div>`}
@@ -4120,10 +4130,15 @@ function onFeedScroll(){const f=$("#feed");if(!f.clientHeight)return;const j=Mat
   document.querySelectorAll("#dots i").forEach((d,k)=>d.classList.toggle("on",k===j));if(f.children.length-j<5)moreSlides();tgHaptic("soft")}
 $("#feed").addEventListener("scroll",onFeedScroll,{passive:true});
 const slideEl=j=>$(`#feed .slide[data-j="${j}"]`);
-function decide(j,kind){const x=slides[j];if(!x||x._done)return;if(CO&&CO.step<3&&kind!==(CO.step===1?"want":"skip")){const sl=slideEl(j),fl=sl&&sl.querySelector(".fly");if(fl){leanTo(fl,0);fl.style.transition="transform .4s cubic-bezier(.2,1.3,.4,1)";fl.style.transform="";fl.style.opacity=""}tgHaptic("rigid");return}x._done=kind;const D=DATA();if(kind==="want"){D.addWant(x);learn(x,2)}else{D.skip(x);learn(x,-1.6)}
+// после «Хочу прочитать» в ленте — подсказка, где эту книгу прочитать
+function whereHint(x){let el=$("#whT");if(!el){el=document.createElement("button");el.id="whT";el.className="wh-t";$("#app").appendChild(el);
+    el.addEventListener("click",()=>{el.classList.remove("on");const y=el._x;if(y)whereOpen(y);tgHaptic()})}
+  el._x=x;el.innerHTML=`<span class="wh-ok">${IC.v}</span><span class="wh-tx"><b>В «Хочу прочитать»</b><small>${esc(x.t)}</small></span><span class="wh-go">Где прочитать</span>`;
+  el.classList.add("on");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("on"),5000)}
+function decide(j,kind){const x=slides[j];if(!x||x._done)return;if(CO&&CO.step<3&&kind!==(CO.step===1?"want":"skip")){const sl=slideEl(j),fl=sl&&sl.querySelector(".fly");if(fl){leanTo(fl,0);fl.style.transition="transform .4s cubic-bezier(.2,1.3,.4,1)";fl.style.transform="";fl.style.opacity=""}tgHaptic("rigid");return}x._done=kind;const D=DATA();if(kind==="want"){D.addWant(x);learn(x,2);if(!CO&&!isF())setTimeout(()=>whereHint(x),450)}else{D.skip(x);learn(x,-1.6)}
   acts.push({j,kind,F:!!x._f});if(acts.length>3)acts.shift();const sl=slideEl(j),fl=sl.querySelector(".fly");
   fl.style.transition="transform .38s cubic-bezier(.4,0,.7,1),opacity .38s";fl.style.transform=`translateX(${kind==="want"?125:-125}%) rotate(${kind==="want"?10:-10}deg)`;fl.style.opacity=0;
-  toast(kind==="want"?"Добавлено в избранное":"Больше не предложу");tgHaptic("medium");
+  if(!(kind==="want"&&!CO&&!isF()))toast(kind==="want"?"Добавлено в избранное":"Больше не предложу");tgHaptic("medium");
   setTimeout(()=>{sl.remove();cur=-1;onFeedScroll();drawDots();updUndo();if(CO)coachNext()},390)}
 function undo(){if(!acts.length)return;if(CO&&CO.step!==3)return;const {j,kind,F}=acts.pop(),x=slides[j],D=F?FM:BK;if(kind==="want")D.rmWant(x);else D.unskip(x);delete x._done;
   const f=$("#feed"),next=[...f.children].find(el=>el.dataset.end!=null||+el.dataset.j>j);next.insertAdjacentHTML("beforebegin",slideHTML(x,j));
