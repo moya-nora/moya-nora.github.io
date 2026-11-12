@@ -26,8 +26,8 @@ async def main():
         try:
           with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"nora/1.0"}),timeout=180) as r: open(f,"wb").write(r.read())
           if os.path.getsize(f)>20000: break
-        except Exception as e: print(t,e); time.sleep(10)
-      print(t,os.path.getsize(f) if os.path.exists(f) else 0,flush=True)
+        except Exception as e: print(t,e); time.sleep(60)
+      print(t,os.path.getsize(f) if os.path.exists(f) else 0,flush=True); time.sleep(40)
       q={"img":f"../out/ai/raw{i}.jpg","t":t,"a":a}
       await pg.goto(f"http://localhost:8766/tools/ai_cover.html?i={i}#"+urllib.parse.quote(json.dumps(q)));await pg.wait_for_timeout(1200)
       await pg.screenshot(path=f"out/ai/cover{i}.png")
