@@ -1,0 +1,17 @@
+name: preview-shots
+on: workflow_dispatch
+permissions: {contents: write}
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install playwright pillow && python -m playwright install --with-deps chromium
+      - run: (python -m http.server 8766 >/dev/null 2>&1 &) && sleep 2 && python tools/preview_shots.py
+      - run: |
+          git config user.email noreply@anthropic.com; git config user.name Claude
+          git checkout -B preview-shots
+          git add -f out/*.png && git commit -qm "preview shots" && git push -f origin preview-shots
