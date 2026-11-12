@@ -1262,6 +1262,14 @@ body.viewing #app .fbar{display:none}
 #app .ffoot{position:sticky;bottom:-20px;margin:0 -18px -20px;padding:12px 18px calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;background:linear-gradient(transparent,rgba(16,16,24,.96) 30%)}
 #app .ffoot .btn{flex:1}
 #app .ffoot .btn.w{flex:2}
+#app .tour{position:fixed;inset:0;z-index:190;opacity:0;transition:opacity .3s;-webkit-tap-highlight-color:transparent}
+#app .tour.on{opacity:1}
+#app .tour-hole{position:fixed;box-shadow:0 0 0 9999px rgba(4,4,8,.78),0 0 0 2px rgba(243,209,154,.7),0 0 40px 6px rgba(243,209,154,.35);transition:all .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+#app .tour-tip{position:fixed;left:16px;right:16px;max-width:420px;margin:0 auto;border-radius:26px;padding:18px 20px 16px;background:linear-gradient(180deg,rgba(38,38,50,.96),rgba(16,16,24,.98));box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.08),0 20px 50px -10px rgba(0,0,0,.8)}
+#app .tour-tip b{display:block;font-family:var(--serif);font-size:26px;font-weight:600;line-height:1.1;color:#fff;margin-bottom:6px}
+#app .tour-tip p{margin:0;font-size:15px;line-height:1.45;color:rgba(255,255,255,.75)}
+#app .tour-ft{display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-size:13px;color:rgba(255,255,255,.5)}
+#app .tour-ft .btn{flex:none;width:auto;min-width:130px;height:42px;padding:0 22px;border-radius:21px;font-size:15px}
 #app .vx{position:absolute;right:16px;top:14px;z-index:3;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.1);display:grid;place-items:center;padding:0}
 #app .vx svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
 #app #vshBody:has(>.vx){position:relative}
@@ -4071,7 +4079,7 @@ let fi=0,colF="want",flowHold=0;
 const pickCol=()=>{colF=VIEW?"read":DATA().want().length?"want":"read"};
 function recList(){if(isF()){if(!FILMS)return [];if(!recList._f||recList._v!==FSEEN.length+FWANT.length+FSKIP.size){recList._f=tevoFilter().filter(f=>!FSKIP.has(f.id)).slice(0,40).map(f=>fItem(f,"rec"));recList._v=FSEEN.length+FWANT.length+FSKIP.size}return recList._f}
   const key=BOOKS.length+"|"+want.length+"|"+dismissed.size;if(recList._k!==key){recList._b=rankFor(tasteQ()).slice(0,40).map(b=>{const x=bItem(b,"rec");x.why=whyBook(b);return x});recList._k=key}return recList._b}
-const flowList=()=>VIEW?(DATA().want().length?DATA().want():DATA().read().filter(x=>x.r!=null).sort((a,b)=>b.r-a.r).slice(0,20)):colF==="want"?DATA().want():recList();
+const flowList=()=>VIEW?(DATA().want().length?DATA().want():DATA().read().filter(x=>x.r!=null).sort((a,b)=>b.r-a.r).slice(0,20)):recList();
 const gridList=()=>colF==="want"?DATA().want():DATA().read();
 function drawFlow(){const L=flowList();fi=L.length?((fi%L.length)+L.length)%L.length:0;
   $("#flow").innerHTML=L.slice(0,60).map(x=>cv(x,176)).join("");$("#flow").classList.toggle("none",!L.length);$("#flowCap").classList.toggle("none",!L.length);[...$("#flow").children].forEach((c,i)=>{c.dataset.i=i});layoutFlow(true)}
@@ -4082,7 +4090,7 @@ function layoutFlow(first){const L=flowList().slice(0,60),n=L.length;if($("#flow
     else{c.style.transform=tf;c.style.opacity=op}
     c.style.zIndex=50-a;c.style.pointerEvents=a>2?"none":"";c.style.filter=o===0?"none":`brightness(${1-a*.25})`;c.classList.toggle("mid",o===0)});
   const x=L[fi],cap=$("#flowCap");
-  cap.innerHTML=x?`${!VIEW&&colF!=="want"&&!x.now?`<span class="kick">Шуршуня советует</span>`:""}${x.now?`<span class="fm" style="margin:0 0 6px">Сейчас читаю</span>`:""}<b>${esc(x.t)}</b><span class="fm">${esc(x.a||"")}</span><p>${esc(hookOf(x))}</p>`
+  cap.innerHTML=x?`${!VIEW&&!x.now?`<span class="kick">Шуршуня советует</span>`:""}${x.now?`<span class="fm" style="margin:0 0 6px">Сейчас читаю</span>`:""}<b>${esc(x.t)}</b><span class="fm">${esc(x.a||"")}</span><p>${esc(hookOf(x))}</p>`
     :`<span class="fm">${VIEW?"Здесь пусто.":colF==="want"?"Здесь пока пусто — добавь что-нибудь из ленты или через лупу внизу.":isF()&&!FILMS?"Загружаю киноархив…":"Здесь пока пусто."}</span>`;
   if(!first){cap.classList.remove("sw");void cap.offsetWidth;cap.classList.add("sw")}
   if(x&&!x.ds)wantDesc(x,()=>{if(flowList()[fi]===x){const p=cap.querySelector("p");if(p)p.textContent=hookOf(x)}});
@@ -4096,15 +4104,15 @@ function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((f
   el.addEventListener("touchmove",e=>{const t=e.touches[0];mv(t.clientX,t.clientY,e)},{passive:false});
   el.addEventListener("touchend",()=>{x0=null});
   el.addEventListener("mousedown",e=>down(e.clientX,e.clientY));addEventListener("mousemove",e=>mv(e.clientX,e.clientY,null));addEventListener("mouseup",()=>{x0=null});
-  el.addEventListener("click",e=>{const c=e.target.closest(".cv");if(c&&!moved){flowHold=Date.now();const i=+c.dataset.i;if(i!==fi){fi=i;layoutFlow()}openItem(flowList()[i],colF==="want"?"top":"rec")}})})();
-(function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,colF==="want"?5600:3600)})();
+  el.addEventListener("click",e=>{const c=e.target.closest(".cv");if(c&&!moved){flowHold=Date.now();const i=+c.dataset.i;if(i!==fi){fi=i;layoutFlow()}openItem(flowList()[i],"rec")}})})();
+(function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,3600)})();
 function drawCol(){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
   $("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read]]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
   const G=gridList();$("#grid").innerHTML=G.map((x,i)=>`<button data-g="${i}">${cv(x,110)}<small>${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
   drawFlow();drawViews()}
 $("#colScroll").addEventListener("scroll",()=>{document.body.classList.toggle("topoff",$("#colScroll").scrollTop>16)},{passive:true});
-$("#pills").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){colF=b.dataset.f;fi=0;drawCol();tgHaptic()}});
+$("#pills").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){colF=b.dataset.f;drawCol();tgHaptic()}});
 // ---------- виды полки: обложки, полки по странам, лента веков, карта, авторы (из первой Норы) ----------
 const cvw=document.createElement("div");cvw.className="cviews";cvw.id="cviews";$("#pills").after(cvw);
 const oldv=document.createElement("div");oldv.className="L oldv";oldv.id="oldv";$("#grid").after(oldv);
@@ -4401,7 +4409,28 @@ function moveLens(){const b=document.querySelector(".dock button.on"),l=$("#lens
 function show(s){SCREEN=s;try{localStorage.setItem("zal.sync.scr",JSON.stringify({s,t:Date.now()}))}catch(e){}document.body.classList.toggle("col",s==="col");document.body.classList.toggle("sum",s==="sum");const was=document.querySelector(".dock button.on");
   document.querySelectorAll("#app .screen").forEach(x=>x.classList.toggle("on",x.id==="s-"+s));document.querySelectorAll(".dock button").forEach(b=>b.classList.toggle("on",b.dataset.s===s));tgHaptic();
   if(was&&was.dataset.s!==s){const l=$("#lens");l.classList.add("go");setTimeout(()=>l.classList.remove("go"),260)}moveLens();
-  if(s==="feed"){cur=-1;onFeedScroll();if(CO)setTimeout(coDraw,300);else coach()}else if(CO)coEl.classList.remove("on");if(s==="col")drawCol();if(s==="fr"){drawFr();frLoad()}if(s==="sum"){drawSum();const x=DATA().read()[0];ambFor(x)}}
+  if(s==="feed"){cur=-1;onFeedScroll();if(CO)setTimeout(coDraw,300);else coach()}else if(CO)coEl.classList.remove("on");if(s==="col")drawCol();if(s==="fr"){drawFr();frLoad()}if(s==="sum"){drawSum();const x=DATA().read()[0];ambFor(x)}if(s!=="feed")setTimeout(()=>tour(s),900)}
+// ---------- знакомство с разделами: при первом заходе подсвечиваем главное ----------
+const TOURS={
+  col:[["#flow","Шуршуня советует","Листай обложки — это подборка под твой вкус. Нажми на книгу, чтобы узнать о ней больше."],
+       ["#pills","Твои полки","«Хочу прочитать» и «Прочитано» — всё, что ты отметила, живёт здесь."],
+       ["#addB","Поставить книгу на полку","Сфотографируй шкаф — Нора сама узнает книги. Или перенеси прочитанное из Литрес и Яндекс Книг."],
+       ['.dock [data-s="feed"]',"Лента находок","Свайпай книги: «читала», «хочу», «не моё» — так Шуршуня быстрее поймёт твой вкус."],
+       ["#srchB","Поиск и фильтры","Ищи по названию или выбирай настроение, жанр и тропы."]],
+  fr:[[".fr-add","Полки друзей","Добавь подруг по логину или нику в Telegram — увидишь, что они читают, и их отзывы."]],
+  sum:[["#bento","Твоя статистика","Сколько прочитано, любимые авторы, страны и века — обновляется само."],
+       ["#sumMore .stamps,#sumMore","Читательский паспорт","Собирай штампы: за классику, книги разных стран и прочитанные полки."]]};
+function tour(name){if(VIEW||LS.get("zal.tour."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
+  if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on"))return;LS.set("zal.tour."+name,1);let k=0;
+  const ov=document.createElement("div");ov.className="tour";$("#app").appendChild(ov);
+  const draw=()=>{const [sel,h,txt]=steps[k],t=document.querySelector(sel);if(!t){next();return}t.scrollIntoView&&t.scrollIntoView({block:"nearest"});
+    const r=t.getBoundingClientRect(),pad=10,vh=innerHeight,below=r.top+r.height/2<vh*.55;
+    ov.innerHTML=`<div class="tour-hole" style="left:${r.left-pad}px;top:${r.top-pad}px;width:${r.width+pad*2}px;height:${r.height+pad*2}px;border-radius:${Math.min(28,(r.height+pad*2)/2)}px"></div>
+      <div class="tour-tip" style="${below?`top:${Math.min(vh-230,r.bottom+pad+16)}px`:`bottom:${Math.max(16,vh-r.top+pad+16)}px`}"><b>${esc(h)}</b><p>${esc(txt)}</p>
+      <div class="tour-ft"><span>${steps.length>1?(k+1)+" из "+steps.length:""}</span><button class="btn w">${k<steps.length-1?"Дальше":"Понятно"}</button></div></div>`;
+    requestAnimationFrame(()=>ov.classList.add("on"))};
+  const next=()=>{tgHaptic();k++;if(k>=steps.length){ov.classList.remove("on");setTimeout(()=>ov.remove(),300);return}draw()};
+  ov.addEventListener("click",next);draw()}
 function refresh(){if(SCREEN==="col")drawCol();else if(SCREEN==="sum")drawSum();else if(SCREEN==="feed"){const keep=$("#feed").scrollTop;if(!slides.length)buildFeed()}}
 document.querySelector(".dock").addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(b)show(b.dataset.s)});
 function setRealmUI(r){REALM=r;LS.set("zal.realm",r);document.body.classList.toggle("films",r==="films");document.querySelectorAll("#app [data-realm]").forEach(x=>x.classList.toggle("on",x.dataset.realm===r))}
