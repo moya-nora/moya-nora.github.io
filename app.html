@@ -1973,8 +1973,8 @@ else setTimeout(()=>{booting=false},1500);
 // ---- вход по почте ----
 async function idt(path,body){const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:${path}?key=${FB.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json","X-Firebase-Locale":"ru"},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));if(!r.ok){const m=String((j.error&&j.error.message)||"").split(" ")[0];
-    throw new Error({EMAIL_EXISTS:"Такой логин или почта уже заняты — придумай другой или войди",INVALID_LOGIN_CREDENTIALS:"Неверный логин или пароль",INVALID_PASSWORD:"Неверный логин или пароль",EMAIL_NOT_FOUND:"Такого логина нет",
-      WEAK_PASSWORD:"Пароль слишком простой — нужно хотя бы 6 символов",INVALID_EMAIL:"Похоже, в логине или почте опечатка",MISSING_PASSWORD:"Введи пароль",TOO_MANY_ATTEMPTS_TRY_LATER:"Слишком много попыток, попробуй позже"}[m]||"Не получилось: облако недоступно")}return j}
+    throw new Error({EMAIL_EXISTS:"Эта почта уже занята — войди с её паролем",INVALID_LOGIN_CREDENTIALS:"Неверная почта или пароль",INVALID_PASSWORD:"Неверная почта или пароль",EMAIL_NOT_FOUND:"С такой почтой Норы нет",
+      WEAK_PASSWORD:"Пароль слишком простой — нужно хотя бы 6 символов",INVALID_EMAIL:"Похоже, в почте опечатка",MISSING_PASSWORD:"Введи пароль",TOO_MANY_ATTEMPTS_TRY_LATER:"Слишком много попыток, попробуй позже"}[m]||"Не получилось: облако недоступно")}return j}
 async function userDoc(j,method,k){const r=await fetch(base()+"users/"+j.localId,{method,headers:{"Content-Type":"application/json",Authorization:"Bearer "+j.idToken},body:method==="PATCH"?JSON.stringify({fields:{k:{stringValue:k}}}):undefined});
   if(method==="GET"){if(r.status===404)return null;if(!r.ok)throw new Error("Не получилось: облако недоступно");const x=await r.json();return x.fields&&x.fields.k&&x.fields.k.stringValue||null}
   if(!r.ok)throw new Error("Не получилось сохранить вход")}
@@ -4532,7 +4532,7 @@ const TOURS={
        ['.dock [data-s="feed"]',"Лента находок","Свайпай книги: «читала», «хочу», «не моё» — так Шуршуня быстрее поймёт твой вкус."],
        ["#srchB","Поиск и фильтры","Ищи по названию или выбирай настроение, жанр и тропы."],
        ['.dock [data-s="fr"]',"Друзья","Добавляй подруг — смотри их полки и отзывы и делись своими."]],
-  fr:[[".fr-add","Добавь друзей","По логину или нику в Telegram. Ты увидишь их полки, оценки и отзывы, а они — твои. Делиться можно и ссылкой."]],
+  fr:[[".fr-add","Добавь друзей","По почте или нику в Telegram. Ты увидишь их полки, оценки и отзывы, а они — твои. Делиться можно и ссылкой."]],
   sum:[["#bento","Твоя статистика","Сколько прочитано, любимые авторы, страны и века — обновляется само."],
        ["#sumMore .stamps,#sumMore","Читательский паспорт","Собирай штампы: за классику, книги разных стран и прочитанные полки."]]};
 function tour(name){if(VIEW||!LS.get("zal.onb",0)||emptyAll()||LS.get("zal.tour."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
@@ -4782,13 +4782,13 @@ function syncClick(t){
   return false}
 function mailSheet(mode){const L=mode==="link";
   vOpen(`<h3 class="vh">${L?"Привязать почту":"Войти по почте"}</h3><p class="sy-note">${L?"Придумай пароль — с почтой и паролем Нору можно открыть в любом браузере, даже без Telegram.":"Почта и пароль, привязанные к Норе."}</p>
-   <input class="sy-in" id="syE" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="${L?"Придумай логин — или впиши почту":"Логин или почта"}">
+   <input class="sy-in" id="syE" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" type="email" inputmode="email" placeholder="Почта">
    <input class="sy-in" id="syP" type="password" autocomplete="${L?"new-password":"current-password"}" placeholder="${L?"Пароль, от 6 символов":"Пароль"}">
    <p class="sy-msg" id="syM"></p><div class="one"><button class="btn w" id="syGo">${L?"Привязать":"Войти"}</button></div>${L?`<p class="au-legal">Привязывая почту, ты соглашаешься с <a href="https://moya-nora.github.io/privacy.html" data-ext target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}${L?"":`<button class="sy-link" id="syR">Забыли пароль?</button>`}`);
   $("#vsheet").classList.toggle("ontop",$("#intro").classList.contains("on")||$("#onb").classList.contains("on"));
   const go=$("#syGo"),msg=$("#syM");
-  go.onclick=async()=>{let e=$("#syE").value.trim();const p=$("#syP").value;if(!e||!p){msg.textContent="Впиши логин и пароль";return}try{e=authId(e).e}catch(x){msg.textContent=x.message;return}go.disabled=true;go.textContent=L?"Привязываю…":"Вхожу…";msg.textContent="";
-    try{if(L){try{await NS.signUp(e,p)}catch(x){if(/уже заняты/.test(x.message)){try{await NS.signIn(e,p)}catch(y){throw new Error(e.endsWith(LOGIN_DOM)?"Такой логин уже занят — придумай другой":"На эту почту уже есть Нора — войди с её паролем")}}else throw x}}else await NS.signIn(e,p);
+  go.onclick=async()=>{let e=$("#syE").value.trim();const p=$("#syP").value;if(!e||!p){msg.textContent="Впиши почту и пароль";return}try{e=authId(e,L).e}catch(x){msg.textContent=x.message;return}go.disabled=true;go.textContent=L?"Привязываю…":"Вхожу…";msg.textContent="";
+    try{if(L){try{await NS.signUp(e,p)}catch(x){if(/уже занят/.test(x.message)){try{await NS.signIn(e,p)}catch(y){throw new Error(e.endsWith(LOGIN_DOM)?"Такой логин уже занят — придумай другой":"На эту почту уже есть Нора — войди с её паролем")}}else throw x}}else await NS.signIn(e,p);
       vClose();toast(L?"Почта привязана":"Вход выполнен — загружаю полки");if(SCREEN==="sum")drawSum()}
     catch(x){msg.textContent=x.message;go.disabled=false;go.textContent=L?"Привязать":"Войти"}};
   const r=$("#syR");if(r)r.onclick=async()=>{const e=$("#syE").value.trim();if(!e){msg.textContent="Впиши почту — пришлю ссылку для нового пароля";return}
@@ -4906,7 +4906,7 @@ function frReqDot(){const d=$("#frDot");if(d)d.hidden=!(REQS.length||FRIENDS.som
 function reqPopup(q){tgHaptic("medium");vOpen(`<div class="frp">${avatar(q.n,q.f,"big")}<h3 class="vh">${esc(q.n||"Кто-то")} хочет добавить вас в друзья</h3><p class="sy-note">Будете видеть полки друг друга.</p></div><div class="fr-yn"><button class="btn w" data-frq-yes="${esc(q.id)}">Принять</button><button class="btn" data-frq-no="${esc(q.id)}">Отклонить</button></div>`)}
 async function reqAnswer(id,yes){const q=REQS.find(x=>x.id===id);if(!q)return;REQS=REQS.filter(x=>x.id!==id);
   try{await NS.reqSet(id,yes?"a":"d")}catch(e){}if(yes){addFriend(q.f,q.n);toast((q.n||"Друг")+" теперь в друзьях");frLoad()}frReqDot();if($("#vsheet").classList.contains("on"))vClose();if(SCREEN==="fr")drawFr()}
-function frFind(){vOpen(`<h3 class="vh">Добавить друга</h3><p class="sy-note">Логин или почта, с которыми друг вошёл в Нору, или ник в Telegram — придёт заявка прямо в приложение.</p>
+function frFind(){vOpen(`<h3 class="vh">Добавить друга</h3><p class="sy-note">Почта, с которой друг вошёл в Нору, или ник в Telegram — придёт заявка прямо в приложение.</p>
    <input class="sy-in" id="frQ" placeholder="почта или @ник" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"><p class="sy-msg" id="frM"></p>
    <button class="btn w fr-go" data-fr-go>Найти</button>${CONTACTS_OK?`<button class="btn fr-go" data-fr-contacts>Найти среди контактов телефона</button>`:""}<div id="frRes"></div>
    <button class="fr-link" data-fr-inv>Друга ещё нет в Норе? Отправить приглашение ссылкой</button>`);setTimeout(()=>{const i=$("#frQ");if(i){i.focus();i.onkeydown=e=>{if(e.key==="Enter")$("[data-fr-go]").click()}}},80)}
@@ -4917,7 +4917,7 @@ async function frContacts(){const res=$("#frRes"),msg=$("#frM");let L=[];try{L=a
   msg.textContent="Ищу…";const found=[];for(const c of em.slice(0,40)){try{const uid=await NS.lookup(c.e);if(uid&&uid!==NS.uid()&&!FRIENDS.some(f=>f.uid===uid)&&!found.some(x=>x.uid===uid))found.push({uid,n:c.n})}catch(e){}}
   msg.textContent=found.length?"":"Никого из выбранных пока нет в Норе — можно отправить приглашение ссылкой.";
   res.innerHTML=found.map(f=>`<div class="frq one-r">${avatar(f.n,f.uid)}<span><b>${esc(f.n)}</b><small>есть в Норе</small></span><button class="btn w" data-fr-send="${esc(f.uid)}" data-n="${esc(f.n)}">Отправить заявку</button></div>`).join("")}
-async function frFindGo(){const q=$("#frQ").value.trim(),msg=$("#frM"),res=$("#frRes");if(!q){msg.textContent="Впиши логин, почту или ник";return}msg.textContent="Ищу…";res.innerHTML="";
+async function frFindGo(){const q=$("#frQ").value.trim(),msg=$("#frM"),res=$("#frRes");if(!q){msg.textContent="Впиши почту или ник";return}msg.textContent="Ищу…";res.innerHTML="";
   try{let uid=await NS.lookup(q);if(!uid&&!q.includes("@")&&LOGIN_RX.test(q.toLowerCase()))uid=await NS.lookup(q.toLowerCase()+LOGIN_DOM);if(!uid){msg.textContent="В Норе такого пока нет — можно отправить приглашение ссылкой.";return}
     if(uid===NS.uid()){msg.textContent="Это ваш собственный аккаунт.";return}if(FRIENDS.some(f=>f.uid===uid)){msg.textContent="Уже в друзьях.";return}
     let p=null;try{p=await NS.getProfile(uid)}catch(e){}const n=p&&p.n||"Без имени";msg.textContent="";
@@ -4989,7 +4989,8 @@ document.addEventListener("click",e=>{const a=e.target.closest("a[data-ext]");if
 // ---------- логин вместо почты ----------
 // Логин превращается во внутренний адрес вида anya@login.moya-nora.github.io: на него ничего не отправляется, почта не нужна.
 const LOGIN_DOM="@login.moya-nora.github.io",LOGIN_RX=/^[a-z0-9][a-z0-9._-]{2,29}$/;
-function authId(v){v=String(v||"").trim();if(v.includes("@")&&!v.startsWith("@"))return {e:v,mail:true};const l=v.replace(/^@/,"").toLowerCase();
+const MAIL_RX=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+function authId(v,up){v=String(v||"").trim();if(v.includes("@")&&!v.startsWith("@")){if(!MAIL_RX.test(v))throw new Error("Похоже, в почте опечатка");return {e:v.toLowerCase(),mail:true}}if(up)throw new Error(v?"Нужна почта — например, anya@mail.ru":"Впиши почту");const l=v.replace(/^@/,"").toLowerCase();
   if(!LOGIN_RX.test(l))throw new Error(l.length<3?"Логин — хотя бы 3 знака":"В логине можно латинские буквы, цифры, точку, - и _");return {e:l+LOGIN_DOM,mail:false}}
 const showId=e=>String(e||"").endsWith(LOGIN_DOM)?String(e).slice(0,-LOGIN_DOM.length):String(e||"");
 // ---------- обязательная регистрация ----------
@@ -5001,18 +5002,18 @@ const signInK=async(e,p)=>{if(authCtx==="onb"&&NS.yieldLocal)NS.yieldLocal();ret
 function authShow(next,ctx){authNext=next||null;authCtx=ctx||"";if(NS.email&&authMode==="up")authMode="in";authDraw();authEl.classList.add("on")}
 function authDraw(){const up=authMode==="up";
   const ob=authCtx==="onb";
-  authEl.innerHTML=`<div class="au-in"><h1>${up?(ob?"Сохрани свою Нору":"Создай аккаунт"):"Вход"}</h1><p>${up?(ob?"Полки готовы! Логин и пароль нужны, чтобы они не потерялись и открывались везде — в Telegram, в браузере и на телефоне. Имя увидят друзья.":"Имя — для друзей. Логин и пароль нужны, чтобы полки не потерялись и открывались на любом устройстве — в Telegram, в браузере, на телефоне и компьютере."):"Логин или почта и пароль от Норы."}</p>
+  authEl.innerHTML=`<div class="au-in"><h1>${up?(ob?"Сохрани свою Нору":"Создай аккаунт"):"Вход"}</h1><p>${up?(ob?"Полки готовы! Почта и пароль нужны, чтобы они не потерялись и открывались везде — в Telegram, в браузере и на телефоне. Имя увидят друзья.":"Имя — для друзей. Почта и пароль нужны, чтобы полки не потерялись и открывались на любом устройстве — в Telegram, в браузере, на телефоне и компьютере."):"Почта и пароль от Норы."}</p>
    ${up?`<input class="sy-in" id="auN" autocomplete="given-name" placeholder="Имя — так тебя увидят друзья" value="${esc(LS.get("zal.name",""))}">`:""}
-   <input class="sy-in" id="auE" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="${up?"Придумай логин — или впиши почту":"Логин или почта"}" value="${esc(up?"":showId(NS.email))}">
+   <input class="sy-in" id="auE" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Почта" value="${esc(up?"":showId(NS.email))}">
    <input class="sy-in" id="auP" type="password" autocomplete="${up?"new-password":"current-password"}" placeholder="${up?"Пароль, от 6 символов":"Пароль"}">
    <p class="sy-msg" id="auM"></p><button class="btn w" id="auGo">${up?"Создать аккаунт":"Войти"}</button>${up?`<p class="au-legal">Создавая аккаунт, ты соглашаешься с <a href="https://moya-nora.github.io/privacy.html" data-ext target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}
    <button class="au-sw" id="auSw">${up?"Уже есть аккаунт? Войти":"Нет аккаунта? Создать"}</button>${up?"":`<button class="au-sw" id="auR">Забыли пароль?</button>`}</div>`;
   const go=$("#auGo"),msg=$("#auM");
   $("#auSw").onclick=()=>{authMode=up?"in":"up";authDraw();tgHaptic()};
-  const r=$("#auR");if(r)r.onclick=async()=>{const e=$("#auE").value.trim();if(!e||!e.includes("@")||e.startsWith("@")){msg.textContent=e?"Пароль восстанавливается только по почте. Если входишь по логину — напиши нам в поддержку.":"Впиши почту — придёт ссылка для нового пароля";return}try{await NS.reset(e);msg.textContent="Письмо отправлено. Задай новый пароль по ссылке и возвращайся."}catch(x){msg.textContent=x.message}};
-  go.onclick=async()=>{let e=$("#auE").value.trim();const p=$("#auP").value;const nv=up?$("#auN").value.trim():"";if(up&&!nv){msg.textContent="Впиши имя — так тебя увидят друзья";$("#auN").focus();return}if(!e||!p){msg.textContent=up?"Придумай логин и пароль":"Впиши логин и пароль";return}try{e=authId(e).e}catch(x){msg.textContent=x.message;return}go.disabled=true;go.textContent=up?"Создаю…":"Вхожу…";msg.textContent="";
+  const r=$("#auR");if(r)r.onclick=async()=>{const e=$("#auE").value.trim();if(!e||!e.includes("@")||e.startsWith("@")){msg.textContent=e?"Пароль восстанавливается по почте. Если ты входила по логину — напиши в бот Норы, поможем.":"Впиши почту — придёт ссылка для нового пароля";return}try{await NS.reset(e);msg.textContent="Письмо отправлено. Задай новый пароль по ссылке и возвращайся."}catch(x){msg.textContent=x.message}};
+  go.onclick=async()=>{let e=$("#auE").value.trim();const p=$("#auP").value;const nv=up?$("#auN").value.trim():"";if(up&&!nv){msg.textContent="Впиши имя — так тебя увидят друзья";$("#auN").focus();return}if(!e||!p){msg.textContent="Впиши почту и пароль";return}try{e=authId(e,up).e}catch(x){msg.textContent=x.message;return}go.disabled=true;go.textContent=up?"Создаю…":"Вхожу…";msg.textContent="";
     const nm=$("#auN");if(nm&&nm.value.trim())LS.set("zal.name",nm.value.trim().slice(0,40));
-    try{if(up){try{await NS.signUp(e,p)}catch(x){if(/уже заняты/.test(x.message)){try{await signInK(e,p)}catch(y){throw new Error(e.endsWith(LOGIN_DOM)?"Такой логин уже занят — придумай другой":"На эту почту уже есть Нора — войди с её паролем")}}else throw x}}else await signInK(e,p);
+    try{if(up){try{await NS.signUp(e,p)}catch(x){if(/уже занят/.test(x.message)){try{await signInK(e,p)}catch(y){throw new Error(e.endsWith(LOGIN_DOM)?"Такой логин уже занят — придумай другой":"На эту почту уже есть Нора — войди с её паролем")}}else throw x}}else await signInK(e,p);
       if(nv)LS.set("zal.name",nv.slice(0,40));else if(!LS.get("zal.name","")&&NS.getProfile){try{const pf=await NS.getProfile(NS.uid());if(pf&&pf.n)LS.set("zal.name",String(pf.n).slice(0,40))}catch(x){}}authEl.classList.remove("on");tgHaptic("medium");toast(up?"Аккаунт создан":"Вход выполнен");const n=authNext;authNext=null;if(n)n();setTimeout(()=>{pubCheck();inviteCheck()},800)}
     catch(x){msg.textContent=x.message;go.disabled=false;go.textContent=up?"Создать аккаунт":"Войти"}};
   $("#auP").onkeydown=e=>{if(e.key==="Enter")go.click()}}
