@@ -160,7 +160,7 @@ ICON = {"cam": '<path d="M8.2 6.5l1.1-1.7c.3-.5.8-.8 1.4-.8h2.6c.6 0 1.1.3 1.4.8
 ic = lambda k: f'<svg viewBox="0 0 24 24">{ICON[k]}</svg>'
 
 SN = """<!-- Cloudflare Web Analytics --><script defer type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "572d5eebd0c442bda32887c9f80bb139"}'></script><!-- End Cloudflare Web Analytics -->"""
-HEAD = f"""<link rel="icon" href="/icons/icon-192.png?v=3"><link rel="apple-touch-icon" href="/icons/icon-180.png?v=3"><meta name="theme-color" content="#05060A">
+HEAD = f"""<link rel="icon" href="/icons/icon-192.png?v=4"><link rel="apple-touch-icon" href="/icons/icon-180.png?v=4"><meta name="theme-color" content="#05060A">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/site.css?v={VER}">"""
@@ -169,7 +169,7 @@ APP = "/app.html?app=1"
 
 
 def hdr(active=""):
-    return ('<header class="hd"><div class="bar gl"><a class="logo" href="/"><img src="/icons/icon-512.png?v=3" alt="">Нора</a><nav class="nav">'
+    return ('<header class="hd"><div class="bar gl"><a class="logo" href="/"><img src="/icons/icon-512.png?v=4" alt="">Нора</a><nav class="nav">'
             + "".join(f'<a href="{u}"{" class=on" if u == active else ""}>{t}</a>' for u, t in NAV)
             + f'</nav><a class="btn sm open" id="openNora" href="{APP}">Открыть Нору</a></div></header>')
 
@@ -178,7 +178,7 @@ MINE = """<script>try{if(localStorage.getItem("zal.onb"))document.querySelectorA
 
 
 def footer(colls):
-    return (f'<footer class="ft"><div class="wrap"><div class="in gl"><div><div class="logo"><img src="/icons/icon-192.png?v=3" alt="">Нора</div><p>Все твои книги в одном месте — бумажные, '
+    return (f'<footer class="ft"><div class="wrap"><div class="in gl"><div><div class="logo"><img src="/icons/icon-192.png?v=4" alt="">Нора</div><p>Все твои книги в одном месте — бумажные, '
             f'из Литрес, Яндекс Книг и LiveLib. Шуршуня подскажет, что читать дальше.</p></div><div><h4>Подборки</h4>'
             + "".join(f'<a href="/c/{p}.html">{esc(t.split(":")[0])}</a>' for p, t in colls[:7])
             + f'</div><div><h4>Нора</h4><a href="{APP}">Открыть в браузере</a><a href="{BOT}">Открыть в Telegram</a><a href="/c/">Все подборки</a>'
@@ -193,7 +193,7 @@ def page(path, title, desc, body, full_title=None, active="", img=None):
     doc = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{esc(full_title or title + " — Нора")}</title><meta name="description" content="{esc(desc[:200])}"><link rel="canonical" href="{canon}">
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc[:200])}"><meta property="og:url" content="{canon}">
-<meta property="og:image" content="{esc(img or SITE + '/icons/icon-512.png?v=3')}"><meta property="og:type" content="website"><meta property="og:site_name" content="Нора">{HEAD}</head><body>
+<meta property="og:image" content="{esc(img or SITE + '/icons/icon-512.png?v=4')}"><meta property="og:type" content="website"><meta property="og:site_name" content="Нора">{HEAD}</head><body>
 {hdr(active)}<main>{body}</main>{FOOT}{MINE}{SN}</body></html>"""
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
