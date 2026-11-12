@@ -1,0 +1,35 @@
+name: Обложки для сайта
+on:
+  schedule:
+    - cron: "41 6 8 * *"   # 8-го числа каждого месяца
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [tools/build_covers.py, .github/workflows/covers.yml]
+permissions:
+  contents: write
+concurrency: { group: books-new, cancel-in-progress: false }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Обложки с Фантлаба
+        run: |
+          set -o pipefail
+          timeout 8000 python -u tools/build_covers.py 3000 2>&1 | tee books/covers.log || true
+      - name: Страницы сайта
+        if: always()
+        run: python -u tools/build_seo.py
+      - name: Сохранить
+        if: always()
+        run: |
+          git config user.name "Mayorov-Vlad"
+          git config user.email "vladislav15333@gmail.com"
+          git add books/covers.json books/covers.log 2>/dev/null || true
+          git add k c index.html privacy.html sitemap.xml robots.txt 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Обложки для сайта: $(date +%Y-%m-%d)"
+          git pull --rebase -X theirs -q && git push
