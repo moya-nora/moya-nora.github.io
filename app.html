@@ -1616,6 +1616,7 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 #app .bkc-ds{flex:1 1 0;min-height:44px;margin:14px 0 0;max-width:46ch;text-align:center;font-size:15px;line-height:1.5;color:rgba(255,255,255,.88);display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
 #app .bkc-acts{display:flex;gap:10px;width:100%;max-width:420px;margin-top:auto;padding-top:16px}
 #app .bkc-acts .btn{flex:1;min-width:0;padding-left:6px;padding-right:6px;font-size:14.5px;white-space:nowrap}
+#app .bkc-acts .btn[data-bkc=want]{flex:1.35;font-size:14px;letter-spacing:-.01em}
 #app .bkc-where{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;max-width:420px;margin-top:10px;padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.16);font-size:15px;font-weight:600;color:var(--ink)}
 #app .bkc-where svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9}
 @media (max-height:700px){#app .bkc-cv{height:32vh}#app .bkc h2{font-size:26px}}
@@ -1656,6 +1657,7 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .fly .info p.ds{display:block;-webkit-line-clamp:unset;overflow:visible;font-size:16px;line-height:1.45;margin-top:12px}
 #app .fly .acts3{gap:22px;margin-top:auto;padding-top:30px}
 #app .fly>.obj{margin-top:auto}
+#app .fr .ac:not(.L *){padding-bottom:0}
 #app #flow,#app #flowCap{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #app .slide .fly:not(.L *){padding-bottom:28px;justify-content:flex-start}
 #app .fly .rb{width:68px;height:68px}#app .fly .rb svg{width:27px;height:27px}
@@ -4317,7 +4319,7 @@ const sxHas=x=>(SX.k==="films"?FM:BK).has(x);
 function hl(t,q){const s=String(t||""),nq=String(q||"").trim().toLowerCase().replace(/ё/g,"е");if(nq.length<2)return esc(s);const i=s.toLowerCase().replace(/ё/g,"е").indexOf(nq);
   return i<0?esc(s):esc(s.slice(0,i))+"<mark>"+esc(s.slice(i,i+nq.length))+"</mark>"+esc(s.slice(i+nq.length))}
 function sxRow(x,i){const st=sxHas(x),F=SX.k==="films";
-  return `<div class="fr" data-i="${i}">${cv(x,48)}<div class="tx"><b>${hl(x.t,SX.q)}</b><span>${hl([x.a,x.y,x.c,x.s?"сериал":"",F&&x.src&&x.src.hr===0?"не выходил в РФ":""].filter(Boolean).join(" · "),SX.q)}</span></div><div class="ac">${st?`<em>${st==="read"?(F?"Просмотрено":"Прочитано"):"В избранном"}</em>`:`<button class="ib" data-sx="read" data-lb="${F?"смотрел":"прочитано"}" aria-label="${F?"Просмотрено":"Прочитано"}">${IC.v}</button><button class="ib w" data-sx="want" data-lb="в избранное" aria-label="${F?"Хочу посмотреть":"Хочу прочитать"}">${PLUS}</button>`}</div></div>`}
+  return `<div class="fr" data-i="${i}">${cv(x,48)}<div class="tx"><b>${hl(x.t,SX.q)}</b><span>${hl([x.a,x.y,x.c,x.s?"сериал":"",F&&x.src&&x.src.hr===0?"не выходил в РФ":""].filter(Boolean).join(" · "),SX.q)}</span></div><div class="ac">${st?`<em>${st==="read"?(F?"Просмотрено":"Прочитано"):"В избранном"}</em>`:""}</div></div>`}
 const POPF=[["Интерстеллар",2014],["Во все тяжкие",2008,1],["Друзья",1994,1],["Форрест Гамп",1994],["Побег из Шоушенка",1994],["Шерлок",2010,1],["Зелёная миля",1999],["Начало",2010],["Игра престолов",2011,1],["Титаник",1997],
   ["Бойцовский клуб",1999],["Чернобыль",2019,1],["Криминальное чтиво",1994],["Матрица",1999],["Очень странные дела",2016,1],["1+1",2011],["Амели",2001],["Унесённые призраками",2001],["Паразиты",2019],["Ла-Ла Ленд",2016],
   ["Остров проклятых",2010],["Тьма",2017,1],["Брат",1997],["Москва слезам не верит",1979],["Король Лев",1994],["Аркейн",2021,1],["Властелин колец: Братство Кольца",2001],["Отступники",2006],["Джентльмены",2019],["Иван Васильевич меняет профессию",1973],["Достучаться до небес",1997],["Амадей",1984]];
@@ -5066,14 +5068,15 @@ const IC2={x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',c
 function bkcFacts(x){const m=META[ikey(x)],fr=frReaders(x),out=[];
   if(m===undefined)return `<span class="sk-f"></span><span class="sk-f w"></span>`;   // пока грузится — без прыжков цифр
   if(m.pg)out.push(`<span><b>${m.pg}</b> ${plural(m.pg,"страница","страницы","страниц")}</span>`);
-  if(m.r)out.push(`<button data-bkc-rv><b>★ ${(m.r/2).toFixed(1).replace(".",",")}</b> ${m.v.toLocaleString("ru-RU")} ${plural(m.v,"оценка","оценки","оценок")}${m.rc?` · ${m.rc} ${plural(m.rc,"отзыв","отзыва","отзывов")}`:""} ›</button>`);
+  if(m.r)out.push(`<span><b>★ ${(m.r/2).toFixed(1).replace(".",",")}</b> ${m.v.toLocaleString("ru-RU")} ${plural(m.v,"оценка","оценки","оценок")}</span>`);
+  if(m.r&&m.rc)out.push(`<button data-bkc-rv><b>${m.rc}</b> ${plural(m.rc,"отзыв","отзыва","отзывов")} ›</button>`);
   if(fr.length){const rv=fr.filter(z=>z.b.rv).length;out.push(`<button data-bkc-fr>Читали друзья: <b>${fr.length}</b>${rv?` · ${rv} ${plural(rv,"отзыв","отзыва","отзывов")}`:""} ›</button>`)}
   if(x.frR&&x.frR.r!=null)out.push(`<span>У ${esc(x.frR.n||"друга")}: <b>★ ${r5(x.frR.r)}</b></span>`);
   return out.join("")}
 function bkcActs(x,L){const st=BK.has(x);
-  if(L==="top"||L==="want"||st==="want"||x.now)return `<button class="btn w" data-bkc="read">Поставить на полку</button>${x.now?"":`<button class="btn" data-bkc="rm">Убрать из избранного</button>`}`;
+  if(L==="top"||L==="want"||st==="want"||x.now)return `<button class="btn w" data-bkc="read">Прочитано</button>${x.now?"":`<button class="btn" data-bkc="rm">Убрать из избранного</button>`}`;
   if(st==="read")return `<button class="btn" disabled>Уже на полке «Прочитано»</button>`;
-  return `<button class="btn w" data-bkc="want">Хочу прочитать</button><button class="btn" data-bkc="read">Поставить на полку</button>`}
+  return `<button class="btn w" data-bkc="read">Прочитано</button><button class="btn" data-bkc="want">Добавить в избранное</button>`}
 function bkcDraw(){const {x,L}=BKC;
   bkcEl.innerHTML=`<div class="bkc-in"><button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button>
    <div class="bkc-cv">${cv(x,190)}<button class="bkc-cov" data-bkc="cov">${IC2.cov}<span>сменить обложку</span></button></div>
