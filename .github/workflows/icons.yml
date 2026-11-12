@@ -1,0 +1,15 @@
+name: fetch-icons
+on: workflow_dispatch
+permissions: {contents: write}
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p img/where
+          for d in litres.ru books.yandex.ru ozon.ru wildberries.ru books.google.com chitai-gorod.ru bookvoed.ru; do
+            curl -sL -A "Mozilla/5.0" "https://www.google.com/s2/favicons?domain=$d&sz=128" -o "img/where/$d.png"; ls -la img/where/$d.png
+          done
+          git config user.email noreply@anthropic.com; git config user.name Claude
+          git add img/where && git commit -qm "Store icons for «Где прочитать»" && git pull -q --rebase && git push
