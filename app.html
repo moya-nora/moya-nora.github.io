@@ -2972,7 +2972,7 @@ function openBook(id){
    ${b.r!=null?`<div class="rating"><b>${Math.round(b.r/2)}</b><span>/ 5</span></div>`:`<div class="rating"><span>Без оценки</span></div>`}
    ${b.n&&!VIEW?`<div class="note">${esc(b.n)}</div>`:""}
    ${!VIEW&&(DISC[b.id]||b.user)?`<button class="btn btn-disc" id="discBtn">${discLabel(b.id)}</button>`:""}
-   ${!VIEW&&!NOCOUNTRY.has(b.c)?`<button class="btn btn-ghost btn-wide" id="cmpBtn">Столкнуть с другой книгой</button>`:""}
+   
    ${VIEW?"":quotesBlock(b)}
    ${VIEW?"":`<button class="btn btn-ghost btn-wide" id="simBtn">Похожие книги</button>`}
    ${b.f.length?`<button class="btn btn-main" id="factsBtn">Интересные факты · ${b.f.length}</button>`:(b.user||VIEW?"":`<p class="status">Автор забылся — и Шуршуня тоже не знает, чья это книга. Если вспомнится, книга переедет на полку своей страны.</p>`)}`);
@@ -3494,7 +3494,7 @@ function tevCard(scope,st,back){
   const has=inWant(r),acc=(r.acclaim||[]).slice(0,3);
   return `<div class="tcard" data-scope="${scope}" lang="ru">${back?`<button class="tback" data-back aria-label="Вернуть записку">↩</button>`:""}
    <div class="tk">${esc(st.label)}</div>
-   <div class="rec-top">${cover(r,78)}<div class="tx"><h4>${esc(r.t)}</h4><div class="by">${esc(r.a)}${r.c?" · "+esc(r.c):""}${r.y?", "+r.y:""}</div>${r.heavy===2?`<div class="heavy">Морально тяжёлая</div>`:""}</div></div>
+   <div class="rec-top">${cover(r,78)}<div class="tx"><h4>${esc(r.t)}</h4><div class="by">${esc(r.a)}${r.c?" · "+esc(r.c):""}${r.y?", "+r.y:""}</div>${r.heavy===2?`<div class="heavy">Тяжёлая</div>`:""}</div></div>
    <div class="when">${esc(r.when)}</div>
    ${r.ann?`<div class="ann">${esc(r.ann)}</div>`:""}
    ${acc.length?`<div class="acc">${acc.map(a=>`<span>${esc(a)}</span>`).join("")}</div>`:""}
@@ -4620,7 +4620,7 @@ const TOURS={
        ["#addB","Поставить книгу на полку","Сфотографируй шкаф — Нора сама узнает книги. Или перенеси прочитанное из Литрес и Яндекс Книг."],
        ['.dock [data-s="feed"]',"Лента находок","Свайпай книги: «читала», «хочу», «не моё» — так Шуршуня быстрее поймёт твой вкус."],
        ["#srchB","Поиск и фильтры","Ищи по названию или выбирай настроение, жанр и тропы."],
-       ['.dock [data-s="fr"]',"Друзья","Добавляй подруг — смотри их полки и отзывы и делись своими."]],
+       ['.dock [data-s="fr"]',"Друзья","Добавляй друзей — смотри их полки и отзывы и делись своими."]],
   fr:[[".fr-add","Добавь друзей","По почте или нику в Telegram. Ты увидишь их полки, оценки и отзывы, а они — твои. Делиться можно и ссылкой."]],
   sum:[["#bento","Твоя статистика","Сколько прочитано, любимые авторы, страны и века — обновляется само."],
        ["#sumMore .stamps,#sumMore","Читательский паспорт","Собирай штампы: за классику, книги разных стран и прочитанные полки."]]};
