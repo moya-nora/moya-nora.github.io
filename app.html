@@ -1684,6 +1684,12 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .wh-l button{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
 #app .wh-l b{font-size:15.5px}#app .wh-l small{flex:1;font-size:13px;color:var(--ink3)}#app .wh-l i{font-style:normal;color:var(--ink3);font-size:20px}
 #app .wh-l .ava{width:36px;height:36px;font-size:16px}
+#app .wh-sh{margin-top:6px}#app .wh-sh b{flex:1}
+#app .wh-ic{flex:none;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.08);object-fit:cover;display:grid;place-items:center}
+#app .wh-ic.sv svg{width:19px;height:19px;fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#app .wh-sw{display:block;margin:14px auto 2px;padding:8px 12px;font-size:13.5px;color:var(--ink3)}
+#app .wh-ch button{padding:22px 12px;text-align:center}
+
 /* друзья: удалить — значком в углу */
 #app .fr-delx{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.08);z-index:2}
 #app .fr-delx svg{width:21px;height:21px;fill:none;stroke:rgba(255,255,255,.75);stroke-width:1.8;stroke-linecap:round}
@@ -4228,7 +4234,7 @@ function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((f
   el.addEventListener("touchmove",e=>{const t=e.touches[0];mv(t.clientX,t.clientY,e)},{passive:false});
   el.addEventListener("touchend",()=>{x0=null});
   el.addEventListener("mousedown",e=>down(e.clientX,e.clientY));addEventListener("mousemove",e=>mv(e.clientX,e.clientY,null));addEventListener("mouseup",()=>{x0=null});
-  el.addEventListener("click",e=>{if(Date.now()-t0>450){flowHold=Date.now();return}const c=e.target.closest(".cv");if(c&&!moved&&!mode){flowHold=Date.now();const i=+c.dataset.i;if(i!==fi){fi=i;layoutFlow()}openItem(flowList()[i],"rec")}})})();
+  el.addEventListener("click",e=>{if(t0&&Date.now()-t0>450){t0=0;flowHold=Date.now();return}t0=0;const c=e.target.closest(".cv");if(c&&!moved&&!mode){flowHold=Date.now();const i=+c.dataset.i;if(i!==fi){fi=i;layoutFlow()}openItem(flowList()[i],"rec")}})})();
 (function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,7000)})();
 function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
@@ -5116,13 +5122,19 @@ const openLink=u=>{try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):w
 const PARTNER={litres:""};
 const pLink=(k,u)=>PARTNER[k]?PARTNER[k].replace("{url}",encodeURIComponent(u)):u;
 function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).split(" ").slice(-1)[0]:"")),qt=encodeURIComponent(x.t);
-  const ON=[["ЛитРес","электронная и аудиокнига",pLink("litres",`https://www.litres.ru/search/?q=${q}`)],["Яндекс Книги","читать по подписке",`https://books.yandex.ru/search?text=${q}`],
-    ["Ozon","бумажная книга с доставкой",`https://www.ozon.ru/search/?text=${q}&category=16500`],["Google Книги","фрагменты и издания",`https://www.google.com/search?tbm=bks&q=${q}`]];
-  const OFF=[["Читай-город","наличие в магазинах и самовывоз",`https://www.chitai-gorod.ru/search?phrase=${qt}`],["Буквоед","наличие в магазинах",`https://www.bookvoed.ru/search?q=${qt}`],
-    ["Книжные рядом","на карте",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],["Библиотеки рядом","на карте",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
-  const choose=`<div class="wh-ch"><button data-wh="on" class="${mode==="on"?"on":""}"><b>Онлайн</b><small>купить или читать в приложении</small></button><button data-wh="off" class="${mode==="off"?"on":""}"><b>Офлайн</b><small>магазины и библиотеки</small></button></div>`;
-  const list=mode?`<div class="wh-l">${(mode==="on"?ON:OFF).map(([n,d,u])=>`<button data-whu="${esc(u)}"><b>${n}</b><small>${d}</small><i>›</i></button>`).join("")}</div>`:"";
-  vOpen(`<h3 class="vh">Где прочитать «${esc(x.t)}»</h3>${choose}${list}`);$("#vsheet").classList.add("ontop");$("#vshBody")._wx=x}
+  // выбор «онлайн/офлайн» показываем один раз, дальше сразу открываем запомненный список
+  if(!mode)mode=LS.get("zal.whm","");if(mode)LS.set("zal.whm",mode);
+  const ic=d=>`<img class="wh-ic" src="img/where/${d}.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'wh-ic'}))">`,
+    PIN='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg></span>',
+    LIB='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M4 20h16M5 9h14M12 4l8 5H4l8-5zM7 9v8M12 9v8M17 9v8"/></svg></span>';
+  const ON=[[ic("litres.ru"),"ЛитРес",pLink("litres",`https://www.litres.ru/search/?q=${q}`)],[ic("books.yandex.ru"),"Яндекс Книги",`https://books.yandex.ru/search?text=${q}`],
+    [ic("ozon.ru"),"Ozon",`https://www.ozon.ru/search/?text=${q}&category=16500`],[ic("wildberries.ru"),"Wildberries",`https://www.wildberries.ru/catalog/0/search.aspx?search=${q}`],
+    [ic("books.google.com"),"Google Книги",`https://www.google.com/search?tbm=bks&q=${q}`]];
+  const OFF=[[PIN,"Книжные рядом",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],[ic("chitai-gorod.ru"),"Читай-город",`https://www.chitai-gorod.ru/search?phrase=${qt}`],
+    [ic("bookvoed.ru"),"Буквоед",`https://www.bookvoed.ru/search?q=${qt}`],[LIB,"Библиотеки рядом",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
+  const choose=`<div class="wh-ch"><button data-wh="on"><b>Онлайн</b></button><button data-wh="off"><b>Офлайн</b></button></div>`;
+  const list=mode?`<div class="wh-l wh-sh">${(mode==="on"?ON:OFF).map(([i,n,u])=>`<button data-whu="${esc(u)}">${i}<b>${n}</b><i>›</i></button>`).join("")}</div><button class="wh-sw" data-wh="${mode==="on"?"off":"on"}">${mode==="on"?"Офлайн: магазины и библиотеки":"Онлайн: приложения и маркетплейсы"} ›</button>`:"";
+  vOpen(mode?list:choose);$("#vsheet").classList.add("ontop");$("#vshBody")._wx=x}
 bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");if(t.closest("[data-bkc-rv]")){reviewsOpen(BKC.x);return}if(t.closest("[data-bkc-fr]")){const fr=frReaders(BKC.x);
     vOpen(`<h3 class="vh">Читали «${esc(BKC.x.t)}»</h3><div class="wh-l">${fr.map(({f,b})=>`<button data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid)}<b>${esc(f.n||"Друг")}</b><small>${b.r!=null?"★ "+r5(b.r):"без оценки"}</small>${b.rv?`<em class="frv">«${esc(b.rv)}»</em>`:""}<i>›</i></button>`).join("")}</div>`);$("#vsheet").classList.add("ontop");return}
   if(!b||!BKC)return;const {x,L}=BKC,a=b.dataset.bkc;tgHaptic();
