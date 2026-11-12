@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><style>
+@font-face{font-family:Cormorant;font-weight:600;src:url(../fonts/cormorant-garamond-cyrillic-600-normal.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Cormorant;font-weight:600;src:url(../fonts/cormorant-garamond-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:Onest;font-weight:400;src:url(../fonts/onest-cyrillic-400-normal.woff2) format('woff2');unicode-range:U+0400-04FF}
+html,body{margin:0;width:600px;height:900px;overflow:hidden;background:#111}
+.c{position:relative;width:600px;height:900px;background-size:cover;background-position:center}
+.c::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,0) 62%,rgba(0,0,0,.72) 100%)}
+.a{position:absolute;left:0;right:0;top:46px;text-align:center;font-family:Onest;font-size:22px;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,246,230,.92)}
+.t{position:absolute;left:40px;right:40px;bottom:58px;text-align:center;font-family:Cormorant;font-weight:600;font-size:64px;line-height:1;color:#FFF6E6;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.t::before{content:"";display:block;width:56px;height:2px;margin:0 auto 22px;background:#E9B866}
+</style></head><body><div class="c" id="c"><div class="a" id="a"></div><div class="t" id="t"></div></div>
+<script>const q=JSON.parse(decodeURIComponent(location.hash.slice(1)));c.style.backgroundImage=`url(${q.img})`;a.textContent=q.a;t.textContent=q.t;if(q.t.length>22)t.style.fontSize="52px"</script></body></html>

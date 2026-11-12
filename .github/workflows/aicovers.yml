@@ -1,0 +1,17 @@
+name: ai-covers-try
+on: workflow_dispatch
+permissions: {contents: write}
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install playwright && python -m playwright install --with-deps chromium
+      - run: (python -m http.server 8766 >/dev/null 2>&1 &) && sleep 2 && python tools/ai_covers_try.py
+      - run: |
+          git config user.email noreply@anthropic.com; git config user.name Claude
+          git checkout -B ai-covers-try
+          git add -f out/ai/cover*.png && git commit -qm "ai covers try" && git push -f origin ai-covers-try
