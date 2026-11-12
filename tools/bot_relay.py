@@ -40,8 +40,18 @@ acked = set()
 
 
 def save():
-    json.dump(state, open(STATE, "w", encoding="utf-8"))
-    print("сохранён chat id владелицы", flush=True)
+    json.dump(state, open(STATE, "w", encoding="utf-8"), ensure_ascii=False)
+    print("состояние бота сохранено", flush=True)
+
+
+def sub(chat, fr, on=True):
+    """Читатель, которому можно раз в неделю прислать «Шуршуня советует»: написал боту, нажал /start или разрешил сообщения из Норы."""
+    S = state.setdefault("subs", {})
+    k = str(chat)
+    old = S.get(k)
+    S[k] = {"n": fr.get("first_name") or "", "on": 1 if on else 0, "t": int(time.time()), "w": (old or {}).get("w", 0)}
+    if not old or old.get("on") != S[k]["on"]:
+        save()
 
 
 def handle(m):
@@ -51,7 +61,15 @@ def handle(m):
     if m["chat"].get("type") != "private":
         return True
     text = m.get("text") or m.get("caption") or ""
+    if "write_access_allowed" in m:
+        sub(chat, fr)
+        return True
+    if text.startswith("/stop") or text.lower().strip() in ("стоп", "отписаться"):
+        sub(chat, fr, False)
+        api("sendMessage", chat_id=chat, text="Хорошо, больше не буду присылать советы. Чтобы вернуть — напиши /start.")
+        return True
     if (fr.get("username") or "").lower() == OWNER:
+        sub(chat, fr)
         if owner_id != chat:
             owner_id = state["owner"] = chat
             save()
@@ -63,8 +81,9 @@ def handle(m):
         elif text.startswith("/start"):
             api("sendMessage", chat_id=chat, text="Готово! Сюда будут приходить вопросы читателей. Чтобы ответить, смахни сообщение влево и нажми «Ответить».")
         return True
+    sub(chat, fr)
     if text.startswith("/start"):
-        api("sendMessage", chat_id=chat, text="Привет! Это Нора — все твои книги в одном месте и советы, что читать дальше.\n\nЕсли есть вопрос или идея — просто напиши сюда, мы ответим.",
+        api("sendMessage", chat_id=chat, text="Привет! Это Нора — все твои книги в одном месте и советы, что читать дальше.\n\nРаз в неделю Шуршуня будет присылать сюда одну книгу для тебя (отписаться — /stop).\n\nЕсли есть вопрос или идея — просто напиши сюда, мы ответим.",
             reply_markup={"inline_keyboard": [[{"text": "Открыть Нору", "web_app": {"url": APP}}]]})
         return True
     if not owner_id:

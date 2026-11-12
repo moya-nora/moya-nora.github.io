@@ -1,0 +1,24 @@
+name: Бот — «Шуршуня советует» раз в неделю
+on:
+  schedule:
+    - cron: "7 11 * * 0"   # воскресенье, 14:07 по Москве
+  workflow_dispatch:
+    inputs:
+      only: {description: "chat id для пробной отправки (пусто — всем)", required: false, default: ""}
+permissions: {contents: write}
+concurrency: {group: bot-weekly, cancel-in-progress: false}
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Разослать
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          ONLY: ${{ github.event.inputs.only }}
+        run: python3 -u tools/bot_weekly.py
+      - name: Запомнить отправленное
+        run: |
+          git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
+          git add tools/bot_weekly.json
+          git diff --cached --quiet || (git commit -m "Бот: еженедельные советы" && git pull --rebase -X theirs -q && git push)

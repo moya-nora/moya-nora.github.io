@@ -5107,7 +5107,13 @@ function authDraw(){const up=authMode==="up";
       if(nv)LS.set("zal.name",nv.slice(0,40));else if(!LS.get("zal.name","")&&NS.getProfile){try{const pf=await NS.getProfile(NS.uid());if(pf&&pf.n)LS.set("zal.name",String(pf.n).slice(0,40))}catch(x){}}authEl.classList.remove("on");tgHaptic("medium");toast(up?"Аккаунт создан":"Вход выполнен");const n=authNext;authNext=null;if(n)n();setTimeout(()=>{pubCheck();inviteCheck()},800)}
     catch(x){msg.textContent=x.message;go.disabled=false;go.textContent=up?"Создать аккаунт":"Войти"}};
   $("#auP").onkeydown=e=>{if(e.key==="Enter")go.click()}}
-function afterSplash(){setTimeout(inviteCheck,300);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&!NS.email)authShow()}
+// книга из сообщения бота: app.html?bk=Название|Автор — сразу открываем её карточку
+function bkParam(){try{const v=new URLSearchParams(location.search).get("bk");if(!v)return;const [t,a]=v.split("|"),b=ALLB().find(b=>norm(b.t)===norm(t)&&(!a||norm(b.a||"").includes(norm(String(a).split(" ").slice(-1)[0]))));
+  if(b)bkcOpen(bItem(b,"rec"),"rec");history.replaceState(null,"",location.pathname+"?app=1")}catch(e){}}
+// разрешение боту писать раз в неделю: спрашиваем один раз, когда на полке уже есть книги
+function askWrite(){try{if(!TG||!TG.requestWriteAccess||LS.get("zal.wa",0)||!BOOKS.length)return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#bkc.on"))return setTimeout(askWrite,20000);
+  LS.set("zal.wa",1);TG.requestWriteAccess(()=>{})}catch(e){}}
+function afterSplash(){setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&!NS.email)authShow()}
 
 
 // ---------- смена обложки вручную: фото / рисунок / другое издание ----------
