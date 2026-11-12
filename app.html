@@ -701,7 +701,7 @@ body.films #app .seg i:not(.L *){transform:translateX(100%)}
 #app .scroll:not(.L *)::-webkit-scrollbar{display:none}
 #app .h1:not(.L *){font-family:var(--serif);font-size:clamp(60px,18vw,100px);font-weight:600;letter-spacing:-.02em;line-height:.9;margin:8px 20px 0}
 #app .flow:not(.L *){position:relative;height:292px;margin-top:4px;overflow-x:clip;overflow-y:visible;touch-action:pan-y}
-#app .flow .cv:not(.L *){position:absolute;left:50%;top:30px;width:176px;margin-left:-88px;border-radius:9px;transform-origin:50% 50%;cursor:pointer;transition:transform .9s cubic-bezier(.25,.8,.25,1),opacity .6s,filter .9s;box-shadow:0 30px 50px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.08)}
+#app .flow .cv:not(.L *){position:absolute;left:50%;top:30px;width:176px;margin-left:-88px;border-radius:9px;transform-origin:50% 50%;cursor:pointer;transition:transform 1.4s cubic-bezier(.25,.8,.25,1),opacity .9s,filter 1.4s;box-shadow:0 30px 50px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.08)}
 #app transition:transform .9s cubic-bezier(.2,.8,.2,1):not(.L *),#app opacity .6s:not(.L *),#app filter .9s;box-shadow:0 30px 50px -20px rgba(0,0,0,.85):not(.L *),#app 0 0 0 1px rgba(255,255,255,.08)}
 .flow .cv.mid:not(.L *){box-shadow:0 40px 70px -24px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.16)}
 #app .flow-cap:not(.L *){text-align:left;padding:0 22px;margin-top:0;height:156px;overflow:hidden}
@@ -1564,7 +1564,27 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 #app .bkc-where{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;max-width:420px;margin-top:10px;padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.16);font-size:15px;font-weight:600;color:var(--ink)}
 #app .bkc-where svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9}
 @media (max-height:700px){#app .bkc-cv{height:32vh}#app .bkc h2{font-size:26px}}
-/* где найти */
+/* подпись под каруселью — варианты (body[data-cap]) */
+body[data-cap] #app .flow-cap:not(.L *){height:auto;min-height:0;overflow:visible;margin-bottom:14px}
+body[data-cap="a"] #app .flow-cap:not(.L *){margin:2px 16px 0;padding:16px 18px 16px;border-radius:26px;background:linear-gradient(180deg,rgba(30,28,40,.62),rgba(14,13,20,.72));-webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 0 0 1px rgba(255,255,255,.08)}
+body[data-cap="a"] #app .flow-cap .kick:not(.L *){display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border-radius:12px;background:rgba(243,209,154,.14);color:#F3D19A;letter-spacing:.06em;font-size:11px}
+body[data-cap="a"] #app .flow-cap .kick:not(.L *)::before{content:"✦";font-size:11px}
+body[data-cap="a"] #app .flow-cap b:not(.L *){font-size:26px}
+body[data-cap="b"] #app .flow-cap:not(.L *){text-align:center;padding:4px 30px 0;text-shadow:0 2px 16px rgba(0,0,0,.5)}
+body[data-cap="b"] #app .flow-cap .kick:not(.L *){font-size:11px;letter-spacing:.2em;margin-bottom:10px}
+body[data-cap="b"] #app .flow-cap b:not(.L *){font-size:30px}
+body[data-cap="b"] #app .flow-cap .fm:not(.L *){font-size:13px;letter-spacing:.04em}
+body[data-cap="b"] #app .flow-cap p:not(.L *){margin:12px auto 0;font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.3;color:rgba(255,255,255,.88)}
+body[data-cap="b"] #app .flow-cap p:not(.L *)::before{content:"«"}body[data-cap="b"] #app .flow-cap p:not(.L *)::after{content:"»"}
+body[data-cap="c"] #app .flow-cap:not(.L *){display:flex;flex-direction:column;padding:0 18px}
+body[data-cap="c"] #app .flow-cap b:not(.L *){order:1;font-size:26px}
+body[data-cap="c"] #app .flow-cap .fm:not(.L *){order:2;margin-top:4px}
+body[data-cap="c"] #app .flow-cap .kick:not(.L *){order:3;display:flex;align-items:center;gap:8px;margin:14px 0 6px;text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:#F3D19A}
+body[data-cap="c"] #app .flow-cap .kick:not(.L *)::before{content:"";width:28px;height:28px;border-radius:50%;background:rgba(243,209,154,.16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F3D19A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 20c-1-9 2-15 7-15s8 6 7 15l-2-1.5-2.5 1.5-2.5-1.5L9.5 20 7 18.5z'/%3E%3Ccircle cx='10' cy='11' r='.8'/%3E%3Ccircle cx='14' cy='11' r='.8'/%3E%3C/svg%3E") center/18px no-repeat}
+body[data-cap="c"] #app .flow-cap p:not(.L *){order:4;position:relative;margin:0;padding:12px 14px;max-height:calc(2.9em + 24px);border-radius:4px 18px 18px 18px;background:rgba(20,18,30,.62);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);color:rgba(255,255,255,.88);max-width:none}
+/* где прочитать */
+#app .whb{display:inline-flex;align-items:center;gap:6px;margin:10px 0 0;padding:8px 14px;border-radius:18px;border:0;background:rgba(255,255,255,.12);color:#fff;font:600 13.5px/1 var(--f);box-shadow:inset 0 .5px 0 rgba(255,255,255,.25)}
+#app .whb svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9}
 #app .wh-ch{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 #app .wh-ch button{padding:16px 12px;border-radius:18px;background:rgba(255,255,255,.07);text-align:left}
 #app .wh-ch button.on{background:#F5F5F7;color:#0B0B10}#app .wh-ch button.on small{color:rgba(11,11,16,.6)}
@@ -3995,7 +4015,7 @@ const SHR='<svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M6 
 function filmFeed(){if(!FILMS)return [];const res=filmList();let i=0;
   feedMore=()=>{const chunk=res.slice(i,i+25);i+=25;return chunk.map(f=>fItem(f,"feed"))};return feedMore()}
 function slideHTML(x,j){const meta=x.a||"";
-  return `<article class="slide" data-j="${j}"><div class="wrap"><div class="fly gl"><div class="bg"></div><button class="shr press" data-shareb="${j}" aria-label="Переслать">${SHR}</button><div class="lean r"><i>${IC.v}</i><b>Добавить</b></div><div class="lean l"><i>${IC.x}</i><b>Не предлагать</b></div><div class="obj">${cv(x,220)}</div><div class="info"><h2>${esc(x.t)}</h2><div class="meta">${esc(meta)}</div>${x.why?`<div class="why">Шуршуня: ${esc(x.why[0].toLowerCase()+x.why.slice(1))}</div>`:""}<p class="ds">${esc(descOf(x))}</p>
+  return `<article class="slide" data-j="${j}"><div class="wrap"><div class="fly gl"><div class="bg"></div><button class="shr press" data-shareb="${j}" aria-label="Переслать">${SHR}</button><div class="lean r"><i>${IC.v}</i><b>Добавить</b></div><div class="lean l"><i>${IC.x}</i><b>Не предлагать</b></div><div class="obj">${cv(x,220)}</div><div class="info"><h2>${esc(x.t)}</h2><div class="meta">${esc(meta)}</div>${x.why?`<div class="why">Шуршуня: ${esc(x.why[0].toLowerCase()+x.why.slice(1))}</div>`:""}<p class="ds">${esc(descOf(x))}</p><button class="whb press" data-whereb="${j}"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg><span>Где прочитать</span></button>
   <div class="acts3"><button class="rb gl press" data-skip="${j}" aria-label="Не предлагать">${IC.x}</button><button class="rb sm gl press" data-undo aria-label="Отменить действие">${IC.u}</button><button class="rb w press" data-want="${j}" aria-label="Добавить">${IC.v}</button></div></div></div></div></article>`}
 function slideDesc(el,x){const upd=()=>{const p=el.querySelector(".info p.ds");if(p)p.textContent=descOf(x)};upd();wantDesc(x,upd);const nx=el.nextElementSibling;if(nx&&nx.dataset.j!=null){const y=slides[+nx.dataset.j];if(y)wantDesc(y,()=>{const p=nx.querySelector(".info p.ds");if(p)p.textContent=descOf(y)})}}
 function bgFill(sl,x){const u=imgOf(x),bg=sl.querySelector(".bg");if(u&&bg&&!bg.firstChild)bg.innerHTML=`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer">`}
@@ -4062,7 +4082,7 @@ $("#feed").addEventListener("click",e=>{const t=e.target;
   const w=t.closest("[data-want]");if(w){decide(+w.dataset.want,"want");return}
   const sk=t.closest("[data-skip]");if(sk){decide(+sk.dataset.skip,"skip");return}
   if(t.closest("[data-undo]")){undo();return}
-  const shb=t.closest("[data-shareb]");if(shb){const x=slides[+shb.dataset.shareb];if(x)shareBook(x);tgHaptic();return}
+  const whb=t.closest("[data-whereb]");if(whb){const x=slides[+whb.dataset.whereb];if(x)whereOpen(x);tgHaptic();return}const shb=t.closest("[data-shareb]");if(shb){const x=slides[+shb.dataset.shareb];if(x)shareBook(x);tgHaptic();return}
   if(t.closest("[data-find]")){$("#srchB").click();return}
   const ob=t.closest(".obj,.info h2");if(ob&&!t.closest("button")){const sl=ob.closest(".slide");const x=sl&&slides[+sl.dataset.j];if(x&&Date.now()-lastTap>350)setTimeout(()=>{if(Date.now()-lastTap>300){learn(x,1);openItem(x,"rec")}},320)}});
 let lastTap=0;
@@ -4105,7 +4125,7 @@ function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((f
   el.addEventListener("touchend",()=>{x0=null});
   el.addEventListener("mousedown",e=>down(e.clientX,e.clientY));addEventListener("mousemove",e=>mv(e.clientX,e.clientY,null));addEventListener("mouseup",()=>{x0=null});
   el.addEventListener("click",e=>{const c=e.target.closest(".cv");if(c&&!moved){flowHold=Date.now();const i=+c.dataset.i;if(i!==fi){fi=i;layoutFlow()}openItem(flowList()[i],"rec")}})})();
-(function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,3600)})();
+(function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,7000)})();
 function drawCol(){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
   $("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read]]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
@@ -4961,7 +4981,7 @@ function bkcDraw(){const {x,L}=BKC;
    <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
    <div class="bkc-acts">${bkcActs(x,L)}</div>
-   <button class="bkc-where" data-bkc="where">${IC2.pin}Где найти?</button></div>`}
+   <button class="bkc-where" data-bkc="where">${IC2.pin}Где прочитать?</button></div>`}
 function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};cardX=x;cardL=L;ambFor(x);bkcDraw();
   // обложка уже в кэше браузера — ждём её расшифровки (до 250 мс), чтобы не мелькала рисованная
   const im=bkcEl.querySelector(".bkc-cv img"),show=()=>{if(BKC&&BKC.x===x){bkcEl.classList.add("on");syncBack()}};
@@ -4992,7 +5012,7 @@ function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).s
     ["Книжные рядом","на карте",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],["Библиотеки рядом","на карте",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
   const choose=`<div class="wh-ch"><button data-wh="on" class="${mode==="on"?"on":""}"><b>Онлайн</b><small>купить или читать в приложении</small></button><button data-wh="off" class="${mode==="off"?"on":""}"><b>Офлайн</b><small>магазины и библиотеки</small></button></div>`;
   const list=mode?`<div class="wh-l">${(mode==="on"?ON:OFF).map(([n,d,u])=>`<button data-whu="${esc(u)}"><b>${n}</b><small>${d}</small><i>›</i></button>`).join("")}</div>`:"";
-  vOpen(`<h3 class="vh">Где найти «${esc(x.t)}»</h3>${choose}${list}`);$("#vsheet").classList.add("ontop");$("#vshBody")._wx=x}
+  vOpen(`<h3 class="vh">Где прочитать «${esc(x.t)}»</h3>${choose}${list}`);$("#vsheet").classList.add("ontop");$("#vshBody")._wx=x}
 bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");if(t.closest("[data-bkc-rv]")){reviewsOpen(BKC.x);return}if(t.closest("[data-bkc-fr]")){const fr=frReaders(BKC.x);
     vOpen(`<h3 class="vh">Читали «${esc(BKC.x.t)}»</h3><div class="wh-l">${fr.map(({f,b})=>`<button data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid)}<b>${esc(f.n||"Друг")}</b><small>${b.r!=null?"★ "+r5(b.r):"без оценки"}</small>${b.rv?`<em class="frv">«${esc(b.rv)}»</em>`:""}<i>›</i></button>`).join("")}</div>`);$("#vsheet").classList.add("ontop");return}
   if(!b||!BKC)return;const {x,L}=BKC,a=b.dataset.bkc;tgHaptic();
