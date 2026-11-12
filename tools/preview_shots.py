@@ -10,13 +10,12 @@ async def fs(route):
 SLIDES=[
  ("1_home","Все полки в одном месте","Все твои книги —<br><em>в одной Норе</em>","Бумажные, из Литрес, Яндекс Книг, LiveLib и других сервисов. Оценки, отзывы и заметки рядом.","#7A2E4A","#C98A3A"),
  ("2_feed","Лента","Что почитать —<br><em>подскажет Шуршуня</em>","Подбирает книги под твой вкус и не предлагает уже прочитанное. С каждой оценкой подборка точнее.","#4A2A7A","#D08A5A"),
- ("3_where","Без поисков по сайтам","Где прочитать —<br><em>сразу</em>","Нора покажет, где есть книга: в Литрес, Яндекс Книгах, на Ozon или в книжном рядом.","#22406E","#C98A3A"),
+ ("3_where","Без долгих поисков","Где прочитать —<br><em>сразу</em>","Нора покажет, где купить или прочитать нужную книгу.","#22406E","#C98A3A"),
  ("4_search","Поиск","Найдётся книга<br><em>на любой вечер</em>","Классика, дарк роман, новинки — фильтры по жанру, настроению и тропам.","#6E2A3C","#B0607A"),
- ("5_book","Карточка книги","Всё о книге —<br><em>на одном экране</em>","Описание, оценки и отзывы читателей, число страниц и кто из друзей уже прочитал.","#5A3A22","#C98A3A"),
- ("6_stats","Статистика","Твой год<br><em>в книгах</em>","Страницы, любимые авторы и итоги года — красиво, хоть в сторис.","#3C2A6E","#C9708A"),
+ ("5_stats","Статистика","Твой год<br><em>в книгах</em>","Страницы, любимые авторы и итоги года — красиво, хоть в сторис.","#3C2A6E","#C9708A"),
 ]
-DEMO={"rec":["Четвёртое крыло|Яррос","Королевство шипов и роз|Маас","Жестокий принц|Блэк","Шестёрка воронов|Бардуго","Незримая жизнь Адди Ларю|Шваб","Из крови и пепла|Арментроут","Семь мужей Эвелин Хьюго|Рид","Гипотеза любви|Хейзелвуд"],
- "feed":["Королевство шипов и роз|Маас","Шестёрка воронов|Бардуго","Незримая жизнь Адди Ларю|Шваб","Семь мужей Эвелин Хьюго|Рид","Гипотеза любви|Хейзелвуд","Из крови и пепла|Арментроут","Жестокий принц|Блэк","Ночной цирк|Моргенштерн"]}
+DEMO={"rec":["Там, где раки поют|Оуэнс","Семь мужей Эвелин Хьюго|Рид","Тень ветра|Сафон","Незримая жизнь Адди Ларю|Шваб","До самого рая|Янагихара","Шестёрка воронов|Бардуго","Королевство шипов и роз|Маас"],
+ "feed":["Семь мужей Эвелин Хьюго|Рид","Шестёрка воронов|Бардуго","Незримая жизнь Адди Ларю|Шваб","Семь мужей Эвелин Хьюго|Рид","Гипотеза любви|Хейзелвуд","Из крови и пепла|Арментроут","Жестокий принц|Блэк","Ночной цирк|Моргенштерн"]}
 async def main():
   async with async_playwright() as p:
     b=await p.chromium.launch(args=["--no-sandbox"])
@@ -29,7 +28,7 @@ async def main():
     shot=lambda n:pg.screenshot(path=O+n+".png")
     await pg.goto("http://localhost:8766/app.html?app=1");await w(4000)
     await js("document.getElementById('introGo').click()");await w(1500)
-    for step,idx in enumerate([[2,6,13,14,16,21],[0,1,2]]):
+    for step,idx in enumerate([[6,8,12,13,16,19],[0,1,2]]):
       for i in idx:
         await js(f"document.querySelectorAll('#onbGrid .op')[{i}].click()");await w(500)
         await js("document.querySelector('#rmSt [data-st=\"5\"]').click()");await w(450)
@@ -43,14 +42,12 @@ async def main():
     await js("const o=document.querySelector('[data-wh=on]');o&&o.click()");await w(4000);await js(clean);await shot("3_where")
     await js("document.querySelector('#vsheet .sh-bg').click()");await w(800)
     await js("const c=document.querySelector('[data-bkc=close]');c&&c.click()");await w(800)
-    await js("document.querySelectorAll('#flow .cv')[3].click()");await w(6000);await js(clean);await shot("5_book")
-    await js("const c=document.querySelector('[data-bkc=close]');c&&c.click()");await w(800)
     await js("document.querySelector('.dock [data-s=col]').click()");await w(1500)
     await js("document.getElementById('srchB').click()");await w(1200)
     await js("([...document.querySelectorAll('#fwrap button')].find(b=>/^Классика$/.test(b.textContent.trim()))||document.querySelector('#fwrap button')).click()");await w(400)
     await js("document.querySelector('[data-fshow]').click()");await w(5000);await js(clean);await shot("4_search")
     await js("location.reload()");await w(5000)
-    await js("document.querySelector('.dock [data-s=sum]').click()");await w(5000);await js(clean);await shot("6_stats")
+    await js("document.querySelector('.dock [data-s=sum]').click()");await w(5000);await js(clean);await shot("5_stats")
     print(errs)
     fp=await b.new_page(viewport={"width":1080,"height":1920})
     for i,(img,k,h,pp,a,bb) in enumerate(SLIDES):
