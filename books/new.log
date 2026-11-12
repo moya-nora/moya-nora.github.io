@@ -3,10 +3,10 @@
    lang=0 стр. 2: всего 28
    lang=0 стр. 3: всего 45
    lang=0 стр. 4: всего 59
-   lang=0 стр. 5: всего 77
-   lang=0 стр. 6: всего 92
+   lang=0 стр. 5: всего 78
+   lang=0 стр. 6: всего 93
    lang=0 стр. 7: всего 107
-   lang=0 стр. 8: всего 124
+   lang=0 стр. 8: всего 126
    lang=0 стр. 9: всего 148
    lang=0 стр. 10: всего 168
    lang=0 стр. 11: всего 188
@@ -34,7 +34,7 @@
    lang=0 стр. 33: всего 697
    lang=0 стр. 34: всего 720
    lang=0 стр. 35: всего 747
-   lang=0 стр. 36: всего 769
+   lang=0 стр. 36: всего 770
    lang=0 стр. 37: всего 793
    lang=0 стр. 38: всего 820
    lang=0 стр. 39: всего 844
@@ -88,6 +88,8 @@
    кандидатов: 1047
 2. Подробности произведений
    0/1047
+  https://api.fantlab.ru/work/2262539/extended: URLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1011)')), повтор
+  https://api.fantlab.ru/work/2262539/extended: RemoteDisconnected('Remote end closed connection without response'), повтор
    100/1047
    200/1047
    300/1047
