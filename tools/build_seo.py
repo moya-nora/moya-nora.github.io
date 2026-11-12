@@ -235,7 +235,7 @@ get = lambda p: next((L for q, _, _, L in coll_data if q == p), [])
 hero = [b for b in get("romantezi") if b["ann"]][:5] or cat_books[:5]
 show = [p for p in ("romantezi", "dark-roman", "lyubovnye-romany", "zhanr-fantasy", "young-adult", "zahvatyvayuschie", "uyutnye", "zhanr-detective") if get(p)]
 TG_REDIRECT = """<script>(function(){try{var s=location.search,h=location.hash,sa=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;
-if(/tgWebApp/.test(h+s)||sa||/[?&]app(=|&|$)/.test(s)){location.replace("app.html?v="+Math.floor(Date.now()/6e5)+(s?"&"+s.slice(1):"")+h)}}catch(e){}})()</script>"""
+if(/tgWebApp/.test(h+s)||sa||/[?&]app(=|&|$)/.test(s)||/^#.*=/.test(h)){location.replace("app.html?v="+Math.floor(Date.now()/6e5)+(s?"&"+s.slice(1):"")+h)}}catch(e){}})()</script>"""
 home = f"""<div class="wrap"><section class="hero"><div><div class="kick">Книжная полка с советником</div><h1>Все твои книги —<br>в одной <em>Норе</em></h1>
 <p>Бумажные, из Литрес, Яндекс Книг и LiveLib — на одной полке. Сфотографируй шкаф, и полка соберётся сама. А Шуршуня подскажет, что читать дальше.</p>{CTA}
 <div class="where">Бесплатно · в браузере, в Telegram и на экране телефона</div></div><div class="fan">{"".join(cv(b) for b in hero)}</div></section>
