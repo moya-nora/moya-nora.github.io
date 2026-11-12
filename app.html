@@ -1685,6 +1685,11 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .wh-l button{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
 #app .wh-l b{font-size:15.5px}#app .wh-l small{flex:1;font-size:13px;color:var(--ink3)}#app .wh-l i{font-style:normal;color:var(--ink3);font-size:20px}
 #app .wh-l .ava{width:36px;height:36px;font-size:16px}
+#app #newAu{margin-bottom:6px}#app .na-row{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:2px 0 6px}
+#app .na-row button{flex:none;width:96px;text-align:left}#app .na-row small{display:block;margin-top:6px;font-size:12.5px;line-height:1.25;max-height:2.5em;overflow:hidden}#app .na-row em{display:block;font-style:normal;font-size:11.5px;color:var(--ink3);margin-top:2px}
+#app .lv-ch{display:flex;align-items:center;gap:14px}#app .lv-ch .ic{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(233,184,102,.14);color:#E9B866;font-size:22px}
+#app .lv-ch.ok .ic{background:#E9B866;color:#0B0B10}#app .lv-ch div{flex:1;min-width:0}#app .lv-ch small{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}#app .lv-ch b{display:block;font-size:16px;margin-top:2px}#app .lv-ch span{display:block;font-size:13px;color:var(--ink2);margin-top:2px}
+#app .lv-ch .btn{flex:none;padding:0 14px;height:36px;font-size:13px}
 #app .lv-goal{display:flex;align-items:center;gap:16px;position:relative;cursor:pointer}
 #app .lv-goal svg{width:108px;height:108px;flex:none;transform:rotate(-90deg)}
 #app .lv-goal circle{fill:none;stroke-width:9;stroke-linecap:round}#app .lv-goal .tr{stroke:rgba(255,255,255,.1)}#app .lv-goal .pr{stroke:#E9B866;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.9,.3,1)}
@@ -1855,7 +1860,7 @@ setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!doc
   </header>
 
 <section class="screen" id="s-feed"><div class="feed" id="feed"></div><button class="ffil gl press" id="ffil" hidden aria-label="Фильтры"></button><div class="gbar" id="gbar" hidden></div><div class="dots" id="dots"></div></section>
-<section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div class="rec-h" id="recH"><span>Шуршуня</span><i>советует</i></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><h3 class="shelf-h">Мои полки</h3><div class="pills" id="pills"></div><div class="grid" id="grid"></div></div></section>
+<section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div class="rec-h" id="recH"><span>Шуршуня</span><i>советует</i></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><div id="newAu" hidden></div><h3 class="shelf-h">Мои полки</h3><div class="pills" id="pills"></div><div class="grid" id="grid"></div></div></section>
 <section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
 
 <div class="bottom"><nav class="dock gl" aria-label="Разделы"><i class="lens lensy" id="lens"></i>
@@ -4275,7 +4280,14 @@ function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
   $("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read]]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
   const G=gridList();$("#grid").innerHTML=G.map((x,i)=>`<button data-g="${i}">${cv(x,110)}<small>${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
-  if(!keepFlow)drawFlow();drawViews()}
+  if(!keepFlow)drawFlow();drawViews();drawNewAu()}
+// «Новое от твоих авторов»: свежие книги (этот и прошлый год) авторов, которых человек оценил на 4–5, и ещё не на полках
+function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a).map(b=>norm(b.a)));if(!fav.size)return [];
+  const W=wantNorms(),seen=new Set(),out=[];for(const b of ALLB()){if(!b.y||b.y<YNOW-1||!b.a||!fav.has(norm(b.a)))continue;const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt)||seen.has(nt)||dismissed.has(b.id))continue;seen.add(nt);out.push(b);if(out.length>=8)break}
+  return out.sort((a,b)=>(b.y||0)-(a.y||0)).map(b=>bItem(b,"rec"))}
+function drawNewAu(){const el=$("#newAu");if(!el)return;const L=newAuList();el.hidden=!L.length;if(!L.length){el.innerHTML="";return}el._l=L;
+  el.innerHTML=`<h3 class="shelf-h">Новое от твоих авторов</h3><div class="na-row">${L.map((x,i)=>`<button data-na="${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a).split(" ").slice(-1)[0])} · ${x.y}</em></button>`).join("")}</div>`}
+$("#newAu").addEventListener("click",e=>{const b=e.target.closest("[data-na]");if(!b)return;const x=$("#newAu")._l[+b.dataset.na];if(x){tgHaptic();bkcOpen(x,"rec")}});
 $("#colScroll").addEventListener("scroll",()=>{document.body.classList.toggle("topoff",$("#colScroll").scrollTop>16)},{passive:true});
 $("#pills").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){if(colF===b.dataset.f)return;colF=b.dataset.f;drawCol(true);tgHaptic()}});
 // ---------- виды полки: обложки, полки по странам, лента веков, карта, авторы (из первой Норы) ----------
@@ -4534,13 +4546,22 @@ function sumLive(r,sts,got){const now=new Date(),Y=String(now.getFullYear()),M=n
   const achC=`<div class="sc gl lv-ach"><div class="hd"><h3>Ачивки</h3><span>${got.length} из ${sts.length}</span></div>
     <div class="stamps">${got.map(st=>`<div class="stp${fresh.includes(st)?" new":""}">${stampEm(st)}<b>${esc(st.t)}</b><small>${esc(st.h)}</small></div>`).join("")}</div>
     ${next.length?`<h4 class="lv-h4">Скоро откроются</h4>${next.map(st=>`<div class="lv-nx"><div><b>${esc(st.t)}</b><small>${esc(st.h)}</small><i><s style="width:${Math.round(st.cur/st.need*100)}%"></s></i></div><em>${st.cur}/${st.need}</em></div>`).join("")}`:""}</div>`;
-  return goalC+monthC+achC+tasteC}
+  const CH=[["Начни год с классики","любая классическая книга",x=>x.g==="classic","gen:classic"],["Книга о любви","роман, где главное — чувства",x=>LOVE(x),"gen:romance"],
+    ["Новая страна","книга из страны, которой ещё нет на полке",(x,L)=>x.c&&!L.some(y=>y!==x&&y.c===x.c&&y.rd!==M),""],["Нон-фикшн","книга о реальном мире",x=>x.g==="nonfic","gen:nonfic"],
+    ["На один вечер","книга до 250 страниц",x=>(x.pg||999)<=250,"len:short"],["Летнее приключение","книга-приключение",x=>has(x,"приключения"),""],
+    ["Толстяк","книга от 500 страниц",x=>(x.pg||0)>=500,"len:long"],["Свежая новинка","книга этого или прошлого года",x=>(x.y||0)>=YNOW-1,"gen:new"],
+    ["Сентябрьский детектив","детектив или триллер",x=>x.g==="detective","gen:detective"],["Что-то жуткое","мистика, хоррор или готика",x=>has(x,"мистика","жутковатое","хоррор","готика"),""],
+    ["Путешествие на Восток","книга автора из Азии",x=>ASIA.has(x.c),"cty:asia"],["Уютный декабрь","тёплая и светлая книга",x=>has(x,"уют","тёплое","светлое"),""]];
+  const [ct,ch,cf,cfl]=CH[now.getMonth()],done=mo.find(x=>cf(x,r));
+  const chC=`<div class="sc gl lv-ch${done?" ok":""}"><i class="ic">${done?"✓":"★"}</i><div><small>Челлендж месяца</small><b>${ct}</b><span>${done?`Выполнено: «${esc(done.t)}»`:ch}</span></div>${!done&&cfl?`<button class="btn" data-chgo="${cfl}">Подобрать</button>`:""}</div>`;
+  return goalC+chC+monthC+achC+tasteC}
 function goalOpen(){const g=LS.get("zal.goal",24);vOpen(`<h3 class="vh">Цель на год</h3><p class="sy-note">Сколько книг хочешь прочитать в ${new Date().getFullYear()} году?</p><div class="fgl">${[6,12,24,36,52,100].map(n=>`<button class="fgc${n===g?" on":""}" data-goalset="${n}">${n}</button>`).join("")}</div>`)}
 $("#vshBody").addEventListener("click",e=>{const b=e.target.closest("[data-goalset]");if(!b)return;LS.set("zal.goal",+b.dataset.goalset);tgHaptic("medium");vClose();drawSum()});
 $("#vshBody").addEventListener("click",e=>{const t=e.target;if(t.closest("[data-sy-out2],[data-sy-del2]"))syncClick(t)});
 $("#sumMore").addEventListener("click",e=>{const t=e.target;
   if(syncClick(t))return;
   if(t.closest("[data-goal]")){goalOpen();return}
+  {const c=t.closest("[data-chgo]");if(c){const [k,v]=c.dataset.chgo.split(":");resetAll();if(k==="gen"&&v!=="new")NF.gen=[v];else if(k==="len")NF.len=v;else if(k==="cty")NF.cty=["Япония","Южная Корея","Китай","Индия"];saveNF();if(v==="new"){FG.gen=["new"];fgSave();show("feed");return}SX.picks=true;openSearch(true);return}}
   if(t.closest("[data-import]")){importOpen();return}
   if(t.closest("[data-qadd]")){openQuoteForm();return}if(t.closest("[data-qall]")){openSheet(`<h3 class="sheet-h">Цитаты</h3><div class="qlist" id="qlist">${quotesListHTML()}</div>`);return}
   if(t.closest("[data-share]")){openShare();return}if(t.closest("[data-backup]")){openBackup();return}
