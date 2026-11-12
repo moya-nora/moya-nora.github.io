@@ -1,17 +1,20 @@
-name: ai-covers-try
-on: workflow_dispatch
+name: ai-covers
+on:
+  workflow_dispatch:
+  schedule: [{cron: "41 17 * * *"}]
 permissions: {contents: write}
+concurrency: {group: ai-covers, cancel-in-progress: false}
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 340
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
-      - run: pip install playwright && python -m playwright install --with-deps chromium
-      - run: (python -m http.server 8766 >/dev/null 2>&1 &) && sleep 2 && python tools/ai_covers_try.py
+      - run: pip install playwright pillow && python -m playwright install --with-deps chromium
+      - run: (python -m http.server 8766 >/dev/null 2>&1 &) && sleep 2 && AI_MINUTES=300 python tools/ai_covers.py
       - run: |
           git config user.email noreply@anthropic.com; git config user.name Claude
-          git checkout -B ai-covers-try
-          git add -f out/ai/cover*.png && git commit -qm "ai covers try" && git push -f origin ai-covers-try
+          git add books/ai_covers.json img/ai && git commit -qm "ИИ-обложки: следующая порция" || exit 0
+          git pull -q --rebase -X theirs && git push

@@ -3971,7 +3971,9 @@ let COV=LS.get("zal.cov",{});const covSave=()=>LS.set("zal.cov",COV);
 const ikey=x=>x._f?"f:"+(x.id||norm(x.t)+(x.y||"")):norm(x.t)+"|"+norm(x.a||"");
 // IMG[k]: адрес картинки; "!время" — источник ответил «нет обложки» (повторим через 2 недели)
 const NOIMG_TTL=14*864e5;
-const imgOf=x=>{const c=COV[ikey(x)];if(c==="draw")return "";if(c)return c;const v=x.img||IMG[ikey(x)]||"";return v&&v[0]!=="!"?v:""};
+// ИИ-обложки для книг, у которых нет свежего издания (готовит tools/ai_covers.py); выбор пользователя в «сменить обложку» важнее
+let AIC=LS.get("zal.aic",{});fetch("books/ai_covers.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.m){const m={};for(const k in j.m)if(j.m[k])m[k]=j.m[k];AIC=m;LS.set("zal.aic",m)}}).catch(()=>{});
+const imgOf=x=>{const c=COV[ikey(x)];if(c==="draw")return "";if(c)return c;if(!x._f&&AIC[ikey(x)])return "img/ai/"+AIC[ikey(x)];const v=x.img||IMG[ikey(x)]||"";return v&&v[0]!=="!"?v:""};
 const imgKnown=k=>{const v=IMG[k];if(!v)return false;if(v[0]!=="!")return true;return Date.now()-(+v.slice(1)||0)<NOIMG_TTL};
 const imgTag=u=>`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer" decoding="async" onload="NORA_IMGOK(this)" onerror="NORA_IMGERR(this)">`;
 window.NORA_IMGOK=function(img){const w=img.naturalWidth,h=img.naturalHeight,r=h/Math.max(1,w),box=img.closest("[data-ik]"),k=box&&box.dataset.ik;
