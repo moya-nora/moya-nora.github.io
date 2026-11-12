@@ -21,7 +21,7 @@ if not TOKEN:
 def api(method, **params):
     req = urllib.request.Request(f"https://api.telegram.org/bot{TOKEN}/{method}", data=json.dumps(params).encode(), headers={"Content-Type": "application/json"})
     try:
-        with urllib.request.urlopen(req, timeout=30) as r:
+        with urllib.request.urlopen(req, timeout=70) as r:
             return json.load(r).get("result")
     except urllib.error.HTTPError as e:
         print(method, e.code, e.read()[:300].decode("utf-8", "replace"))
