@@ -4800,7 +4800,7 @@ function filtersHTML(){if(isF()){const T=TF;
   const genChips=[...B_GEN.map(g=>[g,GEN[g]]),...B_SUBG.map(x=>[x[0],x[1]])];
   const tc=tropeCount(),tAll=B_TROPE.filter(([id])=>tc[tropeTag(id)]||F.trope.includes(id)),tShow=FOPEN.has("tropes-all")?tAll:tAll.slice(0,6);
   const mShow=FOPEN.has("moods-all")?B_MOOD:B_MOOD.filter((m,i)=>i<6||F.mood.includes(m[0]));
-  return `<div class="fsec"><input class="sy-in fask" id="fAsk" value="${esc(F.ask)}" placeholder="Своими словами: «короткое и смешное про Японию»" enterkeyhint="done"></div>`+
+  return ``+
    fsec("Жанр",genChips.map(([id,l])=>fchip("gen",id,F.gen.includes(id),l)).join(""))+
    fsec("Настроение",mShow.map(([id,l])=>fchip("mood",id,F.mood.includes(id),l)).join("")+(mShow.length<B_MOOD.length?`<button type="button" class="fk more" data-fmore="moods-all">ещё ${B_MOOD.length-mShow.length}</button>`:""))+
    (tAll.length?fsec("Тропы",tShow.map(([id,l])=>fchip("trope",id,F.trope.includes(id),l)).join("")+(tShow.length<tAll.length?`<button type="button" class="fk more" data-fmore="tropes-all">ещё ${tAll.length-tShow.length}</button>`:""),"для ромэнтези и любовных романов"):"")+
