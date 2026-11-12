@@ -1257,6 +1257,17 @@ body.viewing #app .fbar{display:none}
 #app .ffoot{position:sticky;bottom:-20px;margin:0 -18px -20px;padding:12px 18px calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;background:linear-gradient(transparent,rgba(16,16,24,.96) 30%)}
 #app .ffoot .btn{flex:1}
 #app .ffoot .btn.w{flex:2}
+#app .vx{position:absolute;right:16px;top:14px;z-index:3;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.1);display:grid;place-items:center;padding:0}
+#app .vx svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+#app #vshBody:has(>.vx){position:relative}
+#app .fwrap.inl{padding-bottom:10px}#app #vshBody:has(#fwrap.inl) #sxf .fc.main:not(.on){display:none}#app .fr .ac:has(.ib[data-lb]):not(.L *){gap:24px;padding-right:8px}#app .fwrap.inl .fsec:first-child{margin-top:4px}
+#app .sx-spot{position:fixed;inset:0;z-index:200;background:rgba(4,4,8,0);transition:background .3s;-webkit-tap-highlight-color:transparent}
+#app .sx-spot.on{background:rgba(4,4,8,.78)}
+#app .sx-spot-c{position:fixed;transform:scale(1);transform-origin:50% 50%;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),opacity .3s;opacity:0}
+#app .sx-spot.on .sx-spot-c{transform:scale(1.07);opacity:1}
+#app .sx-spot-c .sx-feat{margin:0;background:#16261E;box-shadow:0 0 0 1px rgba(143,211,168,.35),0 20px 60px -10px rgba(143,211,168,.35);font-size:14.5px;color:#fff}
+#app .sx-spot-ok{position:fixed;left:50%;transform:translateX(-50%);min-width:160px;opacity:0;transition:opacity .3s .2s}
+#app .sx-spot.on .sx-spot-ok{opacity:1}
 #app .ffoot .btn[disabled]{opacity:.5}
 html[data-theme="light"] #app .fc[data-fdrop],html[data-theme="light"] #app .fk.on,html[data-theme="light"] #app .fc.main i{background:#14151B;color:#F3F1EC}
 html[data-theme="light"] #app .fk{background:rgba(20,21,27,.06);color:var(--ink);box-shadow:inset 0 0 0 .5px rgba(20,21,27,.1)}
@@ -4155,7 +4166,7 @@ const sxHas=x=>(SX.k==="films"?FM:BK).has(x);
 function hl(t,q){const s=String(t||""),nq=String(q||"").trim().toLowerCase().replace(/ё/g,"е");if(nq.length<2)return esc(s);const i=s.toLowerCase().replace(/ё/g,"е").indexOf(nq);
   return i<0?esc(s):esc(s.slice(0,i))+"<mark>"+esc(s.slice(i,i+nq.length))+"</mark>"+esc(s.slice(i+nq.length))}
 function sxRow(x,i){const st=sxHas(x),F=SX.k==="films";
-  return `<div class="fr" data-i="${i}">${cv(x,48)}<div class="tx"><b>${hl(x.t,SX.q)}</b><span>${hl([x.a,x.y,x.c,x.s?"сериал":"",F&&x.src&&x.src.hr===0?"не выходил в РФ":""].filter(Boolean).join(" · "),SX.q)}</span></div><div class="ac">${st?`<em>${st==="read"?(F?"Просмотрено":"Прочитано"):(F?"Хочу посмотреть":"Хочу прочитать")}</em>`:`<button class="ib" data-sx="read" data-lb="${F?"смотрел":"прочитано"}" aria-label="${F?"Просмотрено":"Прочитано"}">${IC.v}</button><button class="ib w" data-sx="want" data-lb="хочу" aria-label="${F?"Хочу посмотреть":"Хочу прочитать"}">${PLUS}</button>`}</div></div>`}
+  return `<div class="fr" data-i="${i}">${cv(x,48)}<div class="tx"><b>${hl(x.t,SX.q)}</b><span>${hl([x.a,x.y,x.c,x.s?"сериал":"",F&&x.src&&x.src.hr===0?"не выходил в РФ":""].filter(Boolean).join(" · "),SX.q)}</span></div><div class="ac">${st?`<em>${st==="read"?(F?"Просмотрено":"Прочитано"):"В избранном"}</em>`:`<button class="ib" data-sx="read" data-lb="${F?"смотрел":"прочитано"}" aria-label="${F?"Просмотрено":"Прочитано"}">${IC.v}</button><button class="ib w" data-sx="want" data-lb="в избранное" aria-label="${F?"Хочу посмотреть":"Хочу прочитать"}">${PLUS}</button>`}</div></div>`}
 const POPF=[["Интерстеллар",2014],["Во все тяжкие",2008,1],["Друзья",1994,1],["Форрест Гамп",1994],["Побег из Шоушенка",1994],["Шерлок",2010,1],["Зелёная миля",1999],["Начало",2010],["Игра престолов",2011,1],["Титаник",1997],
   ["Бойцовский клуб",1999],["Чернобыль",2019,1],["Криминальное чтиво",1994],["Матрица",1999],["Очень странные дела",2016,1],["1+1",2011],["Амели",2001],["Унесённые призраками",2001],["Паразиты",2019],["Ла-Ла Ленд",2016],
   ["Остров проклятых",2010],["Тьма",2017,1],["Брат",1997],["Москва слезам не верит",1979],["Король Лев",1994],["Аркейн",2021,1],["Властелин колец: Братство Кольца",2001],["Отступники",2006],["Джентльмены",2019],["Иван Васильевич меняет профессию",1973],["Достучаться до небес",1997],["Амадей",1984]];
@@ -4178,12 +4189,12 @@ function sxVis(){const base=SX.list.filter(sxPassX),hid=base.filter(x=>sxHas(x)=
 const sxHidBar=hid=>hid.length?`<button class="sx-hid" data-sxread><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>${SX.showRead?"Прочитанное показано":`Скрыто прочитанное: ${hid.length} ${plural(hid.length,"книга","книги","книг")}`}</span><u>${SX.showRead?"скрыть":"показать"}</u></button>`:"";
 function sxDraw(state){const box=$("#fres");if(!box)return;const q=SX.q,F=SX.k==="films";let h="";
   if(SX.mode==="au"){const {vis,hid}=sxVis();h=`<div class="sx-h">${esc(SX.au.name)} — по популярности</div>`+sxHidBar(hid)+(state==="load"?'<div class="sk"></div><div class="sk"></div><div class="sk"></div>':vis.map(sxRow).join("")||(hid.length?"":'<p class="hint">У автора не нашлось книг.</p>'));box.innerHTML=h;box._l=vis;return}
-  if(norm(q).length<2&&sxFilt()&&!F){const all=filterPicks(),L=all.slice(0,SX.fn||40).map(b=>bItem(b,"hit"));SX.list=L;
+  if(norm(q).length<2&&sxFilt()&&!F&&SX.picks){const all=filterPicks(),L=all.slice(0,SX.fn||40).map(b=>bItem(b,"hit"));SX.list=L;
     h=`<div class="sx-h">Подобрано по фильтрам</div>`+(all.length?L.map(sxRow).join("")+(all.length>L.length?`<button class="sx-moref" data-sxmore>Показать ещё</button>`:""):`<p class="hint">С такими фильтрами ничего не нашлось.${(()=>{const d=bestDrop();return d?` Попробуй убрать «${esc(d[1])}».`:""})()}</p><button class="sx-moref" data-sxfreset>Сбросить фильтры</button>`);
     box.innerHTML=h;box._l=L;return}
-  if(norm(q).length<2){const rec=recentGet(),pop=(F?popFilms():popBooks()).filter(x=>!sxHas(x)).slice(0,8);SX.list=pop;
-    h=`<div class="sx-feat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Нора помнит каждую книгу на полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+
-      `<div class="sx-h">${F?"Популярные фильмы и сериалы":"Популярные книги"}</div>`+pop.map(sxRow).join("");box.innerHTML=h;box._l=pop;return}
+  if(norm(q).length<2){const rec=recentGet(),coach=!LS.get("zal.coachsx",0);SX.list=[];
+    h=(coach?`<div class="sx-feat" id="sxFeat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Нора помнит каждую книгу на полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`:"")+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+
+      `<div class="fwrap inl" id="fwrap">${filtersHTML()}</div>${filtersFoot(true)}`;box.innerHTML=h;box._l=[];if(coach)setTimeout(sxCoach,450);return}
   if(SX.authors.length)h+=`<div class="sx-h">Авторы</div><div class="sx-au">${SX.authors.map((a,i)=>`<button data-au="${i}"><i>${esc(a.name[0]||"?")}</i>${hl(a.name,q)}</button>`).join("")}</div>`;
   const {vis,hid}=sxVis();
   h+=vis.length||hid.length?`<div class="sx-h">${F?"Фильмы и сериалы":"Книги"}</div>`+sxHidBar(hid)+vis.map(sxRow).join(""):"";
@@ -4204,7 +4215,13 @@ async function sxAuthor(a){SX.mode="au";SX.au=a;SX.list=[];sxDraw("load");const 
   try{const L=await libAuthorBooks(a.id);if(my!==SX.seq)return;SX.list=L.slice(0,30).map(x=>({t:x.t,a:x.a||a.name,y:x.y,c:x.c,kind:"fl"}));sxDraw("done")}catch(e){sxDraw("err")}}
 $("#addB").onclick=()=>{if(VIEW)return;tgHaptic();openAddBook(SCREEN==="col"&&colF==="want"?"want":"read")};
 $("#srchB").onclick=()=>openSearch();
-function openSearch(keep){if(VIEW)return;const q0=keep?SX.q:"";SX.k=REALM;SX.q=q0;SX.mode="q";if(!keep)SX.showRead=false;SX.fn=keep?SX.fn:40;cardX=null;tgHaptic();$("#vsheet").classList.remove("filters");
+// подсветка «Здесь нет прочитанного» — один раз, при первом заходе в поиск
+function sxCoach(){const el=$("#sxFeat");if(!el||$("#sxSpot"))return;LS.set("zal.coachsx",1);document.activeElement&&document.activeElement.blur();
+  const r=el.getBoundingClientRect(),sp=document.createElement("div");sp.id="sxSpot";sp.className="sx-spot";
+  sp.innerHTML=`<div class="sx-spot-c" style="left:${r.left}px;top:${r.top}px;width:${r.width}px">${el.outerHTML.replace('id="sxFeat"',"")}</div><button class="btn w sx-spot-ok" style="top:${r.bottom+28}px">Понятно</button>`;
+  $("#app").appendChild(sp);requestAnimationFrame(()=>sp.classList.add("on"));tgHaptic("medium");
+  sp.onclick=()=>{sp.classList.remove("on");setTimeout(()=>sp.remove(),300);const f=$("#sxFeat");if(f)f.remove()}}
+function openSearch(keep){if(VIEW)return;if(!keep)SX.picks=false;const q0=keep?SX.q:"";SX.k=REALM;SX.q=q0;SX.mode="q";if(!keep)SX.showRead=false;SX.fn=keep?SX.fn:40;cardX=null;tgHaptic();$("#vsheet").classList.remove("filters");
   vOpen(`<div class="sbar gl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="fq" type="text" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false"><button class="sx-clear" hidden aria-label="Очистить"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
    <div class="sx-tabs" hidden><button data-sk="books">Книги</button></div><div class="sxf" id="sxf">${sxFbar()}</div><div id="fres"></div><button class="sx-photo" data-photo>Добавить книгу по фото обложки или вручную</button>`,true);
   const upd=()=>{document.querySelectorAll("[data-sk]").forEach(b=>b.classList.toggle("on",b.dataset.sk===SX.k));$("#fq").placeholder=SX.k==="films"?"Фильм или сериал":"Название или автор";$("[data-photo]").hidden=SX.k==="films"};upd();
@@ -4212,7 +4229,7 @@ function openSearch(keep){if(VIEW)return;const q0=keep?SX.q:"";SX.k=REALM;SX.q=q
   $(".sx-clear").onclick=()=>{$("#fq").value="";sxRun();$("#fq").focus()};
   document.querySelector(".sx-tabs").onclick=e=>{const b=e.target.closest("[data-sk]");if(!b||b.dataset.sk===SX.k)return;SX.k=b.dataset.sk;upd();sxRun();tgHaptic()};
   if(SX.k==="films")loadFilms().then(()=>{if($("#fres")&&norm(SX.q).length<2)sxDraw()}).catch(()=>{});
-  if(q0){$("#fq").value=q0;sxRun()}else sxDraw();if(!keep)setTimeout(()=>$("#fq").focus(),80)}
+  if(q0){$("#fq").value=q0;sxRun()}else sxDraw();if(!keep&&LS.get("zal.coachsx",0))setTimeout(()=>$("#fq").focus(),80)}
 // фильтры в поиске: кнопка «Фильтры», выбранное с крестиком и быстрые настроения
 function sxFbar(){const act=activeList(),sel=NF.mood;
   return `<button class="fc gl main${act.length?" on":""}" data-sxfopen><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Фильтры${act.length?` <i>${act.length}</i>`:""}</button>`+
@@ -4539,14 +4556,15 @@ $("#vshBody").addEventListener("click",e=>{const m=e.target.closest("[data-fmore
 const fhwAdd=()=>{const i=$("#fHideW");if(!i)return;const v=i.value.trim().slice(0,40);if(v.length<3||NF.hideW.includes(v))return;NF.hideW.push(v);saveNF();tgHaptic();redrawFilters()};
 $("#vshBody").addEventListener("click",e=>{if(e.target.closest("[data-fhwadd]")){fhwAdd();return}const x=e.target.closest("[data-fhw]");if(x){NF.hideW=NF.hideW.filter(w=>w!==x.dataset.fhw);saveNF();tgHaptic();redrawFilters()}},true);
 $("#vshBody").addEventListener("keydown",e=>{if(e.target.id==="fHideW"&&e.key==="Enter"){e.preventDefault();fhwAdd()}});
-function filtersFoot(){const n=countNow();return `<div class="ffoot"><button class="btn" data-freset>Сбросить</button><button class="btn w" data-fshow${n?"":" disabled"}>${n?"Показать":"Ничего не нашлось"}</button></div>`}
-function openFilters(){vOpen(`<h3 class="vh">Фильтры</h3><div class="fwrap" id="fwrap">${filtersHTML()}</div>${filtersFoot()}`,true);vDirty=false;$("#vsheet").classList.add("filters")}
-function redrawFilters(){const w=$("#fwrap");if(!w)return;const top=$("#vsh").scrollTop;w.innerHTML=filtersHTML();$("#vshBody .ffoot").outerHTML=filtersFoot();$("#vsh").scrollTop=top}
-$("#vshBody").addEventListener("input",e=>{if(e.target.id!=="fAsk")return;NF.ask=e.target.value.trim();saveNF();clearTimeout(NF._t);NF._t=setTimeout(()=>{const f=$("#vshBody .ffoot");if(f)f.outerHTML=filtersFoot()},350)});
+function filtersFoot(inl){if(inl&&!sxFilt())return `<div class="ffoot" style="display:none"></div>`;const n=countNow();return `<div class="ffoot"><button class="btn" data-freset>Сбросить</button><button class="btn w" data-fshow${n?"":" disabled"}>${n?"Показать":"Ничего не нашлось"}</button></div>`}
+function openFilters(){vOpen(`<button class="vx" data-vx aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h3 class="vh">Фильтры</h3><div class="fwrap" id="fwrap">${filtersHTML()}</div>${filtersFoot()}`,true);vDirty=false;$("#vsheet").classList.add("filters")}
+function redrawFilters(){const w=$("#fwrap");if(!w)return;const top=$("#vsh").scrollTop;w.innerHTML=filtersHTML();const ff=$("#vshBody .ffoot");if(ff)ff.outerHTML=filtersFoot(w.classList.contains("inl"));$("#vsh").scrollTop=top}
+$("#vshBody").addEventListener("input",e=>{if(e.target.id!=="fAsk")return;NF.ask=e.target.value.trim();saveNF();clearTimeout(NF._t);NF._t=setTimeout(()=>{const f=$("#vshBody .ffoot");if(f)f.outerHTML=filtersFoot(!!document.querySelector("#fwrap.inl"))},350)});
 $("#vshBody").addEventListener("keydown",e=>{if(e.target.id==="fAsk"&&e.key==="Enter")e.target.blur()});
 $("#vshBody").addEventListener("click",e=>{
   if(e.target.closest("[data-freset]")){resetAll();redrawFilters();tgHaptic();return}
-  if(e.target.closest("[data-fshow]")){$("#vsheet").classList.remove("filters");openSearch(true);return}
+  if(e.target.closest("[data-fshow]")){SX.picks=true;$("#vsheet").classList.remove("filters");openSearch(true);return}
+  if(e.target.closest("[data-vx]")){vClose();return}
   const t=e.target.closest("[data-fg]");if(!t)return;tgHaptic();const g=t.dataset.fg,v=t.dataset.fv;
   const tog=(arr,x)=>arr.includes(x)?arr.filter(y=>y!==x):[...arr,x];
   if(isF()){const T=TF;
