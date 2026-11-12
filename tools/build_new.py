@@ -132,11 +132,18 @@ def labels_of(cls):
 
 
 def pages_of(w):
+    # медиана бумажных изданий; аудио (type 30) считает минуты, сборники (11) толще книги
+    pp = []
     for blk in (w.get("editions_blocks") or {}).values():
         for e in blk.get("list") or []:
-            if e.get("pages"):
-                return int(e["pages"])
-    return 0
+            try:
+                n, t = int(e.get("pages") or 0), int(e.get("type") or 0)
+            except (TypeError, ValueError):
+                continue
+            if n > 30 and t == 10:
+                pp.append(n)
+    pp.sort()
+    return pp[(len(pp) - 1) // 2] if pp else 0
 
 
 print("1. Фантлаб: новинки издательств", flush=True)

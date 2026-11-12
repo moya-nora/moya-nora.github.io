@@ -1656,6 +1656,7 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .fly .info p.ds{display:block;-webkit-line-clamp:unset;overflow:visible;font-size:16px;line-height:1.45;margin-top:12px}
 #app .fly .acts3{gap:22px;margin-top:auto;padding-top:30px}
 #app .fly>.obj{margin-top:auto}
+#app #flow,#app #flowCap{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #app .slide .fly:not(.L *){padding-bottom:28px;justify-content:flex-start}
 #app .fly .rb{width:68px;height:68px}#app .fly .rb svg{width:27px;height:27px}
 #app .fly .rb.sm{width:50px;height:50px}#app .fly .rb.sm svg{width:20px;height:20px}
@@ -4211,15 +4212,15 @@ function layoutFlow(first){const L=flowList().slice(0,60),n=L.length;if($("#flow
   if(x&&!x.ds)wantDesc(x,()=>{if(flowList()[fi]===x){const p=cap.querySelector("p");if(p)p.textContent=hookOf(x)}});
   ambFor(x)}
 function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((fi+d)%n+n)%n;layoutFlow()}
-(function(){const el=$("#flow");let x0=null,y0=null,mode=null,moved=0;
-  const down=(x,y)=>{x0=x;y0=y;mode=null;moved=0;flowHold=Date.now()};
+(function(){const el=$("#flow");let x0=null,y0=null,mode=null,moved=0,t0=0;
+  const down=(x,y)=>{x0=x;y0=y;mode=null;moved=0;t0=Date.now();flowHold=t0};
   const mv=(x,y,e)=>{if(x0==null)return;const dx=x-x0,dy=y-y0;if(!mode){if(Math.abs(dx)<8&&Math.abs(dy)<8)return;mode=Math.abs(dx)>Math.abs(dy)?"h":"v"}
     if(mode!=="h")return;if(e&&e.cancelable)e.preventDefault();if(Math.abs(dx)>44){stepFlow(dx<0?1:-1);x0=x;moved++;flowHold=Date.now();tgHaptic()}};
   el.addEventListener("touchstart",e=>{const t=e.touches[0];down(t.clientX,t.clientY)},{passive:true});
   el.addEventListener("touchmove",e=>{const t=e.touches[0];mv(t.clientX,t.clientY,e)},{passive:false});
   el.addEventListener("touchend",()=>{x0=null});
   el.addEventListener("mousedown",e=>down(e.clientX,e.clientY));addEventListener("mousemove",e=>mv(e.clientX,e.clientY,null));addEventListener("mouseup",()=>{x0=null});
-  el.addEventListener("click",e=>{const c=e.target.closest(".cv");if(c&&!moved){flowHold=Date.now();const i=+c.dataset.i;if(i!==fi){fi=i;layoutFlow()}openItem(flowList()[i],"rec")}})})();
+  el.addEventListener("click",e=>{if(Date.now()-t0>450){flowHold=Date.now();return}const c=e.target.closest(".cv");if(c&&!moved&&!mode){flowHold=Date.now();const i=+c.dataset.i;if(i!==fi){fi=i;layoutFlow()}openItem(flowList()[i],"rec")}})})();
 (function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,7000)})();
 function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
@@ -5042,7 +5043,7 @@ const _openBook=openBook;openBook=function(id){_openBook(id);const b=BOOKS.find(
 
 // ---------- карточка книги на весь экран: без прокрутки ----------
 // страницы и оценка читателей — с Фантлаба (оценка работы, страницы лучшего издания), друзья — из их полок
-const META=LS.get("zal.meta2",{});let metaT=0;const metaSave=()=>{clearTimeout(metaT);metaT=setTimeout(()=>LS.set("zal.meta2",META),600)};try{localStorage.removeItem("zal.meta")}catch(e){}
+const META=LS.get("zal.meta3",{});let metaT=0;const metaSave=()=>{clearTimeout(metaT);metaT=setTimeout(()=>LS.set("zal.meta3",META),600)};try{localStorage.removeItem("zal.meta");localStorage.removeItem("zal.meta2")}catch(e){}
 const MQ=[],MX={};let mqn=0;
 function wantMeta(x,cb){if(!x||x._f)return;const k=ikey(x);if(META[k]!==undefined){cb&&cb();return}if(MX[k]){MX[k].push(cb);return}MX[k]=[cb];MQ.push({x,k});mpump()}
 function mpump(){while(mqn<2&&MQ.length){const {x,k}=MQ.shift();mqn++;
@@ -5050,10 +5051,11 @@ function mpump(){while(mqn<2&&MQ.length){const {x,k}=MQ.shift();mqn++;
     const w=L.find(w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur))||L.find(w=>norm(w.rusname||w.name||"")===norm(x.t));if(!w)return {};
     const j=await flj("/work/"+w.work_id),m={w:w.work_id};const rt=j.rating||{};if(+rt.voters>=5){m.r=+rt.rating;m.v=+rt.voters}m.rc=+j.val_responsecount||0;
     if(DESC[k]===undefined){DESC[k]=dClean(j.work_description||"");descSave()}
-    // страницы: полное русское издание с тем же названием (а не том из двух); иначе самое толстое русское
+    // страницы: русские издания с тем же названием (а не том из двух), берём типичное — медиану
     try{const ex=await flj("/work/"+w.work_id+"/extended");const L=[];Object.values(ex.editions_blocks||{}).forEach(b=>(b.list||[]).forEach(e=>L.push(e)));
-      const ru=L.filter(e=>(!e.lang_code||e.lang_code==="ru")&&+e.pages>30&&e.type!==11),same=ru.filter(e=>norm(e.name||"")===norm(x.t)),pick=(same.length?same:ru).map(e=>+e.pages).sort((a,b)=>b-a);
-      if(pick.length)m.pg=pick[0]}catch(e){}
+      const ru0=L.filter(e=>(!e.lang_code||e.lang_code==="ru")&&+e.pages>30&&+e.type!==30&&+e.type!==11),ru=ru0.some(e=>+e.type===10)?ru0.filter(e=>+e.type===10):ru0,same=ru.filter(e=>norm(e.name||"")===norm(x.t)),pick=(same.length?same:ru).map(e=>+e.pages).sort((a,b)=>a-b);
+      // медиана бумажных изданий; аудиокниги (type 30) считают минуты, а не страницы
+      if(pick.length)m.pg=pick[Math.floor((pick.length-1)/2)]}catch(e){}
     return m})()
   .then(m=>{META[k]=m;metaSave()}).catch(()=>{}).finally(()=>{const cbs=MX[k]||[];delete MX[k];mqn--;cbs.forEach(f=>{try{f&&f()}catch(e){}});mpump()})}}
 const frReaders=x=>FRIENDS.map(f=>{const p=FRP[f.uid];const b=p&&(p.read||[]).find(y=>norm(y.t)===norm(x.t));return b?{f,b}:null}).filter(Boolean);
