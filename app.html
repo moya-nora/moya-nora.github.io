@@ -1285,6 +1285,11 @@ html[data-theme="light"] #app .ffoot{background:linear-gradient(transparent,rgba
 #app .sy>button{display:block;width:100%;text-align:left;padding:12px 0;font-size:15px;font-weight:500;border-top:.5px solid rgba(255,255,255,.1)}
 #app .sy-mail{margin:0;padding:12px 0;font-size:14px;color:var(--ink2);border-top:.5px solid rgba(255,255,255,.1)}
 #app .sy-mail b{color:var(--ink);font-weight:500}
+#app .sy-acc{display:flex;gap:8px;margin-top:12px}#app .sy-acc button{flex:1;height:40px;border-radius:20px;border:0;background:rgba(255,255,255,.08);color:var(--ink);font:500 14px/1 var(--f,inherit)}
+#app .sy-acc [data-sy-del]{color:#FF8A8A}
+#app .sy-priv{display:block;margin-top:12px;font-size:12.5px;color:var(--ink3);text-decoration:underline;text-underline-offset:2px}
+#app .au-legal{margin:12px 4px 0;font-size:12.5px;line-height:1.45;color:var(--ink3);text-align:center}#app .au-legal a{color:var(--ink2);text-decoration:underline;text-underline-offset:2px}
+#app .btn.danger{background:#E5484D!important;color:#fff!important;width:100%}
 #app .sy-note{margin:8px 0 0;font-size:12.5px;line-height:1.45;color:var(--ink3)}
 #app .sy-in{display:block;width:100%;margin-top:10px;padding:13px 15px;border-radius:14px;border:0;outline:0;background:rgba(255,255,255,.08);color:var(--ink);font:inherit;font-size:16px;resize:none}
 #app .sy-msg{min-height:18px;margin:10px 0 0;font-size:13px;color:#FFB4A8}
@@ -1889,6 +1894,20 @@ S.reqIncoming=async()=>{if(!tok.uid)return [];const q={structuredQuery:{from:[{c
 S.reqSet=async(id,s)=>{const r=await authed("requests/"+id+"?updateMask.fieldPaths=s",{method:"PATCH",body:JSON.stringify({fields:{s:{stringValue:s}}})});return r.ok};
 S.link=()=>key?"https://moya-nora.github.io/#k="+key:"";
 S.now=()=>sync();
+// выход и удаление: стираем этот телефон, а при удалении — ещё облако и сам аккаунт
+const wipeLocal=()=>{const ks=[];for(let i=0;i<ls.length;i++){const k=ls.key(i);if(k&&k.startsWith("zal."))ks.push(k)}ks.forEach(k=>_rm.call(ls,k));
+  if(TG&&TG.CloudStorage){try{TG.CloudStorage.getKeys((e,L)=>{if(!e&&L&&L.length)TG.CloudStorage.removeItems(L)})}catch(e){}}};
+S.signOut=()=>{clearTimeout(timer);S.on=false;wipeLocal()};
+S.deleteAll=async handles=>{clearTimeout(timer);const t=await S.token();
+  const kill=async(path,auth)=>{const h={"Content-Type":"application/json"};if(auth&&t)h.Authorization="Bearer "+t;const q=auth?"":"?key="+FB.apiKey;
+    let r=await fetch(base()+path+q,{method:"DELETE",headers:h}).catch(()=>null);if(r&&(r.ok||r.status===404))return;
+    await fetch(base()+path+q,{method:"PATCH",headers:h,body:JSON.stringify({fields:{}})}).catch(()=>{})};
+  if(key)await kill("vaults/"+key,false);
+  if(t&&tok.uid){await kill("profiles/"+tok.uid,true);await kill("users/"+tok.uid,true);
+    for(const h of handles||[]){const k=hkey(h);if(k&&k!=="t:")await kill("lookup/"+(await sha(k)),true)}
+    const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${FB.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({idToken:t})});
+    if(!r.ok){const j=await r.json().catch(()=>({}));if(/CREDENTIAL_TOO_OLD|TOKEN_EXPIRED/.test(JSON.stringify(j)))throw new Error("relogin");throw new Error("Не получилось удалить аккаунт — попробуй ещё раз")}}
+  S.on=false;wipeLocal()};
 window.NSYNC=S;
 })();
 
@@ -4304,7 +4323,8 @@ function drawSum(){const F=isF(),r=DATA().read(),u=T[REALM].u,known=r.filter(x=>
    ${eras.length?`<div class="sc gl"><h3>${F?"По десятилетиям":"По векам"}</h3>${bars(F?eras.sort((a,b)=>parseInt(b[0])-parseInt(a[0])):eras)}</div>`:""}
    ${gens.length?`<div class="sc gl"><h3>${F?"Что смотришь":"Что читаешь"}</h3>${bars(gens)}</div>`:""}
    ${au.length&&au[0][1]>1?`<div class="sc gl"><h3>${esc(au[0][0])}</h3><p style="margin:8px 0 0;color:var(--ink2);font-size:14px">Главный автор: ${au[0][1]} ${plural(au[0][1],...u)} на полке.</p></div>`:""}
-   ${links}`}
+   ${links}${accCard()}`}
+$("#vshBody").addEventListener("click",e=>{const t=e.target;if(t.closest("[data-sy-out2],[data-sy-del2]"))syncClick(t)});
 $("#sumMore").addEventListener("click",e=>{const t=e.target;
   if(syncClick(t))return;
   if(t.closest("[data-import]")){importOpen();return}
@@ -4589,23 +4609,34 @@ $("#feed").addEventListener("click",e=>{const d=e.target.closest("[data-fdrop2]"
 // ---------- синхронизация: карточка, вход по почте ----------
 const NS=window.NSYNC||{on:false};
 const agoTxt=t=>{if(!t)return "ещё не было";const m=Math.round((Date.now()-t)/60000);return m<1?"только что":m<60?m+" мин назад":Math.round(m/60)<24?Math.round(m/60)+" ч назад":new Date(t).toLocaleDateString("ru-RU")};
+function accCard(){if(!NS.on||VIEW)return "";const k=NS.key();if(!k&&!NS.email)return "";
+  return `<div class="sc gl sy"><h3>Аккаунт</h3>${NS.email?`<p class="sy-mail">Вход по почте: <b>${esc(NS.email)}</b></p>`:`<button data-sy-mail>Привязать почту</button>`}
+   <div class="sy-acc"><button data-sy-out>Выйти</button><button data-sy-del>Удалить аккаунт</button></div><a class="sy-priv" href="https://moya-nora.github.io/privacy.html" target="_blank" rel="noopener">Политика конфиденциальности</a></div>`}
 function syncCard(){if(!NS.on)return "";const k=NS.key();
   const st=NS.err?`<span class="sy-err">Не синхронизировано: ${esc(NS.err)}</span>`:k?`Синхронизировано ${agoTxt(NS.last)}`:"Пока только на этом устройстве";
   return `<div class="sc gl sy"><h3>Синхронизация</h3><p class="sy-st">${st}</p>
    ${TG&&k?`<button data-sy-open>Открыть в браузере</button>`:""}${k?`<button data-sy-copy>Скопировать ссылку для входа</button>`:""}
    ${NS.email?`<p class="sy-mail">Вход по почте: <b>${esc(NS.email)}</b></p>`:k?`<button data-sy-mail>Привязать почту</button>`:`<button data-sy-login>Войти по почте</button>`}
-   <p class="sy-note">${NS.email?"Если Telegram недоступен — открой Нору в любом браузере и войди с этой почтой.":"С почтой Нору можно открыть в любом браузере, даже если Telegram недоступен."}</p></div>`}
+   <p class="sy-note">${NS.email?"Если Telegram недоступен — открой Нору в любом браузере и войди с этой почтой.":"С почтой Нору можно открыть в любом браузере, даже если Telegram недоступен."}</p>
+   ${k||NS.email?`<div class="sy-acc"><button data-sy-out>Выйти</button><button data-sy-del>Удалить аккаунт</button></div>`:""}<a class="sy-priv" href="https://moya-nora.github.io/privacy.html" target="_blank" rel="noopener">Политика конфиденциальности</a></div>`}
 function syncClick(t){
   if(t.closest("[data-sy-open]")){const u=NS.link();try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(e){window.open(u,"_blank")}return true}
   if(t.closest("[data-sy-copy]")){const u=NS.link();(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("Ссылка скопирована — не показывай её чужим")).catch(()=>{vOpen(`<h3 class="vh">Ссылка для входа</h3><p class="sy-note">Скопируй и открой в любом браузере. Не показывай её чужим: по ней открываются твои полки.</p><textarea class="sy-in" readonly rows="3">${esc(u)}</textarea>`)});return true}
   if(t.closest("[data-sy-mail]")){mailSheet("link");return true}
   if(t.closest("[data-sy-login]")){loginSheet();return true}
+  if(t.closest("[data-sy-out]")){vOpen(`<h3 class="vh">Выйти из Норы?</h3><p class="sy-note">Полки останутся в облаке — вернёшься, войдя с ${NS.email?`почтой <b>${esc(NS.email)}</b>`:"по ссылке для входа — мы скопируем её, сохрани её в заметках"}. С этого устройства всё сотрётся.</p><div class="one"><button class="btn w" data-sy-out2>Выйти</button></div>`);return true}
+  if(t.closest("[data-sy-out2]")){if(!NS.email&&NS.key()){const u=NS.link();try{navigator.clipboard&&navigator.clipboard.writeText(u)}catch(e){}}NS.signOut();location.replace("app.html?v="+Date.now());return true}
+  if(t.closest("[data-sy-del]")){vOpen(`<h3 class="vh">Удалить аккаунт?</h3><p class="sy-note">Сотрутся аккаунт, все полки, оценки, отзывы и профиль для друзей — в облаке и на этом устройстве. Вернуть их будет нельзя.</p><input class="sy-in" id="syDel" placeholder="Напиши «удалить», чтобы подтвердить" autocomplete="off"><p class="sy-msg" id="syDelM"></p><div class="one"><button class="btn w danger" data-sy-del2>Удалить навсегда</button></div>`);return true}
+  if(t.closest("[data-sy-del2]")){const i=$("#syDel"),m=$("#syDelM"),b=t.closest("[data-sy-del2]");if(!i||i.value.trim().toLowerCase()!=="удалить"){m.textContent="Напиши «удалить» — так мы поймём, что это не случайно";return true}
+    b.disabled=true;b.textContent="Удаляю…";const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;
+    NS.deleteAll([NS.email,u&&u.username?"@"+u.username:""].filter(Boolean)).then(()=>{location.replace("app.html?v="+Date.now())})
+      .catch(x=>{b.disabled=false;b.textContent="Удалить навсегда";m.textContent=x.message==="relogin"?"Для удаления войди заново: выйди и войди с почтой, потом повтори.":x.message});return true}
   return false}
 function mailSheet(mode){const L=mode==="link";
   vOpen(`<h3 class="vh">${L?"Привязать почту":"Войти по почте"}</h3><p class="sy-note">${L?"Придумай пароль — с почтой и паролем Нору можно открыть в любом браузере, даже без Telegram.":"Почта и пароль, привязанные к Норе."}</p>
    <input class="sy-in" id="syE" type="email" autocomplete="email" placeholder="Почта" inputmode="email">
    <input class="sy-in" id="syP" type="password" autocomplete="${L?"new-password":"current-password"}" placeholder="${L?"Пароль, от 6 символов":"Пароль"}">
-   <p class="sy-msg" id="syM"></p><div class="one"><button class="btn w" id="syGo">${L?"Привязать":"Войти"}</button></div>${L?"":`<button class="sy-link" id="syR">Забыли пароль?</button>`}`);
+   <p class="sy-msg" id="syM"></p><div class="one"><button class="btn w" id="syGo">${L?"Привязать":"Войти"}</button></div>${L?`<p class="au-legal">Привязывая почту, ты соглашаешься с <a href="https://moya-nora.github.io/privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}${L?"":`<button class="sy-link" id="syR">Забыли пароль?</button>`}`);
   $("#vsheet").classList.toggle("ontop",$("#intro").classList.contains("on")||$("#onb").classList.contains("on"));
   const go=$("#syGo"),msg=$("#syM");
   go.onclick=async()=>{const e=$("#syE").value.trim(),p=$("#syP").value;if(!e||!p){msg.textContent="Заполни почту и пароль";return}go.disabled=true;go.textContent=L?"Привязываю…":"Вхожу…";msg.textContent="";
@@ -4817,7 +4848,7 @@ function authDraw(){const up=authMode==="up";
    ${up?`<input class="sy-in" id="auN" autocomplete="given-name" placeholder="Имя — так тебя увидят друзья" value="${esc(LS.get("zal.name",""))}">`:""}
    <input class="sy-in" id="auE" type="email" autocomplete="email" inputmode="email" placeholder="Почта" value="${esc(up?"":NS.email||"")}">
    <input class="sy-in" id="auP" type="password" autocomplete="${up?"new-password":"current-password"}" placeholder="${up?"Пароль, от 6 символов":"Пароль"}">
-   <p class="sy-msg" id="auM"></p><button class="btn w" id="auGo">${up?"Создать аккаунт":"Войти"}</button>
+   <p class="sy-msg" id="auM"></p><button class="btn w" id="auGo">${up?"Создать аккаунт":"Войти"}</button>${up?`<p class="au-legal">Создавая аккаунт, ты соглашаешься с <a href="https://moya-nora.github.io/privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}
    <button class="au-sw" id="auSw">${up?"Уже есть аккаунт? Войти":"Нет аккаунта? Создать"}</button>${up?"":`<button class="au-sw" id="auR">Забыли пароль?</button>`}</div>`;
   const go=$("#auGo"),msg=$("#auM");
   $("#auSw").onclick=()=>{authMode=up?"in":"up";authDraw();tgHaptic()};
