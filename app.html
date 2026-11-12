@@ -4297,7 +4297,7 @@ $("#grid").addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(
 // ---------- карточка ----------
 let cardX=null,cardL=null,vDirty=false;
 function vOpen(html,tall){$("#vshBody").innerHTML=html;const sh=$("#vsheet");sh.classList.remove("search");sh.classList.toggle("tall",!!tall);sh.classList.add("on");$("#vsh").scrollTop=0;tgHaptic("medium");syncBack()}
-function vClose(){$("#vsheet").classList.remove("on","ontop");document.activeElement&&document.activeElement.blur();syncBack();
+function vClose(){const sh0=$("#vsheet");if(sh0.classList.contains("on")&&(sh0.classList.contains("search")||sh0.classList.contains("filters"))){try{resetAll();SX.picks=false}catch(e){}}$("#vsheet").classList.remove("on","ontop");document.activeElement&&document.activeElement.blur();syncBack();
   if(vDirty){vDirty=false;setTimeout(refresh,520)}}
 $("#vsheet").addEventListener("click",e=>{if(e.target.closest("[data-close],[data-vclose]"))vClose()});
 (function(){const el=$("#vsh");let y0=null,dy=0;el.addEventListener("touchstart",e=>{if(el.scrollTop>0||e.target.closest("input,.sx-au,.f-chips,.f-sort"))return;y0=e.touches[0].clientY;dy=0},{passive:true});
