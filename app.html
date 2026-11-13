@@ -4099,7 +4099,7 @@ async function wikiImg(q){const j=await (await fetch("https://ru.wikipedia.org/w
 async function findImg(x){try{
   if(!x._f){const sur=norm(String(x.a||"").split(" ").slice(-1)[0]),pic=w=>w.pic_edition_id||w.pic_edition_id_auto;
     const nt=norm(x.t),auOk=w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur),tn=w=>norm(w.rusname||w.name||""),tOk=w=>{const n=tn(w);return n===nt||(nt.length>=6&&n.startsWith(nt))};
-    const pick=s=>{const L=(Array.isArray(s)?s:[]).filter(pic);return L.find(w=>auOk(w)&&tn(w)===nt)||L.find(w=>auOk(w)&&tOk(w))||null};
+    const pick=s=>{const L=(Array.isArray(s)?s:[]).filter(pic),ex=L.filter(w=>tn(w)===nt);return L.find(w=>auOk(w)&&tn(w)===nt)||L.find(w=>auOk(w)&&tOk(w))||(ex.length===1&&nt.length>=8?ex[0]:null)};/* «Харди» и «Гарди» — один автор: точное длинное название без двойников тоже подходит */
     let w=pick(await flj("/search-works?q="+encodeURIComponent(x.t)+"&page=1&onlymatches=1"));
     if(!w){const t2=String(x.t).replace(/[«»"'’.,:;!?()—–-]+/g," ").replace(/\s+/g," ").trim();if(t2!==x.t||x.a)w=pick(await flj("/search-works?q="+encodeURIComponent(t2+(x.a?" "+String(x.a).split(" ").slice(-1)[0]:""))+"&page=1"))}
     if(w){const ed=await bestEdition(w.work_id);return ed?IMGFL(ed):""}
