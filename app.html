@@ -1732,7 +1732,7 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .frdel-ask [data-fr-del]{background:#E5484D;color:#fff}
 #app .frdel-ask[hidden]{display:none}
 /* буква в кружке — ровно по центру */
-#app .ava{font-family:var(--f);font-weight:600;line-height:1;padding:0;text-align:center}
+#app .ava{font-family:var(--f);font-weight:600;line-height:1;padding:0;text-align:center;position:relative;overflow:hidden}#app .ava img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
 #app .ava.big{font-size:32px}
 /* регистрация: «Дальше» всегда видна поверх книг */
 #app .onb .onb-bar{position:fixed;z-index:5;bottom:0}
@@ -5057,10 +5057,13 @@ let FRIENDS=LS.get("zal.friends",[]);const frSave=()=>LS.set("zal.friends",FRIEN
 let FSEEN2=LS.get("zal.frseen",{});const frSeenSave=()=>LS.set("zal.frseen",FSEEN2);
 const FRP={};   // загруженные профили друзей
 const hueOf=s=>hsh(String(s))%360;
-const avatar=(n,uid,cls="")=>`<i class="ava ${cls}" style="--h:${hueOf(uid)}">${esc((n||"?").trim().charAt(0).toUpperCase())}</i>`;
+// фото из Telegram (если открыто для всех) поверх буквы; не загрузилось — остаётся буква
+const tgMe=()=>{try{return TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user||null}catch(e){return null}};
+const avaPh=uid=>{const me=NS.uid&&NS.uid();if(uid&&uid===me){const u=tgMe();return u&&u.photo_url||""}const p=typeof FRP!=="undefined"&&FRP[uid];return p&&typeof p.ph==="string"&&/^https:\/\//.test(p.ph)?p.ph:""};
+const avatar=(n,uid,cls="")=>{const ph=avaPh(uid);return `<i class="ava ${cls}" style="--h:${hueOf(uid)}">${esc((n||"?").trim().charAt(0).toUpperCase())}${ph?`<img src="${esc(ph)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">`:""}</i>`};
 function snapNow(){return {read:BOOKS.map(b=>({t:b.t,a:b.a||"",r:b.r??null,rd:b.rd||"",ds:(b.ann||"").slice(0,300),...(b.pub&&b.n?{rv:String(b.n).slice(0,600)}:{})})),want:want.map(w=>({t:w.t,a:w.a||""})),now:nowBook&&nowBook.t?{t:nowBook.t,a:nowBook.a||""}:null}}
 function pubCheck(){if(!NS.on||VIEW||!(NS.hasTok&&NS.hasTok()))return;try{notifySync()}catch(e){}
-  {const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user,hs=[NS.email,u&&u.username?"@"+u.username:""].filter(Boolean),sig=hs.join("|")+"|"+NS.uid();if(hs.length&&NS.lookupPut&&localStorage.getItem("zal.sync.lk")!==sig)NS.lookupPut(hs).then(()=>localStorage.setItem("zal.sync.lk",sig)).catch(()=>{})}const cur=snapNow(),name=myName(),sig=JSON.stringify([name,cur]);const prev=LS.get("zal.sync.pub",null);
+  {const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user,hs=[NS.email,u&&u.username?"@"+u.username:""].filter(Boolean),sig=hs.join("|")+"|"+NS.uid();if(hs.length&&NS.lookupPut&&localStorage.getItem("zal.sync.lk")!==sig)NS.lookupPut(hs).then(()=>localStorage.setItem("zal.sync.lk",sig)).catch(()=>{})}const cur=snapNow(),name=myName();{const u=tgMe();if(u&&u.photo_url)cur.ph=u.photo_url;if(u&&u.username)cur.tg=u.username}const sig=JSON.stringify([name,cur]);const prev=LS.get("zal.sync.pub",null);
   if(prev&&prev.sig===sig)return;const ev=prev?prev.ev||[]:[],now=Date.now(),add=[];
   if(prev&&prev.snap){const pr=new Map(prev.snap.read.map(b=>[norm(b.t),b])),pw=new Set(prev.snap.want.map(w=>norm(w.t)));
     cur.read.forEach(b=>{const o=pr.get(norm(b.t));if(!o)add.push({k:"read",t:b.t,a:b.a,r:b.r,ts:now});else if(b.r!=null&&o.r!==b.r)add.push({k:"rate",t:b.t,a:b.a,r:b.r,ts:now})});
