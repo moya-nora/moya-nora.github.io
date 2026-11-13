@@ -4969,12 +4969,9 @@ const genPass=(b,g)=>{const sg=B_SUBG.find(x=>x[0]===g);return sg?sg[2](b):b.g==
 const B_TROPE=[["enemies","От врагов к возлюбленным"],["academy","Академия магии"],["slow","Медленное сближение"],["fake","Фиктивные отношения"],
   ["fated","Истинная пара"],["gray","Морально серый герой"],["grumpy","Хмурый и солнечная"],["forbid","Запретная любовь"],["triangle","Любовный треугольник"],["chosen","Избранная"],
   ["dragons","Драконы"],["fae","Фейри"],["vamp","Вампиры и оборотни"],["court","Дворцовые интриги"],["found","Найденная семья"],["second","Второй шанс"],["time","Путешествия во времени"],["popadan","Попаданка"]];
-B_TROPE.push(["coming","Взросление"],["school","Школа и университет"],["cozydet","Уютный детектив"],["locked","Загадка в замкнутом мире"],["gothic","Готический особняк"],["saga","Семейная сага"],
-  ["road","Путешествие"],["myth","Мифы и легенды"],["magreal","Магический реализм"],["ai","Искусственный интеллект"],["space","Космос"],["postapoc","Постапокалипсис"],["war","На войне"],["sea","Море и корабли"],["victorian","Викторианская эпоха"],["city","Большой город"]);
-const TR_FN={dragons:b=>has(b,"драконы"),time:b=>has(b,"путешествия во времени"),academy:b=>b.g==="fantasy"&&has(b,"школа и университет"),
-  coming:b=>has(b,"взросление"),school:b=>has(b,"школа и университет"),cozydet:b=>b.g==="detective"&&has(b,"уют","тёплое","смешное"),locked:b=>b.g==="detective"&&has(b,"деревня","море","готика"),
-  gothic:b=>has(b,"готика"),saga:b=>has(b,"семейная сага"),road:b=>has(b,"путешествия"),myth:b=>has(b,"мифология"),magreal:b=>has(b,"магический реализм"),ai:b=>has(b,"искусственный интеллект"),
-  space:b=>has(b,"космос"),postapoc:b=>has(b,"постапокалипсис"),war:b=>has(b,"война")&&b.g!=="nonfic",sea:b=>has(b,"море"),victorian:b=>has(b,"викторианская эпоха"),city:b=>has(b,"большой город")&&b.g!=="nonfic"};
+// тропы — приём жанров ромэнтези, любовного романа, фэнтези и young adult: по темам каталога узнаём только те, что однозначны
+const TROPE_G=b=>b.g==="fantasy"||b.g==="kids"||["romantasy","romance","darkrom","ya"].some(g=>genPass(b,g));
+const TR_FN={dragons:b=>TROPE_G(b)&&has(b,"драконы"),academy:b=>b.g==="fantasy"&&has(b,"школа и университет"),time:b=>TROPE_G(b)&&has(b,"путешествия во времени")};
 const tropePass=(b,id)=>has(b,"троп:"+id)||!!(TR_FN[id]&&TR_FN[id](b));
 const tropeTag=t=>"троп:"+t;
 // в фильтре показываем только те тропы, у которых уже есть книги (метки копятся ежемесячно)
@@ -5077,12 +5074,12 @@ function filtersHTML(){if(isF()){const T=TF;
   const F=NF,lab=(L,id)=>(L.find(x=>x[0]===id)||[])[1];
   const acc=(key,title,sel,html)=>`<details class="facc" data-facc="${key}"${FOPEN.has(key)?" open":""}><summary><b>${title}</b><span>${sel?esc(sel):""}</span><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></summary><div class="fch">${html}</div></details>`;
   const genChips=GEN_ORDER.map(g=>[g,({detective:"Детективы",kids:"Детские и подростковые"})[g]||genLabel(g)]);
-  const TR_ORD=["enemies","coming","academy","cozydet","chosen","time","found","gothic","dragons","road","gray","myth","fated","postapoc","slow","saga"],tro=id=>{const i=TR_ORD.indexOf(id);return i<0?99:i};const tc=tropeCount(),tAll=B_TROPE.filter(([id])=>tc[tropeTag(id)]||F.trope.includes(id)).sort((a,b)=>tro(a[0])-tro(b[0])),tShow=FOPEN.has("tropes-all")?tAll:tAll.slice(0,6);
+  const TR_ORD=[],tro=id=>{const i=TR_ORD.indexOf(id);return i<0?99:i};const tc=tropeCount(),tAll=B_TROPE.filter(([id])=>tc[tropeTag(id)]||F.trope.includes(id)).sort((a,b)=>tro(a[0])-tro(b[0])),tShow=FOPEN.has("tropes-all")?tAll:tAll.slice(0,6);
   const mShow=FOPEN.has("moods-all")?B_MOOD:B_MOOD.filter((m,i)=>i<6||F.mood.includes(m[0]));
   return ``+
    fsec("Жанр",genChips.map(([id,l])=>fchip("gen",id,F.gen.includes(id),l)).join(""))+
    fsec("Настроение",mShow.map(([id,l])=>fchip("mood",id,F.mood.includes(id),l)).join("")+(mShow.length<B_MOOD.length?`<button type="button" class="fk more" data-fmore="moods-all">ещё ${B_MOOD.length-mShow.length}</button>`:""))+
-   (tAll.length?fsec("Тропы",tShow.map(([id,l])=>fchip("trope",id,F.trope.includes(id),l)).join("")+(tShow.length<tAll.length?`<button type="button" class="fk more" data-fmore="tropes-all">ещё ${tAll.length-tShow.length}</button>`:"")):"")+
+   (tAll.length&&(!F.gen.length||F.gen.some(g=>["fantasy","romantasy","romance","darkrom","ya","kids"].includes(g)))?fsec("Тропы",tShow.map(([id,l])=>fchip("trope",id,F.trope.includes(id),l)).join("")+(tShow.length<tAll.length?`<button type="button" class="fk more" data-fmore="tropes-all">ещё ${tAll.length-tShow.length}</button>`:"")):"")+
    `<div class="fmore-h">Уточнить</div>`+
    acc("set","Подборки",lab(B_SET,F.set)||"",B_SET.map(([id,l])=>fchip("set",id,F.set===id,l)).join(""))+
    acc("len","Объём и темп",[lab(B_LEN,F.len),lab(B_PACE,F.pace)].filter(Boolean).join(", "),B_LEN.map(([id,l])=>fchip("len",id,F.len===id,l)).join("")+B_PACE.map(([id,l])=>fchip("pace",id,F.pace===id,l)).join(""))+
