@@ -741,7 +741,7 @@ body.viewing #app .shelf-h{display:none}
 #app .pills button.on:not(.L *){background:#F5F5F7;color:#0B0B10;box-shadow:none}
 #app .pills button.on:not(.L *)::before{display:none}
 #app .grid:not(.L *){display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px;padding:16px 20px 0}
-#app .grid button:not(.L *){text-align:left}
+#app .grid:not(.L *){align-items:start}#app .grid button:not(.L *){text-align:left;display:flex;flex-direction:column;justify-content:flex-start;align-self:start}#app .grid button>.cv{width:100%}
 #app .grid .cv:not(.L *){border-radius:8px;box-shadow:0 14px 24px -14px rgba(0,0,0,.8)}
 #app .grid small:not(.L *){display:block;margin-top:6px;font-size:12px;line-height:1.25;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 #app .bento:not(.L *){display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 20px 0}
@@ -1694,8 +1694,8 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .wh-l button{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
 #app .wh-l b{font-size:15.5px}#app .wh-l small{flex:1;font-size:13px;color:var(--ink3)}#app .wh-l i{font-style:normal;color:var(--ink3);font-size:20px}
 #app .wh-l .ava{width:36px;height:36px;font-size:16px}
-#app #newAu{margin-bottom:6px}#app .na-row{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:2px 0 6px}
-#app .na-row button{flex:none;width:96px;text-align:left}#app .na-row small{display:block;margin-top:6px;font-size:12.5px;line-height:1.25;max-height:2.5em;overflow:hidden}#app .na-row em{display:block;font-style:normal;font-size:11.5px;color:var(--ink3);margin-top:2px}
+#app #newAu{margin-bottom:6px}#app #newAu .na-row{padding-left:22px;padding-right:22px}#app #trend{margin:4px 0 14px}#app #trend .shelf-h{margin-top:4px}#app #trend .tr-sub{margin:3px 22px 10px;font-size:13.5px;color:var(--ink3)}#app #trend .na-row{padding-left:22px;padding-right:22px;scroll-padding:0 22px}#app .bkc-tr{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:10px auto 0;max-width:420px}#app .bkc-tr button{height:30px;padding:0 12px;border-radius:15px;font-size:13px;font-weight:500;color:var(--ink);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);white-space:nowrap}#app .bkc-tr button.au{color:var(--ink2);background:none}#app .onb-gen{display:flex!important;flex-wrap:wrap;gap:10px;align-content:flex-start}#app .onb-gen .fgc{height:46px;padding:0 18px;border-radius:23px;font-size:16px;font-weight:500;color:var(--ink);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}#app .onb-gen .fgc.on{background:#F5F5F7;color:#0B0C11;border-color:transparent}#app .na-row{display:flex;align-items:flex-start;gap:12px;overflow-x:auto;scrollbar-width:none;padding:2px 0 6px}
+#app .na-row button{flex:none;width:96px;text-align:left;display:flex;flex-direction:column;justify-content:flex-start}#app .na-row button>.cv{width:100%}#app .na-row small{display:block;margin-top:6px;font-size:12.5px;line-height:1.25;max-height:2.5em;overflow:hidden}#app .na-row em{display:block;font-style:normal;font-size:11.5px;color:var(--ink3);margin-top:2px}
 #app .lv-ch{display:flex;align-items:center;gap:14px}#app .lv-ch .ic{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(233,184,102,.14);color:#E9B866;font-size:22px}
 #app .lv-ch.ok .ic{background:#E9B866;color:#0B0B10}#app .lv-ch div{flex:1;min-width:0}#app .lv-ch small{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}#app .lv-ch b{display:block;font-size:16px;margin-top:2px}#app .lv-ch span{display:block;font-size:13px;color:var(--ink2);margin-top:2px}
 #app .lv-ch .btn{flex:none;padding:0 14px;height:36px;font-size:13px}
@@ -1870,7 +1870,7 @@ setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!doc
   </header>
 
 <section class="screen" id="s-feed"><div class="feed" id="feed"></div><button class="ffil gl press" id="ffil" hidden aria-label="Фильтры"></button><div class="gbar" id="gbar" hidden></div><div class="dots" id="dots"></div></section>
-<section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div class="rec-h" id="recH"><span>Шуршуня</span><i>советует</i></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><div id="newAu" hidden></div><h3 class="shelf-h">Мои полки</h3><div class="pills" id="pills"></div><div class="grid" id="grid"></div></div></section>
+<section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div id="trend" hidden></div><div class="rec-h" id="recH"><span>Шуршуня</span><i>советует</i></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><div id="newAu" hidden></div><h3 class="shelf-h">Мои полки</h3><div class="pills" id="pills"></div><div class="grid" id="grid"></div></div></section>
 <section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
 
 <div class="bottom"><nav class="dock gl" aria-label="Разделы"><i class="lens lensy" id="lens"></i>
@@ -4170,7 +4170,8 @@ let FSHOWN=new Set();
 const POPT=new Set("Гарри Поттер и философский камень|Гарри Поттер и узник Азкабана|Сумерки|Голодные игры|Четвёртое крыло|Железное пламя|Мастер и Маргарита|1984|Маленький принц|Гордость и предубеждение|Три товарища|Над пропастью во ржи|Шантарам|Маленькая жизнь|Норвежский лес|Убить пересмешника|Великий Гэтсби|Джейн Эйр|Унесённые ветром|Дюна|Властелин колец|Хоббит, или Туда и обратно|Приключения Шерлока Холмса|Дракула|Девушка с татуировкой дракона|Код да Винчи|Скотный двор|Преступление и наказание|Анна Каренина|Собачье сердце|Цветы для Элджернона|Портрет Дориана Грея|Тайная история|Щегол|Песнь Ахилла|Последнее желание|Игра престолов|Семь мужей Эвелин Хьюго|Красный, белый и королевский синий|Тысяча сияющих солнц|Бегущий за ветром|Книжный вор|Вино из одуванчиков|451 градус по Фаренгейту|Дом, в котором…|Зулейха открывает глаза|Пикник на обочине|Понедельник начинается в субботу|Двенадцать стульев|Граф Монте-Кристо|Три мушкетёра|Маленькие женщины|Грозовой перевал|Ребекка|Убийство в «Восточном экспрессе»|И никого не стало|Оно|Сияние|Зелёная миля|Из крови и пепла|Двор шипов и роз|Шестёрка воронов|Тень и кость|Жестокий принц|Цирцея|Хроники Нарнии|О дивный новый мир|Повелитель мух|Война и мир|Марсианин|Задача трёх тел|Проект «Аве Мария»|Вторая жизнь Уве|Дневник памяти|До встречи с тобой|Виноваты звёзды|13 причин почему|Бойцовский клуб|Благие знамения|Сто лет одиночества|Атлант расправил плечи|Ведьмы.ру|Незримая жизнь Адди Ларю|Ночной цирк|Обитель апельсинового дерева|Остров сокровищ|Таинственный сад|Аня из Зелёных Мезонинов|Мы|Евгений Онегин|Отцы и дети|Идиот|Братья Карамазовы|Портрет|Американские боги|Тёмный лес|Вавилон. Сокрытая история|Академия Зодиак. Пробуждение|Шестёрка воронов|Корона полуночи|Стеклянный трон|Ведьмак|Лолита|Белые ночи|Мартин Иден|Над кукушкиным гнездом|Пролетая над гнездом кукушки|Сто лет тому вперёд|Хамнет|Земноморье|Волшебник Земноморья".split("|").map(t=>norm(t)));
 // сначала известные и популярные книги с нормальными обложками, чем дальше листаешь — тем смелее и нишевее
 const popOf=b=>(POPT.has(b._n||norm(b.t))?3:0)+Math.min(1.5,Math.log2(1+(b.sl||0))*.2)+(b.acclaim&&b.acclaim.length?.5:0);
-function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;
+const gpref=()=>{const v=LS.get("zal.gpref",[]);return Array.isArray(v)?v:[]};
+function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;{const GP=gpref();if(GP.length&&GP.some(g=>genPass(b,g)))s+=4}
   (b.tags||[]).forEach(t=>{s+=2*(q.tags[t]||0)+1.4*(TASTE.t[t]||0)});s+=1.2*(TASTE.g[b.g]||0)+1.5*(TASTE.a[b.a]||0);
   const w=Math.max(0,1-(+LS.get("zal.fdn",0)||0)/90);if(w>0){s+=w*3.2*popOf(b);if(!imgOf(b))s-=w*3}
   return s+Math.random()*2.2}
@@ -4333,7 +4334,7 @@ function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
   $("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read]]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
   const G=gridList();$("#grid").innerHTML=G.map((x,i)=>`<button data-g="${i}">${cv(x,110)}<small>${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
-  if(!keepFlow)drawFlow();drawViews();drawNewAu()}
+  if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
 // «Новое от твоих авторов»: свежие книги (этот и прошлый год) авторов, которых человек оценил на 4–5, и ещё не на полках
 function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a).map(b=>norm(b.a)));if(!fav.size)return [];
   const W=wantNorms(),seen=new Set(),out=[];for(const b of ALLB()){if(!b.y||b.y<YNOW-1||!b.a||!fav.has(norm(b.a)))continue;const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt)||seen.has(nt)||dismissed.has(b.id))continue;seen.add(nt);out.push(b);if(out.length>=8)break}
@@ -4341,6 +4342,19 @@ function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>
 function drawNewAu(){const el=$("#newAu");if(!el)return;const L=newAuList();el.hidden=!L.length;if(!L.length){el.innerHTML="";return}el._l=L;
   el.innerHTML=`<h3 class="shelf-h">Новое от твоих авторов</h3><div class="na-row">${L.map((x,i)=>`<button data-na="${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a).split(" ").slice(-1)[0])} · ${x.y}</em></button>`).join("")}</div>`}
 $("#newAu").addEventListener("click",e=>{const b=e.target.closest("[data-na]");if(!b)return;const x=$("#newAu")._l[+b.dataset.na];if(x){tgHaptic();bkcOpen(x,"rec")}});
+// «В тренде сейчас»: о чём в этом месяце говорят в буктоке и на буктюбе (список обновляется раз в месяц). Книги ищем в каталоге по названию и фамилии автора
+const TREND="Ониксовая буря|Яррос;Рыцарь и мотылёк|Гиллиг;Мара и Морок|Арден;Дом земли и крови|Маас;Верити|Гувер;Тео из Голдена|Леви;Проект «Аве Мария»|Вейер;Невьянская башня|Иванов;Йеллоуфейс|Куанг;Незримая жизнь Адди Ларю|Шваб;Четвёртое крыло|Яррос;Неночь|Кристофф;Жестокий принц|Блэк;Демон из Пустоши|Дашкевич;Гипотеза любви|Хейзелвуд;Королевство шипов и роз|Маас;Тайная история|Тартт;Семь мужей Эвелин Хьюго|Рид;Если все кошки в мире исчезнут|Кавамура;Безмолвный пациент|Михаэлидес".split(";").map(s=>s.split("|"));
+let TRB=null,TRK=-1;
+function trendBooks(){const L=ALLB();if(TRB&&TRK===L.length)return TRB;TRK=L.length;const by=new Map();
+  L.forEach(b=>{const n=b._n||norm(b.t);let v=by.get(n);if(!v)by.set(n,v=[]);v.push(b)});
+  TRB=TREND.map(([t,s])=>{const n=norm(t),sn=norm(s),ok=b=>norm(b.a||"").includes(sn);let c=(by.get(n)||[]).find(ok);
+    if(!c)for(const [k,v] of by){if(k.startsWith(n)&&(c=v.find(ok)))break}return c}).filter(Boolean);return TRB}
+function trendList(){if(isF()||VIEW)return [];const GP=gpref(),hit=b=>GP.some(g=>genPass(b,g));
+  return trendBooks().filter(b=>!READ.has(b._n||norm(b.t))&&!dismissed.has(b.id)).map((b,i)=>({b,s:(hit(b)?-100:0)+i})).sort((a,b)=>a.s-b.s).slice(0,14).map(z=>bItem(z.b,"rec"))}
+function drawTrend(){const el=$("#trend");if(!el)return;const L=trendList();el.hidden=L.length<4;if(el.hidden){el.innerHTML="";return}el._l=L;
+  el.innerHTML=`<h3 class="shelf-h">В тренде сейчас</h3><p class="tr-sub">О чём говорят в буктоке и на буктюбе</p><div class="na-row">${L.map((x,i)=>`<button data-tr="${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div>`}
+$("#trend").addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(!b)return;const x=$("#trend")._l[+b.dataset.tr];if(x){tgHaptic();bkcOpen(x,"rec")}});
+addEventListener("bigcat",()=>{TRK=-1;if(SCREEN==="col")drawTrend()});
 $("#colScroll").addEventListener("scroll",()=>{document.body.classList.toggle("topoff",$("#colScroll").scrollTop>16)},{passive:true});
 $("#pills").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){if(colF===b.dataset.f)return;colF=b.dataset.f;drawCol(true);tgHaptic()}});
 // ---------- виды полки: обложки, полки по странам, лента веков, карта, авторы (из первой Норы) ----------
@@ -4691,7 +4705,7 @@ $("#sumMore").addEventListener("click",e=>{const t=e.target;
 // ---------- первая настройка ----------
 let onbK="books",onbPick={};
 function onbList(){return onbK==="films"?popFilms():popBooks()}
-function onbDraw(){const F=onbK==="films",list=onbList();onbPick={};
+function onbDraw(){const F=onbK==="films",list=onbList();onbPick={};onbStage="books";$("#onbGrid").classList.remove("onb-gen");
   $("#onbStep").textContent=F?"2 из 2":"1 из 2";$("#onbH").textContent=F?"Выбери хотя бы два просмотренных фильма или сериала":"Выбери хотя бы две прочитанные книги";
   $("#onbP").textContent=F?"Нажми на фильм или сериал и поставь оценку.":"Нажми на книгу и поставь оценку.";
   $("#onbSkip").hidden=!F;$("#onbGrid").scrollTop=0;
@@ -4713,7 +4727,14 @@ $("#introGo").onclick=()=>{$("#intro").classList.remove("on");$("#onb").classLis
 const onbDone=()=>{if(needAuth()){authMode="up";authShow(onbFinish,"onb")}else onbFinish()};
 function onbSave(){const list=$("#onbGrid")._l,D=onbK==="films"?FM:BK,cs=checkStamps;checkStamps=()=>{};try{Object.entries(onbPick).forEach(([i,n])=>{const x=list[+i];if(!D.has(x))D.markRead(x,n*2,true)})}finally{checkStamps=cs}checkStamps(true)}
 function onbFinish(){setTimeout(inviteCheck,1200);LS.set("zal.onb",1);$("#onb").classList.remove("on");setRealmUI("books");checkStamps(true);pickCol();fi=0;buildFeed();show("col");toast("Полки готовы")}
-$("#onbNext").onclick=()=>{onbSave();tgHaptic("medium");onbDone()};
+// второй шаг: любимые жанры — лента и советы Шуршуни начнут с них
+const GPREF_OPT=[["fantasy","Фэнтези"],["romantasy","Ромэнтези"],["romance","Любовные романы"],["detective","Детективы"],["scifi","Фантастика"],["modern","Современная проза"],["classic","Классика"],["ya","Young adult"],["darkrom","Дарк роман"],["nonfic","Нон-фикшн"],["kids","Детские книги"]];
+let onbStage="books",onbG=[];
+function onbGenDraw(){onbStage="gen";onbG=gpref().slice();$("#onbH").textContent="Какие жанры тебе ближе?";$("#onbP").textContent="Можно выбрать несколько - с них Шуршуня начнёт советовать.";
+  const g=$("#onbGrid");g.classList.add("onb-gen");g.scrollTop=0;g.innerHTML=GPREF_OPT.map(([k,l])=>`<button class="fgc${onbG.includes(k)?" on":""}" data-gp="${k}">${l}</button>`).join("");onbGenBtn()}
+function onbGenBtn(){const b=$("#onbNext");b.disabled=false;b.textContent=onbG.length?"Готово":"Пропустить"}
+$("#onbGrid").addEventListener("click",e=>{const c=e.target.closest("[data-gp]");if(!c)return;e.stopPropagation();const k=c.dataset.gp;onbG=onbG.includes(k)?onbG.filter(x=>x!==k):[...onbG,k];c.classList.toggle("on");tgHaptic();onbGenBtn()},true);
+$("#onbNext").onclick=()=>{tgHaptic("medium");if(onbStage==="books"){onbSave();onbGenDraw();return}LS.set("zal.gpref",onbG);onbStage="books";$("#onbGrid").classList.remove("onb-gen");try{recList._k=null;TRK=-1}catch(e){}onbDone()};
 $("#onbSkip").onclick=()=>onbDone();
 
 // ---------- обучение в ленте: по шагам, с настоящими действиями ----------
@@ -5331,11 +5352,25 @@ function bkcActs(x,L){const st=BK.has(x);
   if(L==="top"||L==="want"||st==="want"||x.now)return `<button class="btn w" data-bkc="read">Прочитано</button>${x.now?"":`<button class="btn" data-bkc="rm">Убрать из избранного</button>`}`;
   if(L==="read"||st==="read")return `<button class="btn" data-bkc="unread">Убрать из «Прочитано»</button>`;
   return `<button class="btn" data-bkc="read">Прочитано</button><button class="btn w" data-bkc="want">Добавить в избранное</button>`}
+// тропы и темы кнопками: нажала — открылись книги с тем же тропом; рядом «Ещё у автора»
+const THEME_T=["ромэнтези","драконы","магия","школа и университет","путешествия во времени","тёмное фэнтези","городское фэнтези","эпическое фэнтези","мифология","сказка","магический реализм","готика","хоррор","мистика","антиутопия","постапокалипсис","космос","искусственный интеллект","викторианская эпоха","исторический роман","семейная сага","детектив","триллер","море","еда","музыка","искусство"];
+const trLabel=t=>t.startsWith("троп:")?((B_TROPE.find(x=>"троп:"+x[0]===t)||[])[1]||""):t[0].toUpperCase()+t.slice(1);
+const sameAu=(a,b)=>{a=String(a||"").trim();b=String(b||"").trim();if(!a||!b||a==="Автор не указан")return false;const A=a.split(/\s+/),B=b.split(/\s+/);return norm(A[A.length-1])===norm(B[B.length-1])&&norm(A[0])[0]===norm(B[0])[0]};
+function auBooks(x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of ALLB()){if(!sameAu(b.a,x.a))continue;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);out.push(b)}
+  return out.sort((a,b)=>(+!!imgOf(b)-+!!imgOf(a))||((b.q||0)-(a.q||0))||((a.y||9999)-(b.y||9999)))}
+function bkcTropes(x){if(x._f)return "";const tg=(catOf(x)||x).tags||x.tags||[],tr=tg.filter(t=>t.startsWith("троп:")&&trLabel(t)),th=tg.filter(t=>THEME_T.includes(t));
+  const L=[...tr,...th].filter((t,i,a)=>a.indexOf(t)===i&&!(t==="драконы"&&a.includes("троп:dragons"))).slice(0,3),au=auBooks(x).length;
+  if(!L.length&&!au)return "";return `<div class="bkc-tr">${L.map(t=>`<button data-bkc-tg="${esc(t)}">${esc(trLabel(t))}</button>`).join("")}${au?`<button class="au" data-bkc-au>Ещё у автора ›</button>`:""}</div>`}
+function tagBooks(t,x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of ALLB()){if(!(b.tags||[]).includes(t)||dismissed.has(b.id))continue;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);out.push(b)}
+  return topK(out,60,b=>popOf(b)*2+(imgOf(b)?2:0)+(b.q||0)+Math.random()*.5).map(z=>z.b)}
+function listSheet(title,sub,L){vOpen(`<h3 class="vh">${esc(title)}</h3>${sub?`<p class="sy-note">${esc(sub)}</p>`:""}<div class="tl-list">${L.map((b,i)=>{const st=BK.has(b);return `<div class="fr" data-tl="${i}">${cv(b,48)}<div class="tx"><b>${esc(b.t)}</b><span>${esc([b.a,b.y].filter(Boolean).join(" · "))}</span></div><div class="ac">${st?`<em>${st==="read"?"Прочитано":"В избранном"}</em>`:""}</div></div>`}).join("")||`<p class="sy-note">Пока ничего не нашлось.</p>`}</div>`,true);
+  $("#vsheet").classList.add("ontop");$("#vshBody")._tl=L}
+$("#vshBody").addEventListener("click",e=>{const r=e.target.closest("[data-tl]");if(!r||!$("#vshBody")._tl)return;const b=$("#vshBody")._tl[+r.dataset.tl];if(!b)return;e.stopPropagation();vClose();tgHaptic();setTimeout(()=>bkcOpen(bItem(b,"rec"),"rec"),180)},true);
 function bkcDraw(){const {x,L}=BKC;
   bkcEl.innerHTML=`<div class="bkc-in"><button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button>
    <div class="bkc-cv">${cv(x,190)}<button class="bkc-cov" data-bkc="cov">${IC2.cov}<span>сменить обложку</span></button></div>
    <div class="bkc-covsw" hidden>${covRow(x)}</div>
-   <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>
+   <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>${bkcTropes(x)}
    <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
    <div class="bkc-acts">${bkcActs(x,L)}</div>
@@ -5347,6 +5382,14 @@ function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};cardX=x;cardL=L;ambFor(x);bkc
   const upd=()=>{if(!BKC||BKC.x!==x)return;const f=$("#bkcFacts");if(f)f.innerHTML=bkcFacts(x);const d=$("#bkcDs");if(d)d.textContent=descOf(x);bkcFit()};requestAnimationFrame(bkcFit);
   wantMeta(x,upd);if(!x.ds)wantDesc(x,upd);if(FRIENDS.length&&!Object.keys(FRP).length)frLoad().then(upd)}
 // описание занимает всё свободное место и аккуратно обрезается — карточку не нужно листать
+// карточку книги можно закрыть, смахнув вниз (если описание не прокручено)
+{let y0=null,x0=0,t0=0,dy=0,act=false;
+bkcEl.addEventListener("touchstart",e=>{y0=null;if(!BKC||e.touches.length!==1||$("#vsheet").classList.contains("on"))return;const sc=e.target.closest(".bkc-dw,.bkc-covsw");if(sc&&sc.scrollTop>2)return;
+  y0=e.touches[0].clientY;x0=e.touches[0].clientX;t0=Date.now();dy=0;act=false},{passive:true});
+bkcEl.addEventListener("touchmove",e=>{if(y0==null)return;const d=e.touches[0].clientY-y0,dx=Math.abs(e.touches[0].clientX-x0);
+  if(!act){if(d>10&&d>dx*1.4)act=true;else{if(d<-6||dx>12)y0=null;return}}dy=Math.max(0,d-10);bkcEl.style.transition="none";bkcEl.style.transform=`translateY(${dy}px)`;e.preventDefault()},{passive:false});
+const end=()=>{if(y0==null)return;y0=null;if(!act)return;const close=dy>110||(dy>45&&Date.now()-t0<260);bkcEl.style.transition="";bkcEl.style.transform="";if(close){tgHaptic();bkcClose()}};
+bkcEl.addEventListener("touchend",end);bkcEl.addEventListener("touchcancel",end)}
 function bkcFit(){const w=$("#bkcDw");if(!w)return;const upd=()=>w.classList.toggle("more",w.scrollTop+w.clientHeight<w.scrollHeight-4);w.onscroll=upd;upd()}
 addEventListener("resize",()=>{if(BKC)bkcFit()});
 function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();if(vDirty){vDirty=false;setTimeout(refresh,300)}}
@@ -5375,7 +5418,7 @@ function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).s
   const choose=`<div class="wh-ch"><button data-wh="on"><b>Онлайн</b></button><button data-wh="off"><b>Офлайн</b></button></div>`;
   const list=mode?`<div class="wh-l wh-sh">${(mode==="on"?ON:OFF).map(([i,n,u])=>`<button data-whu="${esc(u)}">${i}<b>${n}</b><i>›</i></button>`).join("")}</div>`:"";
   vOpen(mode?`<div class="wh-hd"><b>${mode==="on"?"Онлайн":"Офлайн"}</b><button class="vx" data-wh="" aria-label="Назад к выбору"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`+list:choose);$("#vsheet").classList.add("ontop");$("#vshBody")._wx=x}
-bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");if(t.closest("[data-bkc-rv]")){reviewsOpen(BKC.x);return}if(t.closest("[data-bkc-fr]")){const fr=frReaders(BKC.x);
+bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{const g=t.closest("[data-bkc-tg]");if(g){const tg=g.dataset.bkcTg,L=tagBooks(tg,BKC.x);tgHaptic();listSheet(trLabel(tg),L.length?(tg.startsWith("троп:")?"Книги с тем же тропом":"Похожие книги"):"",L);return}}if(t.closest("[data-bkc-au]")){const L=auBooks(BKC.x);tgHaptic();listSheet(BKC.x.a||"Автор","Ещё у автора",L);return}if(t.closest("[data-bkc-rv]")){reviewsOpen(BKC.x);return}if(t.closest("[data-bkc-fr]")){const fr=frReaders(BKC.x);
     vOpen(`<h3 class="vh">Читали «${esc(BKC.x.t)}»</h3><div class="wh-l">${fr.map(({f,b})=>`<button data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid)}<b>${esc(f.n||"Друг")}</b><small>${b.r!=null?"★ "+r5(b.r):"без оценки"}</small>${b.rv?`<em class="frv">«${esc(b.rv)}»</em>`:""}<i>›</i></button>`).join("")}</div>`);$("#vsheet").classList.add("ontop");return}
   if(!b||!BKC)return;const {x,L}=BKC,a=b.dataset.bkc;tgHaptic();
   if(a==="close"){bkcClose();return}
