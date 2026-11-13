@@ -48,13 +48,11 @@
 - [ ] Блок «Интересно знать» на сайте: выбрать вариант A/B/C.
 - [ ] Поиск с настоящим ИИ: платный ключ ~$1–5/мес + Cloudflare Worker.
 - [ ] Новости в Telegram по желанию: секрет `BOT_FB_PASS` + правило Firestore `notify/{uid}`.
-- [ ] Тестирование с друзьями: рассылать опросник `https://moya-nora.github.io/opros.html` (ответы приходят в бота).
 - [ ] Позже: блогеры, Author.Today (самиздат), «Распаковка года».
 
 ## 7. Полезные ссылки
 - Приложение: https://moya-nora.github.io/app.html (в Telegram — через @Wonderbookworld_bot)
 - Сайт: https://moya-nora.github.io
-- Опросник для друзей: https://moya-nora.github.io/opros.html
 - Канал: https://t.me/nora_bookworld
 - Репозиторий: https://github.com/moya-nora/moya-nora.github.io
 - Журнал изменений и макеты: репозиторий → `notes/`

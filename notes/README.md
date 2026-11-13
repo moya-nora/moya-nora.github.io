@@ -27,7 +27,6 @@
 - Лента: обложка не наезжает на текст; обложки берутся только при совпадении автора.
 - Убран край скрытого окна, выглядывавший под меню на iPhone.
 - Канал: описание, первый пост-знакомство подготовлен (`tools/channel/intro.html`, публикация — workflow `channel.yml`).
-- Опросник для друзей-тестировщиков: `/opros.html` (ответы уходят в бота). Скрипт для Google Формы на будущее — `google_form_script.gs`.
 
 ## Открытые вопросы / что дальше
 - [ ] **Канал:** добавить @Wonderbookworld_bot администратором @nora_bookworld с правом «Публикация сообщений» → опубликовать первый пост → настроить ежедневные посты.
@@ -46,10 +45,8 @@
 | `mockups/diary_v3_steps_hero_receipt_polaroid.png` | Дневник v3 — по шагам / обложка на весь экран / чек / полароид |
 | `mockups/book_facts_variants.png` | Блок «Интересно знать» — 3 варианта |
 | `mockups/smart_search.png` | Поиск по описанию |
-| `mockups/opros.png` | Опросник для друзей |
 
 ## История изменений (из коммитов, ноябрь 2026)
-- 2026-11-13 — Feedback form for friends: /opros.html (answers sent via Telegram)
 - 2026-11-13 — Search placeholder: «Книга, автор или описание»
 - 2026-11-13 — Feed: cover never overlaps the title; covers must match the author (no more Divov's cover for Chekhov), cover cache reset
 - 2026-11-13 — Hide the closed bottom sheet completely (its edge peeked under the tab bar on iPhone)
