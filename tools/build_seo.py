@@ -10,7 +10,7 @@ HTML-страницы, которые поисковик читает целик
 import urllib.parse, html, json, os, re, time
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
-SITE = "https://moya-nora.github.io"
+SITE = "https://nora-books.ru"
 BOT = "https://t.me/Wonderbookworld_bot"
 SUPPORT = f'<a href="{BOT}">пиши в Telegram-бот @Wonderbookworld_bot</a>'
 YNOW = time.gmtime().tm_year

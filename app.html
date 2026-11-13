@@ -2055,7 +2055,7 @@ S.reqGet=async id=>{const r=await authed("requests/"+id);if(r.status===404)retur
 S.reqIncoming=async()=>{if(!tok.uid)return [];const q={structuredQuery:{from:[{collectionId:"requests"}],where:{fieldFilter:{field:{fieldPath:"t"},op:"EQUAL",value:{stringValue:tok.uid}}},limit:50}};
   const r=await authed(":runQuery",{method:"POST",body:JSON.stringify(q)});if(!r.ok)throw new Error("HTTP "+r.status);const L=await r.json();return (L||[]).filter(x=>x.document).map(x=>({id:x.document.name.split("/").pop(),...reqDoc(x.document.fields)}))};
 S.reqSet=async(id,s)=>{const r=await authed("requests/"+id+"?updateMask.fieldPaths=s",{method:"PATCH",body:JSON.stringify({fields:{s:{stringValue:s}}})});return r.ok};
-S.link=()=>key?"https://moya-nora.github.io/#k="+key:"";
+S.link=()=>key?"https://nora-books.ru/#k="+key:"";
 S.now=()=>sync();
 // выход и удаление: стираем этот телефон, а при удалении — ещё облако и сам аккаунт
 const wipeLocal=()=>{const ks=[];for(let i=0;i<ls.length;i++){const k=ls.key(i);if(k&&k.startsWith("zal."))ks.push(k)}ks.forEach(k=>_rm.call(ls,k));
@@ -2211,7 +2211,7 @@ const _tgu=(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initDataUnsafe&&Te
 const GUEST=(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData)?(!_tgu||String(_tgu.username||"").toLowerCase()!==OWNER):!!(window.NSYNC&&NSYNC.on&&localStorage.getItem("zal.who")!=='"owner"');
 // «Полка подруги»: ссылка вида …/#s=<код> открывает чужие полки только для просмотра
 const SEED=Object.fromEntries(BOOKS.map(b=>[b.id,b]));
-const SHARE_BASE="https://moya-nora.github.io/";
+const SHARE_BASE="https://nora-books.ru/";
 const SHARE_BOT="Wonderbookworld_bot";// имя бота и короткое имя мини-аппа, напр. "MyBot/zal" — тогда ссылки будут вида t.me/MyBot/zal?startapp=…
 const shDec=s=>{s=s.replace(/-/g,"+").replace(/_/g,"/");const bin=atob(s+"===".slice((s.length+3)%4));return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))};
 const u64=str=>{let bin="";new TextEncoder().encode(str).forEach(x=>bin+=String.fromCharCode(x));return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")};
@@ -4166,7 +4166,7 @@ function bookFeed(){FSHOWN=new Set();const q=tasteQ();
   feedMore=()=>{const sc=topK(ALLB(),160,b=>FSHOWN.has(b.id)||!fgPass(b)?null:feedScore(b,q));
     const out=[],au=new Set();for(const {b} of sc){if(au.has(b.a))continue;au.add(b.a);out.push(b);if(out.length>=8)break}
     out.forEach(b=>FSHOWN.add(b.id));return out.map(b=>{const it=bItem(b,"feed");it.why=whyBook(b);return it})};return feedMore()}
-function shareBook(x){learn(x,2.2);shareSheet("Переслать книгу",`«${x.t}»${x.a?" - "+x.a:""}. Нашлось в Норе`,`https://t.me/${SHARE_BOT}?startapp`,"https://moya-nora.github.io/")}
+function shareBook(x){learn(x,2.2);shareSheet("Переслать книгу",`«${x.t}»${x.a?" — "+x.a:""}. Нашлось в Норе`,`https://t.me/${SHARE_BOT}?startapp`,"https://nora-books.ru/")}
 const SHR='<svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M6 12v6.5A1.5 1.5 0 0 0 7.5 20h9a1.5 1.5 0 0 0 1.5-1.5V12"/></svg>';
 function filmFeed(){if(!FILMS)return [];const res=filmList();let i=0;
   feedMore=()=>{const chunk=res.slice(i,i+25);i+=25;return chunk.map(f=>fItem(f,"feed"))};return feedMore()}
@@ -4969,7 +4969,7 @@ const NS=window.NSYNC||{on:false};
 const agoTxt=t=>{if(!t)return "ещё не было";const m=Math.round((Date.now()-t)/60000);return m<1?"только что":m<60?m+" мин назад":Math.round(m/60)<24?Math.round(m/60)+" ч назад":new Date(t).toLocaleDateString("ru-RU")};
 function accCard(){if(!NS.on||VIEW)return "";const k=NS.key();if(!k&&!NS.email)return "";
   const tgu=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user,nt=tgu&&NS.email?`<button class="sy-ntf" data-ntf>${LS.get("zal.ntf",0)?"🔔 Новости о моих книгах в Telegram: включены":"🔕 Присылать в Telegram новости о моих книгах"}</button>`:"";
-  return nt+`<div class="sy-foot"><a href="https://t.me/Wonderbookworld_bot" data-ext target="_blank" rel="noopener">Поддержка</a><span>·</span><button data-sy-out>Выйти</button><span>·</span><a href="https://moya-nora.github.io/privacy.html" data-ext target="_blank" rel="noopener">Конфиденциальность</a></div>`}
+  return nt+`<div class="sy-foot"><a href="https://t.me/Wonderbookworld_bot" data-ext target="_blank" rel="noopener">Поддержка</a><span>·</span><button data-sy-out>Выйти</button><span>·</span><a href="https://nora-books.ru/privacy.html" data-ext target="_blank" rel="noopener">Конфиденциальность</a></div>`}
 // ---------- новости о книгах в Telegram (по согласию) ----------
 function notifyData(){const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(!u)return null;
   const fav=[...new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a&&b.a!=="Автор не указан").map(b=>b.a))].slice(0,60);
@@ -4987,7 +4987,7 @@ function syncCard(){if(!NS.on)return "";const k=NS.key();
    ${TG&&k?`<button data-sy-open>Открыть в браузере</button>`:""}${k?`<button data-sy-copy>Скопировать ссылку для входа</button>`:""}
    ${NS.email?`<p class="sy-mail">Вход по почте: <b>${esc(NS.email)}</b></p>`:k?`<button data-sy-mail>Привязать почту</button>`:`<button data-sy-login>Войти по почте</button>`}
    <p class="sy-note">${NS.email?"Если Telegram недоступен — открой Нору в любом браузере и войди с этой почтой.":"С почтой Нору можно открыть в любом браузере, даже если Telegram недоступен."}</p>
-   ${k||NS.email?`<div class="sy-acc"><button data-sy-out>Выйти</button><button data-sy-del>Удалить аккаунт</button></div>`:""}<a class="sy-priv" href="https://moya-nora.github.io/privacy.html" target="_blank" rel="noopener">Политика конфиденциальности</a></div>`}
+   ${k||NS.email?`<div class="sy-acc"><button data-sy-out>Выйти</button><button data-sy-del>Удалить аккаунт</button></div>`:""}<a class="sy-priv" href="https://nora-books.ru/privacy.html" target="_blank" rel="noopener">Политика конфиденциальности</a></div>`}
 function syncClick(t){
   if(t.closest("[data-sy-open]")){const u=NS.link();try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(e){window.open(u,"_blank")}return true}
   if(t.closest("[data-sy-copy]")){const u=NS.link();(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("Ссылка скопирована — не показывай её чужим")).catch(()=>{vOpen(`<h3 class="vh">Ссылка для входа</h3><p class="sy-note">Скопируй и открой в любом браузере. Не показывай её чужим: по ней открываются твои полки.</p><textarea class="sy-in" readonly rows="3">${esc(u)}</textarea>`)});return true}
@@ -5005,7 +5005,7 @@ function mailSheet(mode){const L=mode==="link";
   vOpen(`<h3 class="vh">${L?"Привязать почту":"Войти по почте"}</h3><p class="sy-note">${L?"Придумай пароль — с почтой и паролем Нору можно открыть в любом браузере, даже без Telegram.":"Почта и пароль, привязанные к Норе."}</p>
    <input class="sy-in" id="syE" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" type="email" inputmode="email" placeholder="Почта">
    <input class="sy-in" id="syP" type="password" autocomplete="${L?"new-password":"current-password"}" placeholder="${L?"Пароль, от 6 символов":"Пароль"}">
-   <p class="sy-msg" id="syM"></p><div class="one"><button class="btn w" id="syGo">${L?"Привязать":"Войти"}</button></div>${L?`<p class="au-legal">Привязывая почту, ты соглашаешься с <a href="https://moya-nora.github.io/privacy.html" data-ext target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}${L?"":`<button class="sy-link" id="syR">Забыли пароль?</button>`}`);
+   <p class="sy-msg" id="syM"></p><div class="one"><button class="btn w" id="syGo">${L?"Привязать":"Войти"}</button></div>${L?`<p class="au-legal">Привязывая почту, ты соглашаешься с <a href="https://nora-books.ru/privacy.html" data-ext target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}${L?"":`<button class="sy-link" id="syR">Забыли пароль?</button>`}`);
   $("#vsheet").classList.toggle("ontop",$("#intro").classList.contains("on")||$("#onb").classList.contains("on"));
   const go=$("#syGo"),msg=$("#syM");
   go.onclick=async()=>{let e=$("#syE").value.trim();const p=$("#syP").value;if(!e||!p){msg.textContent="Впиши почту и пароль";return}try{e=authId(e,L).e}catch(x){msg.textContent=x.message;return}go.disabled=true;go.textContent=L?"Привязываю…":"Вхожу…";msg.textContent="";
@@ -5066,7 +5066,7 @@ const whenTxt=ts=>{const d=new Date(ts),t=new Date();const days=Math.floor((new 
 const fbItem=b=>{const it=bItem({...b,id:b.id||"f"+hsh(norm(b.t)).toString(36)},"friend");it.ds=b.ds||it.ds;return it};
 // своя метка приглашения: по ней Нора узнаёт, что заявку приняли именно по нашей ссылке
 const frTok=()=>{let k=LS.get("zal.frtok","");if(!k){k=Math.random().toString(36).slice(2,10);LS.set("zal.frtok",k)}return k};
-function inviteLink(){const u=NS.uid&&NS.uid();if(!u)return "";return TG?`https://t.me/${SHARE_BOT}?startapp=f_${u}_${frTok()}`:`https://moya-nora.github.io/#f=${u}&fk=${frTok()}`}
+function inviteLink(){const u=NS.uid&&NS.uid();if(!u)return "";return TG?`https://t.me/${SHARE_BOT}?startapp=f_${u}_${frTok()}`:`https://nora-books.ru/#f=${u}&fk=${frTok()}`}
 function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
   const list=FRIENDS.map(f=>({f,p:FRP[f.uid]})),news=list.filter(x=>x.p&&(x.p.ev||[]).length).sort((a,b)=>(b.p.ev[0].ts||0)-(a.p.ev[0].ts||0));
   box.innerHTML=`<h1 class="fr-h">Друзья</h1>
@@ -5079,7 +5079,7 @@ function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
    <div class="fr-me">Тебя видят как <b>${esc(me||"без имени")}</b> <button data-fr-name>изменить</button></div>`}
 async function frInvite(){const u=NS.uid&&NS.uid();if(!u){toast("Сначала нужен вход");authShow();return}
   // в Telegram — ссылка на мини-приложение, в остальные соцсети — на сайт (откроется и без Telegram)
-  shareSheet("Пригласить в Нору","Добавь меня в друзья в Норе - будем видеть книжные полки друг друга",`https://t.me/${SHARE_BOT}?startapp=f_${u}_${frTok()}`,`https://moya-nora.github.io/#f=${u}&fk=${frTok()}`)}
+  shareSheet("Пригласить в Нору","Добавь меня в друзья в Норе — будем видеть книжные полки друг друга",`https://t.me/${SHARE_BOT}?startapp=f_${u}_${frTok()}`,`https://nora-books.ru/#f=${u}&fk=${frTok()}`)}
 const SHARE_TO=[["tg","Telegram",(t,u)=>"https://t.me/share/url?url="+encodeURIComponent(u)+"&text="+encodeURIComponent(t)],["wa","WhatsApp",(t,u)=>"https://wa.me/?text="+encodeURIComponent(t+" "+u)],
   ["vk","ВКонтакте",(t,u)=>"https://vk.com/share.php?url="+encodeURIComponent(u)+"&title="+encodeURIComponent(t)],["vb","Viber",(t,u)=>"viber://forward?text="+encodeURIComponent(t+" "+u)],
   ["ok","Одноклассники",(t,u)=>"https://connect.ok.ru/offer?url="+encodeURIComponent(u)+"&title="+encodeURIComponent(t)]];
@@ -5227,7 +5227,7 @@ function authDraw(){const up=authMode==="up";
    ${up?`<input class="sy-in" id="auN" autocomplete="given-name" placeholder="Имя — так тебя увидят друзья" value="${esc(LS.get("zal.name",""))}">`:""}
    <input class="sy-in" id="auE" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Почта" value="${esc(up?"":showId(NS.email))}">
    <input class="sy-in" id="auP" type="password" autocomplete="${up?"new-password":"current-password"}" placeholder="${up?"Пароль, от 6 символов":"Пароль"}">
-   <p class="sy-msg" id="auM"></p><button class="btn w" id="auGo">${up?"Создать аккаунт":"Войти"}</button>${up?`<p class="au-legal">Создавая аккаунт, ты соглашаешься с <a href="https://moya-nora.github.io/privacy.html" data-ext target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}
+   <p class="sy-msg" id="auM"></p><button class="btn w" id="auGo">${up?"Создать аккаунт":"Войти"}</button>${up?`<p class="au-legal">Создавая аккаунт, ты соглашаешься с <a href="https://nora-books.ru/privacy.html" data-ext target="_blank" rel="noopener">политикой конфиденциальности</a></p>`:""}
    <button class="au-sw" id="auSw">${up?"Уже есть аккаунт? Войти":"Нет аккаунта? Создать"}</button>${up?"":`<button class="au-sw" id="auR">Забыли пароль?</button>`}</div>`;
   const go=$("#auGo"),msg=$("#auM");
   $("#auSw").onclick=()=>{authMode=up?"in":"up";authDraw();tgHaptic()};

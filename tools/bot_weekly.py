@@ -13,7 +13,7 @@ import html, json, os, random, re, sys, time, urllib.parse, urllib.request
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 TOKEN = os.environ.get("BOT_TOKEN", "").strip()
 DRY = os.environ.get("DRY") == "1"
-APP = "https://moya-nora.github.io/app.html"
+APP = "https://nora-books.ru/app.html"
 SENT = os.path.join(ROOT, "tools", "bot_weekly.json")
 if not TOKEN and not DRY:
     print("нет секрета BOT_TOKEN — пропускаю"); sys.exit(0)

@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-Disallow: /notes/
-Sitemap: https://moya-nora.github.io/sitemap.xml
+Sitemap: https://nora-books.ru/sitemap.xml
