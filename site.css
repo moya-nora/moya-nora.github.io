@@ -232,3 +232,11 @@ a.bk .cv{transition:transform .25s}a.bk:hover .cv{transform:translateY(-4px)}a.b
 .morec{display:block;margin:40px 0 0;padding:20px 24px;border-radius:24px;background:rgba(255,255,255,.06);font:700 26px/1.1 var(--serif);color:var(--ink)}.morec:hover{color:var(--gold2)}
 .whr b.w2{margin-top:16px}.whr a{display:inline-flex;align-items:center;gap:8px}.whr a img{border-radius:6px}.whr a svg{width:20px;height:20px;fill:none;stroke:var(--ink);stroke-width:1.8}
 body>main{padding-top:10px}
+/* оценки и отзывы на странице книги */
+.frate{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}.frate span,.frate button{padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.08);font:400 14px/1 var(--sans);color:var(--ink2);border:0}
+.frate b{color:var(--ink);font-weight:600}.frate button{cursor:pointer}
+.rvl{margin:14px 0 0;display:flex;flex-direction:column;gap:10px}.rv{padding:16px 18px;border-radius:20px;background:rgba(255,255,255,.05)}
+.rv div{display:flex;justify-content:space-between;gap:10px;font-size:14px}.rv div span{color:var(--gold)}
+.rv p{margin:8px 0 0;font-size:14.5px;line-height:1.55;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}.rv p.open{display:block}
+.rvm{margin:6px 0 0;padding:0;border:0;background:none;color:var(--gold);font:500 14px var(--sans);cursor:pointer}
+.like{margin:34px 0 0}.like h2{font:700 32px/1 var(--serif);margin:0}

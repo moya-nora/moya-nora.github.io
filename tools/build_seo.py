@@ -192,6 +192,20 @@ function show(){if(shown)return;shown=1;p.hidden=false;requestAnimationFrame(fun
 function hide(){p.classList.remove("on");setTimeout(function(){p.hidden=true},300)}
 p.addEventListener("click",function(e){if(e.target===p||e.target.closest(".pop-x"))hide()});
 setTimeout(show,v>=2?9000:28000);addEventListener("scroll",function(){if(scrollY>document.body.scrollHeight*.55&&(+sessionStorage.getItem("nora.pv")||0)>=1)setTimeout(show,1500)},{passive:true})}catch(e){}})();</script>"""
+# оценки и отзывы читателей Фантлаба — подгружаются на странице книги; отзывы открываются списком
+REVIEWS_JS = r"""<script>(function(){var el=document.getElementById("frate");if(!el)return;var F="https://api.fantlab.ru",t=el.dataset.t,a=(el.dataset.a||"").toLowerCase().replace(/ё/g,"е");
+var nm=function(s){return String(s||"").toLowerCase().replace(/ё/g,"е")},cl=function(s){return String(s||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim()},
+pl=function(n,a,b,c){n=Math.abs(n)%100;var m=n%10;return n>10&&n<20?c:m>1&&m<5?b:m==1?a:c},esc=function(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")};
+fetch(F+"/search-works?q="+encodeURIComponent(t)+"&page=1&onlymatches=1").then(function(r){return r.json()}).then(function(L){L=Array.isArray(L)?L:[];
+ var w=L.filter(function(x){return !a||nm(x.autor_rusname).indexOf(a)>=0||nm(x.autor_name).indexOf(a)>=0})[0];if(!w)return;
+ return fetch(F+"/work/"+w.work_id).then(function(r){return r.json()}).then(function(j){var r=j.rating||{},v=+r.voters||0,rc=+j.val_responsecount||0,h="";
+  if(v>=5)h+='<span><b>★ '+(r.rating/2).toFixed(1).replace(".",",")+'</b> '+v.toLocaleString("ru-RU")+' '+pl(v,"оценка","оценки","оценок")+'</span>';
+  if(rc)h+='<button type="button" id="rvb"><b>'+rc+'</b> '+pl(rc,"отзыв","отзыва","отзывов")+' ›</button>';el.innerHTML=h;
+  var b=document.getElementById("rvb");if(!b)return;b.onclick=function(){var box=document.getElementById("rvl");if(box){box.hidden=!box.hidden;return}
+   box=document.createElement("div");box.id="rvl";box.className="rvl";box.innerHTML="<p>Загружаю отзывы…</p>";el.after(box);
+   fetch(F+"/work/"+w.work_id+"/responses?page=1&sort=rating").then(function(r){return r.json()}).then(function(R){var it=(R.items||[]).slice(0,20);
+    box.innerHTML=it.map(function(x){var tx=cl(x.response_text||x.text);return '<div class="rv"><div><b>'+esc(x.user_name||"Читатель")+'</b>'+(x.mark?'<span>★ '+(x.mark/2).toFixed(1).replace(".",",")+'</span>':"")+'</div><p>'+esc(tx)+'</p></div>'}).join("")||"<p>Пока без отзывов.</p>";
+    box.querySelectorAll(".rv p").forEach(function(p){if(p.scrollHeight>p.clientHeight+4){var m=document.createElement("button");m.type="button";m.className="rvm";m.textContent="читать дальше";m.onclick=function(){p.classList.add("open");m.remove()};p.after(m)}})})}})}).catch(function(){})})();</script>"""
 SEARCH_JS = r"""<script>(function(){var q=document.getElementById("q"),box=document.getElementById("sres");if(!q)return;var D=null,nm=function(s){return String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9 ]+/g," ")};
 function load(){if(D)return Promise.resolve(D);return fetch("/books/search.json").then(function(r){return r.json()}).then(function(j){D=j.map(function(x){return [x,nm(x[0]+" "+x[1])]});return D})}
 q.addEventListener("focus",load,{once:true});if(location.hash==="#poisk")setTimeout(function(){q.focus()},300);
@@ -370,13 +384,12 @@ for b in cat_books:
     fl = [f for f in b.get("f", [])[:4] if len(f) > 1]
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="{GEN_URL.get(b["g"], "/c/")}">{esc(GEN.get(b["g"], "Книги"))}</a></div>'
             f'<article class="book">{f"<div class=amb style=background-image:url({esc(u)})></div>" if u else ""}<div class="cvw">{cv(b, lazy=False)}</div><div>'
-            f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>'
+            f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p><div class="frate" id="frate" data-t="{esc(b["t"])}" data-a="{esc(b["a"].split(" ")[-1])}"></div>'
             + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "")
-            + (f'<p class="when">{esc(b["when"])}</p>' if b.get("when") else "")
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
-            + WHERE(b) + f'<p class="save"><a href="{BOT}?startapp=site">Понравилась? Шуршуня подберёт похожие под твой вкус →</a></p>' + "</div></article>"
-            + (f'<section class="sec"><div class="kick">Похожие книги</div><h2>Если понравилась эта</h2><p class="sub">Шуршуня подобрала книги того же жанра с похожим настроением.</p>'
-               f'{rail(sim)}</section>' if sim else "")
+            + WHERE(b)
+            + (f'<section class="like"><div class="shd"><h2>Понравилась книга?</h2><a class="all" data-sim href="/p/">Ещё похожие →</a></div>{rail(sim, bare=True)}</section>' if sim else "")
+            + "</div></article>" + REVIEWS_JS
             + "</div>")
     bld = {"@context": "https://schema.org", "@type": "Book", "name": b["t"], "author": {"@type": "Person", "name": b["a"]}, "inLanguage": "ru",
            "url": f"{SITE}/{BOOK_URL[id(b)]}", **({"description": b["ann"]} if b["ann"] else {}), **({"image": (SITE + u) if u.startswith("/") else u} if u else {}),
@@ -477,15 +490,14 @@ for a_, out in sim_pages:
                      f"Что почитать после «{a_['t']}» ({au_}): {', '.join(x['t'] for x, _ in out[:6])} и ещё {max(0, len(out) - 6)} похожих книг.", body,
                      full_title=f"Книги, похожие на «{a_['t']}» — что почитать после | Нора", img=img_of(a_) or None))
 
-# ссылка «Ещё похожие» на странице книги
-for a_, _ in sim_pages:
-    bu = BOOK_URL.get(id(a_))
-    if bu:
-        fp = os.path.join(ROOT, bu)
-        h = open(fp, encoding="utf-8").read()
-        h = h.replace('<p class="sub">Шуршуня подобрала книги того же жанра с похожим настроением.</p>',
-                      f'<p class="sub">Шуршуня подобрала книги того же жанра с похожим настроением. <a href="/{SIM_URL[id(a_)]}">Все похожие книги →</a></p>', 1)
-        open(fp, "w", encoding="utf-8").write(h)
+# ссылка «Ещё похожие» на странице книги — на страницу «Книги, похожие на…», если она есть
+SIMB = {BOOK_URL[id(a_)]: SIM_URL[id(a_)] for a_, _ in sim_pages if id(a_) in BOOK_URL}
+for b in cat_books:
+    fp = os.path.join(ROOT, BOOK_URL[id(b)])
+    h = open(fp, encoding="utf-8").read()
+    su = SIMB.get(BOOK_URL[id(b)])
+    h = h.replace('<a class="all" data-sim href="/p/">Ещё похожие →</a>', f'<a class="all" href="/{su}">Ещё похожие →</a>' if su else "")
+    open(fp, "w", encoding="utf-8").write(h)
 # оглавление «Что почитать после»
 groups = {}
 for a_, out in sim_pages:
