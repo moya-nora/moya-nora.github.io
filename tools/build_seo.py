@@ -143,7 +143,7 @@ except FileNotFoundError:
     COVERS = {}
 nk = lambda s: re.sub(r"[^0-9a-zа-я]+", "", str(s or "").lower().replace("ё", "е"))
 try:
-    AIC = {k: v for k, v in json.load(open(os.path.join(ROOT, "books", "ai_covers.json"), encoding="utf-8"))["m"].items() if v}
+    AIC = {}  # картинки от нейросети больше не используем
 except (FileNotFoundError, KeyError):
     AIC = {}
 img_of = lambda b: (("/img/ai/" + AIC[nk(b["t"]) + "|" + nk(b["a"] or "")]) if nk(b["t"]) + "|" + nk(b["a"] or "") in AIC else "") \
@@ -613,7 +613,7 @@ home_path = page("index.html", "Нора — что почитать", "Что �
                  "А Шуршуня подберёт книги лично тебе.", home,
                  full_title="Нора (Моя Нора) — книжный советник: что почитать, подборки и похожие книги", ld=HOME_LD)
 idx = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
-idx = idx.replace('<meta charset="utf-8">', '<meta charset="utf-8"><meta name="google-site-verification" content="s2CdXU7z22CJQ7fqwqJNwf2nyq4VN3Jk2UEHofqjoXc"><meta name="yandex-verification" content="6a85060ff8390b92">'
+idx = idx.replace('<meta charset="utf-8">', '<meta charset="utf-8"><script src="/ym.js"></script><meta name="google-site-verification" content="s2CdXU7z22CJQ7fqwqJNwf2nyq4VN3Jk2UEHofqjoXc"><meta name="yandex-verification" content="6a85060ff8390b92">'
                   '<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Моя Нора">' + TG_REDIRECT, 1)
 open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(idx)
 urls.insert(0, home_path)

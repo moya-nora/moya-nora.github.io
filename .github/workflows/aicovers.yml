@@ -1,7 +1,6 @@
 name: ai-covers
 on:
   workflow_dispatch:
-  schedule: [{cron: "41 */6 * * *"}]
 permissions: {contents: write}
 concurrency: {group: ai-covers, cancel-in-progress: false}
 jobs:
