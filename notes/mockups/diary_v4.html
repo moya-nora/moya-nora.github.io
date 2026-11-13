@@ -1,0 +1,80 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Corm;src:url(/fonts/cormorant-garamond-cyrillic-700-normal.woff2)}
+@font-face{font-family:CormI;src:url(/fonts/cormorant-garamond-cyrillic-600-italic.woff2)}
+@font-face{font-family:Onest;font-weight:400;src:url(/fonts/onest-cyrillic-400-normal.woff2)}
+@font-face{font-family:Onest;font-weight:500;src:url(/fonts/onest-cyrillic-500-normal.woff2)}
+@font-face{font-family:Onest;font-weight:600;src:url(/fonts/onest-cyrillic-600-normal.woff2)}
+@font-face{font-family:Onest;font-weight:700;src:url(/fonts/onest-cyrillic-700-normal.woff2)}
+*{box-sizing:border-box}body{margin:0;padding:44px 20px 24px;background:#111114;display:flex;gap:18px;font-family:Onest;align-items:flex-start}
+.w{position:relative}.cap{position:absolute;top:-30px;left:0;right:0;text-align:center;color:#E2B66B;font:600 12px Onest;letter-spacing:.07em}
+.ph{width:300px;height:650px;border-radius:40px;overflow:hidden;position:relative;color:#fff;box-shadow:0 0 0 7px #26262c;background:#0a0a0f}
+.bg{position:absolute;inset:-80px;background:url(/img/ai/4085fa04c03a.webp) center/cover;filter:blur(60px) saturate(1.5) brightness(.75)}
+.bg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,12,.25),rgba(8,8,12,.55) 50%,rgba(8,8,12,.92))}
+.in{position:absolute;inset:0;padding:48px 20px 22px;display:flex;flex-direction:column}
+.prog{display:flex;gap:4px}.prog i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.22);overflow:hidden;position:relative}.prog i.f{background:#fff}.prog i.h:after{content:"";position:absolute;inset:0 45% 0 0;background:#fff}
+.hd{display:flex;align-items:center;gap:10px;margin-top:14px}.hd .cv{width:34px;height:50px;border-radius:5px;background:url(/img/ai/4085fa04c03a.webp) center/cover;box-shadow:0 6px 14px -4px #000}
+.hd b{display:block;font:600 13.5px Onest}.hd span{font-size:12px;color:rgba(255,255,255,.6)}.hd .x{margin-left:auto;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:15px;color:rgba(255,255,255,.8)}
+.q{font:700 33px/1.02 Corm;margin:auto 0 22px;letter-spacing:-.01em}.q small{display:block;font:400 14px Onest;color:rgba(255,255,255,.6);margin-top:10px;letter-spacing:0}
+.btn{margin-top:18px;height:52px;border-radius:999px;background:#fff;color:#111;font:600 16px Onest;display:grid;place-items:center}
+.skip{text-align:center;font-size:13px;color:rgba(255,255,255,.55);margin-top:12px}
+/* 1 stars */
+.stars{display:flex;justify-content:space-between;margin:6px 4px 0}.stars i{font-style:normal;font-size:46px;line-height:1;color:rgba(255,255,255,.22)}.stars i.on{color:#F3D19A;text-shadow:0 0 24px rgba(243,209,154,.55)}
+.lab{text-align:center;margin-top:16px;font:600 italic 26px CormI;color:#F3D19A}
+/* 2 emo */
+.emo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}.emo div{min-width:0;display:flex;align-items:center;gap:8px;padding:11px 10px;line-height:1.2;border-radius:18px;background:rgba(255,255,255,.09);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:14px;color:rgba(255,255,255,.88);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.emo div b{flex:none;font-size:22px;font-weight:400;line-height:1}.emo div.on{background:rgba(255,255,255,.95);color:#111;box-shadow:none}
+/* 3 sliders */
+.sl{margin-bottom:16px}.sl .t{display:flex;justify-content:space-between;font-size:14px;margin-bottom:9px;color:rgba(255,255,255,.85)}.sl .t b{font-weight:600;color:#fff}
+.tr{height:40px;border-radius:999px;background:rgba(255,255,255,.1);position:relative;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.tr i{position:absolute;inset:0 auto 0 0;border-radius:999px;background:linear-gradient(90deg,rgba(243,209,154,.55),#F3D19A)}.tr span{position:absolute;top:50%;transform:translateY(-50%);font-size:22px}
+/* 4 quote */
+.qb{border-radius:22px;padding:18px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);min-height:150px;font:600 italic 22px/1.3 CormI;color:#fff}.qb .cur{display:inline-block;width:2px;height:22px;background:#F3D19A;vertical-align:-4px;margin-left:2px}
+.tags{display:flex;gap:6px;margin-top:10px}.tags span{font-size:12px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.75)}
+/* 5 result */
+.R .in{padding-top:44px}.card{margin-top:14px;border-radius:28px;overflow:hidden;position:relative;height:440px;background:url(/img/ai/4085fa04c03a.webp) center 20%/cover;box-shadow:0 30px 60px -20px #000}
+.card:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(10,8,14,.94) 78%)}
+.card .ct{position:absolute;left:16px;right:16px;bottom:16px;z-index:1}
+.card .st{color:#F3D19A;font-size:17px;letter-spacing:3px}.card h3{font:700 27px/1 Corm;margin:6px 0 2px}.card .a{font-size:12.5px;color:rgba(255,255,255,.65)}
+.card .e{display:flex;gap:6px;margin:10px 0}.card .e span{font-size:12px;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.16);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.card .qq{font:600 italic 16px/1.3 CormI;color:rgba(255,255,255,.92)}.card .br{display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:rgba(255,255,255,.5)}
+.row2{display:flex;gap:8px;margin-top:14px}.row2 div{flex:1;height:48px;border-radius:999px;display:grid;place-items:center;font:600 14.5px Onest}.row2 .a1{background:#fff;color:#111}.row2 .a2{background:rgba(255,255,255,.12)}
+</style></head><body>
+<div class="w"><div class="cap">1 · ОЦЕНКА</div><div class="ph"><div class="bg"></div><div class="in">
+ <div class="prog"><i class="h"></i><i></i><i></i><i></i></div>
+ <div class="hd"><div class="cv"></div><div><b>Гордость и предубеждение</b><span>Джейн Остин</span></div><div class="x">✕</div></div>
+ <div class="q">Как тебе книга?<small>Можно поменять потом</small></div>
+ <div class="stars"><i class="on">★</i><i class="on">★</i><i class="on">★</i><i class="on">★</i><i class="on">★</i></div>
+ <div class="lab">Это любовь</div>
+ <div class="btn">Дальше</div><div class="skip">Пропустить дневник</div></div></div></div>
+
+<div class="w"><div class="cap">2 · ЧУВСТВА</div><div class="ph"><div class="bg"></div><div class="in">
+ <div class="prog"><i class="f"></i><i class="h"></i><i></i><i></i></div>
+ <div class="hd"><div class="cv"></div><div><b>Гордость и предубеждение</b><span>Джейн Остин</span></div><div class="x">✕</div></div>
+ <div class="q">Что было, пока читала?<small>Выбери всё, что откликается</small></div>
+ <div class="emo"><div class="on"><b>🦋</b>влюбилась</div><div><b>😭</b>плакала</div><div class="on"><b>😂</b>смеялась</div><div><b>🔥</b>не могла оторваться</div><div><b>😱</b>мурашки</div><div><b>🤯</b>не ожидала</div><div><b>☕️</b>уютно</div><div><b>🥱</b>скучала</div></div>
+ <div class="btn">Дальше</div></div></div></div>
+
+<div class="w"><div class="cap">3 · ПОДРОБНЕЕ</div><div class="ph"><div class="bg"></div><div class="in">
+ <div class="prog"><i class="f"></i><i class="f"></i><i class="h"></i><i></i></div>
+ <div class="hd"><div class="cv"></div><div><b>Гордость и предубеждение</b><span>Джейн Остин</span></div><div class="x">✕</div></div>
+ <div class="q">Насколько…<small>Проведи пальцем</small></div>
+ <div class="sl"><div class="t"><span>Затянул сюжет</span><b>8/10</b></div><div class="tr"><i style="width:80%"></i><span style="left:calc(80% - 32px)">📖</span></div></div>
+ <div class="sl"><div class="t"><span>Полюбились герои</span><b>10/10</b></div><div class="tr"><i style="width:100%"></i><span style="right:10px">💛</span></div></div>
+ <div class="sl"><div class="t"><span>Было романтики</span><b>9/10</b></div><div class="tr"><i style="width:90%"></i><span style="left:calc(90% - 32px)">💌</span></div></div>
+ <div class="btn">Дальше</div></div></div></div>
+
+<div class="w"><div class="cap">4 · ЦИТАТА</div><div class="ph"><div class="bg"></div><div class="in">
+ <div class="prog"><i class="f"></i><i class="f"></i><i class="f"></i><i class="h"></i></div>
+ <div class="hd"><div class="cv"></div><div><b>Гордость и предубеждение</b><span>Джейн Остин</span></div><div class="x">✕</div></div>
+ <div class="q">Фраза, которая осталась с тобой</div>
+ <div class="qb">Я бы легко простила его гордость, если бы он не задел мою<span class="cur"></span></div>
+ <div class="tags"><span>📋 вставить</span><span>📷 по фото страницы</span></div>
+ <div class="btn">Готово</div><div class="skip">Пропустить</div></div></div></div>
+
+<div class="w"><div class="cap">5 · ГОТОВАЯ СТОРИС</div><div class="ph R"><div class="bg"></div><div class="in">
+ <div style="font:700 26px Corm">Страница в дневнике 🎉</div><div style="font-size:13px;color:rgba(255,255,255,.6);margin-top:4px">Книга №17 в этом году</div>
+ <div class="card"><div class="ct"><div class="st">★★★★★</div><h3>Гордость и предубеждение</h3><div class="a">Джейн Остин · за 7 дней</div>
+ <div class="e"><span>🦋 влюбилась</span><span>😂 смеялась</span></div>
+ <div class="qq">«Я бы легко простила его гордость, если бы он не задел мою»</div><div class="br"><span>сюжет 8 · герои 10 · романтика 9</span><span>Нора</span></div></div></div>
+ <div class="row2"><div class="a2">В дневник</div><div class="a1">В сторис ↗</div></div></div></div></div>
+</body></html>
