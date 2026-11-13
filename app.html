@@ -4,7 +4,7 @@
 if(/tgWebApp/.test(q+h)||sa||/[?&](app|v)=/.test(q)||/=/.test(h)||ss.getItem("nora.app")){ss.setItem("nora.app","1");return}location.replace("/")}catch(e){}})()</script><meta name="description" content="Нора — личная книжная полка: все твои книги в одном месте и советы, что читать дальше."><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <script>/* Скрипт Telegram нужен только внутри Telegram; в обычном браузере он может грузиться десятки секунд и держать чёрный экран */
 (function(){var tg=/tgWebApp/.test(location.hash)||!!window.TelegramWebviewProxy||!!(window.external&&"notify" in window.external);try{tg=tg||!!sessionStorage.getItem("__telegram__initParams")}catch(e){}
-if(tg)document.write('<script src="https://telegram.org/js/telegram-web-app.js"><\/script>')})();</script>
+if(tg)document.write('<script src="https://telegram.org/js/telegram-web-app.js?59"><\/script>')})();</script>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png?v=5"><link rel="icon" href="icons/icon-192.png?v=5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Моя Нора"><meta name="theme-color" content="#05060A"><title>Моя Нора</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -638,7 +638,7 @@ body{font-family:var(--f);-webkit-font-smoothing:antialiased;-webkit-tap-highlig
 #app .amb:not(.L *){position:fixed;inset:-20%;z-index:0;pointer-events:none}
 #app .amb img:not(.L *){position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(70px) saturate(1.8) brightness(.75);opacity:0;transition:opacity 1.2s ease}
 #app .amb img.on:not(.L *){opacity:1}
-#app .amb:not(.L *)::after{content:"";position:absolute;inset:0;background:radial-gradient(80% 60% at 50% 40%,transparent,rgba(5,6,10,.55))}
+#app .amb:not(.L *)::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,transparent 45%,#06070B 72%),radial-gradient(80% 60% at 50% 40%,transparent,rgba(5,6,10,.55))}
 #app .aurora:not(.L *){position:fixed;inset:0;z-index:0;background:radial-gradient(40% 35% at 20% 20%,#5B3BFF55,transparent 70%),radial-gradient(45% 40% at 85% 30%,#FF4D8D44,transparent 70%),radial-gradient(50% 45% at 50% 95%,#00C2A844,transparent 70%);animation:au 18s ease-in-out infinite alternate;pointer-events:none}
 @keyframes au{to{transform:scale(1.2) rotate(8deg)}}
 #app .top:not(.L *){position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:calc(12px + var(--sat,env(safe-area-inset-top,0px))) 16px 14px;background:linear-gradient(rgba(5,6,10,.82),rgba(5,6,10,.5) 60%,rgba(5,6,10,0))}
@@ -986,7 +986,7 @@ html[data-theme="light"] #app .gl:not(.L *){background:rgba(20,21,27,0.068);
   box-shadow:inset 0 .5px 0 rgba(20,21,27,0.315),0 12px 32px -14px rgba(0,0,0,0.165)}
 html[data-theme="light"] #app .gl:not(.L *)::before{background:linear-gradient(170deg,rgba(20,21,27,0.378),rgba(20,21,27,0.054) 30%,rgba(20,21,27,0.0) 60%,rgba(20,21,27,0.126));-webkit-mask:linear-gradient(#F3F1EC 0 0) content-box,linear-gradient(#F3F1EC 0 0);mask:linear-gradient(#F3F1EC 0 0) content-box exclude,linear-gradient(#F3F1EC 0 0)}
 html[data-theme="light"] #app .lensy:not(.L *){background:rgba(20,21,27,0.126);box-shadow:inset 0 .5px 0 rgba(20,21,27,0.36)}
-html[data-theme="light"] #app .amb:not(.L *)::after{background:radial-gradient(80% 60% at 50% 40%,transparent,rgba(250,249,246,0.55))}
+html[data-theme="light"] #app .amb:not(.L *)::after{background:linear-gradient(to bottom,transparent 45%,#FAF9F6 72%),radial-gradient(80% 60% at 50% 40%,transparent,rgba(250,249,246,0.55))}
 html[data-theme="light"] #app .aurora:not(.L *){background:radial-gradient(40% 35% at 20% 20%,#5B3BFF55,transparent 70%),radial-gradient(45% 40% at 85% 30%,#FF4D8D44,transparent 70%),radial-gradient(50% 45% at 50% 95%,#00C2A844,transparent 70%)}
 html[data-theme="light"] #app .top:not(.L *){background:linear-gradient(rgba(250,249,246,0.82),rgba(250,249,246,0.5) 60%,rgba(250,249,246,0.0))}
 html[data-theme="light"] #app .brand:not(.L *){text-shadow:0 2px 12px rgba(0,0,0,0.12)}
@@ -3748,7 +3748,8 @@ if(TG){
     {const sat=()=>{const a=TG.safeAreaInset||{},c=TG.contentSafeAreaInset||{};document.documentElement.style.setProperty("--sat",(TG.isFullscreen?(a.top||0)+(c.top||0):0)+"px")};
      ["fullscreenChanged","safeAreaChanged","contentSafeAreaChanged"].forEach(ev=>{try{TG.onEvent(ev,sat)}catch(e){}});sat();
      if(TG.requestFullscreen&&TG.isVersionAtLeast&&TG.isVersionAtLeast("8.0")&&/ios|android/i.test(TG.platform||"")&&!TG.isFullscreen){try{TG.requestFullscreen()}catch(e){}}}
-    const noSw=()=>{try{TG.disableVerticalSwipes&&TG.disableVerticalSwipes()}catch(e){}};noSw();["activated","viewportChanged","fullscreenChanged"].forEach(ev=>{try{TG.onEvent(ev,noSw)}catch(e){}});setTimeout(noSw,600);setTimeout(()=>{try{window.ym&&ym(114237349,"params",{tg:{ver:TG.version,platform:TG.platform,fullscreen:!!TG.isFullscreen,swipes:TG.isVerticalSwipesEnabled}})}catch(e){}},2500);TG.onEvent&&TG.onEvent("themeChanged",()=>{if(!themePref())applyTheme()});TG.BackButton.onClick(()=>{tevScope?closeTev():disc?closeDisc():story?closeStories():closeSheet()})}catch(e){}
+    const tgPost=(ev,d)=>{try{const W=window.Telegram&&Telegram.WebView;if(W&&W.postEvent){W.postEvent(ev,false,d||{});return}if(window.TelegramWebviewProxy)TelegramWebviewProxy.postEvent(ev,JSON.stringify(d||{}));else window.parent.postMessage(JSON.stringify({eventType:ev,eventData:d||{}}),"*")}catch(e){}};
+    const noSw=()=>{try{TG.disableVerticalSwipes&&TG.disableVerticalSwipes()}catch(e){}tgPost("web_app_setup_swipe_behavior",{allow_vertical_swipe:false})};if(/ios|android/i.test(TG.platform||"")&&!TG.isFullscreen&&!TG.requestFullscreen)tgPost("web_app_request_fullscreen");noSw();["activated","viewportChanged","fullscreenChanged"].forEach(ev=>{try{TG.onEvent(ev,noSw)}catch(e){}});setTimeout(noSw,600);setTimeout(()=>{try{window.ym&&ym(114237349,"params",{tg:{ver:TG.version,platform:TG.platform,fullscreen:!!TG.isFullscreen,swipes:TG.isVerticalSwipesEnabled}})}catch(e){}},2500);TG.onEvent&&TG.onEvent("themeChanged",()=>{if(!themePref())applyTheme()});TG.BackButton.onClick(()=>{tevScope?closeTev():disc?closeDisc():story?closeStories():closeSheet()})}catch(e){}
   try{TG.CloudStorage.getItem("want",(err,val)=>{if(!err&&val){try{const ids=JSON.parse(val);if(Array.isArray(ids)&&ids.length){const extra=want.filter(w=>!LIB[w.id]);want=[...extra,...hydrate(ids)];renderWant()}}catch(e){}}})}catch(e){}
 }
 
