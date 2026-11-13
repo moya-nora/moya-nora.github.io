@@ -1660,7 +1660,7 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .slide .fly .info h2:not(.L *){font-size:20px;line-height:1.2;-webkit-line-clamp:2}
 #app .fly .info .meta{font-size:14px;margin-top:6px}
 #app .fly .info p.ds{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:6;overflow:hidden;font-size:16px;line-height:1.45;margin-top:12px}
-#app .fly>.obj{flex:none!important}#app .fly .info{flex:0 1 auto;min-height:0;overflow:hidden}
+#app .fly>.obj{flex:none!important}#app .fly .info{flex:none;overflow:visible}
 @media (max-height:760px){#app .fly .info p.ds{-webkit-line-clamp:4}}@media (max-height:680px){#app .fly .info p.ds{-webkit-line-clamp:3}}
 #app .fly .acts3{gap:22px;margin-top:auto;padding-top:30px}
 #app .fly>.obj{margin-top:auto}
@@ -4173,7 +4173,15 @@ function filmFeed(){if(!FILMS)return [];const res=filmList();let i=0;
 function slideHTML(x,j){const meta=x.a||"";
   return `<article class="slide" data-j="${j}"><div class="wrap"><div class="fly gl"><div class="bg"></div><button class="shr press" data-shareb="${j}" aria-label="Переслать">${SHR}</button><div class="lean r"><i>${IC.v}</i><b>Добавить</b></div><div class="lean l"><i>${IC.x}</i><b>Не предлагать</b></div><div class="obj">${cv(x,220)}</div><div class="info"><h2>${esc(x.t)}</h2><div class="meta">${esc(meta)}</div>${x.why?`<div class="why">Шуршуня: ${esc(x.why[0].toLowerCase()+x.why.slice(1))}</div>`:""}<p class="ds">${esc(wholeSent(descOf(x),260))}</p>
   <div class="acts3"><button class="rb gl press" data-skip="${j}" aria-label="Не предлагать">${IC.x}</button><button class="rb sm gl press" data-undo aria-label="Отменить действие">${IC.u}</button><button class="rb w press" data-want="${j}" aria-label="Добавить">${IC.v}</button></div></div></div></div></article>`}
-function slideDesc(el,x){const upd=()=>{const p=el.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(x),260)};upd();wantDesc(x,upd);const nx=el.nextElementSibling;if(nx&&nx.dataset.j!=null){const y=slides[+nx.dataset.j];if(y)wantDesc(y,()=>{const p=nx.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(y),260)})}}
+function fitSlide(el){const fl=el&&el.querySelector(".fly"),p=fl&&fl.querySelector(".info p.ds"),a=fl&&fl.querySelector(".acts3");if(!p||!a||!fl.getBoundingClientRect().height)return;
+  // описание сокращаем целыми предложениями, чтобы кнопки помещались в карточку — без многоточий
+  if(p.dataset.full==null||!p.textContent.startsWith(p.dataset.cut||"\u0000"))p.dataset.full=p.textContent;
+  const full=p.dataset.full,ss=full.match(/[^.!?]+[.!?»"]*(\s|$)/g)||[full],fb=()=>fl.getBoundingClientRect().bottom-14;
+  p.style.display="";p.style.webkitLineClamp="unset";p.style.lineClamp="unset";
+  for(let k=ss.length;k>=1;k--){const t=ss.slice(0,k).join("").trim();p.textContent=t;p.dataset.cut=t;if(a.getBoundingClientRect().bottom<=fb())return}
+  if(a.getBoundingClientRect().bottom>fb())p.style.display="none"}
+addEventListener("resize",()=>document.querySelectorAll("#app .slide").forEach(fitSlide));
+function slideDesc(el,x){const upd=()=>{const p=el.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(x),260);fitSlide(el)};upd();wantDesc(x,upd);const nx=el.nextElementSibling;if(nx&&nx.dataset.j!=null){const y=slides[+nx.dataset.j];if(y)wantDesc(y,()=>{const p=nx.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(y),260);fitSlide(nx)})}}
 function bgFill(sl,x){const u=imgOf(x),bg=sl.querySelector(".bg");if(u&&bg&&!bg.firstChild)bg.innerHTML=`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer">`}
 function endInner(){return `<h2>Пока всё</h2><p>Шуршуня подберёт новое, как только ты что-нибудь отметишь. А пока можно поискать через лупу.</p><div class="acts"><button class="btn w" data-find>Найти через поиск</button></div>`}
 function drawDots(){return;const n=$("#feed").children.length;$("#dots").innerHTML=Array.from({length:Math.min(n,30)},(_,k)=>`<i class="${k===Math.max(0,cur)?"on":""}"></i>`).join("")}
@@ -4200,7 +4208,7 @@ function buildFeed(){acts=[];const f=$("#feed");$("#ffil").hidden=true;fbarDraw(
   f.innerHTML=slides.map(slideHTML).join("")+`<article class="slide end" data-end><div class="card gl">${slides.length?endInner():!isF()&&FG.gen.length?`<h2>Пока пусто</h2><p>В этих жанрах Шуршуня больше ничего не нашёл. Выбери другие жанры.</p>`:emptyInner()}</div></article>`;
   f.scrollTop=0;cur=-1;drawDots();onFeedScroll();updUndo();}
 function moreSlides(){if(!feedMore)return;const add=feedMore();if(!add.length)return;const base=slides.length;slides.push(...add);
-  $("#feed [data-end]").insertAdjacentHTML("beforebegin",add.map((x,i)=>slideHTML(x,base+i)).join(""));drawDots();updUndo()}
+  $("#feed [data-end]").insertAdjacentHTML("beforebegin",add.map((x,i)=>slideHTML(x,base+i)).join(""));drawDots();updUndo();requestAnimationFrame(()=>document.querySelectorAll("#app .slide").forEach(fitSlide))}
 const FD={x:null,t:0};
 function feedMem(f,j){[...f.children].forEach((el,k)=>{if(Math.abs(k-j)>3){const bg=el.querySelector(".bg");if(bg&&bg.firstChild)bg.innerHTML="";el.querySelectorAll(".obj img").forEach(i=>{const s=i.getAttribute("src");if(s){i.dataset.s=s;i.removeAttribute("src")}})}
   else el.querySelectorAll(".obj img[data-s]").forEach(i=>{i.setAttribute("src",i.dataset.s);delete i.dataset.s})})}
@@ -4718,7 +4726,7 @@ $("#feed").addEventListener("scroll",()=>{if(CO)coDraw()},{passive:true});
 // ---------- навигация ----------
 let SCREEN="col";
 function moveLens(){const b=document.querySelector(".dock button.on"),l=$("#lens");if(!b)return;l.style.width=b.offsetWidth+"px";l.style.transform=`translateX(${b.offsetLeft}px)`}
-function show(s){SCREEN=s;try{localStorage.setItem("zal.sync.scr",JSON.stringify({s,t:Date.now()}))}catch(e){}document.body.classList.toggle("col",s==="col");document.body.classList.toggle("sum",s==="sum");const was=document.querySelector(".dock button.on");
+function show(s){SCREEN=s;if(s==="feed")setTimeout(()=>document.querySelectorAll("#app .slide").forEach(fitSlide),60);try{localStorage.setItem("zal.sync.scr",JSON.stringify({s,t:Date.now()}))}catch(e){}document.body.classList.toggle("col",s==="col");document.body.classList.toggle("sum",s==="sum");const was=document.querySelector(".dock button.on");
   document.querySelectorAll("#app .screen").forEach(x=>x.classList.toggle("on",x.id==="s-"+s));document.querySelectorAll(".dock button").forEach(b=>b.classList.toggle("on",b.dataset.s===s));tgHaptic();
   if(was&&was.dataset.s!==s){const l=$("#lens");l.classList.add("go");setTimeout(()=>l.classList.remove("go"),260)}moveLens();
   if(s==="feed"){cur=-1;onFeedScroll();if(CO)setTimeout(coDraw,300);else coach()}else if(CO)coEl.classList.remove("on");if(s==="col")drawCol();if(s==="fr"){drawFr();frLoad()}if(s==="sum"){drawSum();const x=DATA().read()[0];ambFor(x)}if(s!=="feed")setTimeout(()=>tour(s),900)}
