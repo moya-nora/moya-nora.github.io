@@ -1672,7 +1672,7 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .fly .acts3{gap:22px;margin-top:auto;padding-top:30px}
 #app .fly>.obj{margin-top:auto}
 #app .fr .ac:not(.L *){padding-bottom:0}
-#app #flow,#app #flowCap{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html,body{overscroll-behavior:none}#app .scroll{overscroll-behavior-y:contain}#app #flow{touch-action:pan-y}#app #flow,#app #flowCap{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #app .slide .fly:not(.L *){padding-bottom:28px;justify-content:flex-start}
 #app .fly .rb{width:68px;height:68px}#app .fly .rb svg{width:27px;height:27px}
 #app .fly .rb.sm{width:50px;height:50px}#app .fly .rb.sm svg{width:20px;height:20px}
@@ -3748,7 +3748,7 @@ if(TG){
     {const sat=()=>{const a=TG.safeAreaInset||{},c=TG.contentSafeAreaInset||{};document.documentElement.style.setProperty("--sat",(TG.isFullscreen?(a.top||0)+(c.top||0):0)+"px")};
      ["fullscreenChanged","safeAreaChanged","contentSafeAreaChanged"].forEach(ev=>{try{TG.onEvent(ev,sat)}catch(e){}});sat();
      if(TG.requestFullscreen&&TG.isVersionAtLeast&&TG.isVersionAtLeast("8.0")&&/ios|android/i.test(TG.platform||"")&&!TG.isFullscreen){try{TG.requestFullscreen()}catch(e){}}}
-    TG.disableVerticalSwipes&&TG.disableVerticalSwipes();TG.onEvent&&TG.onEvent("themeChanged",()=>{if(!themePref())applyTheme()});TG.BackButton.onClick(()=>{tevScope?closeTev():disc?closeDisc():story?closeStories():closeSheet()})}catch(e){}
+    const noSw=()=>{try{TG.disableVerticalSwipes&&TG.disableVerticalSwipes()}catch(e){}};noSw();["activated","viewportChanged","fullscreenChanged"].forEach(ev=>{try{TG.onEvent(ev,noSw)}catch(e){}});setTimeout(noSw,600);setTimeout(()=>{try{window.ym&&ym(114237349,"params",{tg:{ver:TG.version,platform:TG.platform,fullscreen:!!TG.isFullscreen,swipes:TG.isVerticalSwipesEnabled}})}catch(e){}},2500);TG.onEvent&&TG.onEvent("themeChanged",()=>{if(!themePref())applyTheme()});TG.BackButton.onClick(()=>{tevScope?closeTev():disc?closeDisc():story?closeStories():closeSheet()})}catch(e){}
   try{TG.CloudStorage.getItem("want",(err,val)=>{if(!err&&val){try{const ids=JSON.parse(val);if(Array.isArray(ids)&&ids.length){const extra=want.filter(w=>!LIB[w.id]);want=[...extra,...hydrate(ids)];renderWant()}}catch(e){}}})}catch(e){}
 }
 
@@ -4332,7 +4332,7 @@ function layoutFlow(first){const L=flowList().slice(0,60),n=L.length;/* обло
 function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((fi+d)%n+n)%n;layoutFlow()}
 (function(){const el=$("#flow");let x0=null,y0=null,mode=null,moved=0,t0=0;
   const down=(x,y)=>{x0=x;y0=y;mode=null;moved=0;t0=Date.now();flowHold=t0};
-  const mv=(x,y,e)=>{if(x0==null)return;const dx=x-x0,dy=y-y0;if(!mode){if(Math.abs(dx)<8&&Math.abs(dy)<8)return;mode=Math.abs(dx)>Math.abs(dy)?"h":"v"}
+  const mv=(x,y,e)=>{if(x0==null)return;const dx=x-x0,dy=y-y0;if(!mode){if(Math.abs(dx)>=Math.abs(dy)&&e&&e.cancelable)e.preventDefault();if(Math.abs(dx)<8&&Math.abs(dy)<8)return;mode=Math.abs(dx)>Math.abs(dy)*.8?"h":"v"}
     if(mode!=="h")return;if(e&&e.cancelable)e.preventDefault();if(Math.abs(dx)>44){stepFlow(dx<0?1:-1);x0=x;moved++;flowHold=Date.now();tgHaptic()}};
   el.addEventListener("touchstart",e=>{const t=e.touches[0];down(t.clientX,t.clientY)},{passive:true});
   el.addEventListener("touchmove",e=>{const t=e.touches[0];mv(t.clientX,t.clientY,e)},{passive:false});
