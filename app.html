@@ -4253,9 +4253,15 @@ document.addEventListener("change",e=>{if(e.target.id==="tHide"&&e.target.closes
 let fi=0,colF="want",flowHold=0;
 const pickCol=()=>{colF=VIEW?"read":DATA().want().length?"want":"read"};
 function recList(){if(isF()){if(!FILMS)return [];if(!recList._f||recList._v!==FSEEN.length+FWANT.length+FSKIP.size){recList._f=tevoFilter().filter(f=>!FSKIP.has(f.id)).slice(0,40).map(f=>fItem(f,"rec"));recList._v=FSEEN.length+FWANT.length+FSKIP.size}return recList._f}
-  // главная — случайные известные книги (подбор по вкусу живёт в ленте); позже сюда встанут книги издательств
+  // главная: если есть полки — случайные книги из тех, что подходят по вкусу; если полок нет — случайные известные книги
   const day=new Date().toDateString(),key=BOOKS.length+"|"+want.length+"|"+dismissed.size+"|"+day+"|"+ALLB().length;
   {const D=demoPick("rec");if(D.length)return D.map(b=>bItem(b,"rec"))}
+  if(recList._k!==key&&(BOOKS.length||want.length)){const W=wantNorms(),q=tasteQ(),ok=b=>{const nt=b._n||norm(b.t);return !READ.has(nt)&&!dismissed.has(b.id)&&!W.has(nt)};
+    // по вкусу: берём лучшие ~70 под полки человека и случайно перемешиваем, чтобы каждый день был новый набор
+    const sc=topK(ALLB(),70,b=>ok(b)?feedScore(b,q):null).map(z=>z.b);
+    for(let i=sc.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sc[i],sc[j]]=[sc[j],sc[i]]}
+    const au=new Set(),out=[];for(const b of sc){if(au.has(b.a))continue;au.add(b.a);out.push(bItem(b,"rec"));if(out.length>=40)break}
+    if(out.length>=8){recList._b=out;recList._k=key;return out}}
   if(recList._k!==key){const W=wantNorms(),pool=ALLB().filter(b=>{const nt=b._n||norm(b.t);return !READ.has(nt)&&!dismissed.has(b.id)&&!W.has(nt)&&(b.q||0)>=3});
     let h=0;for(const ch of day)h=(h*31+ch.charCodeAt(0))>>>0;const rnd=()=>(h=(h*1664525+1013904223)>>>0)/4294967296;
     for(let i=pool.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
