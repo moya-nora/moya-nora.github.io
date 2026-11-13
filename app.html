@@ -1660,6 +1660,9 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .slide .fly .info h2:not(.L *){font-size:20px;line-height:1.2;-webkit-line-clamp:2}
 #app .fly .info .meta{font-size:14px;margin-top:6px}
 #app .fly .info p.ds{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:6;overflow:hidden;font-size:16px;line-height:1.45;margin-top:12px}
+#app .fly .dsm{display:block;margin:6px 0 0;padding:4px 0;border:0;background:none;color:var(--gold,#E2B66B);font:500 15px var(--f);cursor:pointer}#app .fly .dsm[hidden]{display:none}
+#app .slide .fly.rd>.obj{display:none!important}#app .fly.rd .info{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;margin-top:36px}
+#app .fly.rd .info p.ds{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:block!important;-webkit-line-clamp:unset!important;padding-right:4px}#app .fly.rd .acts3{flex:none}#app .fly.rd .info>*:not(.ds){flex:none}#app .fly .dsm{align-self:flex-start;text-align:left}
 #app .fly>.obj{flex:none!important}#app .fly .info{flex:none;overflow:visible}
 @media (max-height:760px){#app .fly .info p.ds{-webkit-line-clamp:4}}@media (max-height:680px){#app .fly .info p.ds{-webkit-line-clamp:3}}
 #app .fly .acts3{gap:22px;margin-top:auto;padding-top:30px}
@@ -4173,13 +4176,20 @@ function filmFeed(){if(!FILMS)return [];const res=filmList();let i=0;
 function slideHTML(x,j){const meta=x.a||"";
   return `<article class="slide" data-j="${j}"><div class="wrap"><div class="fly gl"><div class="bg"></div><button class="shr press" data-shareb="${j}" aria-label="Переслать">${SHR}</button><div class="lean r"><i>${IC.v}</i><b>Добавить</b></div><div class="lean l"><i>${IC.x}</i><b>Не предлагать</b></div><div class="obj">${cv(x,220)}</div><div class="info"><h2>${esc(x.t)}</h2><div class="meta">${esc(meta)}</div>${x.why?`<div class="why">Шуршуня: ${esc(x.why[0].toLowerCase()+x.why.slice(1))}</div>`:""}<p class="ds">${esc(wholeSent(descOf(x),260))}</p>
   <div class="acts3"><button class="rb gl press" data-skip="${j}" aria-label="Не предлагать">${IC.x}</button><button class="rb sm gl press" data-undo aria-label="Отменить действие">${IC.u}</button><button class="rb w press" data-want="${j}" aria-label="Добавить">${IC.v}</button></div></div></div></div></article>`}
-function fitSlide(el){const fl=el&&el.querySelector(".fly"),p=fl&&fl.querySelector(".info p.ds"),a=fl&&fl.querySelector(".acts3");if(!p||!a||!fl.getBoundingClientRect().height)return;
-  // описание сокращаем целыми предложениями, чтобы кнопки помещались в карточку — без многоточий
+function fitSlide(el){const fl=el&&el.querySelector(".fly"),p=fl&&fl.querySelector(".info p.ds"),a=fl&&fl.querySelector(".acts3");if(!p||!a||!fl.getBoundingClientRect().height||fl.classList.contains("rd"))return;
+  // длинное описание: показываем целые предложения, сколько влезает, и «читать дальше» — полный текст открывается в карточке с прокруткой
   if(p.dataset.full==null||!p.textContent.startsWith(p.dataset.cut||"\u0000"))p.dataset.full=p.textContent;
   const full=p.dataset.full,ss=full.match(/[^.!?]+[.!?»"]*(\s|$)/g)||[full],fb=()=>fl.getBoundingClientRect().bottom-14;
-  p.style.display="";p.style.webkitLineClamp="unset";p.style.lineClamp="unset";
-  for(let k=ss.length;k>=1;k--){const t=ss.slice(0,k).join("").trim();p.textContent=t;p.dataset.cut=t;if(a.getBoundingClientRect().bottom<=fb())return}
-  if(a.getBoundingClientRect().bottom>fb())p.style.display="none"}
+  let m=fl.querySelector(".dsm");if(!m){m=document.createElement("button");m.type="button";m.className="dsm";m.dataset.dsm="";m.textContent="читать дальше";p.after(m)}
+  p.style.display="";p.style.webkitLineClamp="unset";p.style.lineClamp="unset";m.hidden=true;p.textContent=full;p.dataset.cut=full;
+  if(a.getBoundingClientRect().bottom<=fb())return;m.hidden=false;
+  for(let k=ss.length-1;k>=1;k--){const t=ss.slice(0,k).join("").trim();p.textContent=t;p.dataset.cut=t;if(a.getBoundingClientRect().bottom<=fb())return}
+  // даже одно предложение не влезает — оставляем первые строки
+  const t1=ss[0].trim();p.textContent=t1;p.dataset.cut=t1;for(let n=3;n>=1;n--){p.style.webkitLineClamp=n;p.style.lineClamp=n;if(a.getBoundingClientRect().bottom<=fb())return}
+  p.style.display="none"}
+function dsMore(fl){const p=fl.querySelector(".info p.ds"),m=fl.querySelector(".dsm");if(!p)return;
+  if(fl.classList.toggle("rd")){p.style.display="";p.style.webkitLineClamp="unset";p.style.lineClamp="unset";p.textContent=p.dataset.full||p.textContent;p.dataset.cut=p.textContent;p.scrollTop=0;m.textContent="свернуть"}
+  else{m.textContent="читать дальше";fitSlide(fl.closest(".slide"))}tgHaptic&&tgHaptic()}
 addEventListener("resize",()=>document.querySelectorAll("#app .slide").forEach(fitSlide));
 function slideDesc(el,x){const upd=()=>{const p=el.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(x),260);fitSlide(el)};upd();wantDesc(x,upd);const nx=el.nextElementSibling;if(nx&&nx.dataset.j!=null){const y=slides[+nx.dataset.j];if(y)wantDesc(y,()=>{const p=nx.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(y),260);fitSlide(nx)})}}
 function bgFill(sl,x){const u=imgOf(x),bg=sl.querySelector(".bg");if(u&&bg&&!bg.firstChild)bg.innerHTML=`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer">`}
@@ -4248,6 +4258,7 @@ function leanTo(fl,dx){const r=fl.querySelector(".lean.r"),l=fl.querySelector(".
   f.addEventListener("touchend",end);f.addEventListener("touchcancel",end);
   f.addEventListener("mousedown",e=>start(e.clientX,e.clientY,e.target));addEventListener("mousemove",e=>{if(g)move(e.clientX,e.clientY,null)});addEventListener("mouseup",end)})();
 $("#feed").addEventListener("click",e=>{const t=e.target;
+  const dm=t.closest("[data-dsm]");if(dm){dsMore(dm.closest(".fly"));return}
   const w=t.closest("[data-want]");if(w){decide(+w.dataset.want,"want");return}
   const sk=t.closest("[data-skip]");if(sk){decide(+sk.dataset.skip,"skip");return}
   if(t.closest("[data-undo]")){undo();return}
