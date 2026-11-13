@@ -5763,11 +5763,11 @@ bkcEl.addEventListener("touchmove",e=>{if(y0==null)return;const d=e.touches[0].c
 const end=()=>{if(y0==null)return;y0=null;if(!act)return;const close=dy>110||(dy>45&&Date.now()-t0<260);bkcEl.style.transition="";bkcEl.style.transform="";if(close){tgHaptic();bkcClose()}};
 bkcEl.addEventListener("touchend",end);bkcEl.addEventListener("touchcancel",end)}
 // «Обзоры»: открываем поиск роликов о книге на YouTube, в VK Видео и TikTok — сами ролики остаются у авторов
-const VIDS=[["YouTube","Обзоры и разборы на буктюбе",q=>"https://www.youtube.com/results?search_query="+q],["VK Видео","Русскоязычные обзоры",q=>"https://vkvideo.ru/?q="+q],["TikTok","Короткие ролики из буктока",q=>"https://www.tiktok.com/search?q="+q]];
+const VIDS=[["YouTube","Обзоры и разборы на буктюбе",q=>"https://www.youtube.com/results?search_query="+q],["VK Видео","Русскоязычные обзоры",q=>"https://yandex.ru/video/search?text="+q+"%20site%3Avkvideo.ru"],["TikTok","Короткие ролики из буктока",q=>"https://www.tiktok.com/search?q="+q]];
 function vidOpen(x){const sur=String(x.a||"").split(" ").slice(-1)[0];
   vOpen(`<h3 class="vh">Обзоры на «${esc(x.t)}»</h3><p class="sy-note">Откроется поиск роликов о книге</p><div class="wh-l">${VIDS.map(([n,d],i)=>`<button data-vid="${i}"><b>${n}</b><small>${d}</small><i>›</i></button>`).join("")}</div>`);
   $("#vsheet").classList.add("ontop");$("#vshBody")._vq=encodeURIComponent(`«${x.t}» ${x.a&&x.a!=="Автор не указан"?x.a:""} обзор книги`)}
-$("#vshBody").addEventListener("click",e=>{const b=e.target.closest("[data-vid]");if(!b)return;e.stopPropagation();const u=VIDS[+b.dataset.vid][2]($("#vshBody")._vq);tgHaptic();try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(x){window.open(u,"_blank")}},true);
+$("#vshBody").addEventListener("click",e=>{const b=e.target.closest("[data-vid]");if(!b)return;e.stopPropagation();const u=VIDS[+b.dataset.vid][2]($("#vshBody")._vq);tgHaptic();try{navigator.clipboard&&navigator.clipboard.writeText(decodeURIComponent($("#vshBody")._vq))}catch(x){}try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(x){window.open(u,"_blank")}},true);
 function bkcFit(){const w=$("#bkcDw");if(!w)return;const upd=()=>{w.classList.toggle("more",w.scrollTop+w.clientHeight<w.scrollHeight-4);bkcEl.classList.toggle("dsc",w.scrollTop>6)};bkcEl.classList.remove("dsc");w.onscroll=upd;upd()}
 addEventListener("resize",()=>{if(BKC)bkcFit()});
 function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();setTimeout(onbAsk,700);if(vDirty){vDirty=false;setTimeout(refresh,300)}}
