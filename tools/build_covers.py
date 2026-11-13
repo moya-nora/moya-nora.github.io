@@ -2,7 +2,7 @@
 """Обложки для страниц сайта: настоящие обложки книг ручного каталога с Фантлаба.
 
 Та же логика, что в приложении (findImg): ищем произведение на Фантлабе, берём самое свежее
-русское издание с картинкой (не старше 1995 года). Если такого нет — пусто, сайт нарисует обложку сам.
+русское издание с картинкой (не старше 2015 года). Если такого нет — пусто, сайт нарисует обложку сам.
 Результат — books/covers.json {"название|фамилия": "адрес картинки" или ""}. Уже найденные не ищем снова,
 пустые перепроверяем раз в полгода. Запуск: python3 tools/build_covers.py [сколько за раз]."""
 import json, os, re, sys, time, urllib.parse, urllib.request
@@ -53,8 +53,8 @@ def find(t, a):
     eds = [e for e in eds if (e.get("pic_num") or 0) > 0 and (not e.get("lang_code") or e.get("lang_code") == "ru") and not e.get("plandate")]
     eds.sort(key=lambda e: (-(e.get("year") or 0), 0 if e.get("type") == 10 else 1))
     if not eds:
-        return IMG + str(pic(w))
-    fresh = [e for e in eds if (e.get("year") or 0) >= 1995]
+        return ""
+    fresh = [e for e in eds if (e.get("year") or 0) >= 2015]
     if not fresh:
         return ""
     single = [e for e in fresh if e.get("type") == 10]

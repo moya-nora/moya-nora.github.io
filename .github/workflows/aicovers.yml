@@ -1,7 +1,7 @@
 name: ai-covers
 on:
   workflow_dispatch:
-  schedule: [{cron: "41 17 * * *"}]
+  schedule: [{cron: "41 */6 * * *"}]
 permissions: {contents: write}
 concurrency: {group: ai-covers, cancel-in-progress: false}
 jobs:
@@ -14,7 +14,11 @@ jobs:
         with: {python-version: "3.12"}
       - run: pip install playwright pillow && python -m playwright install --with-deps chromium
       - run: (python -m http.server 8766 >/dev/null 2>&1 &) && sleep 2 && AI_MINUTES=300 python tools/ai_covers.py
-      - run: |
+      - name: Страницы сайта с новыми обложками
+        if: always()
+        run: python -u tools/build_seo.py || true
+      - if: always()
+        run: |
           git config user.email noreply@anthropic.com; git config user.name Claude
-          git add books/ai_covers.json img/ai && git commit -qm "ИИ-обложки: следующая порция" || exit 0
+          git add books/ai_covers.json img/ai && git add k c p r index.html sitemap.xml 2>/dev/null; git commit -qm "ИИ-обложки: следующая порция" || exit 0
           git pull -q --rebase -X theirs && git push

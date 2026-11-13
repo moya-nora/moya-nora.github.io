@@ -1624,7 +1624,7 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 #app .bkc-acts .btn:disabled{opacity:.5}
 #app .bkc-acts{display:flex;gap:10px;width:100%;max-width:420px;margin-top:auto;padding-top:16px}
 #app .bkc-acts .btn{flex:1;min-width:0;padding-left:6px;padding-right:6px;font-size:14.5px;white-space:nowrap}
-#app .bkc-acts .btn[data-bkc=want]{flex:1.35;font-size:14px;letter-spacing:-.01em}
+#app .bkc-acts .btn[data-bkc=want]{flex:1.35;font-size:14px;letter-spacing:-.01em}#app .bkc-acts .btn[data-bkc=ask]+.btn,#app .bkc-acts .btn[data-bkc=want]:has(+.btn[data-bkc=ask]){flex:1}
 #app .bkc-acts .btn.sure{color:#FF8A80;box-shadow:inset 0 0 0 1px rgba(255,138,128,.5)}
 #app .bkc-low{display:flex;gap:10px;width:100%;max-width:420px;margin-top:10px}#app .bkc-low .bkc-where{margin-top:0;flex:1;min-width:0}#app .bkc-where{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;max-width:420px;margin-top:10px;white-space:nowrap;padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.16);font-size:15px;font-weight:600;color:var(--ink)}
 #app .bkc-where svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9}
@@ -4018,7 +4018,7 @@ function topK(list,k,fs){const best=[];let min=-Infinity;for(const b of list){co
   return best.sort((x,y)=>y.s-x.s).slice(0,k)}
 
 // ---------- обложки: настоящие (Фантлаб/Википедия) поверх рисованных ----------
-try{localStorage.removeItem("zal.img2")}catch(e){}const IMG=LS.get("zal.img3",{});let imgT=0;const imgSave=()=>{clearTimeout(imgT);imgT=setTimeout(()=>LS.set("zal.img3",IMG),500)};
+try{localStorage.removeItem("zal.img2");localStorage.removeItem("zal.img3")}catch(e){}const IMG=LS.get("zal.img4",{});let imgT=0;const imgSave=()=>{clearTimeout(imgT);imgT=setTimeout(()=>LS.set("zal.img4",IMG),500)};
 try{localStorage.removeItem("zal.img")}catch(e){}
 // выбор обложки вручную: "draw" — рисованная, иначе адрес картинки (синхронизируется)
 let COV=LS.get("zal.cov",{});const covSave=()=>LS.set("zal.cov",COV);
@@ -4027,17 +4027,20 @@ const ikey=x=>x._f?"f:"+(x.id||norm(x.t)+(x.y||"")):norm(x.t)+"|"+norm(x.a||"");
 const NOIMG_TTL=14*864e5;
 // ИИ-обложки для книг, у которых нет свежего издания (готовит tools/ai_covers.py); выбор пользователя в «сменить обложку» важнее
 let AIC=LS.get("zal.aic",{});fetch("books/ai_covers.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.m){const m={};for(const k in j.m)if(j.m[k])m[k]=j.m[k];const ch=JSON.stringify(m)!==JSON.stringify(AIC);AIC=m;LS.set("zal.aic",m);if(ch)setTimeout(()=>{try{rerenderAll()}catch(e){}},50)}}).catch(()=>{});
-const imgOf=x=>{const c=COV[ikey(x)];if(c==="draw")return "";if(c)return c;if(!x._f&&AIC[ikey(x)])return "img/ai/"+AIC[ikey(x)];const v=x.img||IMG[ikey(x)]||"";return v&&v[0]!=="!"?v:""};
+// классика и книги до 2005 года из ручного каталога — только ИИ-обложка в стиле Норы (или обложка ЛитРес); их издания на Фантлабе часто старые и некрасивые.
+// у новых книг на Фантлабе — их родные современные обложки, их оставляем
+const isCatB=x=>{if(x._f)return false;const c=catOf(x);return !!c&&(c.y||x.y||0)<2005};
+const imgOf=x=>{const c=COV[ikey(x)];if(c==="draw")return "";if(c)return c;if(!x._f&&AIC[ikey(x)])return "img/ai/"+AIC[ikey(x)];if(x.img)return x.img;if(isCatB(x))return "";const v=IMG[ikey(x)]||"";return v&&v[0]!=="!"?v:""};
 const imgKnown=k=>{const v=IMG[k];if(!v)return false;if(v[0]!=="!")return true;return Date.now()-(+v.slice(1)||0)<NOIMG_TTL};
 const imgTag=u=>`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer" decoding="async" onload="NORA_IMGOK(this)" onerror="NORA_IMGERR(this)">`;
 window.NORA_IMGOK=function(img){const w=img.naturalWidth,h=img.naturalHeight,r=h/Math.max(1,w),box=img.closest("[data-ik]"),k=box&&box.dataset.ik;
-  if(k&&!COV[k]&&(w<150||h<200||r<1.2||r>1.85)){img.remove();if(IMG[k]===img.getAttribute("src")){IMG[k]="!"+Date.now();imgSave()}document.querySelectorAll(`#app [data-ik="${CSS.escape(k)}"] img`).forEach(x=>x.remove());return}
+  if(k&&!COV[k]&&(w<200||h<290||r<1.2||r>1.85)){img.remove();if(IMG[k]===img.getAttribute("src")){IMG[k]="!"+Date.now();imgSave()}document.querySelectorAll(`#app [data-ik="${CSS.escape(k)}"] img`).forEach(x=>x.remove());return}
   img.classList.add("ok")};
 function cv(x,w){const k=ikey(x),u=imgOf(x);let inner="";
   if(x._f)inner=`<span class="L">${poster({...(x.src||{}),id:x.id||x.t,t:x.t,y:x.y,g:x.g||0},w||120)}</span>`;
   else{const s=x.src&&x.src.bg?x.src:null,c=catOf(x),p=palOf(x.t),b=s||{id:x.id||x.t,t:x.t,a:x.a||"",g:x.g||(c&&c.g)||"modern",bg:(c&&c.bg)||p[0],fg:(c&&c.fg)||p[1],tags:c&&c.tags};
     inner=`<span class="L">${cover({...b,a:b.a||""},w||120)}</span>`}
-  if(!u&&x.t)wantImg(x);
+  if(!u&&x.t&&!isCatB(x))wantImg(x);
   return `<div class="cv lg" data-ik="${esc(k)}" style="--lw:${w||120}px">${inner}${u?imgTag(u):""}</div>`}
 // картинка не загрузилась (сеть) — пробуем ещё раз с паузой; после 4 неудач ищем обложку заново
 const IERR={};
@@ -4063,7 +4066,7 @@ const flClean=d=>{d=String(d||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"
 const EDS={};
 async function editionsOf(id){if(EDS[id])return EDS[id];const j=await flj("/work/"+id+"/extended");const L=[];Object.values(j.editions_blocks||{}).forEach(b=>(b.list||[]).forEach(e=>L.push(e)));
   const ok=L.filter(e=>e.pic_num>0&&(!e.lang_code||e.lang_code==="ru")&&!e.plandate).sort((a,b)=>(b.year||0)-(a.year||0)||(a.type===10?-1:1));return EDS[id]=ok}
-async function bestEdition(id){if(!id)return undefined;const L=await editionsOf(id);if(!L.length)return undefined;const fresh=L.filter(e=>(e.year||0)>=1995);
+async function bestEdition(id){if(!id)return null;const L=await editionsOf(id);if(!L.length)return null;const fresh=L.filter(e=>(e.year||0)>=2015);
   if(!fresh.length)return null;const single=fresh.filter(e=>e.type===10);return (single[0]||fresh[0]).edition_id}
 async function wikiImg(q){const j=await (await fetch("https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=5&gsrsearch="+encodeURIComponent(q)+"&prop=pageimages&piprop=thumbnail&pithumbsize=500&pilicense=any")).json();
   const p=Object.values((j.query||{}).pages||{}).sort((a,b)=>a.index-b.index).find(p=>p.thumbnail);return p?p.thumbnail.source:""}
@@ -4073,8 +4076,8 @@ async function findImg(x){try{
     const pick=s=>{const L=(Array.isArray(s)?s:[]).filter(pic);return L.find(w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur))||(sur?null:L.find(w=>norm(w.rusname||w.name||"")===norm(x.t)))};
     let w=pick(await flj("/search-works?q="+encodeURIComponent(x.t)+"&page=1&onlymatches=1"));
     if(!w){const t2=String(x.t).replace(/[«»"'’.,:;!?()—–-]+/g," ").replace(/\s+/g," ").trim();if(t2!==x.t||x.a)w=pick(await flj("/search-works?q="+encodeURIComponent(t2+(x.a?" "+String(x.a).split(" ").slice(-1)[0]:""))+"&page=1"))}
-    if(w){const ed=await bestEdition(w.work_id).catch(()=>undefined);if(ed===null)return "";return IMGFL(ed||pic(w))}
-    return await wikiImg(x.t+" "+(x.a||"")+" роман книга")}
+    if(w){const ed=await bestEdition(w.work_id);return ed?IMGFL(ed):""}
+    return ""}
   return await wikiImg((x.t+" "+(x.y||"")+(x.s?" сериал":" фильм")).trim())}catch(e){return null}}
 // рисованная обложка рисуется в своём размере и подгоняется под ячейку
 const RO=window.ResizeObserver?new ResizeObserver(es=>es.forEach(e=>{const el=e.target,lw=parseFloat(el.style.getPropertyValue("--lw"))||120,w=e.contentRect.width;if(w)el.style.setProperty("--k",(w/lw).toFixed(4))})):null;
@@ -4180,7 +4183,7 @@ const popOf=b=>(POPT.has(b._n||norm(b.t))?3:0)+Math.min(1.5,Math.log2(1+(b.sl||0
 const gpref=()=>{const v=LS.get("zal.gpref",[]);return Array.isArray(v)?v:[]};
 function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;{const GP=gpref();if(GP.length&&GP.some(g=>genPass(b,g)))s+=4}
   (b.tags||[]).forEach(t=>{s+=2*(q.tags[t]||0)+1.4*(TASTE.t[t]||0)});s+=1.2*(TASTE.g[b.g]||0)+1.5*(TASTE.a[b.a]||0);
-  const w=Math.max(0,1-(+LS.get("zal.fdn",0)||0)/90);if(w>0){s+=w*3.2*popOf(b);if(!imgOf(b))s-=w*3}
+  const w=Math.max(0,1-(+LS.get("zal.fdn",0)||0)/90);if(w>0){s+=w*3.2*popOf(b);if(!imgOf(b)&&!isCatB(b))s-=w*3}
   return s+Math.random()*2.2}
 function bookFeed(){FSHOWN=new Set();const q=tasteQ();
   {const D=demoPick("feed");if(D.length){D.forEach(b=>FSHOWN.add(b.id));const it=D.map(b=>{const x=bItem(b,"feed");x.why=whyBook(b);return x});const fm=()=>{const sc=topK(ALLB(),160,b=>FSHOWN.has(b.id)||!fgPass(b)?null:feedScore(b,q));const out=sc.slice(0,8).map(z=>z.b);out.forEach(b=>FSHOWN.add(b.id));return out.map(b=>bItem(b,"feed"))};feedMore=fm;return it}}
@@ -4357,7 +4360,12 @@ function trendBooks(){const L=ALLB();if(TRB&&TRK===L.length)return TRB;TRK=L.len
   TRB=TREND.map(([t,s])=>{const n=norm(t),sn=norm(s),ok=b=>norm(b.a||"").includes(sn);let c=(by.get(n)||[]).find(ok);
     if(!c)for(const [k,v] of by){if(k.startsWith(n)&&(c=v.find(ok)))break}return c}).filter(Boolean);return TRB}
 // подборки на главной под «Шуршуня советует»: в тренде, тебе понравится, читают в этом месяце, книги с запахом мандаринов
-const MAND_RX=/новый год|нового года|новогод|рождеств|мандарин|снег|снеж|камин|какао|ёлк|елк|декабр|плед|сочельник/i;
+// «Читают в этом месяце» и «Книги с запахом мандаринов» — ручные списки свежих книг, которые правда любят (а не самые продаваемые на ЛитРес)
+const MONTH_L="Йеллоуфейс|Куанг;Джеймс|Эверетт;По орбите|Харви;Тайна из тайн|Браун;Человек с клеймом|Роулинг;Рассвет жатвы|Коллинз;Ветер и Правда|Сандерсон;Город и его ненадёжные стены|Мураками;Увидимся в августе|Маркес;Холли|Кинг;Песнь пророка|Линч;Перекрёсток воронов|Сапковский;Фамильяр|Бардуго;Сорока на виселице|Веркин;Дом в Мансуровском|Метлицкая;Колодец и бабочка|Михалкова;Желчный Ангел|Качур;Тени южной ночи|Устинова;Птицеед|Пехов;Седьмой|Лукьяненко;Чагин|Водолазкин;Демон Копперхед|Кингсолвер;Бегущая могила|Роулинг;Царь Скорбь|Хилл".split(";").map(s=>s.split("|"));
+const MAND_L="Легенды и латте|Болдри;Энциклопедия фей Эмили Уайлд|Фосетт;Зимнее солнцестояние|Пилчер;Вторая жизнь Уве|Бакман;Клуб убийств по четвергам|Осман;Просто вместе|Гавальда;Когда я вернусь, будь дома|Сафарли;Пока не остыл кофе|Кавагути;Магазин чудес «Намия»|Хигасино;Дом на краю лазурного моря|Клун;Под шепчущей дверью|Клун;Тринадцатая сказка|Сеттерфилд;Ежевичная зима|Джио;Незримая жизнь Адди Ларю|Шваб;Петровы в гриппе и вокруг него|Сальников;Однажды разбитое сердце|Гарбер;Загадка номера 622|Диккер;Долгий путь к маленькой сердитой планете|Чамберс;Клуб любителей книг и пирогов из картофельных очистков|Шеффер;Наши души по ночам|Харуф".split(";").map(s=>s.split("|"));
+let LBY=null,LBN=-1;
+function listBooks(LST){const L=ALLB();if(!LBY||LBN!==L.length){LBN=L.length;LBY=new Map();L.forEach(b=>{const n=b._n||norm(b.t);let v=LBY.get(n);if(!v)LBY.set(n,v=[]);v.push(b)})}
+  return LST.map(([t,s])=>{const n=norm(t),sn=norm(s),ok=b=>norm(b.a||"").includes(sn);let c=(LBY.get(n)||[]).find(ok);if(!c)for(const [k,v] of LBY){if(k.startsWith(n)&&(c=v.find(ok)))break}return c}).filter(Boolean)}
 let HSV=null,HSK="";
 function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOOKS.length,want.length,dismissed.size,gpref().join()].join("|");if(HSV&&HSK===key)return HSV;HSK=key;
   const W=wantNorms(),seen=new Set();try{(recList()||[]).forEach(x=>seen.add(norm(x.t)))}catch(e){}
@@ -4367,8 +4375,9 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   // в тренде: свои жанры первыми (одного автора можно дважды — там серии)
   {const tr=trendBooks().filter(free).map((b,i)=>({b,s:(hit(b)?-100:0)+i})).sort((a,b)=>a.s-b.s).map(z=>z.b).slice(0,14);tr.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["trend","В тренде сейчас","О чём говорят в буктоке и на буктюбе",tr])}
   if(BOOKS.length||want.length||GP.length){const q=tasteQ();res.push(["like","Тебе понравится","По твоим полкам и оценкам",take(topK(L,120,b=>free(b)?feedScore(b,q)+(imgOf(b)?2:0):null).map(z=>z.b))])}
-  res.push(["month","Читают в этом месяце","Новинки, которые больше всего читают на Литресе",take(topK(L,80,b=>b.y>=YNOW-2&&b.g!=="nonfic"&&b.g!=="kids"&&free(b)&&(!b.big||imgOf(b))?(b.big?0:6)+popOf(b)*2+Math.log2(1+(b.sl||0))*.6+(imgOf(b)?3:0)+(hit(b)?2:0)+Math.random():null).map(z=>z.b))]);
-  res.push(["mand","Книги с запахом мандаринов","Уютные и зимние - под плед и горячий чай",take(topK(L,80,b=>{if(!free(b)||b.g==="nonfic")return null;const tx=(b.when||"")+" "+(b.ann||"");let s=0;if(MAND_RX.test(tx))s+=5;if(/зим/i.test(b.when||""))s+=1.5;(b.tags||[]).forEach(t=>{if(t==="уют"||t==="тёплое")s+=2;else if(t==="светлое"||t==="сказка")s+=1;else if(t==="мрачное"||t==="война"||t==="хоррор")s-=3});return s>=4?s+(imgOf(b)?2:0)+popOf(b)*.5+Math.random():null}).map(z=>z.b))]);
+  const mix=arr=>arr.map(b=>({b,s:(hit(b)?1:0)+Math.random()})).sort((x,y)=>y.s-x.s).map(z=>z.b);
+  res.push(["month","Читают в этом месяце","Свежие книги, которые сейчас обсуждают",take(mix(listBooks(MONTH_L)))]);
+  res.push(["mand","Книги с запахом мандаринов","Уютные и зимние - под плед и горячий чай",take(mix(listBooks(MAND_L)))]);
   HSV=res.filter(r=>r[3].length>=4).map(r=>[r[0],r[1],r[2],r[3].map(b=>bItem(b,"rec"))]);return HSV}
 function drawTrend(){const el=$("#trend");if(!el)return;const S=shelvesCalc();el._s=S;
   el.innerHTML=S.map(([k,h,sub,L],j)=>`<section class="hshelf"><h3 class="shelf-h">${h}</h3><p class="tr-sub">${sub}</p><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div></section>`).join("")}
@@ -5372,10 +5381,14 @@ function bkcFacts(x){const m=META[ikey(x)],fr=frReaders(x),out=[];
   if(x.frR&&x.frR.r!=null)out.push(`<span>У ${esc(x.frR.n||"друга")}: <b>★ ${r5(x.frR.r)}</b></span>`);
   return out.join("")}
 // «Спросить, как тебе»: открываем чат с другом в Telegram с готовым сообщением; если ника нет — копируем текст
-function frAsk(x){const uid=x.frR&&x.frR.uid,p=uid&&FRP[uid]||{},tg=p.tg,fb=(p.read||[]).find(y=>norm(y.t)===norm(x.t));
+function frAsk(x){const uid=x.frR&&x.frR.uid,p=uid&&FRP[uid]||{},tg=String(p.tg||"").replace(/^@/,"").trim(),fb=(p.read||[]).find(y=>norm(y.t)===norm(x.t)),who=x.frR&&x.frR.n?x.frR.n:"другу";
   const msg=fb?`Привет! Вижу у тебя в Норе «${x.t}» - как тебе?`:`Привет! Вижу, ты хочешь прочитать «${x.t}». Уже начинал(а)?`;
-  if(tg){const u="https://t.me/"+encodeURIComponent(tg)+"?text="+encodeURIComponent(msg);try{if(TG&&TG.openTelegramLink){TG.openTelegramLink(u);return}}catch(e){}open(u,"_blank");return}
-  copyText(msg,"Текст скопирован - отправь его "+(x.frR&&x.frR.n?x.frR.n:"другу")+" в Telegram")}
+  let copied=false;try{const t=document.createElement("textarea");t.value=msg;t.setAttribute("readonly","");t.style.cssText="position:fixed;opacity:0;top:0;left:0";document.body.appendChild(t);t.select();t.setSelectionRange(0,msg.length);copied=document.execCommand("copy");t.remove()}catch(e){}
+  if(!copied&&navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(msg).catch(()=>{});copied=true}
+  if(/^[A-Za-z0-9_]{4,32}$/.test(tg)){const u="https://t.me/"+tg;toast("Текст скопирован - вставь его в чат с "+who);
+    setTimeout(()=>{try{if(TG&&TG.openTelegramLink){TG.openTelegramLink(u);return}}catch(e){}window.open(u,"_blank")},350);return}
+  if(navigator.share){navigator.share({text:msg}).catch(()=>{});return}
+  if(copied)toast("Текст скопирован - отправь его "+who+" в Telegram");else vOpen(`<h3 class="vh">Спросить, как тебе</h3><textarea class="sy-in" rows="3" readonly>${esc(msg)}</textarea>`)}
 function bkcSec(x,L){if(x._f||L==="friend")return "";const st=BK.has(x),on=st?isSec(x):!!(BKC&&BKC.sec);
   return `<button class="bkc-sec${on?" on":""}" data-bkc="sec">${ICLOCK}<span>${on?(st?"Секретная книга":"Пойдёт в секретный список"):"В секретный список"}</span><small>· видите только вы</small></button>`}
 function bkcActs(x,L){const st=BK.has(x);
@@ -5389,8 +5402,9 @@ const trLabel=t=>t.startsWith("троп:")?((B_TROPE.find(x=>"троп:"+x[0]===
 const sameAu=(a,b)=>{a=String(a||"").trim();b=String(b||"").trim();if(!a||!b||a==="Автор не указан")return false;const A=a.split(/\s+/),B=b.split(/\s+/);return norm(A[A.length-1])===norm(B[B.length-1])&&norm(A[0])[0]===norm(B[0])[0]};
 function auBooks(x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of ALLB()){if(!sameAu(b.a,x.a))continue;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);out.push(b)}
   return out.sort((a,b)=>(+!!imgOf(b)-+!!imgOf(a))||((b.q||0)-(a.q||0))||((a.y||9999)-(b.y||9999)))}
-function bkcTropes(x){if(x._f)return "";const tg=(catOf(x)||x).tags||x.tags||[],tr=tg.filter(t=>t.startsWith("троп:")&&trLabel(t)),th=tg.filter(t=>THEME_T.includes(t));
-  const L=[...tr,...th].filter((t,i,a)=>a.indexOf(t)===i&&!(t==="драконы"&&a.includes("троп:dragons"))).slice(0,3),au=auBooks(x).length;
+const ROM_T=["ромэнтези","любовный роман","любовное фэнтези","дарк роман","любовные романы"];
+function bkcTropes(x,Lk){if(x._f)return "";const tg=(catOf(x)||x).tags||x.tags||[],rom=tg.some(t=>ROM_T.includes(t)),tr=rom?tg.filter(t=>t.startsWith("троп:")&&trLabel(t)):[],th=tg.filter(t=>THEME_T.includes(t));
+  const L=[...tr,...th].filter((t,i,a)=>a.indexOf(t)===i&&!(t==="драконы"&&a.includes("троп:dragons"))).slice(0,3),au=Lk==="friend"?0:auBooks(x).length;
   if(!L.length&&!au)return "";return `<div class="bkc-tr">${L.map(t=>`<button data-bkc-tg="${esc(t)}">${esc(trLabel(t))}</button>`).join("")}${au?`<button class="au" data-bkc-au>Ещё у автора ›</button>`:""}</div>`}
 function tagBooks(t,x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of ALLB()){if(!(b.tags||[]).includes(t)||dismissed.has(b.id))continue;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);out.push(b)}
   return topK(out,60,b=>popOf(b)*2+(imgOf(b)?2:0)+(b.q||0)+Math.random()*.5).map(z=>z.b)}
@@ -5401,7 +5415,7 @@ function bkcDraw(){const {x,L}=BKC;
   bkcEl.innerHTML=`<div class="bkc-in"><button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button>
    <div class="bkc-cv">${cv(x,190)}<button class="bkc-cov" data-bkc="cov">${IC2.cov}<span>сменить обложку</span></button></div>
    <div class="bkc-covsw" hidden>${covRow(x)}</div>
-   <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>${bkcTropes(x)}
+   <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>${bkcTropes(x,L)}
    <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
    ${bkcSec(x,L)}<div class="bkc-acts">${bkcActs(x,L)}</div>
