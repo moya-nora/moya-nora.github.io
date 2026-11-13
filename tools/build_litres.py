@@ -11,8 +11,15 @@ H = {"User-Agent": "moya-nora-books/1.0 (https://moya-nora.github.io)", "Accept"
 PER = int(os.environ.get("PER_GENRE", "300"))
 
 # жанр ЛитРес (часть названия) → (жанр Норы, метки Норы)
+# сколько книг брать из жанра: в ромэнтези, любовных романах и young adult — намного больше (это их главная аудитория)
+BIG = int(os.environ.get("PER_BIG", "1200"))
 MAP = [
+    (r"^магические академии", "fantasy", ["любовное фэнтези", "троп:academy", "школа и университет"]),
+    (r"^фэнтези про драконов", "fantasy", ["троп:dragons", "драконы"]),
     (r"^любовно-фантастическ|^любовное фэнтези|романтическое фэнтези", "fantasy", ["любовное фэнтези", "любовь", "романтичное"]),
+    (r"^зарубежные любовные романы", "modern", ["любовный роман", "любовь", "романтичное"]),
+    (r"^зарубежное фэнтези|^русское фэнтези|^историческое фэнтези|^детективное фэнтези", "fantasy", ["магия"]),
+    (r"^книги для подростков", "kids", ["young adult", "взросление"]),
     (r"^попаданцы", "fantasy", ["троп:popadan", "приключения"]),
     (r"^городское фэнтези", "fantasy", ["магия", "большой город"]),
     (r"^боевое фэнтези|^героическое фэнтези", "fantasy", ["приключения", "магия", "динамичное"]),
@@ -32,6 +39,15 @@ MAP = [
     (r"^психология|^саморазвитие|^личностный рост", "nonfic", ["психология"]),
 ]
 MAP = [(re.compile(r, re.I), g, t) for r, g, t in MAP]
+BIGRX = re.compile(r"любов|академ|дракон|young adult|подрост|попадан", re.I)
+# метки и жанры книги на ЛитРес → тропы Норы
+TROPES = [(r"академи", "academy"), (r"попад", "popadan"), (r"истинн", "fated"), (r"отбор", "selection"), (r"дракон", "dragons"),
+          (r"от ненависти|враги|врагов", "enemies"), (r"фиктивн|договорн|брак по (договору|расчёту|расчету)|брак поневоле", "marriage"),
+          (r"вампир|оборот", "vamp"), (r"фейри|фэйри|феи|эльф", "fae"), (r"второй шанс", "second"), (r"треугольник", "triangle"),
+          (r"тёмная академия|темная академия", "darkacad"), (r"соперни", "rivals"), (r"запретн", "forbid"), (r"избранн", "chosen"),
+          (r"дворцов|интриги при дворе", "court"), (r"путешеств[а-я]* во времени", "time"), (r"из друзей|дружба переросла", "friends"),
+          (r"медленн[а-я]* (сближение|разгорание)|slow burn", "slow"), (r"найденн[а-я]* семь", "found"), (r"пересказ|по мотивам сказ|сказка на новый лад", "retell")]
+TROPES = [(re.compile(r, re.I), t) for r, t in TROPES]
 
 
 def get(path, tries=4):
@@ -70,7 +86,8 @@ print("жанров ЛитРес:", len(G), "берём:", [(p[1], p[0]) for p i
 books = {}
 for gid, gname, ng, tags in pick:
     got = 0
-    for off in range(0, PER, 50):
+    per = BIG if BIGRX.search(gname) else PER
+    for off in range(0, per, 50):
         d = get(f"genres/{gid}/arts?limit=50&offset={off}&o=popular&art_types=text_book")
         L = ((d or {}).get("payload") or {}).get("data") or []
         if not L:
@@ -99,8 +116,12 @@ for i, b in enumerate(L):
     d = get(f"arts/{b['id']}")
     x = ((d or {}).get("payload") or {}).get("data") or {}
     ann = clean(x.get("html_annotation") or x.get("annotation") or "")
-    if len(ann) > 1500:  # обрезаем по концу предложения, без многоточия
-        cut = ann[:1500]; k = max(cut.rfind(". "), cut.rfind("! "), cut.rfind("? "))
+    lab = " | ".join([t.get("name", "") for t in x.get("tags") or []] + [g.get("name", "") for g in x.get("genres") or []])
+    for rx, tid in TROPES:
+        if rx.search(lab) and "троп:" + tid not in b["tags"]:
+            b["tags"].append("троп:" + tid)
+    if len(ann) > 700:  # обрезаем по концу предложения, без многоточия
+        cut = ann[:700]; k = max(cut.rfind(". "), cut.rfind("! "), cut.rfind("? "))
         ann = cut[:k + 1] if k > 200 else cut
     b["d"] = ann
     if i % 200 == 0:
