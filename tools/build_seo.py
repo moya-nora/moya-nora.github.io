@@ -176,7 +176,7 @@ ic = lambda k: f'<svg viewBox="0 0 24 24">{ICON[k]}</svg>'
 # всплывающее окно посреди визита: главное — советы лично тебе (не всем и не в Telegram-приложении)
 POPUP = """<div class="pop" id="pop" hidden><div class="pop-in gl"><button class="pop-x" aria-label="Закрыть">×</button>
 <div class="kick">Лично для тебя</div><h3>Шуршуня подберёт книги под твой вкус</h3>
-<p>Отметь 3–5 любимых книг — и каждый следующий совет будет про тебя, а не про общий топ. Без регистрации.</p>
+<p>Отметь 3 любимые книги — и советы будут про тебя, а не про общий топ.</p>
 <div class="ctas"><a class="btn" href="https://t.me/Wonderbookworld_bot?startapp=site">Подобрать в Telegram</a><a class="btn ghost" href="/app.html?app=1">Или в браузере</a></div></div></div>
 <script>(function(){try{var L=localStorage,now=Date.now();if(L.getItem("zal.onb")||/tgWebApp/.test(location.hash))return;var off=+L.getItem("nora.pop")||0;if(now-off<3*864e5)return;
 var v=(+sessionStorage.getItem("nora.pv")||0)+1;sessionStorage.setItem("nora.pv",v);var p=document.getElementById("pop"),shown=0;
@@ -184,7 +184,7 @@ function show(){if(shown)return;shown=1;p.hidden=false;requestAnimationFrame(fun
 function hide(){p.classList.remove("on");setTimeout(function(){p.hidden=true},300)}
 p.addEventListener("click",function(e){if(e.target===p||e.target.closest(".pop-x"))hide()});
 setTimeout(show,v>=2?9000:28000);addEventListener("scroll",function(){if(scrollY>document.body.scrollHeight*.55&&(+sessionStorage.getItem("nora.pv")||0)>=1)setTimeout(show,1500)},{passive:true})}catch(e){}})();</script>"""
-SEARCH_JS = """<script>(function(){var q=document.getElementById("q"),box=document.getElementById("sres");if(!q)return;var D=null,nm=function(s){return String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9 ]+/g," ")};
+SEARCH_JS = r"""<script>(function(){var q=document.getElementById("q"),box=document.getElementById("sres");if(!q)return;var D=null,nm=function(s){return String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9 ]+/g," ")};
 function load(){if(D)return Promise.resolve(D);return fetch("/books/search.json").then(function(r){return r.json()}).then(function(j){D=j.map(function(x){return [x,nm(x[0]+" "+x[1])]});return D})}
 q.addEventListener("focus",load,{once:true});if(location.hash==="#poisk")setTimeout(function(){q.focus()},300);
 q.addEventListener("input",function(){var v=nm(q.value).trim();if(v.length<2){box.innerHTML="";return}load().then(function(){var ws=v.split(/\s+/).map(function(w){return w.length>4?w.slice(0,w.length-1):w}),out=[];
@@ -202,7 +202,7 @@ APP = "/app.html?app=1"
 def hdr(active=""):
     return ('<header class="hd"><div class="bar gl"><a class="logo" href="/"><img src="/icons/icon-512.png?v=4" alt="">Нора</a><nav class="nav">'
             + "".join(f'<a href="{u}"{" class=on" if u == active else ""}>{t}</a>' for u, t in NAV)
-            + f'</nav><a class="hsearch" href="/#poisk" aria-label="Поиск книг">{ic("search")}</a><a class="btn sm open" id="openNora" href="{APP}">Открыть Нору</a></div></header>')
+            + f'</nav><a class="btn sm open" id="openNora" href="{APP}">Открыть Нору</a></div></header>')
 
 
 MINE = """<script>try{if(localStorage.getItem("zal.onb"))document.querySelectorAll("#openNora").forEach(function(a){a.textContent="Моя Нора"})}catch(e){}</script>"""
@@ -265,14 +265,14 @@ def rail(L):
 
 
 def shelf(title, href, ds, L, all_txt="Все"):
-    return (f'<section class="shelf"><div class="hd"><h2><a href="{href}">{esc(title)}</a></h2><a class="all" href="{href}">{esc(all_txt)} →</a></div>'
+    return (f'<section class="shelf"><div class="shd"><h2><a href="{href}">{esc(title)}</a></h2><a class="all" href="{href}">{esc(all_txt)} →</a></div>'
             + (f'<p class="ds">{esc(ds)}</p>' if ds else "") + rail(L) + "</section>")
 
 
 CTA = (f'<div class="ctas"><a class="btn" href="{BOT}">{ic("tg")}Подобрать в Telegram</a>'
        f'<a class="btn ghost" href="{APP}">Или в браузере</a></div>')
 FINAL = (f'<section class="final gl"><div class="kick">Лично для тебя</div><h2 style="margin-top:14px">Шуршуня знает, что тебе понравится</h2>'
-         f'<p>Отметь несколько любимых книг — и Нора будет советовать по твоему вкусу, а не по общему топу: в ленте, в Telegram и по новинкам любимых авторов.</p>{CTA}</section>')
+         f'<p>Отметь 3 любимые книги — получи подборку под свой вкус.</p>{CTA}</section>')
 coll_data = []
 for path, title, lead, pred in COLL:
     L = sorted([b for b in books if pred(b)], key=rank)[:60]
@@ -521,13 +521,13 @@ after = onepa(sorted(after, key=lambda b: (TORD.get(nk(b["t"]) + "|" + b["a"].sp
 HOME_SHELVES = [p for p in ("romantezi", "dark-roman", "lyubovnye-romany", "uyutnye", "zahvatyvayuschie", "young-adult") if get(p)]
 lead_of = lambda p: next(l for q, _, l, _ in coll_data if q == p)
 title_of = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
-home = (f'<div class="wrap"><section class="hero2" id="poisk"><div class="kick">Что почитать</div><h1>Найди свою <em>следующую</em> книгу</h1>'
+home = (f'<div class="wrap"><section class="hero2" id="poisk"><h1>Найди свою <em>следующую</em> книгу</h1>'
         f'<p class="lead">Подборки по настроению, новинки и книги, похожие на любимые.</p>'
         f'<div class="sbox gl">{ic("search")}<input id="q" type="search" placeholder="Название или автор" autocomplete="off" enterkeyhint="search"></div><div class="sres" id="sres"></div>'
         f'{chips("")}</section>'
         + shelf("Новинки", "/c/novinki.html", "Свежие книги последних двух лет — каталог обновляется каждый месяц.", sorted(get("novinki")[:30], key=lambda b: not img_of(b))[:14], "Все новинки")
         + "".join(shelf(title_of(p), f"/c/{p}.html", lead_of(p), sorted(get(p)[:28], key=lambda b: not img_of(b))[:14]) for p in HOME_SHELVES)
-        + (f'<section class="shelf"><div class="hd"><h2><a href="/p/">Что почитать после…</a></h2><a class="all" href="/p/">Все →</a></div>'
+        + (f'<section class="shelf"><div class="shd"><h2><a href="/p/">Что почитать после…</a></h2><a class="all" href="/p/">Все →</a></div>'
            f'<p class="ds">Выбери книгу, которая понравилась, — покажем похожие по настроению и сюжетным ходам.</p><div class="rail">{"".join(seed_card(b) for b in after)}</div></section>' if after else "")
         + f'{FINAL}</div>' + SEARCH_JS)
 home_path = page("index.html", "Нора — что почитать", "Что почитать: подборки книг по настроению, новинки, книги, похожие на любимые, — ромэнтези, дарк роман, любовные романы, фэнтези, детективы. "
