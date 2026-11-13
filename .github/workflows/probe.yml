@@ -5,4 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for u in https://moya-nora.github.io/app.html http://nora-books.ru/ https://nora-books.ru/ https://nora-books.ru/app.html https://www.nora-books.ru/; do echo "== $u"; curl -sS -m 20 -o /dev/null -w "%{http_code} -> %{redirect_url}\n" "$u" 2>&1; done
+          curl -s "https://api.telegram.org/bot${BOT_TOKEN}/getChatMenuButton" | python3 -c "import json,sys;d=json.load(sys.stdin);r=d.get('result',{});print(r.get('type'),(r.get('web_app') or {}).get('url'))"
+          curl -s -o /dev/null -w "app %{http_code}\n" https://nora-books.ru/app.html
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
