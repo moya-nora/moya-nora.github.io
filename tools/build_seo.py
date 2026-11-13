@@ -199,13 +199,9 @@ pl=function(n,a,b,c){n=Math.abs(n)%100;var m=n%10;return n>10&&n<20?c:m>1&&m<5?b
 fetch(F+"/search-works?q="+encodeURIComponent(t)+"&page=1&onlymatches=1").then(function(r){return r.json()}).then(function(L){L=Array.isArray(L)?L:[];
  var w=L.filter(function(x){return !a||nm(x.autor_rusname).indexOf(a)>=0||nm(x.autor_name).indexOf(a)>=0})[0];if(!w)return;
  return fetch(F+"/work/"+w.work_id).then(function(r){return r.json()}).then(function(j){var r=j.rating||{},v=+r.voters||0,rc=+j.val_responsecount||0,h="";
-  if(v>=5)h+='<span><b>★ '+(r.rating/2).toFixed(1).replace(".",",")+'</b> '+v.toLocaleString("ru-RU")+' '+pl(v,"оценка","оценки","оценок")+'</span>';
-  if(rc)h+='<button type="button" id="rvb"><b>'+rc+'</b> '+pl(rc,"отзыв","отзыва","отзывов")+' ›</button>';el.innerHTML=h;
-  var b=document.getElementById("rvb");if(!b)return;b.onclick=function(){var box=document.getElementById("rvl");if(box){box.hidden=!box.hidden;return}
-   box=document.createElement("div");box.id="rvl";box.className="rvl";box.innerHTML="<p>Загружаю отзывы…</p>";el.after(box);
-   fetch(F+"/work/"+w.work_id+"/responses?page=1&sort=rating").then(function(r){return r.json()}).then(function(R){var it=(R.items||[]).slice(0,20);
-    box.innerHTML=it.map(function(x){var tx=cl(x.response_text||x.text);return '<div class="rv"><div><b>'+esc(x.user_name||"Читатель")+'</b>'+(x.mark?'<span>★ '+(x.mark/2).toFixed(1).replace(".",",")+'</span>':"")+'</div><p>'+esc(tx)+'</p></div>'}).join("")||"<p>Пока без отзывов.</p>";
-    box.querySelectorAll(".rv p").forEach(function(p){if(p.scrollHeight>p.clientHeight+4){var m=document.createElement("button");m.type="button";m.className="rvm";m.textContent="читать дальше";m.onclick=function(){p.classList.add("open");m.remove()};p.after(m)}})})}})}).catch(function(){})})();</script>"""
+  var u="/r/?w="+w.work_id+"&b="+encodeURIComponent(location.pathname);
+  if(v>=5)h+='<a href="'+u+'">★ '+(r.rating/2).toFixed(1).replace(".",",")+' · '+v.toLocaleString("ru-RU")+' '+pl(v,"оценка","оценки","оценок")+'</a>';
+  if(rc)h+='<a href="'+u+'">'+rc+' '+pl(rc,"отзыв","отзыва","отзывов")+'</a>';el.innerHTML=h;if(h)el.classList.add("on")})}).catch(function(){})})();</script>"""
 SEARCH_JS = r"""<script>(function(){var q=document.getElementById("q"),box=document.getElementById("sres");if(!q)return;var D=null,nm=function(s){return String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9 ]+/g," ")};
 function load(){if(D)return Promise.resolve(D);return fetch("/books/search.json").then(function(r){return r.json()}).then(function(j){D=j.map(function(x){return [x,nm(x[0]+" "+x[1])]});return D})}
 q.addEventListener("focus",load,{once:true});if(location.hash==="#poisk")setTimeout(function(){q.focus()},300);
@@ -549,6 +545,28 @@ POLICY = [
 pol = ('<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><div class="kick">Документы</div><h1>Политика конфиденциальности</h1>'
        f'<p class="lead">Коротко: что Нора знает о тебе и как это удалить. Обновлено {time.strftime("%d.%m.%Y")}.</p></div></div><div class="legal">'
        + "".join(f"<section class='gl'><h2>{h}</h2>{t if t.startswith('<') else '<p>' + t + '</p>'}</section>" for h, t in POLICY) + "</div></div>")
+RV_JS = r"""<script>(function(){var q=new URLSearchParams(location.search),w=+q.get("w")||0,b=q.get("b")||"",F="https://api.fantlab.ru",L=document.getElementById("rvl"),M=document.getElementById("rvmore"),pg=1;
+var bk=document.getElementById("rvback");if(/^\/k\/[a-z0-9-]+\.html$/.test(b))bk.href=b;else bk.onclick=function(e){if(history.length>1){e.preventDefault();history.back()}};
+var pl=function(n,a,b,c){n=Math.abs(n)%100;var m=n%10;return n>10&&n<20?c:m>1&&m<5?b:m==1?a:c},esc=function(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")},
+cl=function(s){return String(s||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\r/g,"").replace(/[ \t]+/g," ").replace(/\n{2,}/g,"\n").trim()},
+dt=function(s){var d=new Date(String(s||"").replace(" ","T"));return isNaN(d)?"":d.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"})};
+if(!w){L.innerHTML='<p class="rve">Отзывы не нашлись.</p>';return}
+fetch(F+"/work/"+w).then(function(r){return r.json()}).then(function(j){var r=j.rating||{},v=+r.voters||0,rc=+j.val_responsecount||0,t=j.work_name||"",a=(j.authors||[]).map(function(x){return x.name}).join(", ");
+ document.title="Отзывы о книге «"+t+"» — Нора";document.getElementById("rvt").textContent="«"+t+"»";document.getElementById("rva").textContent=a;
+ document.getElementById("rvs").innerHTML=(v>=5?'<b>★ '+(r.rating/2).toFixed(1).replace(".",",")+'</b> '+v.toLocaleString("ru-RU")+' '+pl(v,"оценка","оценки","оценок")+' · ':"")+rc+' '+pl(rc,"отзыв","отзыва","отзывов")}).catch(function(){});
+function more(){M.disabled=true;M.textContent="Загружаю…";fetch(F+"/work/"+w+"/responses?page="+pg+"&sort=rating").then(function(r){return r.json()}).then(function(R){var it=R.items||[];if(pg==1)L.innerHTML="";
+ it.forEach(function(x){if(!x)return;var d=document.createElement("article");d.className="rvi";var tx=cl(x.response_text||x.text);
+  d.innerHTML='<header><b>'+esc(x.user_name||"Читатель")+'</b>'+(x.mark?'<span class="mk">★ '+(x.mark/2).toFixed(1).replace(".",",")+'</span>':"")+'</header>'+(dt(x.response_date)?'<time>'+dt(x.response_date)+'</time>':"")+'<p>'+esc(tx).replace(/\n/g,"</p><p>")+'</p>';
+  L.appendChild(d);var ps=d.querySelectorAll("p");if(tx.length>600){d.classList.add("cut");var m=document.createElement("button");m.type="button";m.className="rvm";m.textContent="Читать полностью";m.onclick=function(){d.classList.remove("cut");m.remove()};d.after(m)}});
+ if(pg==1&&!it.length)L.innerHTML='<p class="rve">Пока без отзывов.</p>';pg++;var tot=+R.total_count||+R.count||0;M.hidden=!it.length||it.length<10||(tot&&L.querySelectorAll(".rvi").length>=tot);M.disabled=false;M.textContent="Показать ещё"}).catch(function(){M.disabled=false;M.textContent="Показать ещё"})}
+M.onclick=more;more()})();</script>"""
+rvbody = ('<div class="rvw"><a class="rvback" id="rvback" href="/" aria-label="Назад к книге"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>К книге</a>'
+          '<h1>Отзывы</h1><p class="rvh"><span id="rvt"></span> <span id="rva"></span></p><p class="rvs" id="rvs"></p>'
+          '<div id="rvl"><p class="rve">Загружаю отзывы…</p></div><button type="button" class="rvmore" id="rvmore" hidden>Показать ещё</button>'
+          '<p class="rvsrc">Отзывы и оценки — с сайта <a href="https://fantlab.ru" rel="nofollow noopener" target="_blank">Фантлаб</a></p></div>' + RV_JS)
+page("r/index.html", "Отзывы о книге", "Отзывы читателей о книге.", rvbody)
+_rp = os.path.join(ROOT, "r/index.html"); _rs = open(_rp, encoding="utf-8").read().replace("<head>", '<head><meta name="robots" content="noindex">', 1)
+open(_rp, "w", encoding="utf-8").write(_rs)
 urls.append(page("privacy.html", "Политика конфиденциальности", "Какие данные хранит «Нора», зачем и как их удалить.", pol))
 
 # ---------- главная ----------
