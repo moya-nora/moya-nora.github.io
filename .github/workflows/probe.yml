@@ -5,7 +5,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for q in "Мастер и Маргарита" "Тэсс из рода д'Эрбервиллей" "Время ночь"; do
-            echo "== $q"; curl -s "https://api.fantlab.ru/search-works?q=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" "$q")&page=1&onlymatches=1" | python3 -c "import json,sys;L=json.load(sys.stdin);[print(w.get('work_id'),w.get('rusname'),'|',w.get('autor_rusname'),'| pic',w.get('pic_edition_id'),w.get('pic_edition_id_auto')) for w in (L if isinstance(L,list) else L.get('matches',[]))[:5]]"
+          for id in 65394826 65425437; do
+          curl -s -H "Accept: application/json" "https://api.litres.ru/foundation/api/arts/$id" | python3 -c "import json,sys;d=json.load(sys.stdin)['payload']['data'];print(sorted(d.keys()));print('TAGS',d.get('tags'));print('GENRES',[g.get('name') for g in d.get('genres') or []])"
           done
-          curl -s https://api.fantlab.ru/work/9164/extended | python3 -c "import json,sys;j=json.load(sys.stdin);L=[e for b in (j.get('editions_blocks') or {}).values() for e in b.get('list',[])];ok=[e for e in L if e.get('pic_num',0)>0 and (not e.get('lang_code') or e.get('lang_code')=='ru')];print(len(L),len(ok),sorted([(e.get('year') or 0,e.get('type'),e.get('plandate')) for e in ok],key=lambda z:-z[0])[:12])"
+          curl -s -H "Accept: application/json" "https://api.litres.ru/foundation/api/genres?limit=500" | python3 -c "
+          import json,sys
+          t=json.load(sys.stdin)['payload']['data']
+          def w(n,d=0):
+            for x in n or []:
+              if any(k in x['name'].lower() for k in ['любов','фэнтези','young','подрост','роман']):print('  '*d+x['name'],x['id'],x.get('arts_count'))
+              w(x.get('subgenres'),d+1)
+          w(t)"
