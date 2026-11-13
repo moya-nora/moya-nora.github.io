@@ -280,6 +280,35 @@ for path, title, lead, pred in COLL:
         continue
     L = sorted(L, key=lambda b: (not (b["ann"] or img_of(b)), L.index(b)))  # с описанием и обложкой — вперёд
     coll_data.append((path, title, lead, L))
+# «Читают в этом месяце»: самые обсуждаемые книги последних лет из всех жанров (не только ромэнтези) — по числу оценок, один автор — одна книга
+MON_PREP = ["январе", "феврале", "марте", "апреле", "мае", "июне", "июле", "августе", "сентябре", "октябре", "ноябре", "декабре"][time.gmtime().tm_mon - 1]
+_hot = sorted([b for b in books if (b["y"] or 0) >= YNOW - 4 and (b.get("sl") or 0) >= 300 and (b["ann"] or img_of(b))], key=lambda b: -(b.get("sl") or 0))
+_lit = sorted([b for b in books if (b["y"] or 0) >= YNOW - 8 and not love(b) and b["g"] in ("modern", "detective", "scifi", "nonfic", "fantasy")
+               and (b["acc"] or b["cat"]) and (b["ann"] or img_of(b))], key=lambda b: (-len(b["acc"]), -(b["q"] or 0), -(b["y"] or 0)))
+_g, _au, A_, B_ = {}, set(), [], []
+for b in _hot:  # то, что массово читают: не больше 4 книг одного жанра
+    k = "love" if love(b) else b["g"]
+    if nk(b["a"]) in _au or _g.get(k, 0) >= 4:
+        continue
+    _au.add(nk(b["a"])); _g[k] = _g.get(k, 0) + 1; A_.append(b)
+    if len(A_) >= 18:
+        break
+for b in _lit:  # и то, о чём говорят: премии и громкая проза последних лет
+    if nk(b["a"]) in _au:
+        continue
+    _au.add(nk(b["a"])); B_.append(b)
+    if len(B_) >= 18:
+        break
+hot = [x for pair in zip(B_, A_) for x in pair] + A_[len(B_):] + B_[len(A_):]
+if len(hot) >= 8:
+    coll_data.insert(0, ("chitayut-seychas", f"Читают в {MON_PREP}", "Книги, о которых говорят прямо сейчас: новые романы, детективы, фантастика и нон-фикшн.", hot))
+# «Новогоднее настроение»: зима, Рождество, снег и сказка
+NY_T = re.compile(r"рождеств|нов\w* год|новогодн|сочельник|(?<![а-яё])[её]лк|снегуроч|щелкунчик|метель|снежн\w* королев|зимн|(?<![а-яё])зима\b|декабр", re.I)
+NY_A = re.compile(r"рождеств|новогодн|нов\w* год[а-я]*\b|сочельник|под ёлк|наряжа\w* ёлк", re.I)
+ny = [b for b in books if not notnovel(b) and (NY_T.search(b["t"]) or NY_A.search(b["ann"] or "")) and (b["ann"] or img_of(b))]
+ny = sorted({id(b): b for b in ny}.values(), key=lambda b: (not b["cat"], -(b["q"] or 0), -(b.get("sl") or 0)))[:40]
+if len(ny) >= 8:
+    coll_data.insert(1, ("novogodnee-nastroenie", "Новогоднее настроение", "Зима, Рождество, снег за окном и немного чуда — книги, с которыми наступает праздник.", ny))
 FOOT = footer([(p, t) for p, t, _, _ in coll_data])
 # книги из подборок без обложки — их обложки найдёт tools/build_covers.py в следующий раз
 want, seenw = [], set()
@@ -290,7 +319,7 @@ for _, _, _, L in coll_data:
             seenw.add(k)
             want.append([b["t"], b["a"]])
 json.dump(want[:4000], open(os.path.join(ROOT, "books", "covers_want.json"), "w", encoding="utf-8"), ensure_ascii=False)
-QUICK = [p for p in ("romantezi", "dark-roman", "lyubovnye-romany", "young-adult", "zhanr-fantasy", "uyutnye", "zahvatyvayuschie", "strashnye", "smeshnye", "novinki", "zhanr-classic", "zhanr-detective")
+QUICK = [p for p in ("chitayut-seychas", "novogodnee-nastroenie", "romantezi", "dark-roman", "lyubovnye-romany", "young-adult", "zhanr-fantasy", "uyutnye", "zahvatyvayuschie", "strashnye", "smeshnye", "novinki", "zhanr-classic", "zhanr-detective")
          if any(q == p for q, _, _, _ in coll_data)]
 tname = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
 chips = lambda cur: '<nav class="chips">' + "".join(f'<a href="/c/{p}.html"{" class=on" if p == cur else ""}>{esc(tname(p))}</a>' for p in QUICK) + "</nav>"
@@ -518,7 +547,8 @@ def seed_card(b):
 
 after = [b for g in groups.values() for b in g]
 after = onepa(sorted(after, key=lambda b: (TORD.get(nk(b["t"]) + "|" + b["a"].split(" ")[-1].lower().replace("ё", "е"), 999), not b["cat"], -(b["q"] or 0))))[:16]
-HOME_SHELVES = [p for p in ("romantezi", "dark-roman", "lyubovnye-romany", "uyutnye", "zahvatyvayuschie", "young-adult") if get(p)]
+HOME_SHELVES = [p for p in ("chitayut-seychas", "novogodnee-nastroenie" if time.gmtime().tm_mon in (11, 12, 1) else "", "romantezi", "zhanr-modern", "zhanr-detective",
+                             "uyutnye", "zhanr-nonfic", "dark-roman", "zhanr-classic", "young-adult") if p and get(p)]
 lead_of = lambda p: next(l for q, _, l, _ in coll_data if q == p)
 title_of = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
 home = (f'<div class="wrap"><section class="hero2" id="poisk"><h1>Найди свою <em>следующую</em> книгу</h1>'
