@@ -4308,7 +4308,7 @@ function recList(){if(isF()){if(!FILMS)return [];if(!recList._f||recList._v!==FS
     for(let i=sc.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sc[i],sc[j]]=[sc[j],sc[i]]}
     const au=new Set(),out=[];for(const b of sc){if(au.has(b.a))continue;au.add(b.a);out.push(bItem(b,"rec"));if(out.length>=40)break}
     if(out.length>=8){recList._b=out;recList._k=key;return out}}
-  if(recList._k!==key){const W=wantNorms(),pool=ALLB().filter(b=>{const nt=b._n||norm(b.t);return !READ.has(nt)&&!dismissed.has(b.id)&&!W.has(nt)&&(b.q||0)>=3});
+  if(recList._k!==key){const W=wantNorms(),pool=topK(ALLB(),120,b=>{const nt=b._n||norm(b.t);return !READ.has(nt)&&!dismissed.has(b.id)&&!W.has(nt)&&!b.big&&b.g!=="nonfic"?popOf(b)*2+(imgOf(b)?2:0)+(b.q||0)*.5:null}).map(z=>z.b);/* пока полок нет — известные книги, которые многие читали */
     let h=0;for(const ch of day)h=(h*31+ch.charCodeAt(0))>>>0;const rnd=()=>(h=(h*1664525+1013904223)>>>0)/4294967296;
     for(let i=pool.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
     const au=new Set(),out=[];for(const b of pool){if(au.has(b.a))continue;au.add(b.a);out.push(bItem(b,"rec"));if(out.length>=40)break}
@@ -4739,7 +4739,7 @@ function onbList(){return onbK==="films"?popFilms():popBooks()}
 function onbDraw(){const F=onbK==="films",list=onbList();onbPick={};onbStage="books";$("#onbGrid").classList.remove("onb-gen");
   $("#onbStep").textContent=F?"2 из 2":"1 из 2";$("#onbH").textContent=F?"Выбери хотя бы два просмотренных фильма или сериала":"Выбери хотя бы две прочитанные книги";
   $("#onbP").textContent=F?"Нажми на фильм или сериал и поставь оценку.":"Нажми на книгу и поставь оценку.";
-  $("#onbSkip").hidden=!F;$("#onbGrid").scrollTop=0;
+  $("#onbSkip").hidden=false;$("#onbSkip").textContent=F?"пропустить":"позже";$("#onbGrid").scrollTop=0;
   $("#onbGrid").innerHTML=list.map((x,i)=>`<div class="op${i===0?" nudge":""}" data-i="${i}">${cv(x,110)}${i===0?`<span class="tip">Нажми</span>`:""}<span class="badge"></span><small>${esc(x.t)}${x.s?" · сериал":""}</small></div>`).join("");
   $("#onbGrid")._l=list;onbBtn()}
 function onbBtn(){const n=Object.keys(onbPick).length,b=$("#onbNext"),F=onbK==="films";b.disabled=n<2;b.textContent=n>=2?"Дальше":n?(F?"Выбери ещё один":"Выбери ещё одну"):(F?"Выбери хотя бы два":"Выбери хотя бы две")}
@@ -4754,6 +4754,13 @@ function introShow(){const L=popBooks(),cells=12,reel=$("#reel");
   setTimeout(tick,200)}
 if(window.NSYNC&&NSYNC.on){$("#introGo").insertAdjacentHTML("afterend",`<button class="intro-login" id="introLogin">Уже есть аккаунт? Войти</button>`);$("#introLogin").onclick=()=>{authMode="in";authShow(()=>{$("#intro").classList.remove("on");if(emptyAll()){$("#onb").classList.add("on");onbDraw()}})}}
 $("#introGo").onclick=()=>{$("#intro").classList.remove("on");$("#onb").classList.add("on");onbDraw();tgHaptic("medium")};
+// предложение настроить вкус — не на входе, а когда человек уже посмотрел несколько книг или что-то добавил
+function onbAsk(force){if(VIEW||LS.get("zal.onbAsk",0)&&!force)return;if(BOOKS.length>=2&&!force)return;
+  if(!force&&(+LS.get("zal.cards",0)||0)<4&&!want.length&&!BOOKS.length)return;
+  if(!force&&(document.querySelector(".tour")||$("#auth").classList.contains("on")||$("#vsheet").classList.contains("on")||$("#rm").classList.contains("on")||BKC))return;
+  LS.set("zal.onbAsk",1);
+  vOpen(`<h3 class="vh">Подобрать книги под тебя?</h3><p class="sy-note">Отметь пару прочитанных книг и любимые жанры - Шуршуня станет советовать точнее. Это минута.</p><div class="sheet-btns" style="display:flex;flex-direction:column;gap:10px;margin-top:18px"><button class="btn w" data-onbgo>Отметить книги</button><button class="btn" data-onblater>Позже</button></div>`)}
+$("#vshBody").addEventListener("click",e=>{if(e.target.closest("[data-onbgo]")){e.stopPropagation();vClose();tgHaptic("medium");$("#onb").classList.add("on");onbDraw();return}if(e.target.closest("[data-onblater]")){e.stopPropagation();vClose()}},true);
 // аккаунт просим уже после выбора книг — когда есть что сохранять
 const onbDone=()=>{if(needAuth()){authMode="up";authShow(onbFinish,"onb")}else onbFinish()};
 function onbSave(){const list=$("#onbGrid")._l,D=onbK==="films"?FM:BK,cs=checkStamps;checkStamps=()=>{};try{Object.entries(onbPick).forEach(([i,n])=>{const x=list[+i];if(!D.has(x))D.markRead(x,n*2,true)})}finally{checkStamps=cs}checkStamps(true)}
@@ -4766,7 +4773,7 @@ function onbGenDraw(){onbStage="gen";onbG=gpref().slice();$("#onbH").textContent
 function onbGenBtn(){const b=$("#onbNext");b.disabled=false;b.textContent=onbG.length?"Готово":"Пропустить"}
 $("#onbGrid").addEventListener("click",e=>{const c=e.target.closest("[data-gp]");if(!c)return;e.stopPropagation();const k=c.dataset.gp;onbG=onbG.includes(k)?onbG.filter(x=>x!==k):[...onbG,k];c.classList.toggle("on");tgHaptic();onbGenBtn()},true);
 $("#onbNext").onclick=()=>{tgHaptic("medium");if(onbStage==="books"){onbSave();onbGenDraw();return}LS.set("zal.gpref",onbG);onbStage="books";$("#onbGrid").classList.remove("onb-gen");try{recList._k=null;TRK=-1}catch(e){}onbDone()};
-$("#onbSkip").onclick=()=>onbDone();
+$("#onbSkip").onclick=()=>{if(onbK!=="films"&&onbStage==="books"){$("#onb").classList.remove("on");tgHaptic();return}onbDone()};
 
 // ---------- обучение в ленте: по шагам, с настоящими действиями ----------
 // 1) светится правая половина карточки — смахни вправо или ✓; 2) левая — влево или ✕; 3) кнопка отмены — только нажатие.
@@ -5328,7 +5335,7 @@ function bkParam(){try{const v=new URLSearchParams(location.search).get("bk");if
 // разрешение боту писать раз в неделю: спрашиваем один раз, когда на полке уже есть книги
 function askWrite(){try{if(!TG||!TG.requestWriteAccess||LS.get("zal.wa",0)||!BOOKS.length)return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#bkc.on"))return setTimeout(askWrite,20000);
   LS.set("zal.wa",1);TG.requestWriteAccess(ok=>{if(ok&&!LS.get("zal.ntf",0))setTimeout(notifyAsk,600)})}catch(e){}}
-function afterSplash(){setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&!NS.email)authShow()}
+function afterSplash(){setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&!NS.email)authShow()}
 
 
 // ---------- смена обложки вручную: фото / рисунок / другое издание ----------
@@ -5421,7 +5428,7 @@ function bkcDraw(){const {x,L}=BKC;
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
    ${bkcSec(x,L)}<div class="bkc-acts">${bkcActs(x,L)}</div>
    <div class="bkc-low"><button class="bkc-where" data-bkc="where">${IC2.pin}Где прочитать?</button>${x._f?"":`<button class="bkc-where" data-bkc="vid">${IC2.play}Обзоры</button>`}</div></div>`}
-function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};goal(L==="friend"?"card_friend":"card");cardX=x;cardL=L;ambFor(x);bkcDraw();
+function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};LS.set("zal.cards",(+LS.get("zal.cards",0)||0)+1);goal(L==="friend"?"card_friend":"card");cardX=x;cardL=L;ambFor(x);bkcDraw();
   // обложка уже в кэше браузера — ждём её расшифровки (до 250 мс), чтобы не мелькала рисованная
   const im=bkcEl.querySelector(".bkc-cv img"),show=()=>{if(BKC&&BKC.x===x){bkcEl.classList.add("on");syncBack()}};
   if(im&&im.decode)Promise.race([im.decode().catch(()=>{}),new Promise(r=>setTimeout(r,250))]).then(show);else show();tgHaptic("medium");
@@ -5444,7 +5451,7 @@ function vidOpen(x){const sur=String(x.a||"").split(" ").slice(-1)[0];
 $("#vshBody").addEventListener("click",e=>{const b=e.target.closest("[data-vid]");if(!b)return;e.stopPropagation();const u=VIDS[+b.dataset.vid][2]($("#vshBody")._vq);tgHaptic();try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(x){window.open(u,"_blank")}},true);
 function bkcFit(){const w=$("#bkcDw");if(!w)return;const upd=()=>w.classList.toggle("more",w.scrollTop+w.clientHeight<w.scrollHeight-4);w.onscroll=upd;upd()}
 addEventListener("resize",()=>{if(BKC)bkcFit()});
-function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();if(vDirty){vDirty=false;setTimeout(refresh,300)}}
+function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();setTimeout(onbAsk,700);if(vDirty){vDirty=false;setTimeout(refresh,300)}}
 // отзывы читателей Фантлаба
 const rvClean=s=>String(s||"").replace(/\[(\/?)(b|i|u|s|p|q|spoiler|center|right|left)[^\]]*\]/gi,"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\r/g,"").replace(/\n{3,}/g,"\n\n").trim();
 async function reviewsOpen(x){const m=META[ikey(x)]||{};if(!m.w)return;tgHaptic();
@@ -5506,7 +5513,7 @@ function shelfAnim(x){if(RM)return;const c=catOf(x)||{},bg=x.bg||c.bg||palOf(x.t
 shEl.addEventListener("click",()=>shEl.classList.remove("go"));
 // цели в Метрике: какие действия люди делают (без личных данных)
 const goal=n=>{try{window.ym&&ym(114237349,"reachGoal",n)}catch(e){}};
-{const _aw=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw.call(BK,x);if(!had)goal("want")}}
+{const _aw=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw.call(BK,x);if(!had){goal("want");setTimeout(()=>onbAsk(),2500)}}}
 {const _fw=FM.addWant;FM.addWant=function(x){const had=FM.has(x);_fw.call(FM,x);if(!had)goal("want")}}
 {const _mr=BK.markRead;BK.markRead=function(x,r10,silent){const out=_mr.call(BK,x,r10,silent);if(!silent)goal("read");if(!silent)setTimeout(()=>shelfAnim(x),120);return out}}
 
@@ -5553,7 +5560,8 @@ addEventListener("bigcat",()=>{B_CTY=ctyTop();BIGK=null;
 setTimeout(()=>{const go=()=>loadBig().catch(()=>setTimeout(go,30000));(window.requestIdleCallback||(f=>setTimeout(f,0)))(go)},700);
 if(REALM==="films")loadFilms().then(()=>{if(isF()){buildFeed();refresh()}}).catch(()=>{});
 const emptyAll=()=>!BOOKS.length&&!want.length&&!FSEEN.length&&!FWANT.length&&!nowBook;
-if(!VIEW&&!LS.get("zal.onb",0)){if(!emptyAll())LS.set("zal.onb",1);else setTimeout(()=>{if(emptyAll()&&!LS.get("zal.onb",0))introShow()},900)}
+/* без обязательного выбора книг на входе: человек сразу попадает в Нору, а предложение настроить вкус появится позже (onbAsk) */
+if(!VIEW&&!LS.get("zal.onb",0))LS.set("zal.onb",1);
 
 })();
 </script>
