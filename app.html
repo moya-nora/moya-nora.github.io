@@ -1651,7 +1651,7 @@ body[data-font="2"] #app .flow-cap p:not(.L *){font-family:'Lora',Georgia,serif!
 body[data-font="3"] #app .rec-h{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:600;font-size:36px}
 body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,sans-serif!important;font-size:16.5px!important;line-height:1.5}
 /* карточка ленты: пропорции обложки, текста и кнопок */
-#app .fly .obj{width:min(44vw,190px,calc((100dvh - 580px) * .66))}
+#app .fly .obj{width:min(58vw,250px,calc((100dvh - 500px) * .72))}
 #app .fly .info{margin-top:18px}
 #app .slide .fly .info h2:not(.L *){font-size:20px;line-height:1.2;-webkit-line-clamp:2}
 #app .fly .info .meta{font-size:14px;margin-top:6px}
@@ -4005,7 +4005,7 @@ const ikey=x=>x._f?"f:"+(x.id||norm(x.t)+(x.y||"")):norm(x.t)+"|"+norm(x.a||"");
 // IMG[k]: адрес картинки; "!время" — источник ответил «нет обложки» (повторим через 2 недели)
 const NOIMG_TTL=14*864e5;
 // ИИ-обложки для книг, у которых нет свежего издания (готовит tools/ai_covers.py); выбор пользователя в «сменить обложку» важнее
-let AIC=LS.get("zal.aic",{});fetch("books/ai_covers.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.m){const m={};for(const k in j.m)if(j.m[k])m[k]=j.m[k];AIC=m;LS.set("zal.aic",m)}}).catch(()=>{});
+let AIC=LS.get("zal.aic",{});fetch("books/ai_covers.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.m){const m={};for(const k in j.m)if(j.m[k])m[k]=j.m[k];const ch=JSON.stringify(m)!==JSON.stringify(AIC);AIC=m;LS.set("zal.aic",m);if(ch)setTimeout(()=>{try{rerenderAll()}catch(e){}},50)}}).catch(()=>{});
 const imgOf=x=>{const c=COV[ikey(x)];if(c==="draw")return "";if(c)return c;if(!x._f&&AIC[ikey(x)])return "img/ai/"+AIC[ikey(x)];const v=x.img||IMG[ikey(x)]||"";return v&&v[0]!=="!"?v:""};
 const imgKnown=k=>{const v=IMG[k];if(!v)return false;if(v[0]!=="!")return true;return Date.now()-(+v.slice(1)||0)<NOIMG_TTL};
 const imgTag=u=>`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer" decoding="async" onload="NORA_IMGOK(this)" onerror="NORA_IMGERR(this)">`;
@@ -4137,8 +4137,13 @@ const IC={x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',u:
 function tasteQ(){const q={tags:{},says:[]};BOOKS.filter(b=>(b.r??IMPLIED[b.id]??0)>=8).forEach(b=>tagsOf(b).forEach(t=>q.tags[t]=(q.tags[t]||0)+1));
   want.forEach(w=>(w.tags||tagsOf(w)).forEach(t=>q.tags[t]=(q.tags[t]||0)+.5));
   q.tags=Object.fromEntries(Object.entries(q.tags).sort((a,b)=>b[1]-a[1]).slice(0,14).map(([t,w])=>[t,Math.min(3,w)]));return q}
-function whyBook(b){const loved=BOOKS.filter(x=>(x.r??0)>=8);let best=null,bc=0;loved.forEach(l=>{const c=tagsOf(l).filter(t=>(b.tags||[]).includes(t)).length;if(c>bc){bc=c;best=l}});
-  return best&&bc>=2?`Похоже на «${best.t}»: ${(b.tags||[]).filter(t=>tagsOf(best).includes(t)).slice(0,2).join(", ")}.`:""}
+// «Похоже на…» только когда сходство настоящее: тот же автор или минимум два особенных общих признака (не «любовь», не «атмосферное») в том же жанре
+const WHY_GENERIC=new Set(["любовь","романтичное","атмосферное","грустное","женская судьба","большой город","взросление","психологический роман","интеллектуальное","философский роман","приключения","светлое","тёплое","мрачное","динамичное","напряжённое","смешное","медленное","история","семья","дружба","социальный роман","классика","магия","мистика","жутковатое","уют"]);
+function whyBook(b){const loved=BOOKS.filter(x=>(x.r??0)>=8);if(!loved.length)return "";
+  const au=b.a&&loved.find(l=>l.a&&norm(l.a)===norm(b.a));if(au)return `Ещё от автора «${au.t}», которую ты любишь.`;
+  let best=null,bc=0,sh=[];loved.forEach(l=>{if(l.g&&b.g&&l.g!==b.g)return;const s2=tagsOf(l).filter(t=>!WHY_GENERIC.has(t)&&(b.tags||[]).includes(t));if(s2.length>bc){bc=s2.length;best=l;sh=s2}});
+  if(!best||bc<2)return "";const lab=t=>{if(!t.startsWith("троп:"))return t;try{return (B_TROPE.find(x=>"троп:"+x[0]===t)||[0,t])[1].toLowerCase()}catch(e){return t.slice(5)}};
+  return `Похоже на «${best.t}»: ${sh.slice(0,2).map(lab).join(", ")}.`}
 // лента учится, как в соцсетях: на чём задерживаются, что добавляют, пропускают, открывают и пересылают
 const TASTE=Object.assign({t:{},g:{},a:{}},LS.get("zal.taste",{}));let tasteT=0;const tasteSave=()=>{clearTimeout(tasteT);tasteT=setTimeout(()=>LS.set("zal.taste",TASTE),800)};
 window.noteLearn2=(n,r)=>{if(!n||n.length<3)return;const q=parse(n),w=r==null?.5:r>=8?1:r<=4?-1:.3;
@@ -4158,9 +4163,9 @@ const SHR='<svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M6 
 function filmFeed(){if(!FILMS)return [];const res=filmList();let i=0;
   feedMore=()=>{const chunk=res.slice(i,i+25);i+=25;return chunk.map(f=>fItem(f,"feed"))};return feedMore()}
 function slideHTML(x,j){const meta=x.a||"";
-  return `<article class="slide" data-j="${j}"><div class="wrap"><div class="fly gl"><div class="bg"></div><button class="shr press" data-shareb="${j}" aria-label="Переслать">${SHR}</button><div class="lean r"><i>${IC.v}</i><b>Добавить</b></div><div class="lean l"><i>${IC.x}</i><b>Не предлагать</b></div><div class="obj">${cv(x,220)}</div><div class="info"><h2>${esc(x.t)}</h2><div class="meta">${esc(meta)}</div>${x.why?`<div class="why">Шуршуня: ${esc(x.why[0].toLowerCase()+x.why.slice(1))}</div>`:""}<p class="ds">${esc(wholeSent(descOf(x),170))}</p>
+  return `<article class="slide" data-j="${j}"><div class="wrap"><div class="fly gl"><div class="bg"></div><button class="shr press" data-shareb="${j}" aria-label="Переслать">${SHR}</button><div class="lean r"><i>${IC.v}</i><b>Добавить</b></div><div class="lean l"><i>${IC.x}</i><b>Не предлагать</b></div><div class="obj">${cv(x,220)}</div><div class="info"><h2>${esc(x.t)}</h2><div class="meta">${esc(meta)}</div>${x.why?`<div class="why">Шуршуня: ${esc(x.why[0].toLowerCase()+x.why.slice(1))}</div>`:""}<p class="ds">${esc(wholeSent(descOf(x),260))}</p>
   <div class="acts3"><button class="rb gl press" data-skip="${j}" aria-label="Не предлагать">${IC.x}</button><button class="rb sm gl press" data-undo aria-label="Отменить действие">${IC.u}</button><button class="rb w press" data-want="${j}" aria-label="Добавить">${IC.v}</button></div></div></div></div></article>`}
-function slideDesc(el,x){const upd=()=>{const p=el.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(x),170)};upd();wantDesc(x,upd);const nx=el.nextElementSibling;if(nx&&nx.dataset.j!=null){const y=slides[+nx.dataset.j];if(y)wantDesc(y,()=>{const p=nx.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(y),170)})}}
+function slideDesc(el,x){const upd=()=>{const p=el.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(x),260)};upd();wantDesc(x,upd);const nx=el.nextElementSibling;if(nx&&nx.dataset.j!=null){const y=slides[+nx.dataset.j];if(y)wantDesc(y,()=>{const p=nx.querySelector(".info p.ds");if(p)p.textContent=wholeSent(descOf(y),260)})}}
 function bgFill(sl,x){const u=imgOf(x),bg=sl.querySelector(".bg");if(u&&bg&&!bg.firstChild)bg.innerHTML=`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer">`}
 function endInner(){return `<h2>Пока всё</h2><p>Шуршуня подберёт новое, как только ты что-нибудь отметишь. А пока можно поискать через лупу.</p><div class="acts"><button class="btn w" data-find>Найти через поиск</button></div>`}
 function drawDots(){return;const n=$("#feed").children.length;$("#dots").innerHTML=Array.from({length:Math.min(n,30)},(_,k)=>`<i class="${k===Math.max(0,cur)?"on":""}"></i>`).join("")}
