@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
-      - run: pip install playwright pillow opencv-python-headless && python -m playwright install --with-deps chromium
+      - run: pip install playwright pillow "numpy<2.3" "opencv-python-headless==4.10.0.84" && python -c "import cv2;print(cv2.__version__, cv2.CascadeClassifier)" && python -m playwright install --with-deps chromium
       - run: (python -m http.server 8766 >/dev/null 2>&1 &) && sleep 2 && AI_MINUTES=300 AI_LIMIT=${{ github.event.inputs.limit || 0 }} python tools/ai_covers.py
       - name: Страницы сайта с новыми обложками
         if: always()

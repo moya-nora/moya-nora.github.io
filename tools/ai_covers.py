@@ -98,7 +98,17 @@ def scene(b, desc, pal):
          "Pick a place, an object, weather or a symbol that is specific to THIS story, so the cover could not belong to any other book. "
          f"Use these colors: {pal}. People may appear only as tiny distant figures or seen from behind, never faces. "
          "Describe only what is seen. No text, no title, no quotes.")
-    t = get("https://text.pollinations.ai/" + urllib.parse.quote(q) + "?model=openai", raw=True, timeout=90)
+    t = None
+    for k in range(3):  # длинное задание — POST, в адресе оно не помещается
+        try:
+            body = json.dumps({"model": "openai", "messages": [{"role": "user", "content": q}]}).encode()
+            req = urllib.request.Request("https://text.pollinations.ai/", data=body, headers={**UA, "Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=90) as r:
+                t = r.read()
+            break
+        except Exception as e:  # noqa: BLE001
+            print("  ! текст:", e, flush=True)
+            time.sleep(20 * (k + 1))
     t = (t or b"").decode("utf-8", "ignore").strip().replace("\n", " ")
     return t[:420] if 20 < len(t) < 650 else f"a symbolic scene from the book {b['t']}"
 
@@ -111,8 +121,9 @@ def has_face(path):
     global FACE
     try:
         import cv2
-    except ImportError:
-        return False
+        cv2.CascadeClassifier
+    except (ImportError, AttributeError) as e:
+        raise SystemExit(f"нет проверки лиц (opencv): {e}")
     if FACE is None:
         FACE = [cv2.CascadeClassifier(cv2.data.haarcascades + f) for f in ("haarcascade_frontalface_default.xml", "haarcascade_profileface.xml")]
     im = cv2.imread(path)
