@@ -1618,6 +1618,10 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 #app .bkc-facts b{color:var(--ink);font-weight:600}
 #app .bkc-facts button{font:inherit;color:var(--ink2);background:rgba(143,211,168,.14)}
 #app .bkc-ds{flex:1 1 0;min-height:44px;margin:14px 0 0;max-width:46ch;text-align:center;font-size:15px;line-height:1.5;color:rgba(255,255,255,.88);display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+#app .bkc-sec{display:flex;align-items:center;gap:6px;margin-top:auto;padding:7px 13px;border-radius:17px;color:var(--ink2);font-size:13px;white-space:nowrap;max-width:100%;background:none;border:1px solid rgba(255,255,255,.1)}#app .bkc-sec svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;flex:none}#app .bkc-sec small{font-size:12px;color:var(--ink3)}#app .bkc-sec.on{color:#F3D19A;border-color:rgba(243,209,154,.35);background:rgba(243,209,154,.08)}#app .bkc-sec+.bkc-acts{margin-top:0;padding-top:12px}
+#app .rm-sec{display:flex;align-items:center;gap:10px;margin-top:22px;padding:10px 16px;border-radius:16px;text-align:left;color:var(--ink2);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}#app .rm-sec[hidden]{display:none}#app .rm-sec svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;flex:none}#app .rm-sec b{display:block;margin:0!important;font-family:var(--f)!important;font-size:14.5px!important;font-weight:600;line-height:1.2!important}#app .rm-sec small{display:block;font-size:12px;color:var(--ink3);margin-top:2px}#app .rm-sec.on{color:#F3D19A;border-color:rgba(243,209,154,.35);background:rgba(243,209,154,.08)}
+#app .grid small .lk svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2.2;vertical-align:-1px;margin-right:3px}
+#app .bkc-acts .btn:disabled{opacity:.5}
 #app .bkc-acts{display:flex;gap:10px;width:100%;max-width:420px;margin-top:auto;padding-top:16px}
 #app .bkc-acts .btn{flex:1;min-width:0;padding-left:6px;padding-right:6px;font-size:14.5px;white-space:nowrap}
 #app .bkc-acts .btn[data-bkc=want]{flex:1.35;font-size:14px;letter-spacing:-.01em}
@@ -1888,7 +1892,7 @@ setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!doc
   <button class="btn w" id="introGo">Начать</button></div>
 <div class="onb" id="onb"><div class="onb-top"><div class="stp" id="onbStep" hidden></div><h1 id="onbH">Выбери хотя бы две прочитанные книги</h1><p id="onbP">Нажми на книгу и поставь оценку.</p></div>
   <div class="onb-grid" id="onbGrid"></div><div class="onb-bar"><button class="btn w" id="onbNext" disabled>Выбери хотя бы две</button><button class="onb-skip" id="onbSkip" hidden>пропустить</button></div></div>
-<div class="rm" id="rm"><div class="rm-in"><div id="rmCv"></div><b id="rmT"></b><span id="rmA"></span><p>Как тебе?</p><div class="rm-st" id="rmSt"></div><button class="rm-x" id="rmX" hidden></button></div></div>
+<div class="rm" id="rm"><div class="rm-in"><div id="rmCv"></div><b id="rmT"></b><span id="rmA"></span><p>Как тебе?</p><div class="rm-st" id="rmSt"></div><button class="rm-x" id="rmX" hidden></button><button class="rm-sec" id="rmSec" hidden></button></div></div>
 <div class="coach" id="coach" role="dialog" aria-label="Подсказка">
   <div class="cz l"><div class="trail"><i></i></div><div class="ic gl"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></div><b>Не предлагать</b><small>смахни влево</small></div>
   <div class="cz r"><div class="trail"><i></i></div><div class="ic"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><b>Добавить</b><small>смахни вправо</small></div>
@@ -3451,6 +3455,9 @@ function parse(text){
   return q;
 }
 let dismissed=new Set(LS.get("zal.skip",[]));
+// секретный список: эти книги видите только вы — друзьям не показываем ни на полках, ни в новостях
+let SEC=new Set(LS.get("zal.secret",[]));const isSec=x=>!!x&&SEC.has(norm(x.t));const setSec=(x,on)=>{const n=norm(x.t);if(on)SEC.add(n);else SEC.delete(n);LS.set("zal.secret",[...SEC])};
+const ICLOCK='<svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg>';
 let _wa=null,_wl=-1,_wn=new Set();
 const wantNorms=()=>{if(_wa!==want||_wl!==want.length){_wa=want;_wl=want.length;_wn=new Set(want.map(w=>norm(w.t)))}return _wn};
 function score(b,q){
@@ -4333,7 +4340,7 @@ function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((f
 function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
   $("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read]]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
-  const G=gridList();$("#grid").innerHTML=G.map((x,i)=>`<button data-g="${i}">${cv(x,110)}<small>${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
+  const G=gridList();$("#grid").innerHTML=G.map((x,i)=>`<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
   if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
 // «Новое от твоих авторов»: свежие книги (этот и прошлый год) авторов, которых человек оценил на 4–5, и ещё не на полках
 function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a).map(b=>norm(b.a)));if(!fav.size)return [];
@@ -4428,12 +4435,15 @@ $("#vshBody").addEventListener("click",e=>{const t=e.target;if(!cardX||$("#fres"
 // ---------- оценка: экран со звёздами ----------
 const STAR='<svg viewBox="0 0 24 24"><path d="M12 3.2l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7z"/></svg>';
 let rmCb=null;
-function rmAsk(x,curR,onPick,noLabel,onNo){rmCb={onPick,onNo};$("#rmCv").innerHTML=cv(x,120);$("#rmT").textContent=x.t;$("#rmA").textContent=[x.a,x.s?"сериал":""].filter(Boolean).join(" · ");$("#rmX").textContent=noLabel||"";$("#rmX").hidden=!noLabel;
+let RMSEC=false,RMPRE=null;
+function rmSecDraw(){const b=$("#rmSec");b.classList.toggle("on",RMSEC);b.innerHTML=`${ICLOCK}<span><b>${RMSEC?"В секретном списке":"Добавить в секретный список"}</b><small>Его видите только вы</small></span>`}
+function rmAsk(x,curR,onPick,noLabel,onNo){rmCb={onPick,onNo,x};{const ok=!x._f&&!VIEW&&!$("#onb").classList.contains("on");$("#rmSec").hidden=!ok;rmCb.sec=ok;RMSEC=RMPRE!=null?RMPRE:isSec(x);RMPRE=null;if(ok)rmSecDraw()}$("#rmCv").innerHTML=cv(x,120);$("#rmT").textContent=x.t;$("#rmA").textContent=[x.a,x.s?"сериал":""].filter(Boolean).join(" · ");$("#rmX").textContent=noLabel||"";$("#rmX").hidden=!noLabel;
   $("#rmSt").innerHTML=[1,2,3,4,5].map(n=>`<button data-st="${n}" class="${curR>=n?"on":""}" aria-label="${n} из 5">${STAR}</button>`).join("");$("#rm").classList.add("on");tgHaptic("soft")}
 function rmClose(){$("#rm").classList.remove("on");rmCb=null}
 $("#rmSt").addEventListener("click",e=>{const b=e.target.closest("[data-st]");if(!b||!rmCb)return;const n=+b.dataset.st,cb=rmCb;
-  $("#rmSt").querySelectorAll("button").forEach(x=>x.classList.toggle("on",+x.dataset.st<=n));b.classList.add("pop");tgHaptic("medium");cb.onPick(n);setTimeout(rmClose,380)});
-$("#rmX").onclick=()=>{const cb=rmCb;rmClose();cb&&cb.onNo&&cb.onNo()};
+  $("#rmSt").querySelectorAll("button").forEach(x=>x.classList.toggle("on",+x.dataset.st<=n));b.classList.add("pop");tgHaptic("medium");if(cb.sec)setSec(cb.x,RMSEC);cb.onPick(n);setTimeout(rmClose,380)});
+$("#rmSec").onclick=()=>{RMSEC=!RMSEC;rmSecDraw();tgHaptic()};
+$("#rmX").onclick=()=>{const cb=rmCb;rmClose();if(cb&&cb.sec)setSec(cb.x,RMSEC);cb&&cb.onNo&&cb.onNo()};
 $("#rm").addEventListener("click",e=>{if(e.target.id==="rm")rmClose()});
 
 // ---------- поиск ----------
@@ -5092,7 +5102,7 @@ const hueOf=s=>hsh(String(s))%360;
 const tgMe=()=>{try{return TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user||null}catch(e){return null}};
 const avaPh=uid=>{const me=NS.uid&&NS.uid();if(uid&&uid===me){const u=tgMe();return u&&u.photo_url||""}const p=typeof FRP!=="undefined"&&FRP[uid];return p&&typeof p.ph==="string"&&/^https:\/\//.test(p.ph)?p.ph:""};
 const avatar=(n,uid,cls="")=>{const ph=avaPh(uid);return `<i class="ava ${cls}" style="--h:${hueOf(uid)}">${esc((n||"?").trim().charAt(0).toUpperCase())}${ph?`<img src="${esc(ph)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">`:""}</i>`};
-function snapNow(){return {read:BOOKS.map(b=>({t:b.t,a:b.a||"",r:b.r??null,rd:b.rd||"",ds:(b.ann||"").slice(0,300),...(b.pub&&b.n?{rv:String(b.n).slice(0,600)}:{})})),want:want.map(w=>({t:w.t,a:w.a||""})),now:nowBook&&nowBook.t?{t:nowBook.t,a:nowBook.a||""}:null}}
+function snapNow(){return {read:BOOKS.filter(b=>!SEC.has(norm(b.t))).map(b=>({t:b.t,a:b.a||"",r:b.r??null,rd:b.rd||"",ds:(b.ann||"").slice(0,300),...(b.pub&&b.n?{rv:String(b.n).slice(0,600)}:{})})),want:want.filter(w=>!SEC.has(norm(w.t))).map(w=>({t:w.t,a:w.a||""})),now:nowBook&&nowBook.t&&!SEC.has(norm(nowBook.t))?{t:nowBook.t,a:nowBook.a||""}:null}}
 function pubCheck(){if(!NS.on||VIEW||!(NS.hasTok&&NS.hasTok()))return;try{notifySync()}catch(e){}
   {const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user,hs=[NS.email,u&&u.username?"@"+u.username:""].filter(Boolean),sig=hs.join("|")+"|"+NS.uid();if(hs.length&&NS.lookupPut&&localStorage.getItem("zal.sync.lk")!==sig)NS.lookupPut(hs).then(()=>localStorage.setItem("zal.sync.lk",sig)).catch(()=>{})}const cur=snapNow(),name=myName();{const u=tgMe();if(u&&u.photo_url)cur.ph=u.photo_url;if(u&&u.username)cur.tg=u.username}const sig=JSON.stringify([name,cur]);const prev=LS.get("zal.sync.pub",null);
   if(prev&&prev.sig===sig)return;const ev=prev?prev.ev||[]:[],now=Date.now(),add=[];
@@ -5100,7 +5110,7 @@ function pubCheck(){if(!NS.on||VIEW||!(NS.hasTok&&NS.hasTok()))return;try{notify
     cur.read.forEach(b=>{const o=pr.get(norm(b.t));if(!o)add.push({k:"read",t:b.t,a:b.a,r:b.r,ts:now});else if(b.r!=null&&o.r!==b.r)add.push({k:"rate",t:b.t,a:b.a,r:b.r,ts:now})});
     cur.want.forEach(w=>{if(!pw.has(norm(w.t)))add.push({k:"want",t:w.t,a:w.a,ts:now})});
     if(cur.now&&(!prev.snap.now||norm(prev.snap.now.t)!==norm(cur.now.t)))add.push({k:"now",t:cur.now.t,a:cur.now.a,ts:now})}
-  const evs=[...add,...ev].slice(0,40);
+  const evs=[...add,...ev].filter(e=>!SEC.has(norm(e.t||""))).slice(0,40);
   NS.putProfile(name,{...cur,ev:evs}).then(ok=>{if(ok)localStorage.setItem("zal.sync.pub",JSON.stringify({sig,snap:cur,ev:evs}))}).catch(()=>{})}
 setInterval(pubCheck,20000);document.addEventListener("visibilitychange",()=>{if(document.hidden)pubCheck()});setTimeout(pubCheck,6000);
 async function frLoad(){if(!NS.on)return;await Promise.all(FRIENDS.map(f=>NS.getProfile(f.uid).then(p=>{if(p){FRP[f.uid]=p;if(p.n&&p.n!==f.n){f.n=p.n;frSave()}}}).catch(()=>{})));frDotUpd();if(SCREEN==="fr")drawFr()}
@@ -5154,7 +5164,7 @@ function frShelf(uid,tab){const f=FRIENDS.find(x=>x.uid===uid),p=FRP[uid];if(!f)
    <div class="frg">${L.map((b,i)=>`<button data-frb="${i}">${cv(fbItem(b),100)}<small>${esc(b.t)}</small>${b.r!=null?`<em>★ ${r5(b.r)}</em>`:""}</button>`).join("")||`<p class="sy-note">Пусто.</p>`}</div>
 `,true);
   const sh=$("#vshBody");sh._fr={uid,tab}}
-function frBook(uid,b){const f=FRIENDS.find(x=>x.uid===uid)||{},x=fbItem(b);x.frR={n:f.n,r:b.r};bkcOpen(x,"friend");return;const has=BK.has(x);cardX=x;cardL="friend";
+function frBook(uid,b){const f=FRIENDS.find(x=>x.uid===uid)||{},x=fbItem(b);x.frR={n:f.n,r:b.r,uid};bkcOpen(x,"friend");return;const has=BK.has(x);cardX=x;cardL="friend";
   vOpen(`<div class="dt">${cv(x,150)}<h2>${esc(x.t)}</h2><div class="meta">${esc(x.a||"")}</div>${b.r!=null?`<p class="dd q">У ${esc(f.n||"друга")}: ★ ${r5(b.r)}</p>`:""}<p class="dd" id="cardDesc">${esc(descOf(x))}</p>
    <div class="one">${has?`<button class="btn" disabled>${has==="read"?"Уже прочитано":"Уже в «Хочу прочитать»"}</button>`:`<button class="btn w" data-fr-want>Хочу прочитать</button>`}</div></div>`);
   wantDesc(x,()=>{const d=$("#cardDesc");if(d&&cardX===x)d.textContent=descOf(x)})}
@@ -5348,7 +5358,15 @@ function bkcFacts(x){const m=META[ikey(x)],fr=frReaders(x),out=[];
   if(fr.length){const rv=fr.filter(z=>z.b.rv).length;out.push(`<button data-bkc-fr>Читали друзья: <b>${fr.length}</b>${rv?` · ${rv} ${plural(rv,"отзыв","отзыва","отзывов")}`:""} ›</button>`)}
   if(x.frR&&x.frR.r!=null)out.push(`<span>У ${esc(x.frR.n||"друга")}: <b>★ ${r5(x.frR.r)}</b></span>`);
   return out.join("")}
+// «Спросить, как тебе»: открываем чат с другом в Telegram с готовым сообщением; если ника нет — копируем текст
+function frAsk(x){const uid=x.frR&&x.frR.uid,p=uid&&FRP[uid]||{},tg=p.tg,fb=(p.read||[]).find(y=>norm(y.t)===norm(x.t));
+  const msg=fb?`Привет! Вижу у тебя в Норе «${x.t}» - как тебе?`:`Привет! Вижу, ты хочешь прочитать «${x.t}». Уже начинал(а)?`;
+  if(tg){const u="https://t.me/"+encodeURIComponent(tg)+"?text="+encodeURIComponent(msg);try{if(TG&&TG.openTelegramLink){TG.openTelegramLink(u);return}}catch(e){}open(u,"_blank");return}
+  copyText(msg,"Текст скопирован - отправь его "+(x.frR&&x.frR.n?x.frR.n:"другу")+" в Telegram")}
+function bkcSec(x,L){if(x._f||L==="friend")return "";const st=BK.has(x),on=st?isSec(x):!!(BKC&&BKC.sec);
+  return `<button class="bkc-sec${on?" on":""}" data-bkc="sec">${ICLOCK}<span>${on?(st?"Секретная книга":"Пойдёт в секретный список"):"В секретный список"}</span><small>· видите только вы</small></button>`}
 function bkcActs(x,L){const st=BK.has(x);
+  if(L==="friend"){const tw=st==="read"?`<button class="btn" disabled>Уже прочитано</button>`:st?`<button class="btn" disabled>Уже в избранном</button>`:`<button class="btn w" data-bkc="want">Тоже хочу</button>`;return tw+`<button class="btn" data-bkc="ask">Спросить, как тебе</button>`}
   if(L==="top"||L==="want"||st==="want"||x.now)return `<button class="btn w" data-bkc="read">Прочитано</button>${x.now?"":`<button class="btn" data-bkc="rm">Убрать из избранного</button>`}`;
   if(L==="read"||st==="read")return `<button class="btn" data-bkc="unread">Убрать из «Прочитано»</button>`;
   return `<button class="btn" data-bkc="read">Прочитано</button><button class="btn w" data-bkc="want">Добавить в избранное</button>`}
@@ -5373,7 +5391,7 @@ function bkcDraw(){const {x,L}=BKC;
    <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>${bkcTropes(x)}
    <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
-   <div class="bkc-acts">${bkcActs(x,L)}</div>
+   ${bkcSec(x,L)}<div class="bkc-acts">${bkcActs(x,L)}</div>
    <button class="bkc-where" data-bkc="where">${IC2.pin}Где прочитать?</button></div>`}
 function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};cardX=x;cardL=L;ambFor(x);bkcDraw();
   // обложка уже в кэше браузера — ждём её расшифровки (до 250 мс), чтобы не мелькала рисованная
@@ -5425,11 +5443,13 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="more"){const w=b.parentNode,d=$("#bkcDs");w.classList.add("open");d.style.webkitLineClamp="";d.style.maxHeight="";b.hidden=true;return}
   if(a==="cov"){const sw=bkcEl.querySelector(".bkc-covsw");sw.hidden=!sw.hidden;b.classList.toggle("on",!sw.hidden);return}
   if(a==="where"){whereOpen(x,"");return}
-  if(a==="want"){BK.addWant(x);vDirty=true;toast("Добавлено в избранное");bkcClose();return}
+  if(a==="sec"){const st=BK.has(x);if(st){const on=!isSec(x);setSec(x,on);vDirty=true;toast(on?"Теперь эту книгу видите только вы":"Книгу снова видят друзья")}else BKC.sec=!BKC.sec;const el=bkcEl.querySelector(".bkc-sec");if(el)el.outerHTML=bkcSec(x,L);return}
+  if(a==="ask"){frAsk(x);return}
+  if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");bkcClose();return}
   if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
   if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
     const r=L==="read"?x:BK.read().find(y=>norm(y.t)===norm(x.t));if(r)BK.rmRead(r);vDirty=true;toast("Убрано с полки «Прочитано»");bkcClose();return}
-  if(a==="read"){bkcClose();rmAsk(x,null,n=>{BK.markRead(x,n*2);refresh()},"Без оценки",()=>{BK.markRead(x,null);refresh()})}});
+  if(a==="read"){const pre=BKC.sec?true:null;bkcClose();RMPRE=pre;rmAsk(x,null,n=>{BK.markRead(x,n*2);refresh()},"Без оценки",()=>{BK.markRead(x,null);refresh()})}});
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody"))return;
   const w=t.closest("[data-wh]");if(w){e.stopPropagation&&e.stopPropagation();whereOpen($("#vshBody")._wx,w.dataset.wh);tgHaptic();return}
   const u=t.closest("[data-whu]");if(u){openLink(u.dataset.whu);return}});
