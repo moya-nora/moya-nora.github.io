@@ -923,6 +923,8 @@ body.viewing #app .shelf-h{display:none}
 #app .sh.gl:not(.L *){position:absolute;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));max-height:88dvh;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;border-radius:36px;padding:8px 18px 20px;transform:translateY(115%);transition:transform .55s cubic-bezier(.2,1,.3,1);background:linear-gradient(180deg,rgba(38,38,50,.78),rgba(16,16,24,.84));backdrop-filter:blur(40px) saturate(1.8);-webkit-backdrop-filter:blur(40px) saturate(1.8)}
 #app .sheet.tall .sh.gl:not(.L *){top:calc(60px + env(safe-area-inset-top,0px))}
 #app .sheet.on .sh.gl:not(.L *){transform:none}
+#app .sheet:not(.on) .sh.gl:not(.L *){transform:translateY(calc(100% + 40px + env(safe-area-inset-bottom,0px)));visibility:hidden;transition:transform .45s cubic-bezier(.2,1,.3,1),visibility 0s .45s}
+#app .sheet.on .sh.gl:not(.L *){visibility:visible;transition:transform .55s cubic-bezier(.2,1,.3,1)}
 #app .grab:not(.L *){width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);margin:4px auto 12px}
 #app .dt:not(.L *){text-align:center}
 #app .dt .cv:not(.L *){width:150px;margin:6px auto 0;border-radius:10px;box-shadow:0 30px 50px -20px rgba(0,0,0,.8)}
@@ -4529,7 +4531,7 @@ function sxCoach(){const el=$("#sxFeat");if(!el||$("#sxSpot"))return;LS.set("zal
 function openSearch(keep){if(VIEW)return;if(!keep)SX.picks=false;const q0=keep?SX.q:"";SX.k=REALM;SX.q=q0;SX.mode="q";if(!keep)SX.showRead=false;SX.fn=keep?SX.fn:40;cardX=null;tgHaptic();$("#vsheet").classList.remove("filters");
   vOpen(`<div class="sx-top"><button class="sx-back" data-vclose aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div class="sbar gl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="fq" type="text" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false"><button class="sx-clear" hidden aria-label="Очистить"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
    <div class="sx-tabs" hidden><button data-sk="books">Книги</button></div><div class="sxf" id="sxf">${sxFbar()}</div><div id="fres"></div>`,true);$("#vsheet").classList.add("search");
-  const upd=()=>{document.querySelectorAll("[data-sk]").forEach(b=>b.classList.toggle("on",b.dataset.sk===SX.k));$("#fq").placeholder=SX.k==="films"?"Фильм или сериал":"Название, автор или «про что»";{const ph=$("[data-photo]");if(ph)ph.hidden=SX.k==="films"}};upd();
+  const upd=()=>{document.querySelectorAll("[data-sk]").forEach(b=>b.classList.toggle("on",b.dataset.sk===SX.k));$("#fq").placeholder=SX.k==="films"?"Фильм или сериал":"Книга, автор или просьба";{const ph=$("[data-photo]");if(ph)ph.hidden=SX.k==="films"}};upd();
   $("#fq").addEventListener("input",sxRun);$("#fq").addEventListener("keydown",e=>{if(e.key==="Enter"){recentAdd($("#fq").value);$("#fq").blur()}});
   $(".sx-clear").onclick=()=>{$("#fq").value="";sxRun();$("#fq").focus()};
   document.querySelector(".sx-tabs").onclick=e=>{const b=e.target.closest("[data-sk]");if(!b||b.dataset.sk===SX.k)return;SX.k=b.dataset.sk;upd();sxRun();tgHaptic()};
