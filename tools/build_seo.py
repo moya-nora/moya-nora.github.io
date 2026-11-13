@@ -36,6 +36,7 @@ books = []
 for b in CAT:
     books.append({"t": b["t"], "a": b.get("a", ""), "y": b.get("y"), "g": b.get("g", "modern"), "c": b.get("c", ""), "tags": b.get("tags", []),
                   "q": b.get("q", 1) + 1, "ann": b.get("ann", ""), "acc": b.get("acclaim", []), "cat": True,
+                  "pg": {"short": 220, "mid": 380, "long": 650}.get(b.get("len"), 0),
                   "when": b.get("when", ""), "f": b.get("f", [])})
 
 
@@ -60,7 +61,7 @@ for name in ("books.json", "new.json", "litres.json"):
         if e and len(e) > 2:
             tags += [tagsx["tg"][j] for j in e[2] if j < len(tagsx["tg"])]
         books.append({"t": t, "a": a[0], "y": y or None, "g": d["g"][gi], "c": d["c"][ci] if ci >= 0 else (d["c"][a[1]] if a[1] >= 0 else ""),
-                      "tags": tags, "q": q, "ann": an or "", "acc": [d["aw"][j] for j in aw] if name == "books.json" else [], "cat": False, "sl": sl, "img": im or ""})
+                      "tags": tags, "q": q, "ann": an or "", "acc": [d["aw"][j] for j in aw] if name == "books.json" else [], "cat": False, "sl": sl, "img": im or "", "pg": pg or 0})
 TM = re.search(r'const TROPE_M=\(\(\)=>\{const m=\{\};"([^"]+)"', app)
 TROPES = {}
 for r in (TM.group(1).split(";") if TM else []):
@@ -97,6 +98,8 @@ COLL = [  # (адрес, заголовок, вступление, отбор)
      lambda b: has(b, "young adult") or (has(b, "взросление") and y(b) >= 1995)),
     ("zahvatyvayuschie", "Захватывающие книги, от которых не оторваться", "Книги, которые читатели проглатывают за пару вечеров.",
      lambda b: has(b, "напряжённое", "динамичное", "триллер", "приключения") or b["g"] == "detective"),
+    ("na-odin-vecher", "Книги на один вечер", "Короткие книги, которые проглатываешь за вечер.",
+     lambda b: not notnovel(b) and b["g"] != "kids" and 0 < (b.get("pg") or 0) <= 260 and not has(b, "мрачное", "война")),
     ("smeshnye", "Смешные книги", "Книги, над которыми смеёшься вслух.", lambda b: has(b, "смешное", "юмор", "сатира")),
     ("uyutnye", "Уютные книги для вечера", "Тёплые и светлые книги — для пледа и чая.",
      lambda b: (has(b, "уют", "тёплое") or (has(b, "светлое", "сказка") and not has(b, "исторический роман", "приключения", "динамичное")))
@@ -139,7 +142,12 @@ try:
 except FileNotFoundError:
     COVERS = {}
 nk = lambda s: re.sub(r"[^0-9a-zа-я]+", "", str(s or "").lower().replace("ё", "е"))
-img_of = lambda b: COVERS.get(nk(b["t"]) + "|" + nk(str(b["a"] or "").split(" ")[-1]), "") or b.get("img", "")
+try:
+    AIC = {k: v for k, v in json.load(open(os.path.join(ROOT, "books", "ai_covers.json"), encoding="utf-8"))["m"].items() if v}
+except (FileNotFoundError, KeyError):
+    AIC = {}
+img_of = lambda b: (("/img/ai/" + AIC[nk(b["t"]) + "|" + nk(b["a"] or "")]) if nk(b["t"]) + "|" + nk(b["a"] or "") in AIC else "") \
+    or COVERS.get(nk(b["t"]) + "|" + nk(str(b["a"] or "").split(" ")[-1]), "") or b.get("img", "")
 
 
 def hsh(t):
@@ -200,9 +208,7 @@ APP = "/app.html?app=1"
 
 
 def hdr(active=""):
-    return ('<header class="hd"><div class="bar gl"><a class="logo" href="/"><img src="/icons/icon-512.png?v=4" alt="">Нора</a><nav class="nav">'
-            + "".join(f'<a href="{u}"{" class=on" if u == active else ""}>{t}</a>' for u, t in NAV)
-            + f'</nav><a class="btn sm open" id="openNora" href="{APP}">Открыть Нору</a></div></header>')
+    return ""  # шапка не нужна: главное — книги, вход в Нору — во всплывающем окне и внизу страницы
 
 
 MINE = """<script>try{if(localStorage.getItem("zal.onb"))document.querySelectorAll("#openNora").forEach(function(a){a.textContent="Моя Нора"})}catch(e){}</script>"""
@@ -254,19 +260,25 @@ def card(b, n=None, ann=False):
 
 
 def WHERE(b):
-    q = urllib.parse.quote(b["t"] + " " + b["a"].split(" ")[-1])
-    L = [("ЛитРес", f"https://www.litres.ru/search/?q={q}"), ("Яндекс Книги", f"https://books.yandex.ru/search?text={q}"),
-         ("Ozon", f"https://www.ozon.ru/search/?text={q}&category=16500"), ("Wildberries", f"https://www.wildberries.ru/catalog/0/search.aspx?search={q}")]
-    return '<div class="whr"><b>Где прочитать</b><div>' + "".join(f'<a href="{u}" rel="nofollow noopener" target="_blank">{n}</a>' for n, u in L) + "</div></div>"
+    q = urllib.parse.quote(b["t"] + " " + b["a"].split(" ")[-1]); qt = urllib.parse.quote(b["t"])
+    icon = lambda d: f'<img src="/img/where/{d}.png" alt="" width="22" height="22" loading="lazy">'
+    PIN = '<svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg>'
+    ON = [("litres.ru", "ЛитРес", f"https://www.litres.ru/search/?q={q}"), ("books.yandex.ru", "Яндекс Книги", f"https://books.yandex.ru/search?text={q}"),
+          ("ozon.ru", "Ozon", f"https://www.ozon.ru/search/?text={q}&category=16500"), ("wildberries.ru", "Wildberries", f"https://www.wildberries.ru/catalog/0/search.aspx?search={q}")]
+    OFF = [("", "Книжные рядом", "https://yandex.ru/maps/?text=" + urllib.parse.quote("книжный магазин")), ("chitai-gorod.ru", "Читай-город", f"https://www.chitai-gorod.ru/search?phrase={qt}"),
+           ("bookvoed.ru", "Буквоед", f"https://www.bookvoed.ru/search?q={qt}")]
+    a = lambda d, n, u: f'<a href="{u}" rel="nofollow noopener" target="_blank">{icon(d) if d else PIN}{n}</a>'
+    return ('<div class="whr"><b>Где прочитать</b><div>' + "".join(a(*x) for x in ON) + '</div><b class="w2">Купить в магазине</b><div>'
+            + "".join(a(*x) for x in OFF) + "</div></div>")
 
 
-def rail(L):
-    return '<div class="rail">' + "".join(card(b) for b in L) + "</div>"
+def rail(L, bare=False):
+    return '<div class="rail' + (' bare' if bare else '') + '">' + "".join(card(b) for b in L) + "</div>"
 
 
 def shelf(title, href, ds, L, all_txt="Все"):
     return (f'<section class="shelf"><div class="shd"><h2><a href="{href}">{esc(title)}</a></h2><a class="all" href="{href}">{esc(all_txt)} →</a></div>'
-            + (f'<p class="ds">{esc(ds)}</p>' if ds else "") + rail(L) + "</section>")
+            + (f'<p class="ds">{esc(ds)}</p>' if ds else "") + rail(L, bare=True) + "</section>")
 
 
 CTA = (f'<div class="ctas"><a class="btn" href="{BOT}">{ic("tg")}Подобрать в Telegram</a>'
@@ -340,7 +352,7 @@ def coll_card(p, t, L):
 urls.append(page("c/index.html", "Подборки книг", "Подборки книг по жанрам, настроениям и странам — от ромэнтези до классики.",
                  '<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><div class="kick">Что почитать</div><h1>Подборки книг</h1>'
                  '<p class="lead">По жанрам, настроениям и странам — от ромэнтези до классики.</p></div></div><div style="display:none">'
-                 + "</div>" + "".join(shelf(t.split(":")[0], f"/c/{p}.html", lead, sorted(L[:24], key=lambda b: not img_of(b))[:14], f"Все {len(L)}") for p, t, lead, L in coll_data)
+                 + "</div>" + "".join(shelf(t.split(":")[0], f"/c/{p}.html", "", sorted(L[:24], key=lambda b: not img_of(b))[:14], f"Все {len(L)}") for p, t, lead, L in coll_data)
                  + f"{FINAL}</div>", active="/c/"))
 
 pool = {}
@@ -357,12 +369,11 @@ for b in cat_books:
     fl = [f for f in b.get("f", [])[:4] if len(f) > 1]
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="{GEN_URL.get(b["g"], "/c/")}">{esc(GEN.get(b["g"], "Книги"))}</a></div>'
             f'<article class="book">{f"<div class=amb style=background-image:url({esc(u)})></div>" if u else ""}<div class="cvw">{cv(b, lazy=False)}</div><div>'
-            f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p><div class="facts">{"".join(facts)}</div>'
+            f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>'
             + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "")
             + (f'<p class="when">{esc(b["when"])}</p>' if b.get("when") else "")
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
-            + (f'<p class="acc">Признание: {esc(", ".join(b["acc"]))}</p>' if b["acc"] else "")
-            + WHERE(b) + f'<p class="save"><a href="{BOT}?startapp=site">Сохранить в Нору и получить похожие лично тебе →</a></p>' + "</div></article>"
+            + WHERE(b) + f'<p class="save"><a href="{BOT}?startapp=site">Понравилась? Шуршуня подберёт похожие под твой вкус →</a></p>' + "</div></article>"
             + (f'<section class="sec"><div class="kick">Похожие книги</div><h2>Если понравилась эта</h2><p class="sub">Шуршуня подобрала книги того же жанра с похожим настроением.</p>'
                f'{rail(sim)}</section>' if sim else "")
             + "</div>")
@@ -547,18 +558,16 @@ def seed_card(b):
 
 after = [b for g in groups.values() for b in g]
 after = onepa(sorted(after, key=lambda b: (TORD.get(nk(b["t"]) + "|" + b["a"].split(" ")[-1].lower().replace("ё", "е"), 999), not b["cat"], -(b["q"] or 0))))[:16]
-HOME_SHELVES = [p for p in ("chitayut-seychas", "novogodnee-nastroenie" if time.gmtime().tm_mon in (11, 12, 1) else "", "romantezi", "zhanr-modern", "zhanr-detective",
-                             "uyutnye", "zhanr-nonfic", "dark-roman", "zhanr-classic", "young-adult") if p and get(p)]
+HOME_SHELVES = [("novogodnee-nastroenie", "Новогоднее настроение"), ("chitayut-seychas", None), ("zhanr-fantasy", "Популярное фэнтези"), ("na-odin-vecher", None)]
+HOME_SHELVES = [(p, t) for p, t in HOME_SHELVES if get(p)]
 lead_of = lambda p: next(l for q, _, l, _ in coll_data if q == p)
 title_of = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
 home = (f'<div class="wrap"><section class="hero2" id="poisk"><h1>Найди свою <em>следующую</em> книгу</h1>'
         f'<p class="lead">Подборки по настроению, новинки и книги, похожие на любимые.</p>'
         f'<div class="sbox gl">{ic("search")}<input id="q" type="search" placeholder="Название или автор" autocomplete="off" enterkeyhint="search"></div><div class="sres" id="sres"></div>'
         f'{chips("")}</section>'
-        + shelf("Новинки", "/c/novinki.html", "Свежие книги последних двух лет — каталог обновляется каждый месяц.", sorted(get("novinki")[:30], key=lambda b: not img_of(b))[:14], "Все новинки")
-        + "".join(shelf(title_of(p), f"/c/{p}.html", lead_of(p), sorted(get(p)[:28], key=lambda b: not img_of(b))[:14]) for p in HOME_SHELVES)
-        + (f'<section class="shelf"><div class="shd"><h2><a href="/p/">Что почитать после…</a></h2><a class="all" href="/p/">Все →</a></div>'
-           f'<p class="ds">Выбери книгу, которая понравилась, — покажем похожие по настроению и сюжетным ходам.</p><div class="rail">{"".join(seed_card(b) for b in after)}</div></section>' if after else "")
+        + "".join(shelf(t or title_of(p), f"/c/{p}.html", "", sorted(get(p)[:28], key=lambda b: not img_of(b))[:14]) for p, t in HOME_SHELVES)
+        + '<a class="morec" href="/c/">Посмотреть все подборки →</a>'
         + f'{FINAL}</div>' + SEARCH_JS)
 home_path = page("index.html", "Нора — что почитать", "Что почитать: подборки книг по настроению, новинки, книги, похожие на любимые, — ромэнтези, дарк роман, любовные романы, фэнтези, детективы. "
                  "А Шуршуня подберёт книги лично тебе.", home,

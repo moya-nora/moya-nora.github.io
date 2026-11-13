@@ -227,3 +227,8 @@ a.bk .cv{transition:transform .25s}a.bk:hover .cv{transform:translateY(-4px)}a.b
 @media (min-width:700px){.pop{align-items:center}}
 .pop[hidden]{display:none!important}
 .bk .t{font-weight:600}
+/* полки без подписей — только обложки */
+.rail.bare .bk .t,.rail.bare .bk .a{display:none}.rail.bare .bk{flex-basis:140px}
+.morec{display:block;margin:40px 0 0;padding:20px 24px;border-radius:24px;background:rgba(255,255,255,.06);font:700 26px/1.1 var(--serif);color:var(--ink)}.morec:hover{color:var(--gold2)}
+.whr b.w2{margin-top:16px}.whr a{display:inline-flex;align-items:center;gap:8px}.whr a img{border-radius:6px}.whr a svg{width:20px;height:20px;fill:none;stroke:var(--ink);stroke-width:1.8}
+body>main{padding-top:10px}
