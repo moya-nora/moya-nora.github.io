@@ -1626,7 +1626,7 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 #app .bkc-acts .btn{flex:1;min-width:0;padding-left:6px;padding-right:6px;font-size:14.5px;white-space:nowrap}
 #app .bkc-acts .btn[data-bkc=want]{flex:1.35;font-size:14px;letter-spacing:-.01em}
 #app .bkc-acts .btn.sure{color:#FF8A80;box-shadow:inset 0 0 0 1px rgba(255,138,128,.5)}
-#app .bkc-where{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;max-width:420px;margin-top:10px;padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.16);font-size:15px;font-weight:600;color:var(--ink)}
+#app .bkc-low{display:flex;gap:10px;width:100%;max-width:420px;margin-top:10px}#app .bkc-low .bkc-where{margin-top:0;flex:1;min-width:0}#app .bkc-where{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;max-width:420px;margin-top:10px;white-space:nowrap;padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.16);font-size:15px;font-weight:600;color:var(--ink)}
 #app .bkc-where svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9}
 @media (max-height:700px){#app .bkc-cv{height:32vh}#app .bkc h2{font-size:26px}}
 /* подпись под каруселью — варианты (body[data-cap]) */
@@ -5361,6 +5361,7 @@ const frReaders=x=>FRIENDS.map(f=>{const p=FRP[f.uid];const b=p&&(p.read||[]).fi
 const bkcEl=document.createElement("div");bkcEl.className="bkc";bkcEl.id="bkc";$("#app").appendChild(bkcEl);
 let BKC=null;
 const IC2={x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',cov:'<svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 3.5v17"/><path d="M15.5 9.5l2-2 2 2M17.5 7.5V13"/></svg>',
+  play:'<svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="3.5"/><path d="M10.5 9.3v5.4l4.6-2.7z"/></svg>',
   pin:'<svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg>'};
 function bkcFacts(x){const m=META[ikey(x)],fr=frReaders(x),out=[];
   if(m===undefined)return `<span class="sk-f"></span><span class="sk-f w"></span>`;   // пока грузится — без прыжков цифр
@@ -5404,7 +5405,7 @@ function bkcDraw(){const {x,L}=BKC;
    <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
    ${bkcSec(x,L)}<div class="bkc-acts">${bkcActs(x,L)}</div>
-   <button class="bkc-where" data-bkc="where">${IC2.pin}Где прочитать?</button></div>`}
+   <div class="bkc-low"><button class="bkc-where" data-bkc="where">${IC2.pin}Где прочитать?</button>${x._f?"":`<button class="bkc-where" data-bkc="vid">${IC2.play}Обзоры</button>`}</div></div>`}
 function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};cardX=x;cardL=L;ambFor(x);bkcDraw();
   // обложка уже в кэше браузера — ждём её расшифровки (до 250 мс), чтобы не мелькала рисованная
   const im=bkcEl.querySelector(".bkc-cv img"),show=()=>{if(BKC&&BKC.x===x){bkcEl.classList.add("on");syncBack()}};
@@ -5420,6 +5421,12 @@ bkcEl.addEventListener("touchmove",e=>{if(y0==null)return;const d=e.touches[0].c
   if(!act){if(d>10&&d>dx*1.4)act=true;else{if(d<-6||dx>12)y0=null;return}}dy=Math.max(0,d-10);bkcEl.style.transition="none";bkcEl.style.transform=`translateY(${dy}px)`;e.preventDefault()},{passive:false});
 const end=()=>{if(y0==null)return;y0=null;if(!act)return;const close=dy>110||(dy>45&&Date.now()-t0<260);bkcEl.style.transition="";bkcEl.style.transform="";if(close){tgHaptic();bkcClose()}};
 bkcEl.addEventListener("touchend",end);bkcEl.addEventListener("touchcancel",end)}
+// «Обзоры»: открываем поиск роликов о книге на YouTube, в VK Видео и TikTok — сами ролики остаются у авторов
+const VIDS=[["YouTube","Обзоры и разборы на буктюбе",q=>"https://www.youtube.com/results?search_query="+q],["VK Видео","Русскоязычные обзоры",q=>"https://vkvideo.ru/?q="+q],["TikTok","Короткие ролики из буктока",q=>"https://www.tiktok.com/search?q="+q]];
+function vidOpen(x){const sur=String(x.a||"").split(" ").slice(-1)[0];
+  vOpen(`<h3 class="vh">Обзоры на «${esc(x.t)}»</h3><p class="sy-note">Откроется поиск роликов о книге</p><div class="wh-l">${VIDS.map(([n,d],i)=>`<button data-vid="${i}"><b>${n}</b><small>${d}</small><i>›</i></button>`).join("")}</div>`);
+  $("#vsheet").classList.add("ontop");$("#vshBody")._vq=encodeURIComponent(`${x.t} ${sur} обзор`)}
+$("#vshBody").addEventListener("click",e=>{const b=e.target.closest("[data-vid]");if(!b)return;e.stopPropagation();const u=VIDS[+b.dataset.vid][2]($("#vshBody")._vq);tgHaptic();try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(x){window.open(u,"_blank")}},true);
 function bkcFit(){const w=$("#bkcDw");if(!w)return;const upd=()=>w.classList.toggle("more",w.scrollTop+w.clientHeight<w.scrollHeight-4);w.onscroll=upd;upd()}
 addEventListener("resize",()=>{if(BKC)bkcFit()});
 function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();if(vDirty){vDirty=false;setTimeout(refresh,300)}}
@@ -5455,6 +5462,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="more"){const w=b.parentNode,d=$("#bkcDs");w.classList.add("open");d.style.webkitLineClamp="";d.style.maxHeight="";b.hidden=true;return}
   if(a==="cov"){const sw=bkcEl.querySelector(".bkc-covsw");sw.hidden=!sw.hidden;b.classList.toggle("on",!sw.hidden);return}
   if(a==="where"){whereOpen(x,"");return}
+  if(a==="vid"){vidOpen(x);return}
   if(a==="sec"){const st=BK.has(x);if(st){const on=!isSec(x);setSec(x,on);vDirty=true;toast(on?"Теперь эту книгу видите только вы":"Книгу снова видят друзья")}else BKC.sec=!BKC.sec;const el=bkcEl.querySelector(".bkc-sec");if(el)el.outerHTML=bkcSec(x,L);return}
   if(a==="ask"){frAsk(x);return}
   if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");bkcClose();return}
