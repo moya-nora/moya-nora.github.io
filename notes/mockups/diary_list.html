@@ -1,0 +1,83 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Corm;font-weight:600;src:url(/fonts/cormorant-garamond-cyrillic-600-normal.woff2)}
+@font-face{font-family:Corm;font-weight:700;src:url(/fonts/cormorant-garamond-cyrillic-700-normal.woff2)}
+@font-face{font-family:Lit;font-weight:300 700;src:url(/fonts/literata-cyrillic-wght-normal.woff2)}
+@font-face{font-family:Lit;font-style:italic;font-weight:300 700;src:url(/fonts/literata-cyrillic-wght-italic.woff2)}
+@font-face{font-family:Man;font-weight:400;src:url(/fonts/manrope-cyrillic-400-normal.woff2)}
+@font-face{font-family:Man;font-weight:500;src:url(/fonts/manrope-cyrillic-500-normal.woff2)}
+@font-face{font-family:Man;font-weight:600;src:url(/fonts/manrope-cyrillic-600-normal.woff2)}
+@font-face{font-family:Man;font-weight:700;src:url(/fonts/manrope-cyrillic-700-normal.woff2)}
+*{box-sizing:border-box}body{margin:0;padding:48px 20px 24px;background:#0d0d10;display:flex;gap:20px;font-family:Man;align-items:flex-start}
+.w{position:relative}.cap{position:absolute;top:-32px;left:0;right:0;text-align:center;color:#8f8f99;font:600 11.5px Man;letter-spacing:.08em}
+.ph{width:320px;height:690px;border-radius:42px;overflow:hidden;position:relative;color:#f4f4f5;box-shadow:0 0 0 7px #222228;background:#0b0b0e}
+.tint{position:absolute;left:-40%;right:-40%;top:-30%;height:60%;background:radial-gradient(closest-side,rgba(130,100,200,.28),transparent);filter:blur(10px)}
+.in{position:absolute;inset:0;padding:48px 20px 90px;overflow:hidden}.dock{z-index:4}
+.dock{position:absolute;left:28px;right:28px;bottom:16px;height:58px;border-radius:29px;background:rgba(40,40,48,.85);display:flex;justify-content:space-around;align-items:center;font-size:10.5px;color:#9a9aa4}.dock .on{color:#fff}.dock .s{width:44px;height:44px;border-radius:50%;background:#f4f4f5}
+h1{font:700 30px/1 Corm;margin:0;white-space:nowrap}.row{display:flex;align-items:center;justify-content:space-between}
+.add{height:34px;padding:0 13px;border-radius:17px;background:#f4f4f5;color:#0b0b0e;font:700 12px Man;display:flex;align-items:center;white-space:nowrap}
+.pills{display:flex;gap:7px;margin:14px 0 12px}.pills span{white-space:nowrap;padding:8px 11px;border-radius:16px;font-size:13px;font-weight:600;background:rgba(255,255,255,.07)}.pills span.on{background:#f4f4f5;color:#0b0b0e}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.grid i{aspect-ratio:2/3;border-radius:6px;background-size:cover;background-position:center;display:block;position:relative}
+.grid i b{position:absolute;right:4px;bottom:4px;width:18px;height:18px;border-radius:50%;background:#F3D19A;color:#0b0b0e;font:700 10px/18px Man;text-align:center;font-style:normal}
+.h2{font:700 24px/1 Corm;margin:22px 0 4px}.sub{font-size:12px;color:#8f8f99}
+.dcards{display:flex;gap:10px;margin-top:12px;overflow:hidden}
+.dc{flex:none;width:210px;border-radius:18px;padding:12px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.08)}
+.dc .t{display:flex;gap:10px}.dc .cv{width:46px;height:69px;border-radius:5px;background-size:cover;flex:none}
+.dc b{display:block;font:700 17px/1.05 Corm}.dc small{display:block;font-size:11px;color:#8f8f99;margin-top:3px}.dc .rt{margin-top:6px;font-size:11px;color:#E2B66B;font-weight:600}
+.dc p{margin:10px 0 0;font:400 12.5px/1.45 Lit;color:#dcdce0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.todo{margin-top:12px;display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:16px;border:1px dashed rgba(243,209,154,.4);font-size:12.5px;color:#F3D19A}.todo .cv{width:30px;height:45px;border-radius:4px;background-size:cover;flex:none}.todo span{flex:1;color:#d8d8dd}.todo em{font-style:normal;font-weight:700}
+/* страница дневника */
+.back{font-size:13px;color:#8f8f99}.stat{display:flex;gap:8px;margin:14px 0 4px}.stat div{flex:1;padding:10px;border-radius:14px;background:rgba(255,255,255,.06)}.stat b{display:block;font:700 22px/1 Corm;white-space:nowrap}.stat div:last-child b{font-size:17px;line-height:1.3}.stat small{display:block;line-height:1.3}.stat small{font-size:10.5px;color:#8f8f99}
+.mon{margin:18px 0 8px;font-size:11.5px;font-weight:700;letter-spacing:.08em;color:#8f8f99;text-transform:uppercase}
+.en{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)}.en .cv{width:52px;height:78px;border-radius:6px;background-size:cover;flex:none}
+.en b{display:block;font:700 18px/1.05 Corm}.en .m{font-size:11px;color:#8f8f99;margin-top:3px}.en .w2{font-size:11.5px;color:#E2B66B;margin-top:5px;font-weight:600}
+.en p{margin:6px 0 0;font:400 12.5px/1.45 Lit;color:#d8d8dd;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.q{display:inline-block;margin-top:6px;font:italic 400 11.5px Lit;color:#bdbdc4}
+/* запись */
+.hero{display:flex;gap:14px;margin-top:14px}.hero .cv{width:96px;height:144px;border-radius:8px;background-size:cover;box-shadow:0 18px 30px -12px #000;flex:none}
+.hero b{display:block;font:700 24px/1.02 Corm}.hero small{display:block;font-size:12px;color:#8f8f99;margin-top:5px}.hero .big{margin-top:10px;font:700 15px Man;color:#E2B66B}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.chips span{padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.07);font-size:12px}
+.fx{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.fx div{padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.05);font-size:10.5px;color:#8f8f99}.fx b{display:block;font-size:13px;color:#f4f4f5;font-weight:600;margin-top:2px}
+.lbl{margin:16px 0 6px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#8f8f99;text-transform:uppercase}
+.rv{font:400 13.5px/1.55 Lit;color:#ececef}.qc{margin-top:8px;padding:10px 12px;border-left:2px solid #E2B66B;background:rgba(255,255,255,.04);border-radius:0 10px 10px 0;font:italic 400 12.5px/1.45 Lit;color:#e4e4e7}.qc small{display:block;font:500 10.5px Man;color:#8f8f99;margin-top:4px;font-style:normal}
+.acts{position:absolute;left:20px;right:20px;bottom:84px;z-index:3;display:flex;gap:8px}.acts div{flex:1;height:44px;border-radius:14px;display:grid;place-items:center;font:700 13.5px Man;background:rgba(255,255,255,.08)}.acts .b{background:#f4f4f5;color:#0b0b0e}
+.fade{position:absolute;left:0;right:0;bottom:70px;height:150px;z-index:2;background:linear-gradient(transparent,#0b0b0e 70%)}
+</style></head><body>
+<!-- 1. вкладка «Полки» -->
+<div class="w"><div class="cap">1 · ВКЛАДКА «ПОЛКИ»</div><div class="ph"><div class="tint"></div><div class="in">
+ <div class="row"><h1>Мои полки</h1><div class="add">+ Поставить книгу</div></div>
+ <div class="pills"><span>Хочу прочитать</span><span class="on">Прочитано</span><span>Дневник</span></div>
+ <div class="grid"><i style="background-image:url(/img/ai/3fc3c6aebbbe.webp)"><b>5</b></i><i style="background-image:url(/img/ai/ae0df7deab36.webp)"><b>4</b></i><i style="background-image:url(/img/ai/fb4a623a7f85.webp)"><b>5</b></i></div>
+ <div class="row"><div class="h2">Читательский дневник</div><div class="sub" style="margin-top:20px">Все 12 ›</div></div>
+ <div class="sub">Последние записи</div>
+ <div class="dcards">
+  <div class="dc"><div class="t"><div class="cv" style="background-image:url(/img/ai/3fc3c6aebbbe.webp)"></div><div><b>Дон Касмурро</b><small>9 ноября · 7 дней</small><div class="rt">В любимые · ироничная</div></div></div><p>Рассказчику нельзя верить - и в этом весь кайф. Весь роман гадала, изменила Капиту или нет.</p></div>
+  <div class="dc"><div class="t"><div class="cv" style="background-image:url(/img/ai/ae0df7deab36.webp)"></div><div><b>Имя розы</b><small>28 октября</small><div class="rt">Понравилась · загадочная</div></div></div><p>Детектив в монастыре, где улики - книги.</p></div>
+ </div>
+ <div class="todo"><div class="cv" style="background-image:url(/img/ai/fb4a623a7f85.webp)"></div><span>Ты дочитала <em>«Мельницу на Флоссе»</em>. Запишешь, как тебе?</span><em>›</em></div>
+ </div><div class="dock"><span class="on">Нора</span><span class="s"></span><span class="on">Полки</span><span>Друзья</span></div></div></div>
+
+<!-- 2. страница дневника -->
+<div class="w"><div class="cap">2 · ВЕСЬ ДНЕВНИК</div><div class="ph"><div class="tint"></div><div class="in">
+ <div class="back">‹ Полки</div><h1 style="margin-top:10px;white-space:normal">Читательский дневник</h1>
+ <div class="stat"><div><b>12</b><small>записей в 2026</small></div><div><b>4,3</b><small>средняя оценка</small></div><div><b>ироничные</b><small>чаще всего</small></div></div>
+ <div class="mon">Ноябрь</div>
+ <div class="en"><div class="cv" style="background-image:url(/img/ai/3fc3c6aebbbe.webp)"></div><div><b>Дон Касмурро</b><div class="m">Машаду де Ассис · 2–9 ноября</div><div class="w2">В любимые · ироничная · загадочная</div><p>Рассказчику нельзя верить - и в этом весь кайф. Весь роман гадала, изменила Капиту или нет.</p><span class="q">❝ 3 цитаты</span></div></div>
+ <div class="en"><div class="cv" style="background-image:url(/img/ai/756a8c08b19c.webp)"></div><div><b>Снег</b><div class="m">Орхан Памук · 1–6 ноября</div><div class="w2">Неплохо · медленная</div><p>Красиво, но местами тянется. Зато атмосфера города в снегу - как будто сама там была.</p></div></div>
+ <div class="mon">Октябрь</div>
+ <div class="en"><div class="cv" style="background-image:url(/img/ai/ae0df7deab36.webp)"></div><div><b>Имя розы</b><div class="m">Умберто Эко · 12–28 октября</div><div class="w2">Понравилась · загадочная</div><p>Детектив в монастыре, где улики - книги.</p><span class="q">❝ 1 цитата</span></div></div>
+ <div class="en"><div class="cv" style="background-image:url(/img/ai/80cae7d12617.webp)"></div><div><b>Дом на краю лазурного моря</b><div class="m">Т. Дж. Клун · 3–8 октября</div><div class="w2">В любимые · уютная</div><p>Самая тёплая книга года.</p></div></div>
+ </div><div class="dock"><span>Нора</span><span class="s"></span><span class="on">Полки</span><span>Друзья</span></div></div></div>
+
+<!-- 3. запись -->
+<div class="w"><div class="cap">3 · ЗАПИСЬ О КНИГЕ</div><div class="ph"><div class="tint"></div><div class="in">
+ <div class="row"><div class="back">‹ Дневник</div><div class="back">Изменить</div></div>
+ <div class="hero"><div class="cv" style="background-image:url(/img/ai/3fc3c6aebbbe.webp)"></div><div><b>Дон Касмурро</b><small>Машаду де Ассис<br>2–9 ноября · 7 дней · 288 стр.</small><div class="big">★★★★★ В любимые</div></div></div>
+ <div class="chips"><span>ироничная</span><span>загадочная</span><span>заставляет подумать</span></div>
+ <div class="fx"><div>Темп<b>спокойно</b></div><div>Держит<b>герои</b></div><div>Финал<b>открытый</b></div><div>Любимый герой<b>Капиту</b></div></div>
+ <div class="lbl">Мой отзыв</div>
+ <div class="rv">Рассказчику нельзя верить - и в этом весь кайф. Весь роман гадала, изменила Капиту или нет, а в конце поняла, что книга не об этом, а о ревности, которая сама придумывает себе доказательства…</div>
+ <div class="lbl">Цитаты · 3</div>
+ <div class="qc">«Глаза у неё были как у цыганки - косые и лукавые»<small>стр. 64</small></div>
+ </div><div class="fade"></div><div class="acts"><div>Изменить</div><div class="b">Поделиться</div></div>
+ <div class="dock"><span>Нора</span><span class="s"></span><span class="on">Полки</span><span>Друзья</span></div></div></div>
+</body></html>
