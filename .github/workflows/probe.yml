@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for s in 8.8.8.8 1.1.1.1 ns1.spaceweb.ru; do echo "== $s"; dig +short nora-books.ru A @$s; dig +short www.nora-books.ru @$s; done
+          dig +short NS nora-books.ru @a.dns.ripn.net; dig +norec NS nora-books.ru @a.dns.ripn.net | grep -A5 AUTHORITY; whois nora-books.ru 2>/dev/null | grep -i "state\|created\|nserver" ; for s in 8.8.8.8 1.1.1.1 ns1.spaceweb.ru; do echo "== $s"; dig +short nora-books.ru A @$s; dig +short www.nora-books.ru @$s; done
           curl -sI http://nora-books.ru/ | head -5
           curl -sI https://nora-books.ru/ | head -5 || true
           curl -sI https://moya-nora.github.io/ | head -5
