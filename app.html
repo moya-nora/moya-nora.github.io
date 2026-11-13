@@ -714,7 +714,7 @@ body.films #app .seg i:not(.L *){transform:translateX(100%)}
 #app .scroll:not(.L *)::-webkit-scrollbar{display:none}
 #app .h1:not(.L *){font-family:var(--serif);font-size:clamp(60px,18vw,100px);font-weight:600;letter-spacing:-.02em;line-height:.9;margin:8px 20px 0}
 #app .flow:not(.L *){position:relative;height:292px;margin-top:4px;overflow-x:clip;overflow-y:visible;touch-action:pan-y}
-#app .flow .cv:not(.L *){position:absolute;left:50%;top:30px;width:176px;margin-left:-88px;border-radius:9px;transform-origin:50% 50%;cursor:pointer;transition:transform 1.4s cubic-bezier(.25,.8,.25,1),opacity .9s,filter 1.4s;box-shadow:0 30px 50px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.08)}
+#app .flow .cv:not(.L *){position:absolute;left:50%;top:30px;width:176px;margin-left:-88px;border-radius:9px;transform-origin:50% 50%;cursor:pointer;transition:transform 1.25s cubic-bezier(.16,1,.3,1),opacity 1s ease,filter 1.25s ease;box-shadow:0 30px 50px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.08)}
 #app transition:transform .9s cubic-bezier(.2,.8,.2,1):not(.L *),#app opacity .6s:not(.L *),#app filter .9s;box-shadow:0 30px 50px -20px rgba(0,0,0,.85):not(.L *),#app 0 0 0 1px rgba(255,255,255,.08)}
 .flow .cv.mid:not(.L *){box-shadow:0 40px 70px -24px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.16)}
 #app .flow-cap:not(.L *){text-align:left;padding:0 22px;margin-top:0;height:156px;overflow:hidden}
@@ -1896,6 +1896,24 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .shi{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:20px;font-weight:700;color:#fff}
 #app .shi.tg{background:#2AABEE}#app .shi.wa{background:#25D366}#app .shi.vk{background:#0077FF}#app .shi.vb{background:#7360F2}#app .shi.ok{background:#EE8208}#app .shi.sys,#app .shi.cp{background:rgba(255,255,255,.12)}
 
+
+#app .bkc .bkc-rv{display:block;width:100%;max-width:440px;margin:10px auto 0;text-align:left;border:0;border-radius:16px;padding:12px 14px;background:rgba(255,255,255,.08);color:inherit;font:inherit}
+#app .bkc .bkc-rv p{margin:4px 0 0;font-size:14px;line-height:1.45;opacity:.92;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
+#app .bkc .bkc-rv-h{font-size:12px;font-weight:700;letter-spacing:.02em;opacity:.75}
+#app .bkc .bkc-rv-h span{font-weight:500;opacity:.8;margin-left:6px}
+#app .bkc .bkc-rv.add{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+#app .bkc .bkc-rv.add small{font-weight:400;opacity:.6;font-size:12px}
+#app .bkc .bkc-rv.add svg{width:18px;height:18px}
+.rv-ta{min-height:96px!important;resize:none;line-height:1.45;font-size:16px}
+.rv-vis{display:flex;gap:4px;margin-top:10px;padding:3px;border-radius:12px;background:rgba(255,255,255,.08)}
+.rv-vis button{flex:1;padding:10px 6px;border:0;border-radius:9px;background:none;color:inherit;font:inherit;font-size:14px;font-weight:600;opacity:.65}
+.rv-vis button.on{background:rgba(255,255,255,.18);opacity:1}
+
+
+#app .sx-brain{margin:14px 2px 6px;padding:12px 14px;border-radius:16px;background:linear-gradient(120deg,rgba(160,120,255,.22),rgba(255,170,120,.16));display:flex;flex-direction:column;gap:2px}
+#app .sx-brain b{font-size:14px}#app .sx-brain span{font-size:12px;opacity:.7}
+#app .sx-brain.ld{animation:brp 1.4s ease-in-out infinite}@keyframes brp{50%{opacity:.55}}
+.rv-one{margin-top:16px}.rv-one .btn{width:100%}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -2064,6 +2082,10 @@ async function userDoc(j,method,k){const r=await fetch(base()+"users/"+j.localId
   if(method==="GET"){if(r.status===404)return null;if(!r.ok)throw new Error("Не получилось: облако недоступно");const x=await r.json();return x.fields&&x.fields.k&&x.fields.k.stringValue||null}
   if(!r.ok)throw new Error("Не получилось сохранить вход")}
 // токен входа: храним только на этом устройстве (для записи своего профиля для друзей)
+// iOS иногда очищает память мини-приложения: держим копию ключей входа в облаке Telegram и восстанавливаем
+(function(){try{const W=window.Telegram&&Telegram.WebApp;if(!W||!W.initData||!W.CloudStorage||!W.isVersionAtLeast||!W.isVersionAtLeast("6.9"))return;const K=["zal.sync.rt","zal.sync.uid","zal.sync.email","zal.sync.k"],ck=k=>"n_"+k.replace(/\./g,"_");
+  if(!_get.call(ls,"zal.sync.rt")){if(sessionStorage.getItem("nora.rest"))return;W.CloudStorage.getItems(K.map(ck),(e,v)=>{if(e||!v)return;let any=false;K.forEach(k=>{const x=v[ck(k)];if(x){_set.call(ls,k,x);any=true}});if(any&&_get.call(ls,"zal.sync.rt")){sessionStorage.setItem("nora.rest","1");location.reload()}})}
+  else setTimeout(()=>K.forEach(k=>{const x=_get.call(ls,k);if(x)W.CloudStorage.setItem(ck(k),x)}),3000)}catch(e){}})();
 const tok={rt:_get.call(ls,"zal.sync.rt")||"",uid:_get.call(ls,"zal.sync.uid")||"",id:"",exp:0};
 const keepTok=j=>{tok.rt=j.refreshToken||j.refresh_token||tok.rt;tok.uid=j.localId||j.user_id||tok.uid;tok.id=j.idToken||j.id_token||"";tok.exp=Date.now()+((+(j.expiresIn||j.expires_in)||3600)-120)*1000;
   _set.call(ls,"zal.sync.rt",tok.rt);_set.call(ls,"zal.sync.uid",tok.uid)};
@@ -4166,7 +4188,7 @@ const BK={
   addWant(x){if(BK.has(x))return;const c=catOf(x);const base=c?{...c}:{id:"w"+Date.now().toString(36),t:x.t,a:x.a||"",c:x.c||"",y:x.y||null,g:GEN[x.g]?x.g:"modern",ann:x.ds||""};
     want.unshift({...base,from:"Шуршуня",why:x.wy||base.when||""});saveWant()},
   rmWant(x){if(x.now){nowBook=null;saveNow();return}want=want.filter(w=>norm(w.t)!==norm(x.t));saveWant()},
-  markRead(x,r10,silentDate){const c=catOf(x)||{};if(x.now){nowBook=null;saveNow()}want=want.filter(w=>norm(w.t)!==norm(x.t));saveWant();
+  markRead(x,r10,silentDate){{const sur=norm(String(x.a||"").split(" ").slice(-1)[0]),ex=BOOKS.find(b=>norm(b.t)===norm(x.t)&&(!sur||norm(b.a||"").includes(sur)));if(ex){if(r10!=null){const it=BK.read().find(y=>y.src===ex);if(it)BK.setR(it,r10)}want=want.filter(w=>norm(w.t)!==norm(x.t));saveWant();return ex}}const c=catOf(x)||{};if(x.now){nowBook=null;saveNow()}want=want.filter(w=>norm(w.t)!==norm(x.t));saveWant();
     const rec={t:x.t,a:x.a||c.a||"Автор не указан",c:x.c||c.c||NEWSHELF,y:x.y||c.y||null,g:GEN[x.g]?x.g:(c.g||"modern"),pg:x.pg||LENPG[c.len]||320,r:r10??null};
     if(c.ann)rec.ann=c.ann;if(c.tags)rec.tags=c.tags;if(c.bg){rec.bg=c.bg;rec.fg=c.fg;rec.m=motifOf(c)}if(c.f)rec.f=c.f;if(silentDate)rec.rd=undefined;return addBook(rec)},
   setR(x,r10){const b=x.src;b.r=r10;if(b.user){const m=mine.find(y=>y.id===b.id);if(m)m.r=r10;saveMine()}else{EDITS[b.id]={...(EDITS[b.id]||{}),r:r10};saveEdits()}},
@@ -4374,13 +4396,13 @@ function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((f
 (function(){const el=$("#flow");let x0=null,y0=null,mode=null,moved=0,t0=0;
   const down=(x,y)=>{x0=x;y0=y;mode=null;moved=0;t0=Date.now();flowHold=t0};
   const mv=(x,y,e)=>{if(x0==null)return;const dx=x-x0,dy=y-y0;if(!mode){if(Math.abs(dx)>=Math.abs(dy)&&e&&e.cancelable)e.preventDefault();if(Math.abs(dx)<8&&Math.abs(dy)<8)return;mode=Math.abs(dx)>Math.abs(dy)*.8?"h":"v"}
-    if(mode!=="h")return;if(e&&e.cancelable)e.preventDefault();if(Math.abs(dx)>44){stepFlow(dx<0?1:-1);x0=x;moved++;flowHold=Date.now();tgHaptic()}};
+    if(mode!=="h")return;if(e&&e.cancelable)e.preventDefault();if(Math.abs(dx)>44&&moved<1){stepFlow(dx<0?1:-1);x0=x;moved++;flowHold=Date.now();tgHaptic("soft")}};/* одна книга за одно движение пальца — без пролистывания пачкой */
   el.addEventListener("touchstart",e=>{const t=e.touches[0];down(t.clientX,t.clientY)},{passive:true});
   el.addEventListener("touchmove",e=>{const t=e.touches[0];mv(t.clientX,t.clientY,e)},{passive:false});
   el.addEventListener("touchend",()=>{x0=null});
   el.addEventListener("mousedown",e=>down(e.clientX,e.clientY));addEventListener("mousemove",e=>mv(e.clientX,e.clientY,null));addEventListener("mouseup",()=>{x0=null});
   el.addEventListener("click",e=>{if(t0&&Date.now()-t0>450){t0=0;flowHold=Date.now();return}t0=0;const c=e.target.closest(".cv");if(c&&!moved&&!mode){flowHold=Date.now();const i=+c.dataset.i;if(i!==fi){fi=i;layoutFlow()}openItem(flowList()[i],"rec")}})})();
-(function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,7000)})();
+(function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,9000)})();
 function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
   $("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read]]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
@@ -4577,6 +4599,7 @@ function sxDraw(state){const box=$("#fres");if(!box)return;const q=SX.q,F=SX.k==
   if(norm(q).length<2){const rec=recentGet(),coach=!LS.get("zal.coachsx",0);SX.list=[];
     h=(coach?`<div class="sx-feat" id="sxFeat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Шуршуня помнит каждую книгу на твоей полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`:"")+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+(F?"":`<div class="sx-h">Можно просто попросить</div><div class="sx-rec sx-ask">${MEAN_EX.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`)+
       `<div class="fwrap inl" id="fwrap">${filtersHTML()}</div>${filtersFoot(true)}`;box.innerHTML=h;box._l=[];if(coach)setTimeout(sxCoach,450);return}
+  SX.st=state;if(SX.brain&&!F){if(SX.brain==="load")h+=`<div class="sx-brain ld"><b>Сверхмозг Шуршуни думает…</b><span>разбирает, чего тебе хочется</span></div>`;else if(SX.brain.length){const L=SX.brain.map(o=>{const it=bItem(o.b,"hit");it._w=o.w;return it});SX.brainL=L;h+=`<div class="sx-brain"><b>Сверхмозг Шуршуни советует</b><span>подобрано под твою просьбу</span></div>`+L.map((x,i)=>sxRow(x,"b"+i)).join("")}}
   if(SX.mean&&!F){const M=SX.mean,L=M.list.slice(0,SX.mn||12).map(b=>bItem(b,"hit"));SX.meanL=L;
     h+=`<div class="sx-mean"><b>Шуршуня поняла</b><span>${esc((M.lab.length?M.lab:M.kw.map(w=>"«"+w+"…»")).join(" · "))}</span></div>`+L.map((x,i)=>sxRow(x,"m"+i)).join("")+(M.list.length>L.length?`<button class="sx-moref" data-sxmean>Показать ещё</button>`:"")}
   if(SX.authors.length)h+=`<div class="sx-h">Авторы</div><div class="sx-au">${SX.authors.map((a,i)=>`<button data-au="${i}"><i>${esc(a.name[0]||"?")}</i>${hl(a.name,q)}</button>`).join("")}</div>`;
@@ -4599,6 +4622,10 @@ function genreHit(q){const n=norm(q);if(n.length<4)return null;
 // ---------- смысловой поиск: «про Южную Корею», «что почитать, когда грустно», «страшное на ночь» ----------
 // разбираем просьбу на настроения, темы, страны и слова; ищем по тегам, стране и аннотациям
 const MEAN_I=[
+ [/погруст|грустить|продолж\S* грус|хочу\S* грус|груст\S* и хочу|меланхол|светл\S* грусть|тоскл\S* атмосфер|под дожд\S* погруст/,"погрустить",{"грустное":6,"атмосферное":2,"психологический роман":2,"медленное":1,"смешное":-5,"юмор":-4,"динамичное":-2},{sad:1}],
+ [/научит\S* (мысл|дума)|тип\S* мышлен|мышлени|мыслить|думать иначе|критическ\S* мышл|логик|принима\S* решени|стратеги|прокачать (мозг|голову)|умнее/,"научиться мыслить",{"психология":5,"наука":4,"интеллектуальное":3,"философский роман":2,"история":1},{nf:1}],
+ [/после тяжел|устал|выгоран|разгруз|отдохнуть головой|ничего сложного|легк\S* чтени/,"отдохнуть головой",{"светлое":4,"тёплое":3,"уют":3,"смешное":3,"динамичное":1,"интеллектуальное":-3,"мрачное":-4,"война":-5}],
+ [/как сериал|как хорош\S* сериал|сериальн|запоем|бинж/,"как хороший сериал",{"динамичное":4,"напряжённое":3,"семейная сага":2,"детектив":2,"приключения":2,"медленное":-3}],
  [/грус|тоск|печал|хандр|депресс|плохо на душе|тяжело на душе|одинок|утеш|поддерж|поднять настроен|расстро/,"чтобы стало теплее",{"тёплое":4,"светлое":4,"уют":3,"вдохновляющее":3,"смешное":2,"юмор":2,"мрачное":-6,"война":-5,"хоррор":-6,"жутковатое":-4,"антиутопия":-4},{heavy:0}],
  [/поплак|плак|рыда|слез|до слез|разбил.*сердц|пореветь/,"чтобы поплакать",{"грустное":5,"любовь":2,"женская судьба":1,"семейная сага":1,"смешное":-4,"юмор":-3}],
  [/посмея|смешн|весел|юмор|ржа|угар|забавн|ирони/,"посмеяться",{"смешное":5,"юмор":5,"сатира":3,"мрачное":-4,"грустное":-2}],
@@ -4638,13 +4665,13 @@ const MEAN_C=[[/коре[яиюейц]|сеул|пусан/,["Корея","Юж�
  [/польш|варшав/,["Польша"],["польш","варшав"],"о Польше"],[/австрали/,["Австралия"],["австрал"],"об Австралии"],[/канад/,["Канада"],["канад"],"о Канаде"],[/армени|ереван/,["Армения"],["армен","ереван"],"об Армении"]];
 const MEAN_STOP=new Set("хочу хочется хотела хотел почитать прочитать читать что чтото какую какие какое книга книгу книги книжку посоветуй посоветуйте подскажи найди нужна нужно можно было бы про когда если чтобы чем для мне меня мой моя это эти тот как так очень самое самый лучше лучшие лучшая главное типа вроде похожее похожие где кто его она они есть нет еще уже или при над под без".split(" "));
 function meanParse(q){const s=" "+String(q).toLowerCase().replace(/ё/g,"е")+" ";const P={lab:[],t:{},c:null,ck:[],kw:[],len:"",heavy:null};
-  MEAN_I.forEach(([rx,lab,t,o])=>{if(!rx.test(s))return;P.lab.push(lab);for(const k in t)P.t[k]=(P.t[k]||0)+t[k];if(o&&o.len)P.len=o.len;if(o&&o.heavy!=null)P.heavy=o.heavy});
+  let SAD=0;MEAN_I.forEach(([rx,lab,t,o])=>{if(!rx.test(s))return;if(lab==="чтобы стало теплее"&&SAD)return;if(o&&o.sad)SAD=1;if(o&&o.nf)P.nfx=1;P.lab.push(lab);for(const k in t)P.t[k]=(P.t[k]||0)+t[k];if(o&&o.len)P.len=o.len;if(o&&o.heavy!=null)P.heavy=o.heavy});
   MEAN_C.forEach(([rx,cs,kw,lab])=>{if(!rx.test(s))return;P.lab.push(lab);P.c=new Set([...(P.c||[]),...cs]);P.ck.push(...kw)});
   // остальные значимые слова ищем в аннотациях: «про пчёл», «о маяке»
   const used=[...MEAN_I.map(x=>x[0]),...MEAN_C.map(x=>x[0])];
   P.kw=s.split(/[^a-zа-я0-9-]+/).filter(w=>w.length>=4&&!MEAN_STOP.has(w)&&!used.some(rx=>rx.test(" "+w+" "))).map(w=>stemRu(w)).filter(w=>w.length>=3).slice(0,4);
   const wr=w=>new RegExp("[^а-яa-z0-9]"+w.replace(/[-]/g,"\\-"));P.ckr=new RegExp("[^а-яa-z0-9]("+(P.ck.join("|")||"\\uffff")+")");P.kwr=P.kw.map(wr);
-  P.kids=/дет|ребен|ребён|сыну|дочк|дочер|малыш/.test(s);P.nf=/нон|научпоп|документ|реальн|психолог|саморазв/.test(s);
+  P.kids=/дет|ребен|ребён|сыну|дочк|дочер|малыш/.test(s);P.nf=!!P.nfx||/нон|научпоп|документ|реальн|психолог|саморазв/.test(s);
   P.ok=P.lab.length>0||P.kw.length>0;return P}
 function meanFind(q,k){const P=meanParse(q);if(!P.ok)return null;const W=wantNorms(),pos=Object.entries(P.t),out=[];
   for(const b of ALLB()){const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt))continue;let s=0,hit=0;const tg=b.tags||[];
@@ -4656,12 +4683,27 @@ function meanFind(q,k){const P=meanParse(q);if(!P.ok)return null;const W=wantNor
     if(!hit||s<=0)continue;s+=(b.q||0)*.8+(b.acclaim&&b.acclaim.length?1.5:0)+(b.ann?1:0)+Math.random()*1.2;out.push([s,b])}
   out.sort((a,b)=>b[0]-a[0]);const au=new Set(),L=[];for(const [,b] of out){if(au.has(b.a))continue;au.add(b.a);L.push(b);if(L.length>=(k||40))break}
   return {lab:[...new Set(P.lab)],kw:P.kw,list:L}}
-const MEAN_EX=["Про Южную Корею","Что почитать, когда грустно","Чтобы поплакать","Страшное на ночь","Уютное на осень","На один вечер","Чтобы не оторваться","О драконах и любви"];
+// «сверхмозг» Шуршуни: просьбу своими словами разбирает языковая модель и называет книги; берём те, что есть в каталоге, и сверху - найденные в сети
+const BRAIN={};
+async function brainAsk(q){const key=norm(q);if(BRAIN[key])return BRAIN[key];try{const c=sessionStorage.getItem("nora.br."+key);if(c)return BRAIN[key]=JSON.parse(c)}catch(e){}
+  const mine=BOOKS.slice(-12).map(b=>b.t).join("; ");
+  const prompt=`Ты книжный советчик. Читатель просит: «${String(q).slice(0,200)}». ${mine?"Он уже читал: "+mine+". ":""}Пойми, какое настроение или цель за просьбой (например, хочет остаться в грусти, а не развеселиться; хочет научиться думать по-новому). Назови 14 книг, изданных на русском языке, которые лучше всего подходят - разных авторов, и классику, и современные. Ответь только JSON-массивом без пояснений: [{"t":"название по-русски","a":"имя и фамилия автора по-русски","w":"почему подходит, до 9 слов"}]`;
+  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),16000);
+  try{const r=await fetch("https://text.pollinations.ai/openai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"openai",messages:[{role:"user",content:prompt}],temperature:.6}),signal:ctl.signal});
+    const j=await r.json(),txt=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||"",m=txt.match(/\[[\s\S]*\]/);if(!m)return [];
+    const arr=JSON.parse(m[0]).filter(x=>x&&x.t).slice(0,16),W=wantNorms(),out=[],seen=new Set();
+    for(const x of arr){const nt=norm(x.t),sur=norm(String(x.a||"").split(/\s+/).slice(-1)[0]||"");if(seen.has(nt)||READ.has(nt)||W.has(nt))continue;seen.add(nt);
+      const c=ALLB().find(b=>(b._n||norm(b.t))===nt&&(!sur||norm(b.a||"").includes(sur)))||ALLB().find(b=>(b._n||norm(b.t))===nt);
+      out.push(c?{b:c,w:x.w||""}:{b:{t:x.t,a:x.a||"",kind:"fl",id:"f"+hsh(nt).toString(36)},w:x.w||""})}
+    BRAIN[key]=out;try{sessionStorage.setItem("nora.br."+key,JSON.stringify(out.map(o=>o.b.id?{b:{t:o.b.t,a:o.b.a},w:o.w,c:1}:o)))}catch(e){}return out}
+  catch(e){return []}finally{clearTimeout(tm)}}
+const brainUnpack=L=>L.map(o=>o.c?{b:ALLB().find(b=>norm(b.t)===norm(o.b.t))||o.b,w:o.w}:o);
+const MEAN_EX=["Грустно, и хочу погрустить","Научиться мыслить иначе","После тяжёлого дня","Как хороший сериал","Про Южную Корею","Что почитать, когда грустно","Чтобы поплакать","Страшное на ночь","Уютное на осень","На один вечер","Чтобы не оторваться","О драконах и любви"];
 function sxRun(){const q=$("#fq").value,my=++SX.seq;SX.q=q;SX.mode="q";clearTimeout(SX.t);$(".sx-clear").hidden=!q;
   {const h=SX.k!=="films"&&genreHit(q);if(h){const L=h[0]==="gen"?NF.gen:NF.trope;if(!L.includes(h[1]))L.push(h[1]);saveNF();SX.picks=true;SX.q="";$("#fq").value="";$(".sx-clear").hidden=true;
     const b=$("#sxf");if(b)b.innerHTML=sxFbar();SX.authors=[];sxDraw();tgHaptic();return}}
   if(norm(q).length<2){SX.authors=[];sxDraw();return}
-  SX.list=localFind(q);SX.authors=[];SX.mean=null;SX.mn=12;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=2){const M=meanFind(q,40);if(M&&M.list.length&&(M.lab.length||!SX.list.length))SX.mean=M}sxDraw("load");
+  SX.list=localFind(q);SX.authors=[];SX.mean=null;SX.mn=12;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=2){const M=meanFind(q,40);if(M&&M.list.length&&(M.lab.length||!SX.list.length))SX.mean=M}sxDraw("load");SX.brain=null;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=3){SX.brain="load";brainAsk(q).then(L=>{if(my!==SX.seq)return;SX.brain=brainUnpack(L||[]);sxDraw(SX.st||"done")})}
   SX.t=setTimeout(async()=>{try{if(SX.k==="films")await loadFilms().catch(()=>{});if(my!==SX.seq)return;if(SX.k==="films")SX.list=localFind(q);
       const o=await (SX.k==="films"?onlineSeries(q):onlineBooks(q));if(my!==SX.seq)return;const seen=new Set(SX.list.map(x=>norm(x.t)+(x._f?x.y:"")));
       SX.list=[...SX.list,...o.works.filter(x=>{const n=norm(x.t)+(x._f?x.y:"");if(seen.has(n))return false;seen.add(n);return true})];SX.authors=o.au;sxDraw("done")}
@@ -4710,7 +4752,7 @@ $("#vshBody").addEventListener("click",e=>{const t=e.target;if(!$("#fres"))retur
   const rq=t.closest("[data-rq]");if(rq){$("#fq").value=rq.dataset.rq;sxRun();return}
   const au=t.closest("[data-au]");if(au){recentAdd($("#fq").value);sxAuthor(SX.authors[+au.dataset.au]);tgHaptic();return}
   if(t.closest("[data-man]")){const q=SX.q.trim();const x={_f:1,t:q.charAt(0).toUpperCase()+q.slice(1),id:"u"+Date.now(),kind:"man"};FM.addWant(x);vDirty=true;toast("Добавлено в избранное");sxDraw("done");return}
-  const b=t.closest("[data-sx]");const row=t.closest(".fr");if(!row)return;const di=row.dataset.i,x=di[0]==="m"?(SX.meanL||[])[+di.slice(1)]:$("#fres")._l[+di];if(!x)return;
+  const b=t.closest("[data-sx]");const row=t.closest(".fr");if(!row)return;const di=row.dataset.i,x=di[0]==="m"?(SX.meanL||[])[+di.slice(1)]:di[0]==="b"?(SX.brainL||[])[+di.slice(1)]:$("#fres")._l[+di];if(!x)return;
   if(!b){if(sxHas(x)==="read"){vClose();setTimeout(()=>openItem((SX.k==="films"?FM:BK).read().find(y=>norm(y.t)===norm(x.t)),"read"),300)}else bkcOpen(x,sxHas(x)==="want"?"top":"search");return}
   if(sxHas(x))return;recentAdd($("#fq").value);const D=SX.k==="films"?FM:BK,F=SX.k==="films";
   const done=()=>{vDirty=true;row.querySelector(".ac").innerHTML=`<em>${sxHas(x)==="read"?(F?"Просмотрено":"Прочитано"):"В избранном"}</em>`};
@@ -4801,7 +4843,7 @@ $("#sumMore").addEventListener("click",e=>{const t=e.target;
   if(t.closest("[data-qadd]")){openQuoteForm();return}if(t.closest("[data-qall]")){openSheet(`<h3 class="sheet-h">Цитаты</h3><div class="qlist" id="qlist">${quotesListHTML()}</div>`);return}
   if(t.closest("[data-share]")){openShare();return}if(t.closest("[data-backup]")){openBackup();return}
   if(t.closest("[data-install]")){hsShow("web");return}
-  const sv=t.closest("[data-shv]");if(sv){LS.set("zal.shelfv",sv.dataset.shv);drawSum();tgHaptic();toast(sv.dataset.shv==="spines"?"Полка — корешками":"Полка — обложками");return}
+  const sv=t.closest("[data-shv]");if(sv){LS.set("zal.shelfv",sv.dataset.shv);drawSum();try{drawCol(true)}catch(e){};tgHaptic();toast(sv.dataset.shv==="spines"?"Полка — корешками":"Полка — обложками");return}
   const th=t.closest("[data-theme-set]");if(th){const v=th.dataset.themeSet;try{v?localStorage.setItem("zal.theme",v):localStorage.removeItem("zal.theme")}catch(x){}if(TG&&TG.CloudStorage){try{TG.CloudStorage.setItem("theme",v||"")}catch(x){}}applyTheme();drawSum();tgHaptic();return}
   const o=t.closest("[data-open]");if(o){const x=DATA().read().find(y=>String(y.id)===o.dataset.open);if(x)openItem(x,"read")}});
 
@@ -5280,7 +5322,7 @@ function frShelf(uid,tab){const f=FRIENDS.find(x=>x.uid===uid),p=FRP[uid];if(!f)
    <div class="frg">${L.map((b,i)=>`<button data-frb="${i}">${cv(fbItem(b),100)}<small>${esc(b.t)}</small>${b.r!=null?`<em>★ ${r5(b.r)}</em>`:""}</button>`).join("")||`<p class="sy-note">Пусто.</p>`}</div>
 `,true);
   const sh=$("#vshBody");sh._fr={uid,tab}}
-function frBook(uid,b){const f=FRIENDS.find(x=>x.uid===uid)||{},x=fbItem(b);x.frR={n:f.n,r:b.r,uid};bkcOpen(x,"friend");return;const has=BK.has(x);cardX=x;cardL="friend";
+function frBook(uid,b){const f=FRIENDS.find(x=>x.uid===uid)||{},x=fbItem(b);x.frR={n:f.n,r:b.r,uid,rv:b.rv||""};bkcOpen(x,"friend");return;const has=BK.has(x);cardX=x;cardL="friend";
   vOpen(`<div class="dt">${cv(x,150)}<h2>${esc(x.t)}</h2><div class="meta">${esc(x.a||"")}</div>${b.r!=null?`<p class="dd q">У ${esc(f.n||"друга")}: ★ ${r5(b.r)}</p>`:""}<p class="dd" id="cardDesc">${esc(descOf(x))}</p>
    <div class="one">${has?`<button class="btn" disabled>${has==="read"?"Уже прочитано":"Уже в «Хочу прочитать»"}</button>`:`<button class="btn w" data-fr-want>Хочу прочитать</button>`}</div></div>`);
   wantDesc(x,()=>{const d=$("#cardDesc");if(d&&cardX===x)d.textContent=descOf(x)})}
@@ -5423,7 +5465,7 @@ function bkParam(){try{const v=new URLSearchParams(location.search).get("bk");if
 // разрешение боту писать раз в неделю: спрашиваем один раз, когда на полке уже есть книги
 function askWrite(){try{if(!TG||!TG.requestWriteAccess||LS.get("zal.wa",0)||!BOOKS.length)return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#bkc.on"))return setTimeout(askWrite,20000);
   LS.set("zal.wa",1);TG.requestWriteAccess(ok=>{if(ok&&!LS.get("zal.ntf",0))setTimeout(notifyAsk,600)})}catch(e){}}
-function afterSplash(){setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&!NS.email)authShow()}
+function afterSplash(){setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0))authShow()}
 
 
 // ---------- смена обложки вручную: фото / рисунок / другое издание ----------
@@ -5435,7 +5477,7 @@ async function covNext(x){const k=ikey(x);const s=await flj("/search-works?q="+e
   const L=await editionsOf(w.work_id);if(!L.length)throw new Error("none");const cur=imgOf(x),i=L.findIndex(e=>IMGFL(e.edition_id)===cur);
   COV[k]=IMGFL(L[(i+1)%L.length].edition_id);covSave();return L.length}
 function covApply(x){const k=ikey(x),u=imgOf(x);document.querySelectorAll(`[data-ik="${CSS.escape(k)}"]`).forEach(el=>{el.querySelectorAll("img").forEach(i=>i.remove());if(u)el.insertAdjacentHTML("beforeend",imgTag(u))});
-  document.querySelectorAll(".covsw").forEach(r=>{const c=COV[k];r.querySelectorAll("[data-cov]").forEach(b=>b.classList.toggle("on",b.dataset.cov===(c==="draw"?"draw":c?"next":"auto")))});vDirty=true}
+  document.querySelectorAll(".covsw").forEach(r=>{const c=COV[k];r.querySelectorAll("[data-cov]").forEach(b=>b.classList.toggle("on",b.dataset.cov===(c==="draw"?"draw":c?"next":"auto")))});vDirty=true;clearTimeout(covApply.t);covApply.t=setTimeout(()=>{try{drawCol(true)}catch(e){}},60)}
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-cov]");if(!b||!COVX)return;const x=COVX,k=ikey(x),m=b.dataset.cov;tgHaptic();
   if(m==="auto"){delete COV[k];covSave();if(!imgOf(x)){delete IMG[k];wantImg(x)}covApply(x);return}
   if(m==="draw"){COV[k]="draw";covSave();covApply(x);return}
@@ -5514,8 +5556,28 @@ function bkcDraw(){const {x,L}=BKC;
    <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>${bkcTropes(x,L)}
    <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
-   ${bkcSec(x,L)}<div class="bkc-acts">${bkcActs(x,L)}</div>
+   ${bkcRv(x,L)}${bkcSec(x,L)}<div class="bkc-acts">${bkcActs(x,L)}</div>
    <div class="bkc-low"><button class="bkc-where" data-bkc="where">${IC2.pin}Где прочитать?</button>${x._f?"":`<button class="bkc-where" data-bkc="vid">${IC2.play}Обзоры</button>`}</div></div>`}
+// личный отзыв: свой — пишешь в карточке прочитанной книги, отзыв друга — виден в карточке его книги
+function myRec(x){if(!x||x._f)return null;if(x.src&&BOOKS.includes(x.src))return x.src;const n=norm(x.t);return BOOKS.find(b=>norm(b.t)===n)||null}
+function bkcRv(x,L){if(x._f)return "";
+  if(L==="friend"){const f=x.frR||{};if(!f.rv)return "";return `<div class="bkc-rv fr"><div class="bkc-rv-h">${esc(f.n||"Друг")} о книге${f.r!=null?` <span>★ ${(f.r/2).toFixed(1).replace(".",",")}</span>`:""}</div><p>${esc(f.rv)}</p></div>`}
+  const b=BK.has(x)==="read"?myRec(x):null;if(!b)return "";
+  if(!b.n)return `<button class="bkc-rv add" data-bkc="rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Написать отзыв</span><small>можно показать друзьям</small></button>`;
+  return `<button class="bkc-rv" data-bkc="rv"><div class="bkc-rv-h">Мой отзыв <span>${b.pub?"видят друзья":"только для меня"}</span></div><p>${esc(b.n)}</p></button>`}
+function rvSheet(x){const b=myRec(x);if(!b)return;let pub=b.n?!!b.pub:true;
+  const draw=()=>{document.querySelectorAll("#rvVis [data-rvv]").forEach(e=>e.classList.toggle("on",(e.dataset.rvv==="1")===pub));const h=$("#rvH");if(h)h.textContent=pub?"Отзыв появится на твоей полке у друзей.":"Отзыв увидишь только ты - Нора учтёт его в советах."};
+  vOpen(`<h3 class="vh">Отзыв о «${esc(b.t)}»</h3><textarea id="rvT" class="sy-in rv-ta" rows="3" maxlength="600" placeholder="Что понравилось, что нет, кому бы посоветовала">${esc(b.n||"")}</textarea>
+   <div class="rv-vis" id="rvVis"><button data-rvv="1">Видят друзья</button><button data-rvv="0">Только я</button></div><p class="sy-note" id="rvH"></p>
+   <div class="rv-one"><button class="btn w" id="rvSave">Сохранить</button></div>`);draw();$("#vsheet").classList.add("ontop");
+  const t=$("#rvT");autoGrow(t);setTimeout(()=>{try{t.focus();t.setSelectionRange(t.value.length,t.value.length)}catch(e){}},250);
+  $("#rvVis").onclick=e=>{const v=e.target.closest("[data-rvv]");if(!v)return;pub=v.dataset.rvv==="1";tgHaptic();draw()};
+  $("#rvSave").onclick=()=>{const ch={n:t.value.trim().slice(0,600),pub:pub?1:0};noteLearn(ch.n,b.r);Object.assign(b,ch);
+    if(b.user){const m=mine.find(y=>y.id===b.id);if(m)Object.assign(m,ch);saveMine()}else{EDITS[b.id]={...(EDITS[b.id]||{}),...ch};saveEdits()}
+    try{pubCheck()}catch(e){}vClose();tgHaptic("success");toast(ch.n?(pub?"Отзыв сохранён - друзья увидят его на твоей полке":"Отзыв сохранён"):"Отзыв убран");if(BKC&&BKC.x===x)bkcDraw(),bkcFit()}}
+// поля ввода растут вместе с текстом - не нужно писать в узкой строчке
+function autoGrow(t){if(!t||t._ag)return;t._ag=1;const f=()=>{t.style.height="auto";t.style.height=Math.min(t.scrollHeight+2,Math.round(innerHeight*.45))+"px"};t.addEventListener("input",f);requestAnimationFrame(f)}
+document.addEventListener("focusin",e=>{const t=e.target;if(t&&t.tagName==="TEXTAREA"&&!t.readOnly)autoGrow(t)});
 function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};LS.set("zal.cards",(+LS.get("zal.cards",0)||0)+1);goal(L==="friend"?"card_friend":"card");cardX=x;cardL=L;ambFor(x);bkcDraw();
   // обложка уже в кэше браузера — ждём её расшифровки (до 250 мс), чтобы не мелькала рисованная
   const im=bkcEl.querySelector(".bkc-cv img"),show=()=>{if(BKC&&BKC.x===x){bkcEl.classList.add("on");syncBack()}};
@@ -5574,7 +5636,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="where"){goal("where");whereOpen(x,"");return}
   if(a==="vid"){goal("reviews");vidOpen(x);return}
   if(a==="sec"){const st=BK.has(x);if(st){const on=!isSec(x);setSec(x,on);vDirty=true;toast(on?"Теперь эту книгу видите только вы":"Книгу снова видят друзья")}else BKC.sec=!BKC.sec;const el=bkcEl.querySelector(".bkc-sec");if(el)el.outerHTML=bkcSec(x,L);return}
-  if(a==="ask"){goal("ask_friend");frAsk(x);return}
+  if(a==="ask"){goal("ask_friend");frAsk(x);return}if(a==="rv"){rvSheet(x);return}
   if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");bkcClose();return}
   if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
   if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
@@ -5601,9 +5663,15 @@ function shelfAnim(x){if(RM)return;const c=catOf(x)||{},bg=x.bg||c.bg||palOf(x.t
 shEl.addEventListener("click",()=>shEl.classList.remove("go"));
 // цели в Метрике: какие действия люди делают (без личных данных)
 const goal=n=>{try{window.ym&&ym(114237349,"reachGoal",n)}catch(e){}};
-{const _aw=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw.call(BK,x);if(!had){goal("want");setTimeout(()=>onbAsk(),2500)}}}
+// аккаунт предлагаем сразу после первой книги на полке (и снова при следующем запуске, если вход слетел)
+function authNudge(){try{if(!needAuth()||sessionStorage.getItem("nora.an"))return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on,.tour")||BKC)return setTimeout(authNudge,6000);
+  sessionStorage.setItem("nora.an","1");const back=!!(NS.email||LS.get("zal.sync.was",0));
+  vOpen(`<h3 class="vh">${back?"Войди, чтобы полки не потерялись":"Сохранить твои полки?"}</h3><p class="sy-note">${back?"Вход слетел - войди снова, и книги, оценки и отзывы подтянутся из облака.":"Создай аккаунт - тогда книги не пропадут, их можно открыть с другого телефона и показать друзьям. Это полминуты."}</p><div style="display:flex;flex-direction:column;gap:10px;margin-top:18px"><button class="btn w" data-an-go>${back?"Войти":"Создать аккаунт"}</button><button class="btn" data-an-later>Позже</button></div>`)}catch(e){}}
+$("#vshBody").addEventListener("click",e=>{if(e.target.closest("[data-an-go]")){e.stopPropagation();vClose();authMode=(NS.email||LS.get("zal.sync.was",0))?"in":"up";authShow();return}if(e.target.closest("[data-an-later]")){e.stopPropagation();vClose()}},true);
+setInterval(()=>{try{if(NS.hasTok&&NS.hasTok())LS.set("zal.sync.was",1)}catch(e){}},20000);
+{const _aw=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw.call(BK,x);if(!had){goal("want");setTimeout(()=>onbAsk(),2500);setTimeout(authNudge,5000)}}}
 {const _fw=FM.addWant;FM.addWant=function(x){const had=FM.has(x);_fw.call(FM,x);if(!had)goal("want")}}
-{const _mr=BK.markRead;BK.markRead=function(x,r10,silent){const out=_mr.call(BK,x,r10,silent);if(!silent)goal("read");if(!silent)setTimeout(()=>shelfAnim(x),120);return out}}
+{const _mr=BK.markRead;BK.markRead=function(x,r10,silent){const out=_mr.call(BK,x,r10,silent);if(!silent){goal("read");setTimeout(authNudge,5000)}if(!silent)setTimeout(()=>shelfAnim(x),120);return out}}
 
 
 // ---------- перенос книг из Литрес, Яндекс Книг, LiveLib и других ----------
