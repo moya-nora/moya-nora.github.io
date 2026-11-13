@@ -1,0 +1,25 @@
+name: domain
+# Каждые 20 минут проверяет, видит ли интернет nora-books.ru; как только видит — переводит сайт и выключается.
+on:
+  schedule: [{ cron: "*/20 * * * *" }]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sw:
+    runs-on: ubuntu-latest
+    steps:
+      - id: dns
+        run: |
+          a=$(dig +short nora-books.ru A @8.8.8.8; dig +short nora-books.ru A @1.1.1.1; dig +short nora-books.ru A @77.88.8.8)
+          echo "$a"
+          if [ "$(echo "$a" | grep -c '^185\.199\.')" -ge 6 ] && ! echo "$a" | grep -q 77.222; then echo "ok=1" >> $GITHUB_OUTPUT; fi
+      - if: steps.dns.outputs.ok == '1'
+        uses: actions/checkout@v4
+      - if: steps.dns.outputs.ok == '1'
+        run: |
+          [ -f CNAME ] && exit 0
+          bash tools/switch_domain.sh
+          git rm -q .github/workflows/domain.yml
+          git config user.name "nora-bot"; git config user.email "noreply@anthropic.com"
+          git add -A && git commit -qm "Move site to nora-books.ru" && git pull --rebase -X theirs -q && git push
