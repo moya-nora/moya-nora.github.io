@@ -16,7 +16,7 @@ T0 = time.time()
 UA = {"User-Agent": "nora-ai-covers/1.0 (moya-nora.github.io)"}
 LIMIT = int(os.environ.get("AI_LIMIT", "0"))  # для пробного запуска: сколько обложек нарисовать
 VER = 2  # версия 2: у каждой книги своя картинка по сюжету, своё настроение и свои цвета, без лиц
-NOFACE = "no faces, no portraits, no close-up people, people only as tiny distant figures or seen from behind, no text, no letters, no typography, no watermark"
+NOFACE = "if people appear, draw them as stylized flat illustrated characters with simple minimal faces, no photorealistic faces, no close-up portraits, no text, no letters, no typography, no watermark"
 
 # цвета — от настроения книги (теги каталога), первое совпадение главное
 PALETTES = [
@@ -49,7 +49,8 @@ STYLES = {
 
 def look(b):
     tg = set(b.get("tags") or [])
-    pal = next((p for ks, p in PALETTES if tg & set(ks)), "harmonious colors chosen to match the story")
+    opts = [p for ks, p in PALETTES if tg & set(ks)] or [p for _, p in PALETTES]
+    pal = opts[int(hashlib.md5(ikey(b).encode()).hexdigest()[:4], 16) % min(3, len(opts))]
     sty = STYLES.get(b.get("g"), STYLES["modern"])
     if "сказка" in tg or "юмор" in tg:
         sty = "whimsical hand-drawn gouache illustration" if b.get("g") != "kids" else sty
@@ -96,7 +97,8 @@ def scene(b, desc, pal):
     q = ("Write one English sentence (max 45 words) describing a single striking visual scene for an illustrated "
          f"book cover of «{b['t']}» by {b.get('a') or ''}. Summary: {desc or b.get('ann') or 'unknown'}. Mood: {tags}. "
          "Pick a place, an object, weather or a symbol that is specific to THIS story, so the cover could not belong to any other book. "
-         f"Use these colors: {pal}. People may appear only as tiny distant figures or seen from behind, never faces. "
+         f"Choose a color palette that fits this particular book's setting, era and mood (for example: {pal}) - avoid the generic teal-and-yellow look. "
+         "If people appear, they are stylized illustrated characters, not photorealistic. "
          "Describe only what is seen. No text, no title, no quotes.")
     t = None
     for k in range(3):  # длинное задание — POST, в адресе оно не помещается
@@ -130,7 +132,7 @@ def has_face(path):
     if im is None:
         return False
     g = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    m = int(min(g.shape[:2]) * 0.07)
+    m = int(min(g.shape[:2]) * 0.16)  # мелкие нарисованные лица можно, крупные «как фото» — нет
     return any(len(c.detectMultiScale(g, 1.1, 6, minSize=(m, m))) for c in FACE)
 
 
@@ -171,7 +173,7 @@ async def main():
                 continue
             desc = fl[1] if fl else ""
             pal, sty = look(b)
-            prompt = scene(b, desc, pal) + f", {sty}, color palette: {pal}, " + NOFACE
+            prompt = scene(b, desc, pal) + f", {sty}, " + NOFACE
             seed0 = int(hashlib.md5(k.encode()).hexdigest()[:6], 16)
             raw = os.path.join(DIR, "_raw.jpg")
             img = None
