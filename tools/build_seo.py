@@ -195,6 +195,7 @@ setTimeout(show,v>=2?9000:28000);addEventListener("scroll",function(){if(scrollY
 SEARCH_JS = r"""<script>(function(){var q=document.getElementById("q"),box=document.getElementById("sres");if(!q)return;var D=null,nm=function(s){return String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9 ]+/g," ")};
 function load(){if(D)return Promise.resolve(D);return fetch("/books/search.json").then(function(r){return r.json()}).then(function(j){D=j.map(function(x){return [x,nm(x[0]+" "+x[1])]});return D})}
 q.addEventListener("focus",load,{once:true});if(location.hash==="#poisk")setTimeout(function(){q.focus()},300);
+var u=new URLSearchParams(location.search).get("q");if(u){q.value=u;load().then(function(){q.dispatchEvent(new Event("input"))})}
 q.addEventListener("input",function(){var v=nm(q.value).trim();if(v.length<2){box.innerHTML="";return}load().then(function(){var ws=v.split(/\s+/).map(function(w){return w.length>4?w.slice(0,w.length-1):w}),out=[];
 for(var i=0;i<D.length&&out.length<8;i++){var t=D[i][1];if(ws.every(function(w){return t.indexOf(w)>=0}))out.push(D[i][0])}
 box.innerHTML=out.map(function(x){return '<a href="'+x[2]+'"><b>'+x[0].replace(/</g,"&lt;")+'</b><span>'+x[1].replace(/</g,"&lt;")+(x[3]?" · "+x[3]:"")+'</span></a>'}).join("")+'<a class="sall" href="/app.html?app=1">Искать среди 100 000 книг в Норе →</a>'})})})();</script>"""
@@ -225,12 +226,13 @@ def footer(colls):
 FOOT = ""
 
 
-def page(path, title, desc, body, full_title=None, active="", img=None):
+def page(path, title, desc, body, full_title=None, active="", img=None, ld=None):
     canon = f"{SITE}/{path}".replace("/index.html", "/")
+    ldj = "".join(f'<script type="application/ld+json">{json.dumps(x, ensure_ascii=False)}</script>' for x in (ld or []))
     doc = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{esc(full_title or title + " — Нора")}</title><meta name="description" content="{esc(desc[:200])}"><link rel="canonical" href="{canon}">
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc[:200])}"><meta property="og:url" content="{canon}">
-<meta property="og:image" content="{esc(img or SITE + '/icons/icon-512.png?v=4')}"><meta property="og:type" content="website"><meta property="og:site_name" content="Нора">{HEAD}</head><body>
+<meta property="og:image" content="{esc(img or SITE + '/icons/icon-512.png?v=4')}"><meta property="og:type" content="website"><meta property="og:site_name" content="Нора">{HEAD}{ldj}</head><body>
 {hdr(active)}<main>{body}</main>{FOOT}{MINE}{POPUP}{SN}</body></html>"""
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
@@ -377,7 +379,12 @@ for b in cat_books:
             + (f'<section class="sec"><div class="kick">Похожие книги</div><h2>Если понравилась эта</h2><p class="sub">Шуршуня подобрала книги того же жанра с похожим настроением.</p>'
                f'{rail(sim)}</section>' if sim else "")
             + "</div>")
-    urls.append(page(BOOK_URL[id(b)], f"«{b['t']}», {b['a']}: о чём книга и что почитать похожее", desc, body, img=u or None))
+    bld = {"@context": "https://schema.org", "@type": "Book", "name": b["t"], "author": {"@type": "Person", "name": b["a"]}, "inLanguage": "ru",
+           "url": f"{SITE}/{BOOK_URL[id(b)]}", **({"description": b["ann"]} if b["ann"] else {}), **({"image": (SITE + u) if u.startswith("/") else u} if u else {}),
+           **({"datePublished": str(b["y"])} if b["y"] and b["y"] > 0 else {}), **({"genre": GEN[b["g"]]} if b["g"] in GEN else {})}
+    crumbs = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Нора", "item": SITE + "/"},
+              {"@type": "ListItem", "position": 2, "name": GEN.get(b["g"], "Книги"), "item": SITE + GEN_URL.get(b["g"], "/c/")}, {"@type": "ListItem", "position": 3, "name": b["t"]}]}
+    urls.append(page(BOOK_URL[id(b)], f"«{b['t']}», {b['a']}: о чём книга и что почитать похожее", desc, body, img=u or None, ld=[bld, crumbs]))
 
 # ---------- «Книги, похожие на…»: страницы под поисковые запросы «что почитать после X» ----------
 TROPE_RU = dict(re.findall(r'\["(\w+)","([^"]+)"\]', app[app.index("const B_TROPE="):app.index("];", app.index("const B_TROPE="))]))
@@ -569,9 +576,13 @@ home = (f'<div class="wrap"><section class="hero2" id="poisk"><h1>Найди с�
         + "".join(shelf(t or title_of(p), f"/c/{p}.html", "", sorted(get(p)[:28], key=lambda b: not img_of(b))[:14]) for p, t in HOME_SHELVES)
         + '<a class="morec" href="/c/">Посмотреть все подборки →</a>'
         + f'{FINAL}</div>' + SEARCH_JS)
+HOME_LD = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Нора", "alternateName": ["Моя Нора", "Нора — книжный советник", "Нора книги", "moya-nora"],
+            "url": SITE + "/", "inLanguage": "ru", "potentialAction": {"@type": "SearchAction", "target": SITE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
+           {"@context": "https://schema.org", "@type": "Organization", "name": "Нора", "alternateName": "Моя Нора", "url": SITE + "/", "logo": SITE + "/icons/icon-512.png",
+            "sameAs": [BOT]}]
 home_path = page("index.html", "Нора — что почитать", "Что почитать: подборки книг по настроению, новинки, книги, похожие на любимые, — ромэнтези, дарк роман, любовные романы, фэнтези, детективы. "
                  "А Шуршуня подберёт книги лично тебе.", home,
-                 full_title="Что почитать: подборки книг, новинки и похожие книги — Нора")
+                 full_title="Нора (Моя Нора) — книжный советник: что почитать, подборки и похожие книги", ld=HOME_LD)
 idx = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
 idx = idx.replace('<meta charset="utf-8">', '<meta charset="utf-8"><meta name="google-site-verification" content="s2CdXU7z22CJQ7fqwqJNwf2nyq4VN3Jk2UEHofqjoXc"><meta name="yandex-verification" content="6a85060ff8390b92">'
                   '<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Моя Нора">' + TG_REDIRECT, 1)

@@ -1,0 +1,12 @@
+name: Сообщить поисковикам о новых страницах
+on:
+  push:
+    branches: [main]
+    paths: [sitemap.xml]
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sleep 90 && python3 tools/indexnow.py
