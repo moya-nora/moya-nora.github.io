@@ -5110,7 +5110,9 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-shto
   // открываем сразу приложение соцсети: в браузере — по схеме приложения, внутри Telegram — через системное меню «Поделиться»
   const f=SHARE_TO.find(x=>x[0]===k),url=f[2](s.text,k==="tg"?s.tgLink:s.webLink),full=s.text+" "+(k==="tg"?s.tgLink:s.webLink),E=encodeURIComponent;
   const APP={tg:`tg://msg_url?url=${E(s.tgLink)}&text=${E(s.text)}`,wa:`whatsapp://send?text=${E(s.text+" "+s.webLink)}`,vb:`viber://forward?text=${E(s.text+" "+s.webLink)}`};vClose();
-  if(k==="tg"&&TG&&TG.openTelegramLink){try{TG.openTelegramLink(url);return}catch(x){}}
+  // внутри Telegram на iPhone ссылка t.me/share иногда молча не открывается — там надёжнее системное «Поделиться» (в нём есть Telegram)
+  if(k==="tg"&&TG&&/ios|macos/i.test(TG.platform||"")&&navigator.share){try{await navigator.share({text:s.text+"\n"+s.tgLink});return}catch(x){if(x&&x.name==="AbortError")return}}
+  if(k==="tg"&&TG&&TG.openTelegramLink){try{TG.openTelegramLink(url);setTimeout(()=>{if(!document.hidden)toast("Если окно не открылось — нажми «Скопировать» и отправь ссылку другу")},1500);return}catch(x){}}
   if(!TG&&APP[k]){const t0=Date.now();const a=document.createElement("a");a.href=APP[k];a.style.display="none";document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>{if(!document.hidden&&Date.now()-t0<2600)openLink(url)},1600);return}
   if(navigator.share){try{await navigator.share({title:s.title,text:s.text,url:k==="tg"?s.tgLink:s.webLink});return}catch(x){if(x&&x.name==="AbortError")return}}
