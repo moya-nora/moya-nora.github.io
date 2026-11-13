@@ -1659,7 +1659,9 @@ body[data-font="3"] #app .flow-cap p:not(.L *){font-family:'Onest',system-ui,san
 #app .fly .info{margin-top:18px}
 #app .slide .fly .info h2:not(.L *){font-size:20px;line-height:1.2;-webkit-line-clamp:2}
 #app .fly .info .meta{font-size:14px;margin-top:6px}
-#app .fly .info p.ds{display:block;-webkit-line-clamp:unset;overflow:visible;font-size:16px;line-height:1.45;margin-top:12px}
+#app .fly .info p.ds{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:6;overflow:hidden;font-size:16px;line-height:1.45;margin-top:12px}
+#app .fly>.obj{flex:none!important}#app .fly .info{flex:0 1 auto;min-height:0;overflow:hidden}
+@media (max-height:760px){#app .fly .info p.ds{-webkit-line-clamp:4}}@media (max-height:680px){#app .fly .info p.ds{-webkit-line-clamp:3}}
 #app .fly .acts3{gap:22px;margin-top:auto;padding-top:30px}
 #app .fly>.obj{margin-top:auto}
 #app .fr .ac:not(.L *){padding-bottom:0}
@@ -1962,7 +1964,7 @@ setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!doc
 const FB={apiKey:"AIzaSyD9yfazxfKpaEk1BNFDN61dEB3pfxT9cS4",projectId:"nora-ed429"};
 const ON=!!(FB.apiKey&&FB.projectId);
 const ls=window.localStorage,P=Storage.prototype,_set=P.setItem,_rm=P.removeItem,_get=P.getItem;
-const SKIP=k=>!k||!k.startsWith("zal.")||k==="zal.img"||k==="zal.img2"||k==="zal.desc"||k==="zal.meta"||k==="zal.recent"||k.startsWith("zal.sync");
+const SKIP=k=>!k||!k.startsWith("zal.")||k==="zal.img"||k==="zal.img2"||k==="zal.img3"||k==="zal.desc"||k==="zal.meta"||k==="zal.recent"||k.startsWith("zal.sync");
 const jget=(k,d)=>{try{const v=_get.call(ls,k);return v?JSON.parse(v):d}catch(e){return d}};
 const jset=(k,v)=>{try{_set.call(ls,k,JSON.stringify(v))}catch(e){}};
 const TG=window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData?Telegram.WebApp:null;
@@ -4001,7 +4003,7 @@ function topK(list,k,fs){const best=[];let min=-Infinity;for(const b of list){co
   return best.sort((x,y)=>y.s-x.s).slice(0,k)}
 
 // ---------- обложки: настоящие (Фантлаб/Википедия) поверх рисованных ----------
-const IMG=LS.get("zal.img2",{});let imgT=0;const imgSave=()=>{clearTimeout(imgT);imgT=setTimeout(()=>LS.set("zal.img2",IMG),500)};
+try{localStorage.removeItem("zal.img2")}catch(e){}const IMG=LS.get("zal.img3",{});let imgT=0;const imgSave=()=>{clearTimeout(imgT);imgT=setTimeout(()=>LS.set("zal.img3",IMG),500)};
 try{localStorage.removeItem("zal.img")}catch(e){}
 // выбор обложки вручную: "draw" — рисованная, иначе адрес картинки (синхронизируется)
 let COV=LS.get("zal.cov",{});const covSave=()=>LS.set("zal.cov",COV);
@@ -4053,7 +4055,7 @@ async function wikiImg(q){const j=await (await fetch("https://ru.wikipedia.org/w
 // null — не удалось связаться (повторим), "" — обложки нет, иначе адрес
 async function findImg(x){try{
   if(!x._f){const sur=norm(String(x.a||"").split(" ").slice(-1)[0]),pic=w=>w.pic_edition_id||w.pic_edition_id_auto;
-    const pick=s=>{const L=(Array.isArray(s)?s:[]).filter(pic);return L.find(w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur))||L.find(w=>norm(w.rusname||w.name||"")===norm(x.t))};
+    const pick=s=>{const L=(Array.isArray(s)?s:[]).filter(pic);return L.find(w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur))||(sur?null:L.find(w=>norm(w.rusname||w.name||"")===norm(x.t)))};
     let w=pick(await flj("/search-works?q="+encodeURIComponent(x.t)+"&page=1&onlymatches=1"));
     if(!w){const t2=String(x.t).replace(/[«»"'’.,:;!?()—–-]+/g," ").replace(/\s+/g," ").trim();if(t2!==x.t||x.a)w=pick(await flj("/search-works?q="+encodeURIComponent(t2+(x.a?" "+String(x.a).split(" ").slice(-1)[0]:""))+"&page=1"))}
     if(w){const ed=await bestEdition(w.work_id).catch(()=>undefined);if(ed===null)return "";return IMGFL(ed||pic(w))}
