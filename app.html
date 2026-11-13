@@ -4031,7 +4031,7 @@ const NOIMG_TTL=14*864e5;
 // классика и книги до 2005 года из ручного каталога — только ИИ-обложка в стиле Норы (или обложка ЛитРес); их издания на Фантлабе часто старые и некрасивые.
 // у новых книг на Фантлабе — их родные современные обложки, их оставляем
 const isCatB=x=>{if(x._f)return false;const c=catOf(x);return !!c&&(c.y||x.y||0)<2005};
-const imgOf=x=>{const c=COV[ikey(x)];if(c==="draw")return "";if(c)return c;if(!x._f&&AIC[ikey(x)])return "img/ai/"+AIC[ikey(x)];if(x.img)return x.img;if(isCatB(x))return "";const v=IMG[ikey(x)]||"";return v&&v[0]!=="!"?v:""};
+const imgOf=x=>{const k=ikey(x),c=COV[k];if(c==="draw")return "";if(c)return c;const v=IMG[k]||"";if(v&&v[0]!=="!")return v;if(!x._f&&AIC[k])return "img/ai/"+AIC[k];if(x.img)return x.img;return ""};
 const imgKnown=k=>{const v=IMG[k];if(!v)return false;if(v[0]!=="!")return true;return Date.now()-(+v.slice(1)||0)<NOIMG_TTL};
 const imgTag=u=>`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer" decoding="async" onload="NORA_IMGOK(this)" onerror="NORA_IMGERR(this)">`;
 window.NORA_IMGOK=function(img){const w=img.naturalWidth,h=img.naturalHeight,r=h/Math.max(1,w),box=img.closest("[data-ik]"),k=box&&box.dataset.ik;
@@ -4041,7 +4041,7 @@ function cv(x,w){const k=ikey(x),u=imgOf(x);let inner="";
   if(x._f)inner=`<span class="L">${poster({...(x.src||{}),id:x.id||x.t,t:x.t,y:x.y,g:x.g||0},w||120)}</span>`;
   else{const s=x.src&&x.src.bg?x.src:null,c=catOf(x),p=palOf(x.t),b=s||{id:x.id||x.t,t:x.t,a:x.a||"",g:x.g||(c&&c.g)||"modern",bg:(c&&c.bg)||p[0],fg:(c&&c.fg)||p[1],tags:c&&c.tags};
     inner=`<span class="L">${cover({...b,a:b.a||""},w||120)}</span>`}
-  if(!u&&x.t&&!isCatB(x))wantImg(x);
+  if(x.t&&!(u&&u.indexOf("img/ai/")<0))wantImg(x);
   return `<div class="cv lg" data-ik="${esc(k)}" style="--lw:${w||120}px">${inner}${u?imgTag(u):""}</div>`}
 // картинка не загрузилась (сеть) — пробуем ещё раз с паузой; после 4 неудач ищем обложку заново
 const IERR={};
@@ -4051,7 +4051,7 @@ window.NORA_IMGERR=function(img){const box=img.closest("[data-ik]"),k=box&&box.d
   else if(IMG[k]===u){delete IMG[k];imgSave()}};
 const IQ=[],IX={};let iqn=0,iretry=0;
 function wantImg(x){const k=ikey(x);if(imgKnown(k)||IX[k])return;IX[k]=1;IQ.push({x,k});pump()}
-function putImg(k,u){document.querySelectorAll(`#app [data-ik="${CSS.escape(k)}"]`).forEach(el=>{if(!el.querySelector("img"))el.insertAdjacentHTML("beforeend",imgTag(u))});
+function putImg(k,u){document.querySelectorAll(`#app [data-ik="${CSS.escape(k)}"]`).forEach(el=>{const im=el.querySelector("img");if(!im)el.insertAdjacentHTML("beforeend",imgTag(u));else if((im.getAttribute("src")||"").indexOf("img/ai/")>=0)im.src=u});
   const sl=document.querySelector(`.slide [data-ik="${CSS.escape(k)}"]`);if(sl){const bg=sl.closest(".slide").querySelector(".bg");if(bg&&!bg.firstChild)bg.innerHTML=`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer">`}
   if(curImgKey===k)ambient(u);const pre=new Image();pre.referrerPolicy="no-referrer";pre.src=u}
 function pump(){while(iqn<6&&IQ.length){const {x,k}=IQ.shift();iqn++;
@@ -4068,7 +4068,7 @@ const EDS={};
 async function editionsOf(id){if(EDS[id])return EDS[id];const j=await flj("/work/"+id+"/extended");const L=[];Object.values(j.editions_blocks||{}).forEach(b=>(b.list||[]).forEach(e=>L.push(e)));
   const ok=L.filter(e=>e.pic_num>0&&(!e.lang_code||e.lang_code==="ru")&&!e.plandate).sort((a,b)=>(b.year||0)-(a.year||0)||(a.type===10?-1:1));return EDS[id]=ok}
 async function bestEdition(id){if(!id)return null;const L=await editionsOf(id);if(!L.length)return null;const fresh=L.filter(e=>(e.year||0)>=2015);
-  if(!fresh.length)return null;const single=fresh.filter(e=>e.type===10);return (single[0]||fresh[0]).edition_id}
+  if(!fresh.length)return null;fresh.sort((a,b)=>(b.year||0)-(a.year||0));const single=fresh.filter(e=>e.type===10);return (single[0]||fresh[0]).edition_id}
 async function wikiImg(q){const j=await (await fetch("https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=5&gsrsearch="+encodeURIComponent(q)+"&prop=pageimages&piprop=thumbnail&pithumbsize=500&pilicense=any")).json();
   const p=Object.values((j.query||{}).pages||{}).sort((a,b)=>a.index-b.index).find(p=>p.thumbnail);return p?p.thumbnail.source:""}
 // null — не удалось связаться (повторим), "" — обложки нет, иначе адрес
