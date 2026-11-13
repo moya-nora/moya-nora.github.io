@@ -4525,7 +4525,7 @@ function luckPool(){const W=wantNorms(),q=tasteQ(),shown=(LUCK&&LUCK.seen)||new 
   for(let i=sc.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sc[i],sc[j]]=[sc[j],sc[i]]}return sc}
 function luckOpen(){if(VIEW)return;LUCK=LUCK||{seen:new Set(),n:0};goal("luck");luckRoll(true)}
 function luckFan(){const el=$("#lgFan");if(!el)return;const P=luckPool().filter(b=>imgOf(b)).slice(0,3);el.innerHTML=P.map((b,i)=>`<span style="--i:${i}">${cv(bItem(b,"rec"),70)}</span>`).join("")}
-function luckRoll(first){const P=luckPool();if(!P.length){toast("Шуршуня перебрала всю стопку - загляни попозже");return}
+function luckRoll(first){const P=luckPool();if(!P.length){toast("Шуршуня перебрал всю стопку - загляни попозже");return}
   const pick=P[0],x=bItem(pick,"rec");LUCK.x=x;LUCK.seen.add(pick._n||norm(pick.t));LUCK.n++;
   const reel=[];const src=P.slice(1).filter(b=>imgOf(b)).slice(0,24);for(let i=0;i<26;i++)reel.push(src.length?src[i%src.length]:pick);const T=22;reel[T]=pick;
   luckEl.innerHTML=`<div class="lk-bg"></div><button class="lk-x" data-lk="x" aria-label="Закрыть">${IC2.x}</button>
@@ -4671,7 +4671,7 @@ function sxDraw(state){const box=$("#fres");if(!box)return;const q=SX.q,F=SX.k==
       `<div class="fwrap inl" id="fwrap">${filtersHTML()}</div>${filtersFoot(true)}`;box.innerHTML=h;box._l=[];if(coach)setTimeout(sxCoach,450);return}
   SX.st=state;if(SX.brain&&!F){if(SX.brain==="load")h+=`<div class="sx-brain ld"><b>Сверхмозг Шуршуни думает…</b><span>разбирает, чего тебе хочется - это до полуминуты</span></div>`;else if(SX.brain.length){const L=SX.brain.map(o=>{const it=bItem(o.b,"hit");it._w=o.w;return it});SX.brainL=L;h+=`<div class="sx-brain"><b>Сверхмозг Шуршуни советует</b><span>подобрано под твою просьбу</span></div>`+L.map((x,i)=>sxRow(x,"b"+i)).join("")}}
   if(SX.mean&&!F){const M=SX.mean,L=M.list.slice(0,SX.mn||12).map(b=>bItem(b,"hit"));SX.meanL=L;
-    h+=`<div class="sx-mean"><b>Шуршуня поняла</b><span>${esc((M.lab.length?M.lab:M.kw.map(w=>"«"+w+"…»")).join(" · "))}</span></div>`+L.map((x,i)=>sxRow(x,"m"+i)).join("")+(M.list.length>L.length?`<button class="sx-moref" data-sxmean>Показать ещё</button>`:"")}
+    h+=`<div class="sx-mean"><b>Шуршуня понял</b><span>${esc((M.lab.length?M.lab:M.kw.map(w=>"«"+w+"…»")).join(" · "))}</span></div>`+L.map((x,i)=>sxRow(x,"m"+i)).join("")+(M.list.length>L.length?`<button class="sx-moref" data-sxmean>Показать ещё</button>`:"")}
   if(SX.authors.length)h+=`<div class="sx-h">Авторы</div><div class="sx-au">${SX.authors.map((a,i)=>`<button data-au="${i}"><i>${esc(a.name[0]||"?")}</i>${hl(a.name,q)}</button>`).join("")}</div>`;
   const {vis,hid}=sxVis();
   h+=vis.length||hid.length?`<div class="sx-h">${F?"Фильмы и сериалы":SX.mean?"Совпадения по названию":"Книги"}</div>`+sxHidBar(hid)+vis.map(sxRow).join(""):"";
@@ -4997,15 +4997,16 @@ function show(s){SCREEN=s;if(s==="feed")setTimeout(()=>document.querySelectorAll
 document.body.dataset.cap="c";document.body.dataset.font="1";
 // ---------- знакомство с разделами: при первом заходе подсвечиваем главное ----------
 const TOURS={
-  col:[["#flow","Шуршуня советует","Листай обложки — это подборка под твой вкус. Нажми на книгу, чтобы узнать о ней больше."],
-       ['.dock [data-s="feed"]',"Лента находок","Свайпай книги: «читала», «хочу», «не моё» — так Шуршуня быстрее поймёт твой вкус."],
-       ["#srchB","Поиск и фильтры","Ищи по названию или выбирай настроение, жанр и тропы."],
-       ['.dock [data-s="fr"]',"Друзья","Добавляй друзей — смотри их полки и отзывы и делись своими."]],
-  fr:[[".fr-add","Добавь друзей","По почте или нику в Telegram. Ты увидишь их полки, оценки и отзывы, а они — твои. Делиться можно и ссылкой."]],
+  col:[["#recH","Знакомься: это Шуршуня","Книжный дух Норы. Он живёт между полками, перечитал тысячи книг и подбирает их под тебя - это не реклама и не редакция. Чем больше ты отмечаешь прочитанного и любимого, тем точнее его советы."],
+       ["#flow","Его подборка для тебя","Листай обложки и нажми на книгу - откроются описание, отзывы читателей и где её найти."],
+       ["#luckGo","Книга для тебя","Не хочешь выбирать - Шуршуня вытащит одну книгу из стопки под твой вкус."],
+       ["#srchB","Поиск","Ищи по названию или просто попроси своими словами: «грустно, и хочу погрустить», «что-то как хороший сериал»."],
+       ['.dock [data-s="sum"]',"Полки и дневник","Здесь твои книги, отзывы и читательский дневник. Сверху видно, сохранены ли полки в аккаунте."]],
+  fr:[[".fr-nick,.fr-add","Друзья","Скажи другу свой ник - он найдёт тебя за секунду. Или добавь его по нику, почте или ссылке: вы увидите полки, оценки и отзывы друг друга."]],
   sum:[["#bento","Твоя статистика","Сколько прочитано, любимые авторы, страны и века — обновляется само."],
        ["#sumMore .stamps,#sumMore","Читательский паспорт","Собирай штампы: за классику, книги разных стран и прочитанные полки."]]};
-function tour(name){if(VIEW||!LS.get("zal.onb",0)||emptyAll()||LS.get("zal.tour."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
-  if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on"))return;LS.set("zal.tour."+name,1);let k=0;
+function tour(name){if(VIEW||!LS.get("zal.onb",0)||(name!=="col"&&emptyAll())||LS.get("zal.tour2."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
+  if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on"))return;LS.set("zal.tour2."+name,1);let k=0;
   const ov=document.createElement("div");ov.className="tour";$("#app").appendChild(ov);
   const draw=()=>{const [sel,h,txt]=steps[k],t=document.querySelector(sel);if(!t){next();return}t.scrollIntoView&&t.scrollIntoView({block:"nearest"});
     const r=t.getBoundingClientRect(),pad=10,vh=innerHeight,below=r.top+r.height/2<vh*.55;
@@ -5536,7 +5537,7 @@ function bkParam(){try{const v=new URLSearchParams(location.search).get("bk");if
 // разрешение боту писать раз в неделю: спрашиваем один раз, когда на полке уже есть книги
 function askWrite(){try{if(!TG||!TG.requestWriteAccess||LS.get("zal.wa",0)||!BOOKS.length)return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#bkc.on"))return setTimeout(askWrite,20000);
   LS.set("zal.wa",1);TG.requestWriteAccess(ok=>{if(ok&&!LS.get("zal.ntf",0))setTimeout(notifyAsk,600)})}catch(e){}}
-function afterSplash(){setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0))authShow()}
+function afterSplash(){setTimeout(()=>{if(SCREEN==="col")tour("col")},2600);setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0))authShow()}
 
 
 // ---------- смена обложки вручную: фото / рисунок / другое издание ----------
