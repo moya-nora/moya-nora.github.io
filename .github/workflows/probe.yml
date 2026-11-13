@@ -5,6 +5,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for q in "хочу почитать о Южной Корее" "что почитать когда грустно"; do
-          t0=$(date +%s%N)
-          curl -s -m 60 -X POST https://text.pollinations.ai/openai -H "Content-Type: application/json" -H "Origin: https://moya-nora.github.io" -D /tmp/h -d "{\"model\":\"openai\",\"referrer\":\"moya-nora.github.io\",\"messages\":[{\"role\":\"system\",\"content\":\"Ты книжный советник. Ответь только JSON: {\\\"books\\\":[{\\\"t\\\":\\\"название по-русски\\\",\\\"a\\\":\\\"автор\\\",\\\"why\\\":\\\"почему, до 12 слов\\\"}]} — 8 книг.\"},{\"role\":\"user\",\"content\":\"$q\"}]}" | head -c 2500; echo; grep -i "access-control\|HTTP/" /tmp/h; echo "ms=$(( ($(date +%s%N)-t0)/1000000 ))"; done
+          curl -s https://text.pollinations.ai/models | python3 -c "import json,sys;[print(m.get('name'),m.get('tier'),m.get('reasoning'),m.get('description','')[:50]) for m in json.load(sys.stdin)]"
+          for m in openai-fast mistral; do sleep 46; t0=$(date +%s%N)
+          curl -s -m 60 -X POST https://text.pollinations.ai/openai -H "Content-Type: application/json" -d "{\"model\":\"$m\",\"max_tokens\":700,\"referrer\":\"moya-nora.github.io\",\"messages\":[{\"role\":\"system\",\"content\":\"Ты книжный советник. Ответь только JSON: {\\\"books\\\":[{\\\"t\\\":\\\"название по-русски\\\",\\\"a\\\":\\\"автор\\\",\\\"why\\\":\\\"почему, до 12 слов\\\"}]} — 8 книг.\"},{\"role\":\"user\",\"content\":\"что почитать когда грустно\"}]}" | head -c 1800; echo; echo "$m ms=$(( ($(date +%s%N)-t0)/1000000 ))"; done
