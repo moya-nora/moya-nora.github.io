@@ -5,14 +5,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for id in 65394826 65425437; do
-          curl -s -H "Accept: application/json" "https://api.litres.ru/foundation/api/arts/$id" | python3 -c "import json,sys;d=json.load(sys.stdin)['payload']['data'];print(sorted(d.keys()));print('TAGS',d.get('tags'));print('GENRES',[g.get('name') for g in d.get('genres') or []])"
-          done
-          curl -s -H "Accept: application/json" "https://api.litres.ru/foundation/api/genres?limit=500" | python3 -c "
-          import json,sys
-          t=json.load(sys.stdin)['payload']['data']
-          def w(n,d=0):
-            for x in n or []:
-              if any(k in x['name'].lower() for k in ['любов','фэнтези','young','подрост','роман']):print('  '*d+x['name'],x['id'],x.get('arts_count'))
-              w(x.get('subgenres'),d+1)
-          w(t)"
+          curl -sS -m 40 -D - -X POST https://text.pollinations.ai/openai -H 'Content-Type: application/json' -H 'Origin: https://nora-books.ru' \
+            -d '{"model":"openai","messages":[{"role":"user","content":"Читатель просит: «грустно и хочу продолжить грустить». Назови 6 книг на русском. Ответь только JSON-массивом [{\"t\":\"название\",\"a\":\"автор\"}]"}]}' | head -c 3000
