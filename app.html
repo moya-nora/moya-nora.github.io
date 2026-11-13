@@ -5492,6 +5492,7 @@ shEl.addEventListener("click",()=>shEl.classList.remove("go"));
 // цели в Метрике: какие действия люди делают (без личных данных)
 const goal=n=>{try{window.ym&&ym(114237349,"reachGoal",n)}catch(e){}};
 {const _aw=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw.call(BK,x);if(!had)goal("want")}}
+{const _fw=FM.addWant;FM.addWant=function(x){const had=FM.has(x);_fw.call(FM,x);if(!had)goal("want")}}
 {const _mr=BK.markRead;BK.markRead=function(x,r10,silent){const out=_mr.call(BK,x,r10,silent);if(!silent)goal("read");if(!silent)setTimeout(()=>shelfAnim(x),120);return out}}
 
 
