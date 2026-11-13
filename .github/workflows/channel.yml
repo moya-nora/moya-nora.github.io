@@ -1,0 +1,13 @@
+name: channel
+on:
+  workflow_dispatch:
+    inputs:
+      post: { description: "файл из tools/channel", default: "intro.html" }
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/channel_post.py "tools/channel/${{ inputs.post }}"
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
