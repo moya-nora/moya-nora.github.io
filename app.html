@@ -1626,6 +1626,7 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 #app .bkc-acts .btn{flex:1;min-width:0;padding-left:6px;padding-right:6px;font-size:14.5px;white-space:nowrap}
 #app .bkc-acts .btn[data-bkc=want]{flex:1.35;font-size:14px;letter-spacing:-.01em}#app .bkc-acts .btn[data-bkc=ask]+.btn,#app .bkc-acts .btn[data-bkc=want]:has(+.btn[data-bkc=ask]){flex:1}
 #app .bkc-acts .btn.sure{color:#FF8A80;box-shadow:inset 0 0 0 1px rgba(255,138,128,.5)}
+#app .swipe-go{display:flex;align-items:center;gap:14px;width:calc(100% - 44px);margin:6px 22px 26px;padding:14px 16px;border-radius:20px;text-align:left;color:var(--ink);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}#app .swipe-go svg{width:26px;height:26px;fill:none;stroke:#F3D19A;stroke-width:1.8;flex:none}#app .swipe-go span{flex:1}#app .swipe-go b{display:block;font-size:16px;font-weight:600}#app .swipe-go small{display:block;margin-top:2px;font-size:13px;color:var(--ink3)}#app .swipe-go i{font-style:normal;font-size:24px;color:var(--ink3)}body.viewing #app .swipe-go{display:none}#app #sumScroll .shelves-h{margin-top:18px}#app #sumScroll .stat-h{margin:26px 22px 4px}
 #app .bkc-low{display:flex;gap:10px;width:100%;max-width:420px;margin-top:10px}#app .bkc-low .bkc-where{margin-top:0;flex:1;min-width:0}#app .bkc-where{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;max-width:420px;margin-top:10px;white-space:nowrap;padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.16);font-size:15px;font-weight:600;color:var(--ink)}
 #app .bkc-where svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9}
 @media (max-height:700px){#app .bkc-cv{height:32vh}#app .bkc h2{font-size:26px}}
@@ -1874,14 +1875,13 @@ setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!doc
   </header>
 
 <section class="screen" id="s-feed"><div class="feed" id="feed"></div><button class="ffil gl press" id="ffil" hidden aria-label="Фильтры"></button><div class="gbar" id="gbar" hidden></div><div class="dots" id="dots"></div></section>
-<section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div class="rec-h" id="recH"><span>Шуршуня</span><i>советует</i></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><div id="trend"></div><div id="newAu" hidden></div><h3 class="shelf-h">Мои полки</h3><div class="pills" id="pills"></div><div class="grid" id="grid"></div></div></section>
-<section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
+<section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div class="rec-h" id="recH"><span>Шуршуня</span><i>советует</i></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><button class="swipe-go press" id="swipeGo"><svg viewBox="0 0 24 24"><path d="M8 3.5h8M6 6.5h12"/><rect x="4" y="9.5" width="16" height="11" rx="3"/></svg><span><b>Листать книги</b><small>Вправо - хочу, влево - не моё</small></span><i>›</i></button><div id="trend"></div><div id="newAu" hidden></div></div></section>
+<section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><h3 class="shelf-h shelves-h">Мои полки</h3><div class="pills" id="pills"></div><div class="grid" id="grid"></div><h3 class="shelf-h stat-h">Статистика</h3><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
 
 <div class="bottom"><nav class="dock gl" aria-label="Разделы"><i class="lens lensy" id="lens"></i>
   
   <button data-s="col" class="on"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20v-8a6 6 0 0 1 12 0v8"/><path d="M10 20v-4.5a2 2 0 0 1 4 0V20"/></svg>Нора</button>
-  <button data-s="feed"><svg viewBox="0 0 24 24"><path d="M8 3.5h8M6 6.5h12"/><rect x="4" y="9.5" width="16" height="11" rx="3"/></svg>Лента</button>
-  <button class="dsrch press" id="srchB" aria-label="Поиск книг"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button><button data-s="fr"><svg viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="16.5" cy="9.5" r="2.6"/><path d="M15.5 14.2c2.6-.3 4.6 1.3 5 4.3"/></svg>Друзья<i class="dot" id="frDot" hidden></i></button><button data-s="sum"><svg viewBox="0 0 24 24"><path d="M3.5 17.5l5.5-5.5 4 3.5 7.5-8"/><path d="M15.5 7.5h5v5"/></svg>Статистика</button>
+  <button class="dsrch press" id="srchB" aria-label="Поиск книг"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button><button data-s="fr"><svg viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="16.5" cy="9.5" r="2.6"/><path d="M15.5 14.2c2.6-.3 4.6 1.3 5 4.3"/></svg>Друзья<i class="dot" id="frDot" hidden></i></button><button data-s="sum"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20V6.5h3.5V20M10.5 20V4.5H14V20"/><path d="M15.2 9.2l3.3-.9 2.6 10.9-3.3.8z"/></svg>Полки</button>
 
 </nav></div>
 <div class="sheet" id="vsheet"><div class="sh-bg" data-close></div><div class="sh gl" id="vsh"><div class="grab"></div><div id="vshBody"></div></div></div>
@@ -4386,6 +4386,7 @@ function drawTrend(){const el=$("#trend");if(!el)return;const S=shelvesCalc();el
   el.innerHTML=S.map(([k,h,sub,L],j)=>`<section class="hshelf"><h3 class="shelf-h">${h}</h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div></section>`).join("")}
 $("#trend").addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(!b)return;const [j,i]=b.dataset.tr.split(":").map(Number),S=$("#trend")._s,x=S&&S[j]&&S[j][3][i];if(x){tgHaptic();bkcOpen(x,"rec")}});
 addEventListener("bigcat",()=>{TRK=-1;HSV=null;if(SCREEN==="col"){drawTrend();layoutFlow(true)}});
+$("#swipeGo").addEventListener("click",()=>{tgHaptic("medium");if(isF())buildFeed();show("feed")});
 $("#colScroll").addEventListener("scroll",()=>{document.body.classList.toggle("topoff",$("#colScroll").scrollTop>16)},{passive:true});
 $("#pills").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){if(colF===b.dataset.f)return;colF=b.dataset.f;drawCol(true);tgHaptic()}});
 // ---------- виды полки: обложки, полки по странам, лента веков, карта, авторы (из первой Норы) ----------
@@ -4810,14 +4811,13 @@ $("#feed").addEventListener("scroll",()=>{if(CO)coDraw()},{passive:true});
 let SCREEN="col";
 function moveLens(){const b=document.querySelector(".dock button.on"),l=$("#lens");if(!b)return;l.style.width=b.offsetWidth+"px";l.style.transform=`translateX(${b.offsetLeft}px)`}
 function show(s){SCREEN=s;if(s==="feed")setTimeout(()=>document.querySelectorAll("#app .slide").forEach(fitSlide),60);try{localStorage.setItem("zal.sync.scr",JSON.stringify({s,t:Date.now()}))}catch(e){}document.body.classList.toggle("col",s==="col");document.body.classList.toggle("sum",s==="sum");const was=document.querySelector(".dock button.on");
-  document.querySelectorAll("#app .screen").forEach(x=>x.classList.toggle("on",x.id==="s-"+s));document.querySelectorAll(".dock button").forEach(b=>b.classList.toggle("on",b.dataset.s===s));tgHaptic();
+  document.querySelectorAll("#app .screen").forEach(x=>x.classList.toggle("on",x.id==="s-"+s));document.querySelectorAll(".dock button").forEach(b=>b.classList.toggle("on",b.dataset.s===(s==="feed"?"col":s)));tgHaptic();
   if(was&&was.dataset.s!==s){const l=$("#lens");l.classList.add("go");setTimeout(()=>l.classList.remove("go"),260)}moveLens();
-  if(s==="feed"){cur=-1;onFeedScroll();if(CO)setTimeout(coDraw,300);else coach()}else if(CO)coEl.classList.remove("on");if(s==="col")drawCol();if(s==="fr"){drawFr();frLoad()}if(s==="sum"){drawSum();const x=DATA().read()[0];ambFor(x)}if(s!=="feed")setTimeout(()=>tour(s),900)}
+  if(s==="feed"){cur=-1;onFeedScroll();if(CO)setTimeout(coDraw,300);else coach()}else if(CO)coEl.classList.remove("on");if(s==="col")drawCol();if(s==="fr"){drawFr();frLoad()}if(s==="sum"){drawCol(true);drawSum();const x=DATA().read()[0];ambFor(x)}if(s!=="feed")setTimeout(()=>tour(s),900);try{syncBack()}catch(e){}}
 document.body.dataset.cap="c";document.body.dataset.font="1";
 // ---------- знакомство с разделами: при первом заходе подсвечиваем главное ----------
 const TOURS={
   col:[["#flow","Шуршуня советует","Листай обложки — это подборка под твой вкус. Нажми на книгу, чтобы узнать о ней больше."],
-       ["#pills","Твои полки","«Хочу прочитать» и «Прочитано» — всё, что ты отметила, живёт здесь."],
        ["#addB","Поставить книгу на полку","Сфотографируй шкаф — Нора сама узнает книги. Или перенеси прочитанное из Литрес и Яндекс Книг."],
        ['.dock [data-s="feed"]',"Лента находок","Свайпай книги: «читала», «хочу», «не моё» — так Шуршуня быстрее поймёт твой вкус."],
        ["#srchB","Поиск и фильтры","Ищи по названию или выбирай настроение, жанр и тропы."],
@@ -4846,15 +4846,15 @@ $("#top").addEventListener("click",e=>{if(e.target.closest("button"))return;cons
 addEventListener("resize",moveLens);
 
 // ---------- связь со старыми функциями ----------
-renderShelves=()=>{if(SCREEN==="col")drawCol();recList._k=null};
-renderWant=()=>{recList._k=null;if(SCREEN==="col")drawCol()};
+renderShelves=()=>{if(SCREEN==="col"||SCREEN==="sum")drawCol(SCREEN==="sum");recList._k=null};
+renderWant=()=>{recList._k=null;if(SCREEN==="col"||SCREEN==="sum")drawCol(SCREEN==="sum")};
 renderTime=()=>{if(SCREEN==="sum")drawSum()};
 renderFilms=()=>{recList._v=-1;if(SCREEN==="col")drawCol();else if(SCREEN==="sum")drawSum()};
 renderQuotes=()=>{if(SCREEN==="sum")drawSum()};
 go=function(v){if(v==="ftev"){setRealmUI("films");buildFeed();show("feed")}else if(v==="fseen"||v==="fwant"){setRealmUI("films");show("col")}else if(v==="tev"){setRealmUI("books");show("feed")}else if(v==="time"){show("sum")}else show("col")};
 setRealm=(r)=>{setRealmUI(r);pickCol();buildFeed();show(SCREEN)};
-syncBack=function(){if(!TG||!TG.BackButton)return;(story||sheetOpen||disc||tevScope||$("#vsheet").classList.contains("on")||($("#bkc")&&$("#bkc").classList.contains("on")))?TG.BackButton.show():TG.BackButton.hide()};
-if(TG&&TG.BackButton)try{TG.BackButton.onClick(()=>{if($("#vsheet").classList.contains("on")&&!sheetOpen&&!disc&&!story&&!tevScope)vClose()})}catch(e){}
+syncBack=function(){if(!TG||!TG.BackButton)return;(story||sheetOpen||disc||tevScope||SCREEN==="feed"||$("#vsheet").classList.contains("on")||($("#bkc")&&$("#bkc").classList.contains("on")))?TG.BackButton.show():TG.BackButton.hide()};
+if(TG&&TG.BackButton)try{TG.BackButton.onClick(()=>{if($("#vsheet").classList.contains("on")&&!sheetOpen&&!disc&&!story&&!tevScope)vClose();else if(SCREEN==="feed"&&!sheetOpen&&!disc&&!story&&!tevScope&&!(bkcEl&&bkcEl.classList.contains("on")))show("col")})}catch(e){}
 // оценки везде от 0 до 5 (хранятся как раньше, 0–10)
 ratingPicker=function(cur){const c=cur==null?null:Math.max(1,Math.round(cur/2));return `<div class="rate r5" id="rate">${[1,2,3,4,5].map(n=>`<button type="button" data-r="${n*2}" class="rs${c===n?" on":""}${c!=null&&n<=c?" lit":""}" aria-label="${n} из 5">★</button>`).join("")}<button type="button" data-r="" class="none${cur==null?" on":""}">без оценки</button></div>`};
 document.addEventListener("click",e=>{const b=e.target.closest("#rate.r5 button");if(!b)return;const v=b.dataset.r===""?0:+b.dataset.r;b.parentNode.querySelectorAll("button.rs").forEach(y=>y.classList.toggle("lit",+y.dataset.r<=v))});
