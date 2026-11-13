@@ -4,4 +4,4 @@ jobs:
   p:
     runs-on: ubuntu-latest
     steps:
-      - run: curl -sS -o /dev/null -w "%{http_code}\n" https://nora-books.ru/i/abcd1234; curl -s https://nora-books.ru/i/abcd1234 | grep -o 'startapp=i_[^"]*' | head -1
+      - run: curl -s https://nora-books.ru/app.html | grep -o "nora-books.ru/i/\"+k\|в Норе - будем" | sort | uniq -c
