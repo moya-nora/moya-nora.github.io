@@ -5,7 +5,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          dig +short NS nora-books.ru @a.dns.ripn.net; dig +norec NS nora-books.ru @a.dns.ripn.net | grep -A5 AUTHORITY; whois nora-books.ru 2>/dev/null | grep -i "state\|created\|nserver" ; for s in 8.8.8.8 1.1.1.1 ns1.spaceweb.ru; do echo "== $s"; dig +short nora-books.ru A @$s; dig +short www.nora-books.ru @$s; done
-          curl -sI http://nora-books.ru/ | head -5
-          curl -sI https://nora-books.ru/ | head -5 || true
-          curl -sI https://moya-nora.github.io/ | head -5
+          for q in "хочу почитать о Южной Корее" "что почитать когда грустно"; do
+          t0=$(date +%s%N)
+          curl -s -m 60 -X POST https://text.pollinations.ai/openai -H "Content-Type: application/json" -H "Origin: https://moya-nora.github.io" -D /tmp/h -d "{\"model\":\"openai\",\"referrer\":\"moya-nora.github.io\",\"messages\":[{\"role\":\"system\",\"content\":\"Ты книжный советник. Ответь только JSON: {\\\"books\\\":[{\\\"t\\\":\\\"название по-русски\\\",\\\"a\\\":\\\"автор\\\",\\\"why\\\":\\\"почему, до 12 слов\\\"}]} — 8 книг.\"},{\"role\":\"user\",\"content\":\"$q\"}]}" | head -c 2500; echo; grep -i "access-control\|HTTP/" /tmp/h; echo "ms=$(( ($(date +%s%N)-t0)/1000000 ))"; done
