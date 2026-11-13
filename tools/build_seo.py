@@ -47,18 +47,30 @@ def load(name):
 
 
 tagsx = load("tags.json") or {"tg": [], "m": {}}
-for name in ("books.json", "new.json"):
+for name in ("books.json", "new.json", "litres.json"):
     d = load(name)
     if not d:
         continue
-    for w, t, ai, y, gi, tg, q, sl, ci, aw, pg, rw, o in d["b"]:
+    for row in d["b"]:
+        w, t, ai, y, gi, tg, q, sl, ci, aw, pg, rw, o = row[:13]
+        im, an = (row[13], row[14]) if len(row) > 14 else ("", "")
         a = d["a"][ai]
         tags = [d["tg"][j] for j in tg]
         e = tagsx["m"].get(str(w))
         if e and len(e) > 2:
             tags += [tagsx["tg"][j] for j in e[2] if j < len(tagsx["tg"])]
         books.append({"t": t, "a": a[0], "y": y or None, "g": d["g"][gi], "c": d["c"][ci] if ci >= 0 else (d["c"][a[1]] if a[1] >= 0 else ""),
-                      "tags": tags, "q": q, "ann": "", "acc": [d["aw"][j] for j in aw] if name == "books.json" else [], "cat": False, "sl": sl})
+                      "tags": tags, "q": q, "ann": an or "", "acc": [d["aw"][j] for j in aw] if name == "books.json" else [], "cat": False, "sl": sl, "img": im or ""})
+TM = re.search(r'const TROPE_M=\(\(\)=>\{const m=\{\};"([^"]+)"', app)
+TROPES = {}
+for r in (TM.group(1).split(";") if TM else []):
+    if r.count("|") == 2:
+        t_, a_, l_ = r.split("|")
+        TROPES[re.sub(r"[^0-9a-zа-я]+", "", t_.lower().replace("ё", "е")) + "|" + a_.lower().replace("ё", "е")] = ["троп:" + x for x in l_.split()]
+for b in books:
+    k = re.sub(r"[^0-9a-zа-я]+", "", b["t"].lower().replace("ё", "е")) + "|" + b["a"].split(" ")[-1].lower().replace("ё", "е")
+    if k in TROPES:
+        b["tags"] = b["tags"] + [x for x in TROPES[k] if x not in b["tags"]]
 seen, uniq = set(), []
 for b in books:  # ручной каталог первым — у него есть описания
     k = re.sub(r"[^0-9a-zа-я]+", "", b["t"].lower().replace("ё", "е")) + "|" + b["a"].split(" ")[-1].lower()
@@ -126,7 +138,7 @@ try:
 except FileNotFoundError:
     COVERS = {}
 nk = lambda s: re.sub(r"[^0-9a-zа-я]+", "", str(s or "").lower().replace("ё", "е"))
-img_of = lambda b: COVERS.get(nk(b["t"]) + "|" + nk(str(b["a"] or "").split(" ")[-1]), "")
+img_of = lambda b: COVERS.get(nk(b["t"]) + "|" + nk(str(b["a"] or "").split(" ")[-1]), "") or b.get("img", "")
 
 
 def hsh(t):
@@ -164,7 +176,7 @@ HEAD = f"""<link rel="icon" href="/icons/icon-192.png?v=4"><link rel="apple-touc
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/site.css?v={VER}">"""
-NAV = [("/c/romantezi.html", "Ромэнтези"), ("/c/dark-roman.html", "Дарк роман"), ("/c/zhanr-fantasy.html", "Фэнтези"), ("/c/novinki.html", "Новинки"), ("/c/", "Все подборки")]
+NAV = [("/c/romantezi.html", "Ромэнтези"), ("/c/dark-roman.html", "Дарк роман"), ("/c/novinki.html", "Новинки"), ("/p/", "Похожие книги"), ("/c/", "Все подборки")]
 APP = "/app.html?app=1"
 
 
@@ -290,6 +302,115 @@ for b in cat_books:
                f'<div class="row">{"".join(card(x) for x in sim)}</div></section>' if sim else "")
             + "</div>")
     urls.append(page(BOOK_URL[id(b)], f"«{b['t']}», {b['a']}: о чём книга и что почитать похожее", desc, body, img=u or None))
+
+# ---------- «Книги, похожие на…»: страницы под поисковые запросы «что почитать после X» ----------
+TROPE_RU = dict(re.findall(r'\["(\w+)","([^"]+)"\]', app[app.index("const B_TROPE="):app.index("];", app.index("const B_TROPE="))]))
+GENERIC = {"любовь", "романтичное", "атмосферное", "грустное", "женская судьба", "большой город", "взросление", "психологический роман", "интеллектуальное",
+           "философский роман", "приключения", "светлое", "тёплое", "мрачное", "динамичное", "напряжённое", "смешное", "медленное", "история", "семья", "дружба",
+           "социальный роман", "классика", "магия", "мистика", "жутковатое", "уют", "детектив", "триллер", "психология", "самиздат"}
+lab = lambda t: TROPE_RU.get(t[5:], t[5:]).lower() if t.startswith("троп:") else t
+LOVEY = lambda b: has(b, "любовное фэнтези", "любовный роман", "ромэнтези") or (love(b) and any(t.startswith("троп:") for t in b["tags"]))
+SPOOL = [b for b in books if (b["q"] or 0) >= 2 and len(b["tags"]) >= 2 and (b["ann"] or img_of(b)) and not notnovel(b)]
+print("книг для «похожих»:", len(SPOOL))
+
+
+def simscore(a, x):
+    if x is a or nk(x["t"]) == nk(a["t"]) or SER(x) == SER(a):
+        return None, []
+    ta, tx = set(a["tags"]), set(x["tags"])
+    sh = ta & tx
+    tro = [t for t in sh if t.startswith("троп:")]
+    spec = [t for t in sh if not t.startswith("троп:") and t not in GENERIC]
+    gen = len(sh) - len(tro) - len(spec)
+    same_g = a["g"] == x["g"]
+    if not same_g and not (LOVEY(a) and LOVEY(x)):
+        return None, []
+    if len(tro) + len(spec) < 1 or len(tro) * 2 + len(spec) + gen * 0.3 < 2:
+        return None, []
+    sc = 3 * len(tro) + 1.6 * len(spec) + 0.4 * gen + (1.5 if same_g else 0) + (1.2 if LOVEY(a) == LOVEY(x) else -2)
+    if a["y"] and x["y"]:
+        sc -= min(abs(a["y"] - x["y"]), 120) / 60
+    sc += min(x["q"] or 0, 4) * 0.5 + (0.6 if img_of(x) else 0) + (0.4 if x["ann"] else 0)
+    return sc, tro + spec
+
+
+SER = lambda b: nk(b["a"]) + "|" + nk(re.split(r"[.:—–(]|\s\d|\sкнига|\sтом", b["t"].lower())[0])
+seeds = [b for b in books if ((b["q"] or 0) >= 3 or ((b["q"] or 0) >= 2 and (LOVEY(b) or b["g"] == "fantasy"))) and (b["y"] or 0) >= 1980 and not notnovel(b)
+         and len(b["tags"]) >= 3 and (img_of(b) or b["ann"])]
+_ss = set()
+seeds = [b for b in sorted(seeds, key=lambda b: (not b["cat"], -(b["q"] or 0))) if not (SER(b) in _ss or _ss.add(SER(b)))]
+seeds = sorted(seeds, key=lambda b: (not LOVEY(b), not (b["g"] in ("fantasy", "kids") and (b["y"] or 0) >= 2000), -(b["q"] or 0), -(b.get("sl") or 0)))[:int(os.environ.get("SIM_N", "700"))]
+SIM_URL, sim_pages, usedp = {}, [], set()
+for a_ in seeds:
+    cand = []
+    for x in SPOOL:
+        sc, why = simscore(a_, x)
+        if sc is not None:
+            cand.append((sc, x, why))
+    cand.sort(key=lambda z: -z[0])
+    out, au = [], {}
+    for sc, x, why in cand:
+        k = nk(x["a"])
+        if k == nk(a_["a"]) and au.get(k, 0) >= 1 or au.get(k, 0) >= 2:
+            continue
+        au[k] = au.get(k, 0) + 1
+        out.append((x, why))
+        if len(out) >= 12:
+            break
+    if len(out) < 6:
+        continue
+    sl_ = slug("pohozhie-na-" + a_["t"] + "-" + a_["a"].split(" ")[-1])
+    while sl_ in usedp:
+        sl_ += "-2"
+    usedp.add(sl_)
+    SIM_URL[id(a_)] = f"p/{sl_}.html"
+    sim_pages.append((a_, out))
+
+
+def sim_card(x, why, n):
+    u = BOOK_URL.get(id(x))
+    meta = ", ".join(v for v in [x["a"], str(x["y"]) if x["y"] and x["y"] > 0 else ""] if v)
+    w = ", ".join(list(dict.fromkeys(lab(t) for t in why if t != "ромэнтези"))[:3])
+    ann = x["ann"] if len(x["ann"]) <= 240 else x["ann"][:240].rsplit(" ", 1)[0] + "…"
+    inner = (cv(x) + f'<div class="num">№ {n}</div><div class="t">{esc(x["t"])}</div><div class="a">{esc(meta)}</div>'
+             + (f'<p class="why">Тоже: {esc(w)}</p>' if w else "") + (f'<p>{esc(ann)}</p>' if ann else ""))
+    return f'<a class="bk" href="/{u}">{inner}</a>' if u else f'<div class="bk">{inner}</div>'
+
+
+for a_, out in sim_pages:
+    au_ = a_["a"]
+    tops = ", ".join(f"«{x['t']}»" for x, _ in out[:4])
+    lead = (f"Если понравилась «{a_['t']}» ({au_}), вот {len(out)} книг с похожим настроением и сюжетными ходами — Шуршуня подобрала их по жанру, "
+            f"тропам и тому, что ценят читатели. Начни с {tops}.")
+    back = BOOK_URL.get(id(a_))
+    body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="/p/">Что почитать после</a></div>'
+            f'<div class="ph"><div><div class="kick">Что почитать после</div><h1>Книги, похожие на «{esc(a_["t"])}»</h1><p class="lead">{esc(lead)}</p>'
+            + (f'<p class="lead" style="margin-top:8px"><a href="/{back}">О книге «{esc(a_["t"])}» →</a></p>' if back else "")
+            + f'</div><div class="cnt gl">{len(out)} книг</div></div>'
+            f'<div class="grid">{"".join(sim_card(x, w, i + 1) for i, (x, w) in enumerate(out))}</div>{FINAL}</div>')
+    urls.append(page(SIM_URL[id(a_)], f"Книги, похожие на «{a_['t']}»",
+                     f"Что почитать после «{a_['t']}» ({au_}): {', '.join(x['t'] for x, _ in out[:6])} и ещё {max(0, len(out) - 6)} похожих книг.", body,
+                     full_title=f"Книги, похожие на «{a_['t']}» — что почитать после | Нора", img=img_of(a_) or None))
+
+# ссылка «Ещё похожие» на странице книги
+for a_, _ in sim_pages:
+    bu = BOOK_URL.get(id(a_))
+    if bu:
+        fp = os.path.join(ROOT, bu)
+        h = open(fp, encoding="utf-8").read()
+        h = h.replace('<p class="sub">Шуршуня подобрала книги того же жанра с похожим настроением.</p>',
+                      f'<p class="sub">Шуршуня подобрала книги того же жанра с похожим настроением. <a href="/{SIM_URL[id(a_)]}">Все похожие книги →</a></p>', 1)
+        open(fp, "w", encoding="utf-8").write(h)
+# оглавление «Что почитать после»
+groups = {}
+for a_, out in sim_pages:
+    groups.setdefault("Ромэнтези и любовные романы" if LOVEY(a_) else GEN.get(a_["g"], "Другое"), []).append(a_)
+toc = "".join(f'<section class="sec"><h2>{esc(g)}</h2><nav class="chips">' + "".join(f'<a href="/{SIM_URL[id(b)]}">{esc(b["t"])}</a>' for b in L) + "</nav></section>"
+              for g, L in sorted(groups.items(), key=lambda z: -len(z[1])))
+urls.append(page("p/index.html", "Что почитать после любимой книги", "Книги, похожие на популярные романы: ромэнтези, любовные романы, фэнтези, детективы и современная проза.",
+                 f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><div class="kick">Похожие книги</div><h1>Что почитать после любимой книги</h1>'
+                 f'<p class="lead">Выбери книгу, которая понравилась, — Шуршуня покажет похожие по настроению и сюжетным ходам.</p></div></div>{toc}{FINAL}</div>', active="/p/"))
+print("страниц «похожие на»:", len(sim_pages))
 
 # ---------- политика конфиденциальности ----------
 POLICY = [
