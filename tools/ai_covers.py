@@ -15,7 +15,46 @@ MAX_MIN = int(os.environ.get("AI_MINUTES", "300"))
 FRESH = 2015
 T0 = time.time()
 UA = {"User-Agent": "nora-ai-covers/1.0 (moya-nora.github.io)"}
-STYLE = "contemporary illustrated book cover art, painterly, rich cinematic colors, elegant composition, no text, no letters, no typography, no watermark"
+LIMIT = int(os.environ.get("AI_LIMIT", "0"))  # для пробного запуска: сколько обложек нарисовать
+VER = 2  # версия 2: у каждой книги своя картинка по сюжету, своё настроение и свои цвета, без лиц
+NOFACE = "no faces, no portraits, no close-up people, people only as tiny distant figures or seen from behind, no text, no letters, no typography, no watermark"
+
+# цвета — от настроения книги (теги каталога), первое совпадение главное
+PALETTES = [
+    (("смешное", "юмор", "сатира"), "bright sunny yellows, tangerine orange and sky blue, cheerful high-key light"),
+    (("уют", "тёплое"), "warm honey, cream, soft terracotta and sage green, cosy golden lamplight"),
+    (("романтичное", "любовь"), "blush pink, coral, peach and soft gold, tender warm light"),
+    (("светлое", "вдохновляющее"), "fresh mint, pale turquoise, lemon and white, airy morning light"),
+    (("хоррор", "жутковатое", "готика"), "ink black, bone white and blood crimson, eerie moonlight"),
+    (("мрачное", "война"), "charcoal, rust, ash grey and smoky ochre, harsh dim light"),
+    (("напряжённое", "триллер", "детектив"), "deep navy, signal red and stark white, high contrast noir light"),
+    (("грустное", "медленное"), "muted slate blue, dove grey and faded lilac, quiet overcast light"),
+    (("мистика", "магический реализм", "атмосферное"), "teal, violet and misty silver, dreamy haze"),
+    (("космос", "научная фантастика", "искусственный интеллект"), "electric cyan, magenta and deep space indigo, glowing light"),
+    (("море",), "ocean turquoise, sea foam and sand beige, salty bright air"),
+    (("природа и животные", "деревня"), "leaf green, wheat gold and earth brown, natural daylight"),
+    (("исторический роман", "история", "викторианская эпоха"), "sepia, ochre, oxblood and parchment, candlelit"),
+    (("интеллектуальное", "философский роман"), "ultramarine, cream and a single vermilion accent, calm light"),
+]
+# манера рисунка — от жанра
+STYLES = {
+    "kids": "whimsical storybook gouache illustration, playful shapes",
+    "fantasy": "rich painterly fantasy illustration, detailed environment",
+    "scifi": "retro-futurist sci-fi poster illustration, bold geometric forms",
+    "detective": "graphic noir illustration, strong shadows and shapes",
+    "classic": "classic oil painting, visible brushstrokes, museum quality",
+    "modern": "contemporary editorial illustration, textured flat colors",
+    "nonfic": "minimal conceptual illustration, one strong symbolic object, lots of empty space",
+}
+
+
+def look(b):
+    tg = set(b.get("tags") or [])
+    pal = next((p for ks, p in PALETTES if tg & set(ks)), "harmonious colors chosen to match the story")
+    sty = STYLES.get(b.get("g"), STYLES["modern"])
+    if "сказка" in tg or "юмор" in tg:
+        sty = "whimsical hand-drawn gouache illustration" if b.get("g") != "kids" else sty
+    return pal, sty
 
 
 def norm(s):
@@ -53,13 +92,36 @@ def fantlab(b):
     return (max(ys) if ys else 0), desc[:900]
 
 
-def scene(b, desc):
-    q = ("Write one English sentence (max 40 words) describing a single striking visual scene for an illustrated "
-         f"book cover of the novel «{b['t']}» by {b.get('a') or ''}. Base it on this summary: {desc or 'unknown'}. "
-         "Describe only what is seen: characters, setting, light, mood. No text, no title, no quotes.")
+def scene(b, desc, pal):
+    tags = ", ".join(t for t in (b.get("tags") or []) if not t.startswith("троп:"))
+    q = ("Write one English sentence (max 45 words) describing a single striking visual scene for an illustrated "
+         f"book cover of «{b['t']}» by {b.get('a') or ''}. Summary: {desc or b.get('ann') or 'unknown'}. Mood: {tags}. "
+         "Pick a place, an object, weather or a symbol that is specific to THIS story, so the cover could not belong to any other book. "
+         f"Use these colors: {pal}. People may appear only as tiny distant figures or seen from behind, never faces. "
+         "Describe only what is seen. No text, no title, no quotes.")
     t = get("https://text.pollinations.ai/" + urllib.parse.quote(q) + "?model=openai", raw=True, timeout=90)
     t = (t or b"").decode("utf-8", "ignore").strip().replace("\n", " ")
-    return t[:400] if 20 < len(t) < 600 else f"atmospheric scene from the book {b['t']}"
+    return t[:420] if 20 < len(t) < 650 else f"a symbolic scene from the book {b['t']}"
+
+
+FACE = None
+
+
+def has_face(path):
+    """Нашла ли проверка лицо заметного размера: такие картинки выбрасываем."""
+    global FACE
+    try:
+        import cv2
+    except ImportError:
+        return False
+    if FACE is None:
+        FACE = [cv2.CascadeClassifier(cv2.data.haarcascades + f) for f in ("haarcascade_frontalface_default.xml", "haarcascade_profileface.xml")]
+    im = cv2.imread(path)
+    if im is None:
+        return False
+    g = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    m = int(min(g.shape[:2]) * 0.07)
+    return any(len(c.detectMultiScale(g, 1.1, 6, minSize=(m, m))) for c in FACE)
 
 
 async def main():
@@ -84,8 +146,11 @@ async def main():
             k = ikey(b)
             # книги до 2005 года — всегда своя обложка (их издания на Фантлабе часто старые или некрасивые);
             # у новых книг — только если на Фантлабе нет русского издания с картинкой свежее 2015 года
-            if st["m"].get(k):
+            st.setdefault("v", {})
+            if st["m"].get(k) and st["v"].get(k) == VER:
                 continue
+            if LIMIT and made >= LIMIT:
+                break
             old = (b.get("y") or 0) < 2005
             if not old and k in st["m"] and st["t"].get(k, "") >= time.strftime("%Y", time.gmtime(time.time() - 365 * 86400)):
                 continue
@@ -95,22 +160,30 @@ async def main():
                 st["m"][k] = "";st["t"][k] = ym
                 continue
             desc = fl[1] if fl else ""
-            prompt = scene(b, desc) + ", " + STYLE
-            seed = int(hashlib.md5(k.encode()).hexdigest()[:6], 16)
-            url = "https://image.pollinations.ai/prompt/" + urllib.parse.quote(prompt) + f"?width=768&height=1152&nologo=true&model=flux&seed={seed}"
-            img = None
-            for tr in range(4):
-                img = get(url, tries=1, raw=True, timeout=180)
-                if img and len(img) > 20000:
-                    break
-                img = None
-                time.sleep(60)
-            if not img:
-                print("  нет картинки:", b["t"], flush=True)
-                continue
+            pal, sty = look(b)
+            prompt = scene(b, desc, pal) + f", {sty}, color palette: {pal}, " + NOFACE
+            seed0 = int(hashlib.md5(k.encode()).hexdigest()[:6], 16)
             raw = os.path.join(DIR, "_raw.jpg")
-            open(raw, "wb").write(img)
-            fn = hashlib.md5(k.encode()).hexdigest()[:12] + ".webp"
+            img = None
+            for tr in range(6):  # до трёх попыток с разным зерном, если нашлось лицо
+                url = "https://image.pollinations.ai/prompt/" + urllib.parse.quote(prompt) + f"?width=768&height=1152&nologo=true&model=flux&seed={seed0 + tr}"
+                img = get(url, tries=1, raw=True, timeout=180)
+                if not img or len(img) < 20000:
+                    img = None
+                    time.sleep(60)
+                    continue
+                open(raw, "wb").write(img)
+                if has_face(raw):
+                    print("  лицо на картинке, перерисовываю:", b["t"], flush=True)
+                    img = None
+                    time.sleep(20)
+                    continue
+                break
+            if not img:
+                print("  нет подходящей картинки:", b["t"], flush=True)
+                continue
+            fn = hashlib.md5(k.encode()).hexdigest()[:11] + "v.webp"
+            oldf = st["m"].get(k)
             q = {"img": "../img/ai/_raw.jpg?" + fn, "t": b["t"], "a": b.get("a") or ""}
             await pg.goto("http://localhost:8766/tools/ai_cover.html?" + fn + "#" + urllib.parse.quote(json.dumps(q)))
             await pg.wait_for_timeout(1200)
@@ -118,7 +191,12 @@ async def main():
             await pg.screenshot(path=png)
             from PIL import Image
             Image.open(png).convert("RGB").resize((480, 720), Image.LANCZOS).save(os.path.join(DIR, fn), "WEBP", quality=82)
-            st["m"][k] = fn;st["t"][k] = ym;made += 1
+            if oldf and oldf != fn:
+                try:
+                    os.remove(os.path.join(DIR, oldf))
+                except FileNotFoundError:
+                    pass
+            st["m"][k] = fn;st["t"][k] = ym;st["v"][k] = VER;made += 1
             print(f"{made}. {b['t']} — {prompt[:80]}", flush=True)
             json.dump(st, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
             time.sleep(35)
