@@ -4,4 +4,8 @@ jobs:
   p:
     runs-on: ubuntu-latest
     steps:
-      - run: curl -s https://nora-books.ru/app.html | grep -o "nora-books.ru/i/\"+k\|в Норе - будем" | sort | uniq -c
+      - run: |
+          for q in "Мастер и Маргарита" "Тэсс из рода д'Эрбервиллей" "Время ночь"; do
+            echo "== $q"; curl -s "https://api.fantlab.ru/search-works?q=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" "$q")&page=1&onlymatches=1" | python3 -c "import json,sys;L=json.load(sys.stdin);[print(w.get('work_id'),w.get('rusname'),'|',w.get('autor_rusname'),'| pic',w.get('pic_edition_id'),w.get('pic_edition_id_auto')) for w in (L if isinstance(L,list) else L.get('matches',[]))[:5]]"
+          done
+          curl -s https://api.fantlab.ru/work/4166/extended | python3 -c "import json,sys;j=json.load(sys.stdin);L=[e for b in (j.get('editions_blocks') or {}).values() for e in b.get('list',[])];ok=[e for e in L if e.get('pic_num',0)>0 and (not e.get('lang_code') or e.get('lang_code')=='ru')];print(len(L),len(ok),sorted([(e.get('year'),e.get('type')) for e in ok],reverse=True)[:8])"
