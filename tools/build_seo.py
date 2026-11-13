@@ -322,7 +322,7 @@ NY_A = re.compile(r"рождеств|новогодн|нов\w* год[а-я]*\b
 ny = [b for b in books if not notnovel(b) and (NY_T.search(b["t"]) or NY_A.search(b["ann"] or "")) and (b["ann"] or img_of(b))]
 ny = sorted({id(b): b for b in ny}.values(), key=lambda b: (not b["cat"], -(b["q"] or 0), -(b.get("sl") or 0)))[:40]
 if len(ny) >= 8:
-    coll_data.insert(1, ("novogodnee-nastroenie", "Новогоднее настроение", "Зима, Рождество, снег за окном и немного чуда — книги, с которыми наступает праздник.", ny))
+    coll_data.insert(1, ("novogodnee-nastroenie", "Книги с запахом мандаринов", "Зима, Рождество, снег за окном и немного чуда — книги, с которыми наступает праздник.", ny))
 FOOT = footer([(p, t) for p, t, _, _ in coll_data])
 # книги из подборок без обложки — их обложки найдёт tools/build_covers.py в следующий раз
 want, seenw = [], set()
@@ -565,7 +565,7 @@ def seed_card(b):
 
 after = [b for g in groups.values() for b in g]
 after = onepa(sorted(after, key=lambda b: (TORD.get(nk(b["t"]) + "|" + b["a"].split(" ")[-1].lower().replace("ё", "е"), 999), not b["cat"], -(b["q"] or 0))))[:16]
-HOME_SHELVES = [("novogodnee-nastroenie", "Новогоднее настроение"), ("chitayut-seychas", None), ("zhanr-fantasy", "Популярное фэнтези"), ("na-odin-vecher", None)]
+HOME_SHELVES = [("novogodnee-nastroenie", "Книги с запахом мандаринов"), ("chitayut-seychas", None), ("zhanr-fantasy", "Популярное фэнтези"), ("na-odin-vecher", None)]
 HOME_SHELVES = [(p, t) for p, t in HOME_SHELVES if get(p)]
 lead_of = lambda p: next(l for q, _, l, _ in coll_data if q == p)
 title_of = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
