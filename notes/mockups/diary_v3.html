@@ -1,0 +1,84 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Corm;src:url(/fonts/cormorant-garamond-cyrillic-700-normal.woff2)}
+@font-face{font-family:CormI;src:url(/fonts/cormorant-garamond-cyrillic-600-italic.woff2)}
+@font-face{font-family:Onest;font-weight:400;src:url(/fonts/onest-cyrillic-400-normal.woff2)}
+@font-face{font-family:Onest;font-weight:500;src:url(/fonts/onest-cyrillic-500-normal.woff2)}
+@font-face{font-family:Onest;font-weight:600;src:url(/fonts/onest-cyrillic-600-normal.woff2)}
+@font-face{font-family:Onest;font-weight:700;src:url(/fonts/onest-cyrillic-700-normal.woff2)}
+@font-face{font-family:Unb;src:url(/fonts/unbounded-cyrillic-800-normal.woff2)}
+@font-face{font-family:Osw;src:url(/fonts/oswald-cyrillic-600-normal.woff2)}
+*{box-sizing:border-box}body{margin:0;padding:44px 24px 24px;background:#141418;display:flex;gap:22px;font-family:Onest;align-items:flex-start}
+.w{position:relative}.cap{position:absolute;top:-30px;left:0;right:0;text-align:center;color:#E2B66B;font:600 12.5px Onest;letter-spacing:.07em}
+.ph{width:340px;height:740px;border-radius:42px;overflow:hidden;position:relative;color:#fff;box-shadow:0 0 0 8px #2a2a30;background:#07070b}
+.cvimg{background:url(/img/ai/4085fa04c03a.webp) center/cover}
+/* 1 — шаги */
+.S .bg{position:absolute;inset:-60px;filter:blur(60px) saturate(1.3);opacity:.45}
+.S .in{position:relative;height:100%;display:flex;flex-direction:column;padding:56px 22px 26px}
+.prog{display:flex;gap:5px}.prog i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.2)}.prog i.f{background:#fff}
+.S .mini{display:flex;gap:10px;align-items:center;margin:18px 0 0;font-size:13px;color:rgba(255,255,255,.7)}.S .mini .cv{width:28px;height:42px;border-radius:4px}
+.S h3{font:700 34px/1.05 Corm;margin:auto 0 26px}
+.emo{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.emo div{aspect-ratio:1;border-radius:24px;background:rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:12px;color:rgba(255,255,255,.8);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.15)}
+.emo div b{font-size:34px;font-weight:400}.emo div.on{background:#fff;color:#111;transform:scale(1.04)}
+.S .nx{margin-top:22px;display:flex;justify-content:space-between;align-items:center;font-size:14px;color:rgba(255,255,255,.6)}
+.S .nx span:last-child{background:#fff;color:#111;padding:14px 26px;border-radius:999px;font-weight:600}
+/* 2 — обложка-герой */
+.H .cv{position:absolute;left:0;right:0;top:0;height:430px}
+.H .cv:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,#07070b 98%)}
+.H .in{position:absolute;left:0;right:0;bottom:0;padding:0 22px 24px}
+.H .st{font-size:13px;color:rgba(255,255,255,.7);display:flex;gap:10px;align-items:center}.H .st b{color:#F3D19A;font-size:16px;letter-spacing:2px}
+.H h2{font:700 34px/1 Corm;margin:6px 0 2px}.H .au{color:rgba(255,255,255,.6);font-size:14px}
+.H .em{display:flex;gap:8px;margin:16px 0}.H .em span{display:flex;align-items:center;gap:6px;padding:8px 12px 8px 8px;border-radius:999px;background:rgba(255,255,255,.08);font-size:13px}.H .em span b{font-size:20px;font-weight:400}
+.H .meters{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.ring{text-align:center;font-size:11px;color:rgba(255,255,255,.55)}.ring div{width:56px;height:56px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;font:700 17px Onest;color:#fff;background:conic-gradient(#F3D19A var(--p),rgba(255,255,255,.1) 0);-webkit-mask:radial-gradient(circle 21px,transparent 98%,#000 100%);mask:radial-gradient(circle 21px,transparent 98%,#000 100%);position:relative}
+.ring{position:relative}.ring em{position:absolute;top:18px;left:0;right:0;font:700 16px Onest;color:#fff;font-style:normal}
+.H .q{font:600 20px/1.3 CormI;color:rgba(255,255,255,.92);padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}
+/* 3 — чек */
+.R{background:linear-gradient(160deg,#2b2033,#0c0a10)}.R .in{padding:46px 20px}
+.rc{background:#FBF8F1;color:#1a1714;border-radius:6px 6px 0 0;padding:20px 18px 26px;font:500 13px/1.5 ui-monospace,Menlo,monospace;position:relative;transform:rotate(-1.5deg);box-shadow:0 30px 60px -20px #000}
+.rc:after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:10px;background:radial-gradient(circle at 6px -2px,transparent 7px,#FBF8F1 7.5px) 0 0/12px 10px repeat-x}
+.rc .t{text-align:center;font:800 15px Unb;letter-spacing:.04em}.rc .s{text-align:center;color:#8a8378;font-size:11px;margin:2px 0 12px}
+.rc .r{display:flex;justify-content:space-between}.rc .d{border-top:1.5px dashed #c9c2b5;margin:10px 0}
+.rc .tot{display:flex;justify-content:space-between;font:800 18px Unb}
+.rc .bc{height:38px;margin-top:14px;background:repeating-linear-gradient(90deg,#1a1714 0 2px,transparent 2px 4px,#1a1714 4px 5px,transparent 5px 8px,#1a1714 8px 11px,transparent 11px 12px)}
+.rc .ft{text-align:center;font-size:11px;color:#8a8378;margin-top:6px}
+.R .sh{margin-top:30px;text-align:center;font-size:13px;color:rgba(255,255,255,.6)}
+/* 4 — стикеры */
+.P{background:linear-gradient(170deg,#F5D7C8 0%,#E9C2D4 55%,#C9B9E6 100%);color:#2a1f2a}.P .in{padding:60px 22px;position:relative;height:100%}
+.pol{width:220px;margin:10px auto 0;background:#fff;padding:10px 10px 46px;border-radius:4px;transform:rotate(-4deg);box-shadow:0 24px 50px -18px rgba(60,20,60,.5);position:relative}
+.pol .cv{height:270px;border-radius:2px}.pol .cpt{position:absolute;bottom:12px;left:0;right:0;text-align:center;font:600 16px CormI;color:#3a2e35}
+.stk{position:absolute;padding:8px 13px;border-radius:999px;font:700 14px Onest;box-shadow:0 8px 18px -8px rgba(0,0,0,.35);background:#fff;border:3px solid #fff}
+.P .big{text-align:center;margin-top:34px;font:800 26px/1.1 Unb;letter-spacing:-.01em}.P .sub{text-align:center;font-size:13.5px;margin-top:8px;opacity:.7}
+.P .q{margin-top:18px;text-align:center;font:600 18px/1.3 CormI}
+</style></head><body>
+<div class="w"><div class="cap">1 · ЗАПОЛНЕНИЕ ПО ШАГАМ</div><div class="ph S"><div class="bg cvimg"></div><div class="in">
+ <div class="prog"><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
+ <div class="mini"><div class="cv cvimg"></div>Гордость и предубеждение</div>
+ <h3>Что было, пока ты читала?</h3>
+ <div class="emo"><div class="on"><b>🦋</b>влюбилась</div><div><b>😭</b>плакала</div><div class="on"><b>😂</b>смеялась</div><div><b>🔥</b>не оторваться</div><div><b>🤯</b>не ожидала</div><div><b>🥱</b>скучала</div></div>
+ <div class="nx"><span>Пропустить</span><span>Дальше</span></div></div></div></div>
+
+<div class="w"><div class="cap">2 · ГОТОВАЯ СТРАНИЦА</div><div class="ph H"><div class="cv cvimg"></div><div class="in">
+ <div class="st"><b>★★★★★</b>7 дней · ноябрь</div><h2>Гордость и предубеждение</h2><div class="au">Джейн Остин</div>
+ <div class="em"><span><b>🦋</b>влюбилась</span><span><b>😂</b>смеялась</span></div>
+ <div class="meters"><div class="ring"><div style="--p:80%"></div><em>4</em>сюжет</div><div class="ring"><div style="--p:100%"></div><em>5</em>герои</div><div class="ring"><div style="--p:100%"></div><em>5</em>любовь</div><div class="ring"><div style="--p:20%"></div><em>1</em>слёзы</div></div>
+ <div class="q">«Я бы легко простила его гордость, если бы он не задел мою»</div></div></div></div>
+
+<div class="w"><div class="cap">3 · ДЛЯ СТОРИС: КНИЖНЫЙ ЧЕК</div><div class="ph R"><div class="in">
+ <div class="rc"><div class="t">КНИЖНАЯ НОРА</div><div class="s">чек № 17 · 9 ноября 2026</div>
+ <div class="r"><span>Гордость и предубеждение</span></div><div class="r" style="color:#8a8378"><span>Джейн Остин</span><span>384 стр.</span></div>
+ <div class="d"></div>
+ <div class="r"><span>влюбилась в героя</span><span>×1</span></div><div class="r"><span>смеялась вслух</span><span>×3</span></div><div class="r"><span>плакала</span><span>×0</span></div><div class="r"><span>не спала ночью</span><span>×2</span></div>
+ <div class="d"></div><div class="r"><span>Сюжет</span><span>4/5</span></div><div class="r"><span>Герои</span><span>5/5</span></div><div class="r"><span>Читала</span><span>7 дн.</span></div>
+ <div class="d"></div><div class="tot"><span>ИТОГО</span><span>★★★★★</span></div>
+ <div class="bc"></div><div class="ft">спасибо, что читаете · @nora_bookworld</div></div>
+ <div class="sh">Поделиться ↗</div></div></div></div>
+
+<div class="w"><div class="cap">4 · ДЛЯ СТОРИС: ПОЛАРОИД СО СТИКЕРАМИ</div><div class="ph P"><div class="in">
+ <div class="pol"><div class="cv cvimg"></div><div class="cpt">ноябрь, 7 дней</div></div>
+ <div class="stk" style="top:66px;right:24px;transform:rotate(8deg)">🦋 влюбилась</div>
+ <div class="stk" style="top:300px;left:20px;transform:rotate(-7deg);background:#FFE58A;border-color:#FFE58A">😂 смеялась</div>
+ <div class="stk" style="top:250px;right:30px;transform:rotate(5deg);background:#2a1f2a;border-color:#2a1f2a;color:#fff">★ 5/5</div>
+ <div class="big">Гордость<br>и предубеждение</div><div class="sub">Джейн Остин · прочитано в Норе</div>
+ <div class="q">«Я бы легко простила его гордость, если бы он не задел мою»</div></div></div></div>
+</body></html>
