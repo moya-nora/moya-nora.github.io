@@ -5,4 +5,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          dig +short NS nora-books.ru @a.dns.ripn.net; echo "--8.8.8.8"; dig +short nora-books.ru A @8.8.8.8; echo "--ns1.spaceweb"; dig +short nora-books.ru A @ns1.spaceweb.ru
+          for u in https://moya-nora.github.io/app.html http://nora-books.ru/ https://nora-books.ru/ https://nora-books.ru/app.html https://www.nora-books.ru/; do echo "== $u"; curl -sS -m 20 -o /dev/null -w "%{http_code} -> %{redirect_url}\n" "$u" 2>&1; done
