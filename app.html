@@ -1618,6 +1618,7 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 #app .bkc-acts{display:flex;gap:10px;width:100%;max-width:420px;margin-top:auto;padding-top:16px}
 #app .bkc-acts .btn{flex:1;min-width:0;padding-left:6px;padding-right:6px;font-size:14.5px;white-space:nowrap}
 #app .bkc-acts .btn[data-bkc=want]{flex:1.35;font-size:14px;letter-spacing:-.01em}
+#app .bkc-acts .btn.sure{color:#FF8A80;box-shadow:inset 0 0 0 1px rgba(255,138,128,.5)}
 #app .bkc-where{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;max-width:420px;margin-top:10px;padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.16);font-size:15px;font-weight:600;color:var(--ink)}
 #app .bkc-where svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9}
 @media (max-height:700px){#app .bkc-cv{height:32vh}#app .bkc h2{font-size:26px}}
@@ -4369,7 +4370,7 @@ function itemHTML(){const x=cardX,L=cardL,F=!!x._f;const meta=x.a||"";
    :L==="top"?(x.now?`<div class="one"><button class="btn w" data-cmv>${T[REALM].did}</button></div>`:`<div class="one"><button class="btn" data-crm>Убрать из избранного</button></div>`)
    :`<div class="acts"><button class="btn w" data-cmv>${T[REALM].did}</button><button class="btn" data-crm>Убрать</button></div>`}</div>`}
 function openItem(x,L){if(!x)return;
-  if(L==="read"){if(x._f)openFilm(x.src);else openBook(x.src.id);return}
+  if(L==="read"){if(x._f||VIEW){if(x._f)openFilm(x.src);else openBook(x.src.id);return}bkcOpen(x,"read");return}
   if(VIEW)return;if(!x._f){bkcOpen(x,L);return}cardX=x;cardL=L;ambFor(x);vOpen(itemHTML())}
 $("#vshBody").addEventListener("click",e=>{const t=e.target;if(!cardX||$("#fres"))return;const D=cardX._f?FM:BK;
   if(t.closest("[data-cmv]")){const x=cardX;vClose();rmAsk(x,null,n=>{D.markRead(x,n*2);toast(x._f?"Отмечено как просмотренное":"Отмечено как прочитанное");refresh()},"Без оценки",()=>{D.markRead(x,null);refresh()});return}
@@ -5219,7 +5220,7 @@ function bkcFacts(x){const m=META[ikey(x)],fr=frReaders(x),out=[];
   return out.join("")}
 function bkcActs(x,L){const st=BK.has(x);
   if(L==="top"||L==="want"||st==="want"||x.now)return `<button class="btn w" data-bkc="read">Прочитано</button>${x.now?"":`<button class="btn" data-bkc="rm">Убрать из избранного</button>`}`;
-  if(st==="read")return `<button class="btn" disabled>Уже на полке «Прочитано»</button>`;
+  if(L==="read"||st==="read")return `<button class="btn" data-bkc="unread">Убрать из «Прочитано»</button>`;
   return `<button class="btn" data-bkc="read">Прочитано</button><button class="btn w" data-bkc="want">Добавить в избранное</button>`}
 function bkcDraw(){const {x,L}=BKC;
   bkcEl.innerHTML=`<div class="bkc-in"><button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button>
@@ -5274,6 +5275,8 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");if
   if(a==="where"){whereOpen(x,"");return}
   if(a==="want"){BK.addWant(x);vDirty=true;toast("Добавлено в избранное");bkcClose();return}
   if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
+  if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
+    const r=L==="read"?x:BK.read().find(y=>norm(y.t)===norm(x.t));if(r)BK.rmRead(r);vDirty=true;toast("Убрано с полки «Прочитано»");bkcClose();return}
   if(a==="read"){bkcClose();rmAsk(x,null,n=>{BK.markRead(x,n*2);refresh()},"Без оценки",()=>{BK.markRead(x,null);refresh()})}});
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody"))return;
   const w=t.closest("[data-wh]");if(w){e.stopPropagation&&e.stopPropagation();whereOpen($("#vshBody")._wx,w.dataset.wh);tgHaptic();return}
