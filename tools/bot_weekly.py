@@ -132,7 +132,7 @@ def news_for(nd, me):
     for b in FRESH:
         k = "n:" + norm(b["t"])
         if norm(b["a"]) in fav and norm(b["t"]) not in have and k not in sentk:
-            out.append((k, f"📖 Новая книга автора, которого ты любишь: «{b['t']}» — {b['a']}")); sentk.add(k)
+            out.append((k, f"📖 Новая книга автора, которого ты любишь: «{b['t']}» - {b['a']}")); sentk.add(k)
             if len(out) >= 2: break
     for uid in (nd.get("fr") or [])[:40]:
         ev, name = profile_ev(uid)
@@ -153,7 +153,7 @@ def news_for(nd, me):
         elif (pr.get("discount_percent") or 0) >= 20:
             k = f"d:{norm(w['t'])}:{week}"
             if k not in sentk:
-                out.append((k, f"🏷 «{w['t']}» сейчас со скидкой {pr['discount_percent']}% на ЛитРес — {int(pr.get('final_price') or 0)} ₽")); sentk.add(k)
+                out.append((k, f"🏷 «{w['t']}» сейчас со скидкой {pr['discount_percent']}% на ЛитРес - {int(pr.get('final_price') or 0)} ₽")); sentk.add(k)
         time.sleep(0.3)
         if len(out) >= 5:
             break

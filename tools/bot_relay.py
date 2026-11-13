@@ -66,7 +66,7 @@ def handle(m):
         return True
     if text.startswith("/stop") or text.lower().strip() in ("стоп", "отписаться"):
         sub(chat, fr, False)
-        api("sendMessage", chat_id=chat, text="Хорошо, больше не буду присылать советы. Чтобы вернуть — напиши /start.")
+        api("sendMessage", chat_id=chat, text="Хорошо, больше не буду присылать советы. Чтобы вернуть - напиши /start.")
         return True
     if (fr.get("username") or "").lower() == OWNER:
         sub(chat, fr)
@@ -77,13 +77,13 @@ def handle(m):
         tag = re.search(r"#u(\d+)", (rep or {}).get("text") or (rep or {}).get("caption") or "")
         if rep and tag:
             ok = api("copyMessage", chat_id=int(tag.group(1)), from_chat_id=chat, message_id=m["message_id"])
-            api("sendMessage", chat_id=chat, text="✓ Отправлено" if ok else "Не получилось отправить — человек мог остановить бота.", reply_to_message_id=m["message_id"])
+            api("sendMessage", chat_id=chat, text="✓ Отправлено" if ok else "Не получилось отправить - человек мог остановить бота.", reply_to_message_id=m["message_id"])
         elif text.startswith("/start"):
             api("sendMessage", chat_id=chat, text="Готово! Сюда будут приходить вопросы читателей. Чтобы ответить, смахни сообщение влево и нажми «Ответить».")
         return True
     sub(chat, fr)
     if text.startswith("/start"):
-        api("sendMessage", chat_id=chat, text="Привет! Это Нора — все твои книги в одном месте и советы, что читать дальше.\n\nРаз в неделю Шуршуня будет присылать сюда одну книгу для тебя (отписаться — /stop).\n\nЕсли есть вопрос или идея — просто напиши сюда, мы ответим.",
+        api("sendMessage", chat_id=chat, text="Привет! Это Нора: подберу книги под твой вкус и подскажу, что читать дальше.\n\nРаз в неделю Шуршуня будет присылать сюда одну книгу для тебя (отписаться - /stop).\n\nЕсли есть вопрос или идея - просто напиши сюда, мы ответим.",
             reply_markup={"inline_keyboard": [[{"text": "Открыть Нору", "web_app": {"url": APP}}]]})
         return True
     if not owner_id:
@@ -97,7 +97,7 @@ def handle(m):
         api("copyMessage", chat_id=owner_id, from_chat_id=chat, message_id=m["message_id"])
     if chat not in acked:
         acked.add(chat)
-        api("sendMessage", chat_id=chat, text="Спасибо! Передали в команду Норы — ответим здесь же.")
+        api("sendMessage", chat_id=chat, text="Спасибо! Передали в команду Норы - ответим здесь же.")
     return True
 
 
