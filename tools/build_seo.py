@@ -142,8 +142,9 @@ try:
 except FileNotFoundError:
     COVERS = {}
 nk = lambda s: re.sub(r"[^0-9a-zа-я]+", "", str(s or "").lower().replace("ё", "е"))
+AIOK = set(json.load(open(os.path.join(ROOT, "books", "ai_ok.json"), encoding="utf-8"))) if os.path.exists(os.path.join(ROOT, "books", "ai_ok.json")) else set()
 try:
-    AIC = {k: v for k, v in json.load(open(os.path.join(ROOT, "books", "ai_covers.json"), encoding="utf-8"))["m"].items() if v and os.path.exists(os.path.join(ROOT, "img", "ai", v))}
+    AIC = {k: v for k, v in json.load(open(os.path.join(ROOT, "books", "ai_covers.json"), encoding="utf-8"))["m"].items() if v and os.path.exists(os.path.join(ROOT, "img", "ai", v)) and (v in AIOK or v.endswith("v.webp"))}
 except (FileNotFoundError, KeyError):
     AIC = {}
 img_of = lambda b: (("/img/ai/" + AIC[nk(b["t"]) + "|" + nk(b["a"] or "")]) if nk(b["t"]) + "|" + nk(b["a"] or "") in AIC else "") \
