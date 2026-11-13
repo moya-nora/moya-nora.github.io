@@ -5353,7 +5353,7 @@ function inviteLink(){const u=NS.uid&&NS.uid();if(!u)return "";return TG?`https:
 function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
   const list=FRIENDS.map(f=>({f,p:FRP[f.uid]})),news=list.filter(x=>x.p&&(x.p.ev||[]).length).sort((a,b)=>(b.p.ev[0].ts||0)-(a.p.ev[0].ts||0));
   box.innerHTML=`<h1 class="fr-h">Друзья</h1>
-   ${VIEW?"":(()=>{const nk=LS.get("zal.nick","");return nk?`<button class="fr-nick" data-nick><span>Твой ник в Норе</span><b>@${esc(nk)}</b><i>изменить</i></button>`:`<button class="fr-nick new" data-nick><span>Придумай ник - по нему друзья найдут тебя за секунду</span><i>придумать ›</i></button>`})()}
+   ${VIEW?"":(()=>{const nk=LS.get("zal.nick","");return nk?`<button class="fr-nick" data-nick><span>Друзья найдут тебя по нику</span><b>@${esc(nk)}</b><i>изменить</i></button>`:`<button class="fr-nick new" data-nick><span>Ник, по которому тебя найдут друзья, появится после входа</span><i>›</i></button>`})()}
    ${REQS.length?`<h3 class="fr-sec">Заявки в друзья</h3>`+REQS.map(q=>`<div class="sc gl frq">${avatar(q.n,q.f)}<span><b>${esc(q.n||"Кто-то")}</b><small>хочет добавить в друзья</small></span><button class="btn w" data-frq-yes="${esc(q.id)}">Принять</button><button class="btn" data-frq-no="${esc(q.id)}">Отклонить</button></div>`).join(""):""}
    <div class="fr-row"><button class="fr-add" data-fr-find><i class="ava plus">+</i><span>Добавить</span></button>${list.map(({f})=>`<button class="fr-av" data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid,frNew(f)?"new":"")}<span>${esc(f.n||"Друг")}</span></button>`).join("")}</div>
    ${FRIENDS.length?"":`<div class="sc gl fr-empty"><h3>Полки друзей</h3><p>Найди друга по почте или нику в Telegram — придёт заявка прямо в Нору. Когда заявку примут, вы будете видеть полки друг друга: что прочитано, оценки, что хочется прочитать.</p><button class="btn w" data-fr-find>Добавить друга</button></div>`}
@@ -5728,11 +5728,20 @@ $("#sumScroll").addEventListener("click",e=>{const t=e.target;const op=t.closest
 // свой ник в Норе: по нему друзья находят друг друга без почты
 const NICK_RX=/^[a-zа-я0-9._-]{3,24}$/i;
 function nickSheet(){if(needAuth()){authShow();return}const cur=LS.get("zal.nick","");
-  vOpen(`<h3 class="vh">Твой ник в Норе</h3><p class="sy-note">Скажи его другу - он впишет ник в поиске друзей. Буквы, цифры, точка или подчёркивание, от 3 знаков.</p><input class="sy-in" id="nkI" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="например, oksana.reads" value="${esc(cur)}"><p class="sy-msg" id="nkM"></p><div class="rv-one"><button class="btn w" id="nkS">Сохранить</button></div>`);
+  vOpen(`<h3 class="vh">Твой ник в Норе</h3><p class="sy-note">Имя «${esc(myName()||"")}» может быть у многих, а ник - только у тебя. Скажи его другу: он впишет ник в поиске друзей и сразу найдёт тебя. Можно поменять на любой свободный - латиница или кириллица, цифры, точка, от 3 знаков.</p><input class="sy-in" id="nkI" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="например, oksana.reads" value="${esc(cur)}"><p class="sy-msg" id="nkM"></p><div class="rv-one"><button class="btn w" id="nkS">Сохранить</button></div>`);
   const i=$("#nkI"),m=$("#nkM");setTimeout(()=>{try{i.focus()}catch(e){}},200);i.onkeydown=e=>{if(e.key==="Enter")$("#nkS").click()};
   $("#nkS").onclick=async()=>{const v=NS.nickKey(i.value);if(!NICK_RX.test(v)){m.textContent=v.length<3?"Хотя бы 3 знака":"Только буквы, цифры, точка, дефис или подчёркивание";return}
     if(v===cur){vClose();return}m.textContent="Проверяю…";try{const u=await NS.nickGet(v);if(u&&u!==NS.uid()){m.textContent="Этот ник уже занят - попробуй другой";return}await NS.nickPut(v);LS.set("zal.nick",v);tgHaptic("success");vClose();toast("Готово - тебя можно найти по @"+v);drawFr()}catch(e){m.textContent="Не получилось сохранить - проверь интернет"}}}
 document.addEventListener("click",e=>{if(e.target.closest("[data-nick]")){tgHaptic();nickSheet()}});
+// ник выдаём сам: из имени (Настя → nastya), а если занят - nastya2, nastya3…; поменять можно в «Друзьях»
+const TRL={а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"e",ж:"zh",з:"z",и:"i",й:"y",к:"k",л:"l",м:"m",н:"n",о:"o",п:"p",р:"r",с:"s",т:"t",у:"u",ф:"f",х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sch",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya"};
+const nickBase=()=>{const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;let b=(u&&u.username)||myName()||(NS.email?String(NS.email).split("@")[0]:"");
+  b=String(b).toLowerCase().split("").map(c=>TRL[c]!=null?TRL[c]:c).join("").replace(/[^a-z0-9._-]+/g,"").replace(/^[._-]+/,"").slice(0,18);return b.length>=3?b:(b+"reader").slice(0,18)};
+let NICKBUSY=false;
+async function nickAuto(){if(NICKBUSY||VIEW||LS.get("zal.nick","")||needAuth()||!NS.nickGet||!(NS.uid&&NS.uid()))return;NICKBUSY=true;
+  try{const b=nickBase();for(let i=1;i<40;i++){const v=i===1?b:b+(i<10?i:Math.floor(Math.random()*900+100));const u=await NS.nickGet(v);if(!u||u===NS.uid()){await NS.nickPut(v);LS.set("zal.nick",v);if(SCREEN==="fr")drawFr();break}}}catch(e){}finally{NICKBUSY=false}}
+setTimeout(nickAuto,7000);setInterval(nickAuto,60000);
+
 // статус аккаунта на «Полках»: видно, сохранены ли книги
 function acctLine(){if(VIEW||!NS.on)return "";if(needAuth())return `<button class="acct off" data-acct><i></i><span>Полки сохранены только на этом устройстве</span><b>Войти</b></button>`;
   return `<div class="acct"><i></i><span>Полки сохранены в аккаунте${NS.email?" · "+esc(NS.email):""}</span></div>`}
