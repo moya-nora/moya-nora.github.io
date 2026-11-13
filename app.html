@@ -1914,6 +1914,71 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .sx-brain b{font-size:14px}#app .sx-brain span{font-size:12px;opacity:.7}
 #app .sx-brain.ld{animation:brp 1.4s ease-in-out infinite}@keyframes brp{50%{opacity:.55}}
 .rv-one{margin-top:16px}.rv-one .btn{width:100%}
+
+@font-face{font-family:DMan;font-weight:400;src:url(/fonts/manrope-cyrillic-400-normal.woff2)}
+@font-face{font-family:DMan;font-weight:500;src:url(/fonts/manrope-cyrillic-500-normal.woff2)}
+@font-face{font-family:DMan;font-weight:600;src:url(/fonts/manrope-cyrillic-600-normal.woff2)}
+@font-face{font-family:DMan;font-weight:700;src:url(/fonts/manrope-cyrillic-700-normal.woff2)}
+@font-face{font-family:DLit;font-weight:300 700;src:url(/fonts/literata-cyrillic-wght-normal.woff2)}
+@font-face{font-family:DLit;font-style:italic;font-weight:300 700;src:url(/fonts/literata-cyrillic-wght-italic.woff2)}
+#app #grid.diary{display:block}
+#app .dstrip,#app #grid.diary,#app .dpage,#app .dflow{font-family:DMan,system-ui,sans-serif;text-align:left}
+#app .dstrip{margin-top:22px}
+#app .dstrip .dh{display:flex;align-items:baseline;justify-content:space-between}
+#app .dstrip .dh button{border:0;background:none;color:inherit;opacity:.6;font:600 13px DMan}
+#app .dcards{display:flex;gap:10px;margin:10px -18px 0;padding:0 18px 4px;overflow-x:auto;scrollbar-width:none}
+#app .dcards::-webkit-scrollbar{display:none}
+#app .dcard{flex:none;width:228px;text-align:left;color:inherit;border-radius:18px;padding:12px;background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.08);font:inherit}
+#app .dc-t{display:flex;gap:10px}#app .dc-t .cv,#app .dc-t>div:first-child{flex:none}
+#app .dcard b{display:block;font:700 15px/1.15 DMan}#app .dcard small{display:block;font-size:11.5px;opacity:.55;margin-top:3px}
+#app .dc-r,#app .dent .dw{margin-top:6px;font-size:11.5px;color:#E2B66B;font-weight:600}
+#app .dcard p{margin:10px 0 0;font:400 13px/1.45 DLit,Georgia,serif;opacity:.88;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#app .dtodo{margin-top:12px;width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:16px;border:1px dashed rgba(243,209,154,.45);background:none;color:inherit;font:500 13px/1.35 DMan;text-align:left}
+#app .dtodo span{flex:1;opacity:.9}#app .dtodo em{font-style:normal;font-weight:700;color:#F3D19A}#app .dtodo i{font-style:normal;opacity:.5;font-size:18px}
+#app .dsub{font-size:12.5px;opacity:.55;margin:2px 0 4px}
+#app .dmon{margin:18px 0 6px;font-size:11.5px;font-weight:700;letter-spacing:.08em;opacity:.5;text-transform:uppercase}
+#app .dent{display:flex;gap:12px;width:100%;padding:11px 0;border:0;border-bottom:1px solid rgba(255,255,255,.07);background:none;color:inherit;text-align:left;font:inherit}
+#app .dent>div:last-child{flex:1;min-width:0}
+#app .dent b{display:block;font:700 15.5px/1.15 DMan}#app .dent .dm{font-size:11.5px;opacity:.55;margin-top:3px}
+#app .dent p{margin:6px 0 0;font:400 13px/1.45 DLit,Georgia,serif;opacity:.85;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#app .dq{display:inline-block;margin-top:6px;font:italic 400 12px DLit,serif;opacity:.7}
+#app .dempty{margin-top:14px;padding:18px;border-radius:18px;background:rgba(255,255,255,.05)}#app .dempty b{font:700 16px DMan}#app .dempty p{margin:6px 0 0;font-size:13.5px;line-height:1.45;opacity:.7}
+#app .dhero{display:flex;gap:14px;margin-top:6px}#app .dhero>*:first-child{flex:none;box-shadow:0 18px 30px -12px #000}
+#app .dhero b{display:block;font:700 22px/1.08 DMan;letter-spacing:-.02em}#app .dhero small{display:block;font-size:12.5px;opacity:.55;margin-top:6px}
+#app .dbig{margin-top:10px;font:700 15px DMan;color:#E2B66B}
+#app .dchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}#app .dchips span{padding:6px 11px;border-radius:10px;background:rgba(255,255,255,.08);font-size:12.5px}
+#app .dfx{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}#app .dfx div{padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.05);font-size:11px;opacity:.9}#app .dfx b{display:block;font-size:13.5px;font-weight:600;margin-top:2px}
+#app .dlbl{margin:18px 0 6px;font-size:11px;font-weight:700;letter-spacing:.08em;opacity:.5;text-transform:uppercase}
+#app .drv{font:400 15px/1.6 DLit,Georgia,serif;white-space:pre-line}
+#app .dqc{position:relative;margin-top:8px;padding:10px 34px 10px 12px;border-left:2px solid #E2B66B;background:rgba(255,255,255,.05);border-radius:0 12px 12px 0;font:italic 400 14px/1.45 DLit,Georgia,serif}
+#app .dqc small{display:block;font:500 11px DMan;opacity:.55;margin-top:4px;font-style:normal}
+#app .dqx{position:absolute;right:6px;top:6px;width:26px;height:26px;border:0;background:none;color:inherit;opacity:.5;padding:4px}#app .dqx svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+#app .dacts,#app .dfn{display:flex;gap:8px;margin-top:22px}#app .dacts .btn,#app .dfn .btn{flex:1}
+#app .dfh{display:flex;justify-content:space-between;align-items:center}#app .dfk{font-size:12px;font-weight:700;letter-spacing:.06em;opacity:.5}
+#app .dfx2{width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.08);color:inherit;display:grid;place-items:center}#app .dfx2 svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+#app .dfb{display:flex;gap:10px;align-items:center;margin-top:10px}#app .dfb b{display:block;font:700 14px DMan}#app .dfb small{font-size:12px;opacity:.55}
+#app .dft{font:700 26px/1.1 DMan;letter-spacing:-.02em;margin:18px 0 4px}#app .dfs{margin:0 0 12px;font-size:13px;opacity:.55}
+#app .dfr{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+#app .dfr button{display:flex;justify-content:space-between;align-items:center;padding:15px 16px;border-radius:16px;border:0;background:rgba(255,255,255,.07);color:inherit;font:600 16px DMan}
+#app .dfr button i{font-style:normal;color:#E2B66B;letter-spacing:2px;font-size:14px}#app .dfr button.on{background:#f4f4f5;color:#0b0b0e}
+#app .dfm{display:flex;flex-wrap:wrap;gap:8px}#app .dfm button{padding:10px 14px;border-radius:14px;border:0;background:rgba(255,255,255,.08);color:inherit;font:600 14px DMan}#app .dfm button.on{background:#f4f4f5;color:#0b0b0e}
+#app .dfl{margin:16px 0 8px;font-size:12px;font-weight:700;opacity:.55}
+#app .dfta{width:100%;min-height:42vh;border:0;border-radius:16px;padding:14px;background:rgba(255,255,255,.06);color:inherit;font:400 16px/1.6 DLit,Georgia,serif;resize:none;outline:0}
+#app .dfqt{min-height:70px;margin-top:12px;font:italic 400 15px/1.45 DLit,Georgia,serif;resize:none}
+#app .dfqr{display:flex;gap:8px;margin-top:8px}#app .dfqr input{width:84px;flex:none;margin:0}#app .dfqr .btn{flex:1}
+
+#app .dflow .cv,#app .dpage .cv,#app .dstrip .cv,#app #grid.diary .cv{width:var(--lw);height:auto;aspect-ratio:2/3;flex:none}
+#app .bkc .bkc-cv{transition:height .45s cubic-bezier(.2,.8,.2,1),margin .45s}
+#app .bkc.dsc .bkc-cv{height:15vh;margin-top:6px}
+#app .fr-nick{display:flex;align-items:center;gap:8px;width:100%;margin:4px 0 14px;padding:12px 14px;border-radius:16px;border:0;background:rgba(255,255,255,.07);color:inherit;font:inherit;text-align:left}
+#app .fr-nick span{flex:1;font-size:13px;opacity:.7}#app .fr-nick b{font-size:15px}#app .fr-nick i{font-style:normal;font-size:12.5px;opacity:.55}
+#app .fr-nick.new{border:1px dashed rgba(243,209,154,.45)}#app .fr-nick.new span{opacity:.9}#app .fr-nick.new i{color:#F3D19A;opacity:1;font-weight:600}
+#app .acct{display:flex;align-items:center;gap:8px;margin:-2px 0 10px;font-size:12px;opacity:.6;border:0;background:none;color:inherit;padding:0;text-align:left;width:100%}
+#app .acct i{width:7px;height:7px;border-radius:50%;background:#6fd39a;flex:none}
+#app .acct.off{opacity:1}#app .acct.off i{background:#f0a35c}#app .acct.off span{opacity:.75}#app .acct.off b{margin-left:auto;color:#F3D19A;font-weight:700}
+#app #grid.diary .dent{display:flex;flex-direction:row;align-items:flex-start;gap:12px;aspect-ratio:auto;height:auto}
+#app #grid.diary .dtodo{flex-direction:row}#app #grid.diary .dent>div:last-child{text-align:left}
+#app #acctL{margin:0 22px}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -2113,6 +2178,9 @@ S.notifyPut=async d=>{const t=await S.token();if(!t||!tok.uid)return false;const
 S.notifyDel=async()=>{const t=await S.token();if(!t||!tok.uid)return false;const r=await fetch(base()+"notify/"+tok.uid,{method:"DELETE",headers:{Authorization:"Bearer "+t}});return r.ok};
 S.lookupPut=async handles=>{if(!tok.uid)return;for(const h of handles){const k=hkey(h);if(!k||k==="t:")continue;const id=await sha(k);
   await authed("lookup/"+id,{method:"PATCH",body:JSON.stringify({fields:{u:{stringValue:tok.uid}}})}).catch(()=>{})}};
+S.nickKey=n=>String(n||"").trim().toLowerCase().replace(/^@/,"").replace(/ё/g,"е");
+S.nickGet=async n=>{const k=S.nickKey(n);if(k.length<3)return null;const r=await fetch(base()+"lookup/"+(await sha("n:"+k))+"?key="+FB.apiKey,{cache:"no-store"});if(r.status===404)return null;if(!r.ok)throw new Error("HTTP "+r.status);const j=await r.json();return j.fields&&j.fields.u&&j.fields.u.stringValue||null};
+S.nickPut=async n=>{if(!tok.uid)throw new Error("noauth");const k=S.nickKey(n);const r=await authed("lookup/"+(await sha("n:"+k)),{method:"PATCH",body:JSON.stringify({fields:{u:{stringValue:tok.uid}}})});if(!r.ok)throw new Error("HTTP "+r.status);return true};
 S.lookup=async h=>{const k=hkey(h);if(!k)return null;const r=await fetch(base()+"lookup/"+(await sha(k))+"?key="+FB.apiKey,{cache:"no-store"});if(r.status===404)return null;if(!r.ok)throw new Error("HTTP "+r.status);const j=await r.json();return j.fields&&j.fields.u&&j.fields.u.stringValue||null};
 const reqDoc=f=>({f:f.f.stringValue,t:f.t.stringValue,n:f.n?f.n.stringValue:"",s:f.s.stringValue,k:f.k?f.k.stringValue:"",ts:f.ts?+f.ts.integerValue:0});
 S.reqSend=async(to,name,s,k)=>{const fields={f:{stringValue:tok.uid},t:{stringValue:to},n:{stringValue:name||""},s:{stringValue:s||"p"},ts:{integerValue:String(Date.now())}};if(k)fields.k={stringValue:k};
@@ -4405,9 +4473,11 @@ function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((f
 (function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,9000)})();
 function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
-  $("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read]]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
+  if(colF==="diary"&&(VIEW||isF()))colF="read";$("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read],...(isF()?[]:[["diary","Дневник"]])]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
+  {const dg=colF==="diary",cvx=$("#cviews"),ov=$("#oldv");$("#grid").classList.toggle("diary",dg);if(cvx)cvx.hidden=dg;if(ov)ov.hidden=dg;
+   if(dg){$("#grid").innerHTML=diaryPage();const ds=$("#dstripB");if(ds)ds.innerHTML="";if(!keepFlow)drawFlow();drawNewAu();drawTrend();return}}
   const G=gridList();$("#grid").innerHTML=G.map((x,i)=>`<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
-  if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
+  {let ac=$("#acctL");if(!ac){ac=document.createElement("div");ac.id="acctL";const st=$(".shelves-top");st&&st.after(ac)}ac.innerHTML=acctLine()}{let ds=$("#dstripB");if(!ds){ds=document.createElement("div");ds.id="dstripB";($("#oldv")||$("#grid")).after(ds)}ds.innerHTML=colF==="read"&&!VIEW?diaryStrip():""}if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
 // «Новое от твоих авторов»: свежие книги (этот и прошлый год) авторов, которых человек оценил на 4–5, и ещё не на полках
 function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a).map(b=>norm(b.a)));if(!fav.size)return [];
   const W=wantNorms(),seen=new Set(),out=[];for(const b of ALLB()){if(!b.y||b.y<YNOW-1||!b.a||!fav.has(norm(b.a)))continue;const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt)||seen.has(nt)||dismissed.has(b.id))continue;seen.add(nt);out.push(b);if(out.length>=8)break}
@@ -4524,7 +4594,7 @@ function vOpen(html,tall){$("#vshBody").innerHTML=html;const sh=$("#vsheet");sh.
 function vClose(){const sh0=$("#vsheet");if(sh0.classList.contains("on")&&(sh0.classList.contains("search")||sh0.classList.contains("filters"))){try{resetAll();SX.picks=false}catch(e){}}$("#vsheet").classList.remove("on","ontop");document.activeElement&&document.activeElement.blur();syncBack();
   if(vDirty){vDirty=false;setTimeout(refresh,520)}}
 $("#vsheet").addEventListener("click",e=>{if(e.target.closest("[data-close],[data-vclose]"))vClose()});
-(function(){const el=$("#vsh");let y0=null,dy=0;el.addEventListener("touchstart",e=>{if(el.scrollTop>0||e.target.closest("input,.sx-au,.f-chips,.f-sort"))return;y0=e.touches[0].clientY;dy=0},{passive:true});
+(function(){const el=$("#vsh");let y0=null,dy=0;el.addEventListener("touchstart",e=>{if(el.scrollTop>0||e.target.closest("input,textarea,.sx-au,.f-chips,.f-sort,.dcards"))return;y0=e.touches[0].clientY;dy=0},{passive:true});
   el.addEventListener("touchmove",e=>{if(y0==null)return;dy=Math.max(0,e.touches[0].clientY-y0);el.style.transition="none";el.style.transform=`translateY(${dy}px)`},{passive:true});
   el.addEventListener("touchend",()=>{if(y0==null)return;y0=null;
     if(dy>90){el.style.transition="transform .26s cubic-bezier(.4,0,1,1)";el.style.transform="translateY(110%)";setTimeout(()=>{el.style.transition="none";vClose();requestAnimationFrame(()=>{el.style.transform="";requestAnimationFrame(()=>{el.style.transition=""})})},250)}
@@ -5283,6 +5353,7 @@ function inviteLink(){const u=NS.uid&&NS.uid();if(!u)return "";return TG?`https:
 function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
   const list=FRIENDS.map(f=>({f,p:FRP[f.uid]})),news=list.filter(x=>x.p&&(x.p.ev||[]).length).sort((a,b)=>(b.p.ev[0].ts||0)-(a.p.ev[0].ts||0));
   box.innerHTML=`<h1 class="fr-h">Друзья</h1>
+   ${VIEW?"":(()=>{const nk=LS.get("zal.nick","");return nk?`<button class="fr-nick" data-nick><span>Твой ник в Норе</span><b>@${esc(nk)}</b><i>изменить</i></button>`:`<button class="fr-nick new" data-nick><span>Придумай ник - по нему друзья найдут тебя за секунду</span><i>придумать ›</i></button>`})()}
    ${REQS.length?`<h3 class="fr-sec">Заявки в друзья</h3>`+REQS.map(q=>`<div class="sc gl frq">${avatar(q.n,q.f)}<span><b>${esc(q.n||"Кто-то")}</b><small>хочет добавить в друзья</small></span><button class="btn w" data-frq-yes="${esc(q.id)}">Принять</button><button class="btn" data-frq-no="${esc(q.id)}">Отклонить</button></div>`).join(""):""}
    <div class="fr-row"><button class="fr-add" data-fr-find><i class="ava plus">+</i><span>Добавить</span></button>${list.map(({f})=>`<button class="fr-av" data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid,frNew(f)?"new":"")}<span>${esc(f.n||"Друг")}</span></button>`).join("")}</div>
    ${FRIENDS.length?"":`<div class="sc gl fr-empty"><h3>Полки друзей</h3><p>Найди друга по почте или нику в Telegram — придёт заявка прямо в Нору. Когда заявку примут, вы будете видеть полки друг друга: что прочитано, оценки, что хочется прочитать.</p><button class="btn w" data-fr-find>Добавить друга</button></div>`}
@@ -5345,8 +5416,8 @@ function frReqDot(){const d=$("#frDot");if(d)d.hidden=!(REQS.length||FRIENDS.som
 function reqPopup(q){tgHaptic("medium");vOpen(`<div class="frp">${avatar(q.n,q.f,"big")}<h3 class="vh">${esc(q.n||"Кто-то")} хочет добавить вас в друзья</h3><p class="sy-note">Будете видеть полки друг друга.</p></div><div class="fr-yn"><button class="btn w" data-frq-yes="${esc(q.id)}">Принять</button><button class="btn" data-frq-no="${esc(q.id)}">Отклонить</button></div>`)}
 async function reqAnswer(id,yes){const q=REQS.find(x=>x.id===id);if(!q)return;REQS=REQS.filter(x=>x.id!==id);
   try{await NS.reqSet(id,yes?"a":"d")}catch(e){}if(yes){addFriend(q.f,q.n);toast((q.n||"Друг")+" теперь в друзьях");frLoad()}frReqDot();if($("#vsheet").classList.contains("on"))vClose();if(SCREEN==="fr")drawFr()}
-function frFind(){vOpen(`<h3 class="vh">Добавить друга</h3><p class="sy-note">Почта, с которой друг вошёл в Нору, или ник в Telegram — придёт заявка прямо в приложение.</p>
-   <input class="sy-in" id="frQ" placeholder="почта или @ник" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"><p class="sy-msg" id="frM"></p>
+function frFind(){vOpen(`<h3 class="vh">Добавить друга</h3><p class="sy-note">Ник друга в Норе, его почта или ник в Telegram - придёт заявка прямо в приложение.</p>
+   <input class="sy-in" id="frQ" placeholder="ник, почта или @telegram" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"><p class="sy-msg" id="frM"></p>
    <button class="btn w fr-go" data-fr-go>Найти</button>${CONTACTS_OK?`<button class="btn fr-go" data-fr-contacts>Найти среди контактов телефона</button>`:""}<div id="frRes"></div>
    <button class="fr-link" data-fr-inv>Друга ещё нет в Норе? Отправить приглашение ссылкой</button>`);setTimeout(()=>{const i=$("#frQ");if(i){i.focus();i.onkeydown=e=>{if(e.key==="Enter")$("[data-fr-go]").click()}}},80)}
 // контакты телефона: браузер даёт выбрать контакты только в Chrome на Android (на iPhone и внутри Telegram — нет)
@@ -5357,7 +5428,7 @@ async function frContacts(){const res=$("#frRes"),msg=$("#frM");let L=[];try{L=a
   msg.textContent=found.length?"":"Никого из выбранных пока нет в Норе — можно отправить приглашение ссылкой.";
   res.innerHTML=found.map(f=>`<div class="frq one-r">${avatar(f.n,f.uid)}<span><b>${esc(f.n)}</b><small>есть в Норе</small></span><button class="btn w" data-fr-send="${esc(f.uid)}" data-n="${esc(f.n)}">Отправить заявку</button></div>`).join("")}
 async function frFindGo(){const q=$("#frQ").value.trim(),msg=$("#frM"),res=$("#frRes");if(!q){msg.textContent="Впиши почту или ник";return}msg.textContent="Ищу…";res.innerHTML="";
-  try{let uid=await NS.lookup(q);if(!uid&&!q.includes("@")&&LOGIN_RX.test(q.toLowerCase()))uid=await NS.lookup(q.toLowerCase()+LOGIN_DOM);if(!uid){msg.textContent="В Норе такого пока нет — можно отправить приглашение ссылкой.";return}
+  try{let uid=null;if(!/^[^@]+@[^@]+\./.test(q)&&NS.nickGet)uid=await NS.nickGet(q).catch(()=>null);if(!uid)uid=await NS.lookup(q);if(!uid&&!q.includes("@")&&LOGIN_RX.test(q.toLowerCase()))uid=await NS.lookup(q.toLowerCase()+LOGIN_DOM);if(!uid){msg.textContent="В Норе такого пока нет — можно отправить приглашение ссылкой.";return}
     if(uid===NS.uid()){msg.textContent="Это ваш собственный аккаунт.";return}if(FRIENDS.some(f=>f.uid===uid)){msg.textContent="Уже в друзьях.";return}
     let p=null;try{p=await NS.getProfile(uid)}catch(e){}const n=p&&p.n||"Без имени";msg.textContent="";
     res.innerHTML=`<div class="frq one-r">${avatar(n,uid)}<span><b>${esc(n)}</b><small>${p?(p.read||[]).length+" "+plural((p.read||[]).length,"книга","книги","книг")+" на полке":""}</small></span><button class="btn w" data-fr-send="${esc(uid)}" data-n="${esc(n)}">Отправить заявку</button></div>`}
@@ -5563,8 +5634,8 @@ function myRec(x){if(!x||x._f)return null;if(x.src&&BOOKS.includes(x.src))return
 function bkcRv(x,L){if(x._f)return "";
   if(L==="friend"){const f=x.frR||{};if(!f.rv)return "";return `<div class="bkc-rv fr"><div class="bkc-rv-h">${esc(f.n||"Друг")} о книге${f.r!=null?` <span>★ ${(f.r/2).toFixed(1).replace(".",",")}</span>`:""}</div><p>${esc(f.rv)}</p></div>`}
   const b=BK.has(x)==="read"?myRec(x):null;if(!b)return "";
-  if(!b.n)return `<button class="bkc-rv add" data-bkc="rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Написать отзыв</span><small>можно показать друзьям</small></button>`;
-  return `<button class="bkc-rv" data-bkc="rv"><div class="bkc-rv-h">Мой отзыв <span>${b.pub?"видят друзья":"только для меня"}</span></div><p>${esc(b.n)}</p></button>`}
+  if(!hasEntry(b))return `<button class="bkc-rv add" data-bkc="rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Записать в дневник</span><small>отзыв, настроение, цитаты</small></button>`;
+  return `<button class="bkc-rv" data-bkc="dopen"><div class="bkc-rv-h">В дневнике <span>${esc(dLine(b))}${b.n&&b.pub?" · отзыв видят друзья":""}</span></div>${b.n?`<p>${esc(b.n)}</p>`:""}</button>`}
 function rvSheet(x){const b=myRec(x);if(!b)return;let pub=b.n?!!b.pub:true;
   const draw=()=>{document.querySelectorAll("#rvVis [data-rvv]").forEach(e=>e.classList.toggle("on",(e.dataset.rvv==="1")===pub));const h=$("#rvH");if(h)h.textContent=pub?"Отзыв появится на твоей полке у друзей.":"Отзыв увидишь только ты - Нора учтёт его в советах."};
   vOpen(`<h3 class="vh">Отзыв о «${esc(b.t)}»</h3><textarea id="rvT" class="sy-in rv-ta" rows="3" maxlength="600" placeholder="Что понравилось, что нет, кому бы посоветовала">${esc(b.n||"")}</textarea>
@@ -5578,6 +5649,94 @@ function rvSheet(x){const b=myRec(x);if(!b)return;let pub=b.n?!!b.pub:true;
 // поля ввода растут вместе с текстом - не нужно писать в узкой строчке
 function autoGrow(t){if(!t||t._ag)return;t._ag=1;const f=()=>{t.style.height="auto";t.style.height=Math.min(t.scrollHeight+2,Math.round(innerHeight*.45))+"px"};t.addEventListener("input",f);requestAnimationFrame(f)}
 document.addEventListener("focusin",e=>{const t=e.target;if(t&&t.tagName==="TEXTAREA"&&!t.readOnly)autoGrow(t)});
+// ---------- читательский дневник: оценка, настроение, как читалось, отзыв и цитаты к прочитанной книге ----------
+const DV=["Не моё","Так себе","Неплохо","Понравилась","Любимая"];
+const DMOOD=["романтичная","ироничная","лёгкая","уютная","грустная","напряжённая","мрачная","загадочная","заставляет подумать","вдохновляет","смешная","тяжёлая","атмосферная","трогательная"];
+const DHOW=[["p","Темп",["залпом","спокойно","медленно"]],["h","Держит",["сюжет","герои","атмосфера","всё вместе"]],["e","Финал",["идеальный","ожидаемый","открытый","расстроил"]]];
+const MON=["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"],MONG=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+const hasEntry=b=>!!(b&&(b.n||(b.dm&&b.dm.length)||(b.dp&&Object.values(b.dp).some(Boolean))||bQuotes(b).length));
+const bQuotes=b=>b?quotes.filter(q=>q.book===(b.id||b.t)||(!q.book&&q.bt&&norm(q.bt)===norm(b.t))):[];
+function bSave(b,ch){Object.assign(b,ch);if(b.user){const m=mine.find(y=>y.id===b.id);if(m)Object.assign(m,ch);saveMine()}else{EDITS[b.id]={...(EDITS[b.id]||{}),...ch};saveEdits()}vDirty=true;try{pubCheck()}catch(e){}}
+const dDate=b=>{if(b.dd){const d=new Date(b.dd);return d.getDate()+" "+MONG[d.getMonth()]}const m=String(b.rd||"").match(/^(\d{4})-(\d{2})/);return m?MON[+m[2]-1]+(+m[1]!==YNOW?" "+m[1]:""):""};
+const dKey=b=>b.dd||(b.rd?b.rd+"-01":"0000");
+const dVerd=b=>b.r!=null?DV[Math.max(1,Math.min(5,Math.round(b.r/2)))-1]:"";
+const dLine=b=>[dVerd(b),...(b.dm||[]).slice(0,2)].filter(Boolean).join(" · ");
+const dItem=b=>bItem(b,"read");
+function diaryList(){return BOOKS.filter(hasEntry).sort((a,b)=>dKey(b).localeCompare(dKey(a)))}
+function diaryTodo(){if(isF()||VIEW)return null;const sk=LS.get("zal.dskip",[]);const r=BOOKS.filter(b=>!hasEntry(b)&&!sk.includes(b.id)).sort((a,b)=>dKey(b).localeCompare(dKey(a)))[0];
+  if(!r)return null;const m=String(r.dd||r.rd||"").slice(0,7),now=new Date(),cur=now.toISOString().slice(0,7),prev=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().slice(0,7);return m===cur||m===prev?r:null}
+function dCard(b){const x=dItem(b);return `<button class="dcard" data-dopen="${esc(b.id)}"><div class="dc-t">${cv(x,46)}<div><b>${esc(b.t)}</b><small>${esc(dDate(b))}</small>${dLine(b)?`<div class="dc-r">${esc(dLine(b))}</div>`:""}</div></div>${b.n?`<p>${esc(b.n)}</p>`:""}</button>`}
+function diaryStrip(){if(isF()||VIEW)return "";const L=diaryList(),td=diaryTodo();if(!L.length&&!td)return "";
+  return `<div class="dstrip">${L.length?`<div class="dh"><h3 class="shelf-h">Дневник</h3><button data-f="diary">Все ${L.length} ›</button></div><div class="dcards">${L.slice(0,6).map(dCard).join("")}</div>`:`<div class="dh"><h3 class="shelf-h">Дневник</h3></div>`}
+   ${td?`<button class="dtodo" data-dnew="${esc(td.id)}">${cv(dItem(td),30)}<span>Ты дочитала <em>«${esc(td.t)}»</em>. Запишешь, как тебе?</span><i>›</i></button>`:""}</div>`}
+function diaryPage(){const L=diaryList(),td=diaryTodo();let h=td?`<button class="dtodo" data-dnew="${esc(td.id)}">${cv(dItem(td),30)}<span>Ты дочитала <em>«${esc(td.t)}»</em>. Запишешь, как тебе?</span><i>›</i></button>`:"";
+  if(!L.length)return h+`<div class="dempty"><b>Здесь будет твой читательский дневник</b><p>Открой прочитанную книгу и нажми «Записать в дневник» - оценка, настроение, отзыв и любимые цитаты останутся здесь.</p></div>`;
+  const yN=L.filter(b=>dKey(b).startsWith(String(YNOW))).length;h+=`<div class="dsub">${L.length} ${plural(L.length,"запись","записи","записей")}${yN&&yN!==L.length?`, в ${YNOW} - ${yN}`:""}</div>`;let last="";
+  for(const b of L){const k=dKey(b).slice(0,7),m=k.match(/^(\d{4})-(\d{2})/),lab=m&&m[1]!=="0000"?MON[+m[2]-1]+(+m[1]!==YNOW?" "+m[1]:""):"Раньше";if(lab!==last){h+=`<div class="dmon">${esc(lab)}</div>`;last=lab}
+    const q=bQuotes(b).length;h+=`<button class="dent" data-dopen="${esc(b.id)}">${cv(dItem(b),52)}<div><b>${esc(b.t)}</b><div class="dm">${esc([b.a,dDate(b)].filter(Boolean).join(" · "))}</div>${dLine(b)?`<div class="dw">${esc(dLine(b))}</div>`:""}${b.n?`<p>${esc(b.n)}</p>`:""}${q?`<span class="dq">❝ ${q} ${plural(q,"цитата","цитаты","цитат")}</span>`:""}</div></button>`}
+  return h}
+// запись о книге
+function dOpen(b,top){if(!b)return;const x=dItem(b),Q=bQuotes(b),dp=b.dp||{};
+  vOpen(`<div class="dpage"><div class="dhero">${cv(x,96)}<div><b>${esc(b.t)}</b><small>${esc([b.a,dDate(b),b.pg?b.pg+" стр.":""].filter(Boolean).join(" · "))}</small>${b.r!=null?`<div class="dbig">${"★".repeat(Math.round(b.r/2))} ${esc(dVerd(b))}</div>`:""}</div></div>
+   ${(b.dm||[]).length?`<div class="dchips">${b.dm.map(m=>`<span>${esc(m)}</span>`).join("")}</div>`:""}
+   ${DHOW.some(([k])=>dp[k])||dp.hero?`<div class="dfx">${DHOW.filter(([k])=>dp[k]).map(([k,l])=>`<div>${l}<b>${esc(dp[k])}</b></div>`).join("")}${dp.hero?`<div>Любимый герой<b>${esc(dp.hero)}</b></div>`:""}</div>`:""}
+   ${b.n?`<div class="dlbl">Мой отзыв${b.pub?" · видят друзья":""}</div><div class="drv">${esc(b.n)}</div>`:""}
+   ${Q.length?`<div class="dlbl">Цитаты · ${Q.length}</div>${Q.map(q=>`<div class="dqc">«${esc(q.text)}»${q.page?`<small>стр. ${esc(q.page)}</small>`:""}</div>`).join("")}`:""}
+   <div class="dacts"><button class="btn" data-dedit="${esc(b.id)}">Изменить</button><button class="btn w" data-dshare="${esc(b.id)}">Поделиться</button></div></div>`,true);if(top||BKC)$("#vsheet").classList.add("ontop")}
+function dShare(b){const dp=b.dp||{},Q=bQuotes(b);const txt=[`«${b.t}»${b.a?" - "+b.a:""}`,b.r!=null?"★".repeat(Math.round(b.r/2))+" "+dVerd(b):"",(b.dm||[]).join(", "),b.n||"",Q[0]?"«"+Q[0].text+"»":"","Мой читательский дневник в Норе: "+location.origin+"/"].filter(Boolean).join("\n\n");
+  if(navigator.share){navigator.share({text:txt}).catch(()=>{});return}try{navigator.clipboard.writeText(txt).then(()=>toast("Скопировано - вставь в сообщение"))}catch(e){toast("Не получилось скопировать")}}
+// заполнение по шагам
+let DF=null;
+function dNew(b,step){if(!b)return;const ds=LS.get("zal.ddraft",{})[b.id];DF={b,step:step||0,r:b.r!=null?Math.round(b.r/2):0,dm:[...(b.dm||[])],dp:{...(b.dp||{})},n:ds!=null?ds:(b.n||""),pub:b.n?!!b.pub:true,top:!!BKC};dStep()}
+function dHead(t,sub){return `<div class="dfh"><div class="dfk">${DF.step+1} из 5</div><button class="dfx2" data-dfclose aria-label="Закрыть">${IC2.x}</button></div><div class="dfb">${cv(dItem(DF.b),40)}<div><b>${esc(DF.b.t)}</b><small>${esc(DF.b.a||"")}</small></div></div><h3 class="dft">${t}</h3>${sub?`<p class="dfs">${sub}</p>`:""}`}
+function dNav(last){return `<div class="dfn">${DF.step?`<button class="btn" data-dfback>Назад</button>`:""}<button class="btn w" data-dfnext>${last?"Сохранить в дневник":"Дальше"}</button></div>`}
+function dStep(){const s=DF.step;let h="";
+  if(s===0)h=dHead("Как тебе книга?")+`<div class="dfr">${DV.map((l,i)=>`<button data-dfr="${i+1}" class="${DF.r===i+1?"on":""}"><span>${l}</span><i>${"★".repeat(i+1)}</i></button>`).join("")}</div>`+dNav();
+  if(s===1)h=dHead("Какая она?","Выбери до трёх слов")+`<div class="dfm">${DMOOD.map(m=>`<button data-dfm="${esc(m)}" class="${DF.dm.includes(m)?"on":""}">${esc(m)}</button>`).join("")}</div>`+dNav();
+  if(s===2)h=dHead("Как читалась?","Можно пропустить любую строку")+DHOW.map(([k,l,o])=>`<div class="dfl">${l}</div><div class="dfm one">${o.map(v=>`<button data-dfh="${k}" data-v="${esc(v)}" class="${DF.dp[k]===v?"on":""}">${esc(v)}</button>`).join("")}</div>`).join("")+`<div class="dfl">Любимый герой</div><input class="sy-in" id="dfHero" maxlength="60" placeholder="Имя героя" value="${esc(DF.dp.hero||"")}">`+dNav();
+  if(s===3)h=`<div class="dfh"><div class="dfk">4 из 5</div><button class="dfx2" data-dfclose aria-label="Закрыть">${IC2.x}</button></div><h3 class="dft">Мой отзыв</h3><p class="dfs" id="dfWc">Без ограничений. Черновик сохраняется сам</p><textarea id="dfN" class="dfta" placeholder="Что зацепило, что нет, кому бы посоветовала">${esc(DF.n)}</textarea>
+    <div class="rv-vis" id="dfVis"><button data-dfv="1" class="${DF.pub?"on":""}">Видят друзья</button><button data-dfv="0" class="${DF.pub?"":"on"}">Только я</button></div>`+dNav();
+  if(s===4){const Q=bQuotes(DF.b);h=dHead("Цитаты","Сколько угодно, любой длины. Можно пропустить")+Q.map(q=>`<div class="dqc">«${esc(q.text)}»${q.page?`<small>стр. ${esc(q.page)}</small>`:""}<button class="dqx" data-dfqx="${q.ts}" aria-label="Удалить">${IC2.x}</button></div>`).join("")+
+    `<textarea id="dfQ" class="sy-in dfqt" rows="2" placeholder="Фраза, которую хочется запомнить"></textarea><div class="dfqr"><input class="sy-in" id="dfQp" inputmode="numeric" placeholder="Стр."><button class="btn" data-dfqadd>+ Добавить цитату</button></div>`+dNav(true)}
+  vOpen(`<div class="dflow s${s}">${h}</div>`,true);$("#vsheet").classList.add("ontop");
+  const t=$("#dfN");if(t){const wc=()=>{const n=(t.value.trim().match(/\S+/g)||[]).length;$("#dfWc").textContent=n?`${n} ${plural(n,"слово","слова","слов")} · черновик сохранён`:"Без ограничений. Черновик сохраняется сам"};
+    t.addEventListener("input",()=>{DF.n=t.value;const d=LS.get("zal.ddraft",{});d[DF.b.id]=t.value;LS.set("zal.ddraft",d);wc()});wc();setTimeout(()=>{try{t.focus()}catch(e){}},300)}
+  const q=$("#dfQ");if(q)autoGrow(q)}
+function dCollect(){const h=$("#dfHero");if(h)DF.dp.hero=h.value.trim();const t=$("#dfN");if(t)DF.n=t.value;const q=$("#dfQ");if(q&&q.value.trim())dQAdd()}
+function dQAdd(){const q=$("#dfQ");if(!q||!q.value.trim())return;const b=DF.b;quotes.push({ts:Date.now(),book:b.id||b.t,bt:b.t,ba:b.a,text:q.value.trim(),page:($("#dfQp").value||"").trim()});saveQuotes();try{renderQuotes()}catch(e){}tgHaptic()}
+function dFinish(){const b=DF.b,ch={dm:DF.dm.slice(0,3),dp:DF.dp,n:String(DF.n||"").trim(),pub:DF.pub?1:0};if(DF.r)ch.r=DF.r*2;if(!b.dd)ch.dd=new Date().toISOString().slice(0,10);
+  noteLearn([ch.n,...ch.dm].join(" "),ch.r!=null?ch.r:b.r);bSave(b,ch);const d=LS.get("zal.ddraft",{});delete d[b.id];LS.set("zal.ddraft",d);goal("diary");tgHaptic("success");
+  const top=DF.top;DF=null;try{rerenderAll()}catch(e){}if(BKC){try{bkcDraw();bkcFit()}catch(e){}}if(SCREEN==="sum")drawCol(true);dOpen(b,top);toast("Записано в дневник")}
+$("#vshBody").addEventListener("click",e=>{const t=e.target;
+  const op=t.closest("[data-dopen]");if(op){e.stopPropagation();tgHaptic();dOpen(BOOKS.find(b=>b.id===op.dataset.dopen));return}
+  const ed=t.closest("[data-dedit]");if(ed){e.stopPropagation();dNew(BOOKS.find(b=>b.id===ed.dataset.dedit));return}
+  const sh=t.closest("[data-dshare]");if(sh){e.stopPropagation();dShare(BOOKS.find(b=>b.id===sh.dataset.dshare));return}
+  if(!DF)return;
+  if(t.closest("[data-dfclose]")){e.stopPropagation();dCollect();DF=null;vClose();return}
+  const r=t.closest("[data-dfr]");if(r){DF.r=+r.dataset.dfr;tgHaptic();setTimeout(()=>{if(DF){DF.step=1;dStep()}},180);document.querySelectorAll("[data-dfr]").forEach(x=>x.classList.toggle("on",x===r));return}
+  const m=t.closest("[data-dfm]");if(m){const v=m.dataset.dfm,i=DF.dm.indexOf(v);if(i>=0)DF.dm.splice(i,1);else{if(DF.dm.length>=3)DF.dm.shift();DF.dm.push(v)}tgHaptic();document.querySelectorAll("[data-dfm]").forEach(x=>x.classList.toggle("on",DF.dm.includes(x.dataset.dfm)));return}
+  const hw=t.closest("[data-dfh]");if(hw){const k=hw.dataset.dfh,v=hw.dataset.v;DF.dp[k]=DF.dp[k]===v?"":v;tgHaptic();document.querySelectorAll(`[data-dfh="${k}"]`).forEach(x=>x.classList.toggle("on",DF.dp[k]===x.dataset.v));return}
+  const pv=t.closest("[data-dfv]");if(pv){DF.pub=pv.dataset.dfv==="1";document.querySelectorAll("[data-dfv]").forEach(x=>x.classList.toggle("on",x===pv));tgHaptic();return}
+  if(t.closest("[data-dfqadd]")){dQAdd();dStep();return}
+  const qx=t.closest("[data-dfqx]");if(qx){const ts=+qx.dataset.dfqx;quotes=quotes.filter(q=>q.ts!==ts);saveQuotes();dStep();return}
+  if(t.closest("[data-dfback]")){dCollect();DF.step--;dStep();return}
+  if(t.closest("[data-dfnext]")){dCollect();if(DF.step>=4){dFinish();return}DF.step++;dStep();return}},true);
+// полки: «Записать» из подсказки и записи из ленты дневника
+$("#sumScroll").addEventListener("click",e=>{const t=e.target;const op=t.closest("[data-dopen]");if(op){tgHaptic();dOpen(BOOKS.find(b=>b.id===op.dataset.dopen));return}
+  const nw=t.closest("[data-dnew]");if(nw){tgHaptic();dNew(BOOKS.find(b=>b.id===nw.dataset.dnew));return}
+  const f=t.closest(".dstrip [data-f]");if(f){colF="diary";drawCol(true);$("#sumScroll").scrollTo({top:0,behavior:"smooth"});tgHaptic()}});
+// свой ник в Норе: по нему друзья находят друг друга без почты
+const NICK_RX=/^[a-zа-я0-9._-]{3,24}$/i;
+function nickSheet(){if(needAuth()){authShow();return}const cur=LS.get("zal.nick","");
+  vOpen(`<h3 class="vh">Твой ник в Норе</h3><p class="sy-note">Скажи его другу - он впишет ник в поиске друзей. Буквы, цифры, точка или подчёркивание, от 3 знаков.</p><input class="sy-in" id="nkI" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="например, oksana.reads" value="${esc(cur)}"><p class="sy-msg" id="nkM"></p><div class="rv-one"><button class="btn w" id="nkS">Сохранить</button></div>`);
+  const i=$("#nkI"),m=$("#nkM");setTimeout(()=>{try{i.focus()}catch(e){}},200);i.onkeydown=e=>{if(e.key==="Enter")$("#nkS").click()};
+  $("#nkS").onclick=async()=>{const v=NS.nickKey(i.value);if(!NICK_RX.test(v)){m.textContent=v.length<3?"Хотя бы 3 знака":"Только буквы, цифры, точка, дефис или подчёркивание";return}
+    if(v===cur){vClose();return}m.textContent="Проверяю…";try{const u=await NS.nickGet(v);if(u&&u!==NS.uid()){m.textContent="Этот ник уже занят - попробуй другой";return}await NS.nickPut(v);LS.set("zal.nick",v);tgHaptic("success");vClose();toast("Готово - тебя можно найти по @"+v);drawFr()}catch(e){m.textContent="Не получилось сохранить - проверь интернет"}}}
+document.addEventListener("click",e=>{if(e.target.closest("[data-nick]")){tgHaptic();nickSheet()}});
+// статус аккаунта на «Полках»: видно, сохранены ли книги
+function acctLine(){if(VIEW||!NS.on)return "";if(needAuth())return `<button class="acct off" data-acct><i></i><span>Полки сохранены только на этом устройстве</span><b>Войти</b></button>`;
+  return `<div class="acct"><i></i><span>Полки сохранены в аккаунте${NS.email?" · "+esc(NS.email):""}</span></div>`}
+document.addEventListener("click",e=>{if(e.target.closest("[data-acct]")){tgHaptic();authMode=(NS.email||LS.get("zal.sync.was",0))?"in":"up";authShow()}});
 function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};LS.set("zal.cards",(+LS.get("zal.cards",0)||0)+1);goal(L==="friend"?"card_friend":"card");cardX=x;cardL=L;ambFor(x);bkcDraw();
   // обложка уже в кэше браузера — ждём её расшифровки (до 250 мс), чтобы не мелькала рисованная
   const im=bkcEl.querySelector(".bkc-cv img"),show=()=>{if(BKC&&BKC.x===x){bkcEl.classList.add("on");syncBack()}};
@@ -5597,9 +5756,9 @@ bkcEl.addEventListener("touchend",end);bkcEl.addEventListener("touchcancel",end)
 const VIDS=[["YouTube","Обзоры и разборы на буктюбе",q=>"https://www.youtube.com/results?search_query="+q],["VK Видео","Русскоязычные обзоры",q=>"https://vkvideo.ru/?q="+q],["TikTok","Короткие ролики из буктока",q=>"https://www.tiktok.com/search?q="+q]];
 function vidOpen(x){const sur=String(x.a||"").split(" ").slice(-1)[0];
   vOpen(`<h3 class="vh">Обзоры на «${esc(x.t)}»</h3><p class="sy-note">Откроется поиск роликов о книге</p><div class="wh-l">${VIDS.map(([n,d],i)=>`<button data-vid="${i}"><b>${n}</b><small>${d}</small><i>›</i></button>`).join("")}</div>`);
-  $("#vsheet").classList.add("ontop");$("#vshBody")._vq=encodeURIComponent(`${x.t} ${sur} обзор`)}
+  $("#vsheet").classList.add("ontop");$("#vshBody")._vq=encodeURIComponent(`«${x.t}» ${x.a&&x.a!=="Автор не указан"?x.a:""} обзор книги`)}
 $("#vshBody").addEventListener("click",e=>{const b=e.target.closest("[data-vid]");if(!b)return;e.stopPropagation();const u=VIDS[+b.dataset.vid][2]($("#vshBody")._vq);tgHaptic();try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(x){window.open(u,"_blank")}},true);
-function bkcFit(){const w=$("#bkcDw");if(!w)return;const upd=()=>w.classList.toggle("more",w.scrollTop+w.clientHeight<w.scrollHeight-4);w.onscroll=upd;upd()}
+function bkcFit(){const w=$("#bkcDw");if(!w)return;const upd=()=>{w.classList.toggle("more",w.scrollTop+w.clientHeight<w.scrollHeight-4);bkcEl.classList.toggle("dsc",w.scrollTop>6)};bkcEl.classList.remove("dsc");w.onscroll=upd;upd()}
 addEventListener("resize",()=>{if(BKC)bkcFit()});
 function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();setTimeout(onbAsk,700);if(vDirty){vDirty=false;setTimeout(refresh,300)}}
 // отзывы читателей Фантлаба
@@ -5622,8 +5781,8 @@ function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).s
   const ON=[[ic("litres.ru"),"ЛитРес",pLink("litres",`https://www.litres.ru/search/?q=${q}`)],[ic("books.yandex.ru"),"Яндекс Книги",`https://books.yandex.ru/search?text=${q}`],
     [ic("ozon.ru"),"Ozon",`https://www.ozon.ru/search/?text=${q}&category=16500`],[ic("wildberries.ru"),"Wildberries",`https://www.wildberries.ru/catalog/0/search.aspx?search=${q}`],
     [ic("books.google.com"),"Google Книги",`https://www.google.com/search?tbm=bks&q=${q}`]];
-  const OFF=[[PIN,"Книжные рядом",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],[ic("chitai-gorod.ru"),"Читай-город",`https://www.chitai-gorod.ru/search?phrase=${qt}`],
-    [ic("bookvoed.ru"),"Буквоед",`https://www.bookvoed.ru/search?q=${qt}`],[LIB,"Библиотеки рядом",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
+  const OFF=[[PIN,"Книжные рядом",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],[ic("chitai-gorod.ru"),"Читай-город",`https://www.chitai-gorod.ru/search?phrase=${q}`],
+    [ic("bookvoed.ru"),"Буквоед",`https://www.bookvoed.ru/search?q=${q}`],[LIB,"Библиотеки рядом",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
   const choose=`<div class="wh-ch"><button data-wh="on"><b>Онлайн</b></button><button data-wh="off"><b>Офлайн</b></button></div>`;
   const list=mode?`<div class="wh-l wh-sh">${(mode==="on"?ON:OFF).map(([i,n,u])=>`<button data-whu="${esc(u)}">${i}<b>${n}</b><i>›</i></button>`).join("")}</div>`:"";
   vOpen(mode?`<div class="wh-hd"><b>${mode==="on"?"Онлайн":"Офлайн"}</b><button class="vx" data-wh="" aria-label="Назад к выбору"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`+list:choose);$("#vsheet").classList.add("ontop");$("#vshBody")._wx=x}
@@ -5636,7 +5795,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="where"){goal("where");whereOpen(x,"");return}
   if(a==="vid"){goal("reviews");vidOpen(x);return}
   if(a==="sec"){const st=BK.has(x);if(st){const on=!isSec(x);setSec(x,on);vDirty=true;toast(on?"Теперь эту книгу видите только вы":"Книгу снова видят друзья")}else BKC.sec=!BKC.sec;const el=bkcEl.querySelector(".bkc-sec");if(el)el.outerHTML=bkcSec(x,L);return}
-  if(a==="ask"){goal("ask_friend");frAsk(x);return}if(a==="rv"){rvSheet(x);return}
+  if(a==="ask"){goal("ask_friend");frAsk(x);return}if(a==="rv"){dNew(myRec(x));return}if(a==="dopen"){dOpen(myRec(x),true);return}
   if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");bkcClose();return}
   if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
   if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
