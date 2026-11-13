@@ -238,7 +238,7 @@ FOOT = ""
 def page(path, title, desc, body, full_title=None, active="", img=None, ld=None):
     canon = f"{SITE}/{path}".replace("/index.html", "/")
     ldj = "".join(f'<script type="application/ld+json">{json.dumps(x, ensure_ascii=False)}</script>' for x in (ld or []))
-    doc = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    doc = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><script src="/ym.js"></script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{esc(full_title or title + " — Нора")}</title><meta name="description" content="{esc(desc[:200])}"><link rel="canonical" href="{canon}">
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc[:200])}"><meta property="og:url" content="{canon}">
 <meta property="og:image" content="{esc(img or SITE + '/icons/icon-512.png?v=5')}"><meta property="og:type" content="website"><meta property="og:site_name" content="Нора">{HEAD}{ldj}</head><body>
@@ -538,7 +538,7 @@ POLICY = [
     ("Что мы не делаем", "<ul><li>Не продаём и не передаём данные рекламодателям.</li><li>Не показываем полки посторонним — только друзьям, которых ты добавишь.</li>"
      "<li>Не отправляем никуда фото шкафа: книги распознаются прямо на телефоне.</li></ul>"),
     ("Где это хранится", "В облаке Google Firebase — его серверы за пределами России. Создавая аккаунт, ты соглашаешься на такое хранение. "
-     "Для статистики посещений сайта используем Cloudflare Web Analytics — без cookies и без привязки к тебе."),
+     "Для статистики посещений сайта и приложения используем Яндекс Метрику и Cloudflare Web Analytics: считаем, сколько людей заходит и какие кнопки нажимают. Метрика использует cookies, но не получает твоё имя, почту и полки, а запись экрана в ней выключена."),
     ("Как удалить данные", "Напиши в бот Норы — удалим аккаунт и все полки в течение 30 дней."),
     ("Связаться с нами", f'Вопросы и просьбы — {SUPPORT}.'),
 ]

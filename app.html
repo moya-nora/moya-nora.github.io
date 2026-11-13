@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ru" data-theme="dark">
-<head><meta charset="utf-8"><script>/* в обычном браузере без ссылки из сайта — на сайт; Telegram, иконка на экране и ссылки «поделиться» открывают приложение */(function(){try{var q=location.search,h=location.hash,ss=sessionStorage,sa=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;
+<head><meta charset="utf-8"><script src="/ym.js"></script><script>/* в обычном браузере без ссылки из сайта — на сайт; Telegram, иконка на экране и ссылки «поделиться» открывают приложение */(function(){try{var q=location.search,h=location.hash,ss=sessionStorage,sa=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;
 if(/tgWebApp/.test(q+h)||sa||/[?&](app|v)=/.test(q)||/=/.test(h)||ss.getItem("nora.app")){ss.setItem("nora.app","1");return}location.replace("/")}catch(e){}})()</script><meta name="description" content="Нора — личная книжная полка: все твои книги в одном месте и советы, что читать дальше."><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <script>/* Скрипт Telegram нужен только внутри Telegram; в обычном браузере он может грузиться десятки секунд и держать чёрный экран */
 (function(){var tg=/tgWebApp/.test(location.hash)||!!window.TelegramWebviewProxy||!!(window.external&&"notify" in window.external);try{tg=tg||!!sessionStorage.getItem("__telegram__initParams")}catch(e){}
@@ -4748,7 +4748,7 @@ $("#introGo").onclick=()=>{$("#intro").classList.remove("on");$("#onb").classLis
 // аккаунт просим уже после выбора книг — когда есть что сохранять
 const onbDone=()=>{if(needAuth()){authMode="up";authShow(onbFinish,"onb")}else onbFinish()};
 function onbSave(){const list=$("#onbGrid")._l,D=onbK==="films"?FM:BK,cs=checkStamps;checkStamps=()=>{};try{Object.entries(onbPick).forEach(([i,n])=>{const x=list[+i];if(!D.has(x))D.markRead(x,n*2,true)})}finally{checkStamps=cs}checkStamps(true)}
-function onbFinish(){setTimeout(inviteCheck,1200);LS.set("zal.onb",1);$("#onb").classList.remove("on");setRealmUI("books");checkStamps(true);pickCol();fi=0;buildFeed();show("col");toast("Полки готовы")}
+function onbFinish(){goal("signup_done");setTimeout(inviteCheck,1200);LS.set("zal.onb",1);$("#onb").classList.remove("on");setRealmUI("books");checkStamps(true);pickCol();fi=0;buildFeed();show("col");toast("Полки готовы")}
 // второй шаг: любимые жанры — лента и советы Шуршуни начнут с них
 const GPREF_OPT=[["fantasy","Фэнтези"],["romantasy","Ромэнтези"],["romance","Любовные романы"],["detective","Детективы"],["scifi","Фантастика"],["modern","Современная проза"],["classic","Классика"],["ya","Young adult"],["darkrom","Дарк роман"],["nonfic","Нон-фикшн"],["kids","Детские книги"]];
 let onbStage="books",onbG=[];
@@ -5144,7 +5144,7 @@ function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
      return `<div class="sc gl frc"><button class="frh" data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid)}<b>${esc(f.n||"Друг")}</b><span>${whenTxt(ev[0].ts)}${fresh?` · новых: ${fresh}`:""}</span></button>
        <div class="frs">${ev.map((e,i)=>`<button class="fre" data-fr-ev="${esc(f.uid)}|${i}">${cv(fbItem(e),84)}<em>${esc(evLabel(e))}</em><small>${esc(e.t)}</small></button>`).join("")}</div></div>`}).join(""):FRIENDS.length?`<p class="fr-note">Когда друзья что-нибудь прочитают или оценят, это появится здесь.</p>`:""}
    <div class="fr-me">Тебя видят как <b>${esc(me||"без имени")}</b> <button data-fr-name>изменить</button></div>`}
-async function frInvite(){const u=NS.uid&&NS.uid();if(!u){toast("Сначала нужен вход");authShow();return}
+async function frInvite(){goal("invite");const u=NS.uid&&NS.uid();if(!u){toast("Сначала нужен вход");authShow();return}
   // в Telegram — ссылка на мини-приложение, в остальные соцсети — на сайт (откроется и без Telegram)
   // короткая ссылка nora-books.ru/i/<код>: код записан в облаке и ведёт к тебе; не записался — длинная ссылка, как раньше
   const k=frTok();let ok=LS.get("zal.invk","")===k;if(!ok&&NS.lookupPut){try{await NS.lookupPut(["@inv:"+k]);LS.set("zal.invk",k);ok=true}catch(e){}}
@@ -5406,7 +5406,7 @@ function bkcDraw(){const {x,L}=BKC;
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
    ${bkcSec(x,L)}<div class="bkc-acts">${bkcActs(x,L)}</div>
    <div class="bkc-low"><button class="bkc-where" data-bkc="where">${IC2.pin}Где прочитать?</button>${x._f?"":`<button class="bkc-where" data-bkc="vid">${IC2.play}Обзоры</button>`}</div></div>`}
-function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};cardX=x;cardL=L;ambFor(x);bkcDraw();
+function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};goal(L==="friend"?"card_friend":"card");cardX=x;cardL=L;ambFor(x);bkcDraw();
   // обложка уже в кэше браузера — ждём её расшифровки (до 250 мс), чтобы не мелькала рисованная
   const im=bkcEl.querySelector(".bkc-cv img"),show=()=>{if(BKC&&BKC.x===x){bkcEl.classList.add("on");syncBack()}};
   if(im&&im.decode)Promise.race([im.decode().catch(()=>{}),new Promise(r=>setTimeout(r,250))]).then(show);else show();tgHaptic("medium");
@@ -5461,10 +5461,10 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="close"){bkcClose();return}
   if(a==="more"){const w=b.parentNode,d=$("#bkcDs");w.classList.add("open");d.style.webkitLineClamp="";d.style.maxHeight="";b.hidden=true;return}
   if(a==="cov"){const sw=bkcEl.querySelector(".bkc-covsw");sw.hidden=!sw.hidden;b.classList.toggle("on",!sw.hidden);return}
-  if(a==="where"){whereOpen(x,"");return}
-  if(a==="vid"){vidOpen(x);return}
+  if(a==="where"){goal("where");whereOpen(x,"");return}
+  if(a==="vid"){goal("reviews");vidOpen(x);return}
   if(a==="sec"){const st=BK.has(x);if(st){const on=!isSec(x);setSec(x,on);vDirty=true;toast(on?"Теперь эту книгу видите только вы":"Книгу снова видят друзья")}else BKC.sec=!BKC.sec;const el=bkcEl.querySelector(".bkc-sec");if(el)el.outerHTML=bkcSec(x,L);return}
-  if(a==="ask"){frAsk(x);return}
+  if(a==="ask"){goal("ask_friend");frAsk(x);return}
   if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");bkcClose();return}
   if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
   if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
@@ -5489,7 +5489,10 @@ function shelfAnim(x){if(RM)return;const c=catOf(x)||{},bg=x.bg||c.bg||palOf(x.t
   shEl.classList.remove("go");void shEl.offsetWidth;shEl.classList.add("go");tgHaptic("rigid");setTimeout(()=>tgHaptic("medium"),1050);
   clearTimeout(shEl._t);shEl._t=setTimeout(()=>shEl.classList.remove("go"),2300)}
 shEl.addEventListener("click",()=>shEl.classList.remove("go"));
-{const _mr=BK.markRead;BK.markRead=function(x,r10,silent){const out=_mr.call(BK,x,r10,silent);if(!silent)setTimeout(()=>shelfAnim(x),120);return out}}
+// цели в Метрике: какие действия люди делают (без личных данных)
+const goal=n=>{try{window.ym&&ym(114237349,"reachGoal",n)}catch(e){}};
+{const _aw=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw.call(BK,x);if(!had)goal("want")}}
+{const _mr=BK.markRead;BK.markRead=function(x,r10,silent){const out=_mr.call(BK,x,r10,silent);if(!silent)goal("read");if(!silent)setTimeout(()=>shelfAnim(x),120);return out}}
 
 
 // ---------- перенос книг из Литрес, Яндекс Книг, LiveLib и других ----------
