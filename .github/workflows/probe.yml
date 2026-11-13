@@ -4,5 +4,8 @@ jobs:
   p:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: python3 tools/probe_at.py
+      - run: |
+          for s in 8.8.8.8 1.1.1.1 ns1.spaceweb.ru; do echo "== $s"; dig +short nora-books.ru A @$s; dig +short www.nora-books.ru @$s; done
+          curl -sI http://nora-books.ru/ | head -5
+          curl -sI https://nora-books.ru/ | head -5 || true
+          curl -sI https://moya-nora.github.io/ | head -5
