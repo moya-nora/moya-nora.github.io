@@ -381,7 +381,7 @@ for a_, out in sim_pages:
     au_ = a_["a"]
     tops = ", ".join(f"«{x['t']}»" for x, _ in out[:4])
     lead = (f"Если понравилась «{a_['t']}» ({au_}), вот {len(out)} книг с похожим настроением и сюжетными ходами — Шуршуня подобрала их по жанру, "
-            f"тропам и тому, что ценят читатели. Начни с {tops}.")
+            f"тропам и тому, что ценят читатели. Самые близкие: {tops}.")
     back = BOOK_URL.get(id(a_))
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="/p/">Что почитать после</a></div>'
             f'<div class="ph"><div><div class="kick">Что почитать после</div><h1>Книги, похожие на «{esc(a_["t"])}»</h1><p class="lead">{esc(lead)}</p>'

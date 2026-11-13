@@ -190,3 +190,4 @@ a.bk .cv{transition:transform .25s}a.bk:hover .cv{transform:translateY(-4px)}a.b
 .feat .ic{background:rgba(226,182,107,.16);box-shadow:inset 0 0 0 1px rgba(226,182,107,.55),0 0 24px -4px rgba(226,182,107,.5)}
 .feat .ic svg{stroke:var(--gold)}
 .feat h3{color:#F3DDB0}
+.grid .bk p.why{color:#E9B866;font-size:13px;margin:6px 0 0;-webkit-line-clamp:2}
