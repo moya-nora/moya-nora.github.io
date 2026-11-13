@@ -12,7 +12,7 @@ import json, os, re, sys, time, urllib.request
 TOKEN = os.environ.get("BOT_TOKEN", "").strip()
 OWNER = os.environ.get("OWNER_USERNAME", "").strip().lstrip("@").lower() or "stanislava_kurdina"
 STATE = os.path.join(os.path.dirname(__file__), "bot_state.json")
-APP = "https://nora-books.ru/app.html"
+APP = "https://moya-nora.github.io/app.html"
 if not TOKEN:
     print("нет секрета BOT_TOKEN — пропускаю")
     sys.exit(0)
