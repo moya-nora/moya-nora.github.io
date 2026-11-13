@@ -240,3 +240,7 @@ body>main{padding-top:10px}
 .rv p{margin:8px 0 0;font-size:14.5px;line-height:1.55;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}.rv p.open{display:block}
 .rvm{margin:6px 0 0;padding:0;border:0;background:none;color:var(--gold);font:500 14px var(--sans);cursor:pointer}
 .like{margin:34px 0 0}.like h2{font:700 32px/1 var(--serif);margin:0}
+/* полка «Понравилась книга?» внутри колонки книги не должна раздвигать страницу */
+.book>div{min-width:0}.like{min-width:0}.like h2{margin-bottom:14px!important}.like .rail{margin:0 -28px;padding:2px 28px 10px}
+@media (min-width:900px){.like .rail{margin:0;padding:2px 0 10px}}
+html,body{overflow-x:hidden}
