@@ -143,7 +143,7 @@ except FileNotFoundError:
     COVERS = {}
 nk = lambda s: re.sub(r"[^0-9a-zа-я]+", "", str(s or "").lower().replace("ё", "е"))
 try:
-    AIC = {}  # картинки от нейросети больше не используем
+    AIC = {k: v for k, v in json.load(open(os.path.join(ROOT, "books", "ai_covers.json"), encoding="utf-8"))["m"].items() if v and os.path.exists(os.path.join(ROOT, "img", "ai", v))}
 except (FileNotFoundError, KeyError):
     AIC = {}
 img_of = lambda b: (("/img/ai/" + AIC[nk(b["t"]) + "|" + nk(b["a"] or "")]) if nk(b["t"]) + "|" + nk(b["a"] or "") in AIC else "") \
