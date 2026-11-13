@@ -4316,8 +4316,8 @@ function recList(){if(isF()){if(!FILMS)return [];if(!recList._f||recList._v!==FS
 const flowList=()=>VIEW?(DATA().want().length?DATA().want():DATA().read().filter(x=>x.r!=null).sort((a,b)=>b.r-a.r).slice(0,20)):recList();
 const gridList=()=>colF==="want"?DATA().want():DATA().read();
 function drawFlow(){const L=flowList();fi=L.length?((fi%L.length)+L.length)%L.length:0;
-  $("#flow").innerHTML=L.slice(0,60).map(x=>cv(x,176)).join("");$("#flow").classList.toggle("none",!L.length);$("#flowCap").classList.toggle("none",!L.length);[...$("#flow").children].forEach((c,i)=>{c.dataset.i=i});layoutFlow(true)}
-function layoutFlow(first){const L=flowList().slice(0,60),n=L.length;if($("#flow").children.length!==n){drawFlow();return}
+  $("#flow").innerHTML=L.slice(0,60).map(x=>cv(x,176)).join("");$("#flow")._sig=L.slice(0,60).map(x=>ikey(x)).join("|");$("#flow").classList.toggle("none",!L.length);$("#flowCap").classList.toggle("none",!L.length);[...$("#flow").children].forEach((c,i)=>{c.dataset.i=i});layoutFlow(true)}
+function layoutFlow(first){const L=flowList().slice(0,60),n=L.length;/* обложки и подпись всегда из одного и того же списка: если список сменился (догрузился каталог), перерисовываем */if($("#flow").children.length!==n||$("#flow")._sig!==L.map(x=>ikey(x)).join("|")){drawFlow();return}
   [...$("#flow").children].forEach((c,i)=>{let o=((i-fi)%n+n)%n;if(o>n/2)o-=n;const a=Math.abs(o),prev=c.dataset.o==null?null:+c.dataset.o;c.dataset.o=o;
     const tf=`translateX(${o*150}px) scale(${o===0?1:.8})`,op=a>2?0:1;
     if(prev!=null&&Math.abs(prev-o)>1){c.style.transition="none";c.style.opacity=0;c.style.transform=tf;void c.offsetWidth;c.style.transition="";requestAnimationFrame(()=>{c.style.opacity=op})}
@@ -4382,7 +4382,7 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
 function drawTrend(){const el=$("#trend");if(!el)return;const S=shelvesCalc();el._s=S;
   el.innerHTML=S.map(([k,h,sub,L],j)=>`<section class="hshelf"><h3 class="shelf-h">${h}</h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div></section>`).join("")}
 $("#trend").addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(!b)return;const [j,i]=b.dataset.tr.split(":").map(Number),S=$("#trend")._s,x=S&&S[j]&&S[j][3][i];if(x){tgHaptic();bkcOpen(x,"rec")}});
-addEventListener("bigcat",()=>{TRK=-1;HSV=null;if(SCREEN==="col")drawTrend()});
+addEventListener("bigcat",()=>{TRK=-1;HSV=null;if(SCREEN==="col"){drawTrend();layoutFlow(true)}});
 $("#colScroll").addEventListener("scroll",()=>{document.body.classList.toggle("topoff",$("#colScroll").scrollTop>16)},{passive:true});
 $("#pills").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){if(colF===b.dataset.f)return;colF=b.dataset.f;drawCol(true);tgHaptic()}});
 // ---------- виды полки: обложки, полки по странам, лента веков, карта, авторы (из первой Норы) ----------
