@@ -1971,7 +1971,7 @@ setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!doc
 const FB={apiKey:"AIzaSyD9yfazxfKpaEk1BNFDN61dEB3pfxT9cS4",projectId:"nora-ed429"};
 const ON=!!(FB.apiKey&&FB.projectId);
 const ls=window.localStorage,P=Storage.prototype,_set=P.setItem,_rm=P.removeItem,_get=P.getItem;
-const SKIP=k=>!k||!k.startsWith("zal.")||k==="zal.img"||k==="zal.img2"||k==="zal.img3"||k==="zal.desc"||k==="zal.meta"||k==="zal.recent"||k.startsWith("zal.sync");
+const SKIP=k=>!k||!k.startsWith("zal.")||k==="zal.img"||k==="zal.img2"||k==="zal.img3"||k==="zal.img4"||k==="zal.img5"||k==="zal.desc"||k==="zal.meta"||k==="zal.recent"||k.startsWith("zal.sync");
 const jget=(k,d)=>{try{const v=_get.call(ls,k);return v?JSON.parse(v):d}catch(e){return d}};
 const jset=(k,v)=>{try{_set.call(ls,k,JSON.stringify(v))}catch(e){}};
 const TG=window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData?Telegram.WebApp:null;
@@ -4019,7 +4019,7 @@ function topK(list,k,fs){const best=[];let min=-Infinity;for(const b of list){co
   return best.sort((x,y)=>y.s-x.s).slice(0,k)}
 
 // ---------- обложки: настоящие (Фантлаб/Википедия) поверх рисованных ----------
-try{localStorage.removeItem("zal.img2");localStorage.removeItem("zal.img3")}catch(e){}const IMG=LS.get("zal.img4",{});let imgT=0;const imgSave=()=>{clearTimeout(imgT);imgT=setTimeout(()=>LS.set("zal.img4",IMG),500)};
+try{localStorage.removeItem("zal.img2");localStorage.removeItem("zal.img3");localStorage.removeItem("zal.img4")}catch(e){}const IMG=LS.get("zal.img5",{});let imgT=0;const imgSave=()=>{clearTimeout(imgT);imgT=setTimeout(()=>LS.set("zal.img5",IMG),500)};
 try{localStorage.removeItem("zal.img")}catch(e){}
 // выбор обложки вручную: "draw" — рисованная, иначе адрес картинки (синхронизируется)
 let COV=LS.get("zal.cov",{});const covSave=()=>LS.set("zal.cov",COV);
@@ -4074,7 +4074,8 @@ async function wikiImg(q){const j=await (await fetch("https://ru.wikipedia.org/w
 // null — не удалось связаться (повторим), "" — обложки нет, иначе адрес
 async function findImg(x){try{
   if(!x._f){const sur=norm(String(x.a||"").split(" ").slice(-1)[0]),pic=w=>w.pic_edition_id||w.pic_edition_id_auto;
-    const pick=s=>{const L=(Array.isArray(s)?s:[]).filter(pic);return L.find(w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur))||(sur?null:L.find(w=>norm(w.rusname||w.name||"")===norm(x.t)))};
+    const nt=norm(x.t),auOk=w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur),tn=w=>norm(w.rusname||w.name||""),tOk=w=>{const n=tn(w);return n===nt||(nt.length>=6&&n.startsWith(nt))};
+    const pick=s=>{const L=(Array.isArray(s)?s:[]).filter(pic);return L.find(w=>auOk(w)&&tn(w)===nt)||L.find(w=>auOk(w)&&tOk(w))||null};
     let w=pick(await flj("/search-works?q="+encodeURIComponent(x.t)+"&page=1&onlymatches=1"));
     if(!w){const t2=String(x.t).replace(/[«»"'’.,:;!?()—–-]+/g," ").replace(/\s+/g," ").trim();if(t2!==x.t||x.a)w=pick(await flj("/search-works?q="+encodeURIComponent(t2+(x.a?" "+String(x.a).split(" ").slice(-1)[0]:""))+"&page=1"))}
     if(w){const ed=await bestEdition(w.work_id);return ed?IMGFL(ed):""}
@@ -4169,7 +4170,7 @@ const WHY_GENERIC=new Set(["любовь","романтичное","атмосф
 function whyBook(b){const loved=BOOKS.filter(x=>(x.r??0)>=8);if(!loved.length)return "";
   const au=b.a&&loved.find(l=>l.a&&norm(l.a)===norm(b.a));if(au)return `Ещё от автора «${au.t}», которую ты любишь.`;
   let best=null,bc=0,sh=[];loved.forEach(l=>{if(l.g&&b.g&&l.g!==b.g)return;const s2=tagsOf(l).filter(t=>!WHY_GENERIC.has(t)&&(b.tags||[]).includes(t));if(s2.length>bc){bc=s2.length;best=l;sh=s2}});
-  if(!best||bc<2)return "";const lab=t=>{if(!t.startsWith("троп:"))return t;try{return (B_TROPE.find(x=>"троп:"+x[0]===t)||[0,t])[1].toLowerCase()}catch(e){return t.slice(5)}};
+  if(!best||bc<2){const same=loved.find(l=>l.g===b.g&&l.c&&l.c===b.c&&b.c!=="");if(same)return `Тебе понравилась «${same.t}» - это тоже ${b.g==="classic"?(b.c==="Россия"?"русская классика":"классика"):(GEN[b.g]||"похожая книга").toLowerCase()}.`;const g=loved.find(l=>l.g===b.g);if(g&&b.g!=="modern")return `Тебе понравилась «${g.t}» - это тоже ${GEN[b.g]?GEN[b.g].toLowerCase():"похожий жанр"}.`;return (typeof POPT!=="undefined"&&POPT.has(b._n||norm(b.t)))?"Одна из самых читаемых книг.":""}const lab=t=>{if(!t.startsWith("троп:"))return t;try{return (B_TROPE.find(x=>"троп:"+x[0]===t)||[0,t])[1].toLowerCase()}catch(e){return t.slice(5)}};
   return `Похоже на «${best.t}»: ${sh.slice(0,2).map(lab).join(", ")}.`}
 // лента учится, как в соцсетях: на чём задерживаются, что добавляют, пропускают, открывают и пересылают
 const TASTE=Object.assign({t:{},g:{},a:{}},LS.get("zal.taste",{}));let tasteT=0;const tasteSave=()=>{clearTimeout(tasteT);tasteT=setTimeout(()=>LS.set("zal.taste",TASTE),800)};
@@ -4182,8 +4183,9 @@ const POPT=new Set("Гарри Поттер и философский камен
 // сначала известные и популярные книги с нормальными обложками, чем дальше листаешь — тем смелее и нишевее
 const popOf=b=>(POPT.has(b._n||norm(b.t))?3:0)+Math.min(1.5,Math.log2(1+(b.sl||0))*.2)+(b.acclaim&&b.acclaim.length?.5:0);
 const gpref=()=>{const v=LS.get("zal.gpref",[]);return Array.isArray(v)?v:[]};
+let IDF=null;const idf=t=>{if(!IDF){IDF={};const N=CAT.length;CAT.forEach(b=>(b.tags||[]).forEach(x=>IDF[x]=(IDF[x]||0)+1));for(const k in IDF)IDF[k]=Math.max(.25,Math.min(1.6,Math.log(N/IDF[k])/3))}return IDF[t]||1.2};
 function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;{const GP=gpref();if(GP.length&&GP.some(g=>genPass(b,g)))s+=4}
-  (b.tags||[]).forEach(t=>{s+=2*(q.tags[t]||0)+1.4*(TASTE.t[t]||0)});s+=1.2*(TASTE.g[b.g]||0)+1.5*(TASTE.a[b.a]||0);
+  (b.tags||[]).forEach(t=>{s+=2*(q.tags[t]||0)*idf(t)+1.4*(TASTE.t[t]||0)*idf(t)});s+=1.2*(TASTE.g[b.g]||0)+1.5*(TASTE.a[b.a]||0);
   const w=Math.max(0,1-(+LS.get("zal.fdn",0)||0)/90);if(w>0){s+=w*3.2*popOf(b);if(!imgOf(b)&&!isCatB(b))s-=w*3}
   return s+Math.random()*2.2}
 function bookFeed(){FSHOWN=new Set();const q=tasteQ();
