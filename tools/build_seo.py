@@ -476,7 +476,7 @@ FAQ = [("Это бесплатно?", "Да. Все полки, советы, ф
        ("Мои данные кто-то увидит?", "Только друзья, которых ты добавишь, и только то, что ты разрешишь. Подробнее — в политике конфиденциальности.")]
 home = f"""<div class="wrap"><section class="hero"><div><div class="kick">Книжная полка с советником</div><h1>Все твои книги<br>в одной <em>Норе</em></h1>
 <p class="lead">Бумажные, из Литрес, Яндекс Книг и LiveLib — на одной полке. Сфотографируй шкаф, и полка соберётся сама. А Шуршуня подскажет, что читать дальше.</p>{CTA}
-<div class="where"><span>{ic("free")}Бесплатно</span><span>{ic("ph")}Телефон и компьютер</span><span>{ic("tg")}Telegram</span></div></div>
+</div>
 <div class="stage"><div class="glow"></div>{"".join(cv(b, lazy=False) for b in hero)}<div class="phone"><img src="/img/app-home.webp" alt="Главный экран Норы: полки и совет Шуршуни" width="520" height="1125"></div></div></section>
 <section class="sec" id="kak"><div class="kick">Что умеет Нора</div><h2>Библиотека, которая<br>знает твой вкус</h2><p class="sub">Без таблиц и ручного ввода — скучную часть Нора делает сама.</p>
 <div class="feats">{"".join(f'<div class="feat gl"><div class="ic">{ic(k)}</div><h3>{h}</h3><p>{p}</p></div>' for k, h, p in FEATS)}</div></section>
