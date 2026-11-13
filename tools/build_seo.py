@@ -210,7 +210,7 @@ q.addEventListener("input",function(){var v=nm(q.value).trim();if(v.length<2){bo
 for(var i=0;i<D.length&&out.length<8;i++){var t=D[i][1];if(ws.every(function(w){return t.indexOf(w)>=0}))out.push(D[i][0])}
 box.innerHTML=out.map(function(x){return '<a href="'+x[2]+'"><b>'+x[0].replace(/</g,"&lt;")+'</b><span>'+x[1].replace(/</g,"&lt;")+(x[3]?" · "+x[3]:"")+'</span></a>'}).join("")+'<a class="sall" href="/app.html?app=1">Искать среди 100 000 книг в Норе →</a>'})})})();</script>"""
 SN = """<!-- Cloudflare Web Analytics --><script defer type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "572d5eebd0c442bda32887c9f80bb139"}'></script><!-- End Cloudflare Web Analytics -->"""
-HEAD = f"""<link rel="icon" href="/icons/icon-192.png?v=4"><link rel="apple-touch-icon" href="/icons/icon-180.png?v=4"><meta name="theme-color" content="#05060A">
+HEAD = f"""<link rel="icon" href="/icons/icon-192.png?v=5"><link rel="apple-touch-icon" href="/icons/icon-180.png?v=5"><meta name="theme-color" content="#05060A">
 <link rel="preload" href="/fonts/onest-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/cormorant-garamond-cyrillic-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/site.css?v={VER}">"""
 NAV = [("/c/romantezi.html", "Ромэнтези"), ("/c/dark-roman.html", "Дарк роман"), ("/c/novinki.html", "Новинки"), ("/p/", "Похожие книги"), ("/c/", "Все подборки")]
@@ -225,7 +225,7 @@ MINE = """<script>try{if(localStorage.getItem("zal.onb"))document.querySelectorA
 
 
 def footer(colls):
-    return (f'<footer class="ft"><div class="wrap"><div class="in gl"><div><div class="logo"><img src="/icons/icon-192.png?v=4" alt="">Нора</div><p>Подборки, новинки и книги, похожие на любимые. '
+    return (f'<footer class="ft"><div class="wrap"><div class="in gl"><div><div class="logo"><img src="/icons/icon-192.png?v=5" alt="">Нора</div><p>Подборки, новинки и книги, похожие на любимые. '
             f'А Шуршуня подберёт книги лично тебе.</p></div><div><h4>Подборки</h4>'
             + "".join(f'<a href="/c/{p}.html">{esc(t.split(":")[0])}</a>' for p, t in colls[:7])
             + f'</div><div><h4>Нора</h4><a href="{APP}">Открыть в браузере</a><a href="{BOT}">Открыть в Telegram</a><a href="/c/">Все подборки</a>'
@@ -241,7 +241,7 @@ def page(path, title, desc, body, full_title=None, active="", img=None, ld=None)
     doc = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{esc(full_title or title + " — Нора")}</title><meta name="description" content="{esc(desc[:200])}"><link rel="canonical" href="{canon}">
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc[:200])}"><meta property="og:url" content="{canon}">
-<meta property="og:image" content="{esc(img or SITE + '/icons/icon-512.png?v=4')}"><meta property="og:type" content="website"><meta property="og:site_name" content="Нора">{HEAD}{ldj}</head><body>
+<meta property="og:image" content="{esc(img or SITE + '/icons/icon-512.png?v=5')}"><meta property="og:type" content="website"><meta property="og:site_name" content="Нора">{HEAD}{ldj}</head><body>
 {hdr(active)}<main>{body}</main>{FOOT}{MINE}{POPUP}{SN}</body></html>"""
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
