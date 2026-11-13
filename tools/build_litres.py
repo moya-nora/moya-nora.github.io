@@ -93,13 +93,16 @@ for gid, gname, ng, tags in pick:
         time.sleep(0.4)
     print(f"  {gname}: {got}", flush=True)
 
-# аннотации — отдельным запросом к книге (короткие, до 300 знаков)
+# аннотации — отдельным запросом к книге (целиком, до 1500 знаков по концу предложения)
 L = sorted(books.values(), key=lambda b: -b["n"])
 for i, b in enumerate(L):
     d = get(f"arts/{b['id']}")
     x = ((d or {}).get("payload") or {}).get("data") or {}
     ann = clean(x.get("html_annotation") or x.get("annotation") or "")
-    b["d"] = ann if len(ann) <= 300 else ann[:300].rsplit(" ", 1)[0] + "…"
+    if len(ann) > 1500:  # обрезаем по концу предложения, без многоточия
+        cut = ann[:1500]; k = max(cut.rfind(". "), cut.rfind("! "), cut.rfind("? "))
+        ann = cut[:k + 1] if k > 200 else cut
+    b["d"] = ann
     if i % 200 == 0:
         print("  аннотации:", i, "/", len(L), flush=True)
     time.sleep(0.25)

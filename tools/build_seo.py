@@ -99,7 +99,8 @@ COLL = [  # (адрес, заголовок, вступление, отбор)
      lambda b: has(b, "напряжённое", "динамичное", "триллер", "приключения") or b["g"] == "detective"),
     ("smeshnye", "Смешные книги", "Книги, над которыми смеёшься вслух.", lambda b: has(b, "смешное", "юмор", "сатира")),
     ("uyutnye", "Уютные книги для вечера", "Тёплые и светлые книги — для пледа и чая.",
-     lambda b: has(b, "уют", "тёплое", "светлое", "сказка") and not has(b, "мрачное", "жутковатое", "хоррор", "война")),
+     lambda b: (has(b, "уют", "тёплое") or (has(b, "светлое", "сказка") and not has(b, "исторический роман", "приключения", "динамичное")))
+     and not has(b, "мрачное", "жутковатое", "хоррор", "война", "грустное")),
     ("strashnye", "Страшные книги", "Хоррор, мистика и готика — книги, после которых не выключишь свет.", lambda b: has(b, "жутковатое", "хоррор", "мистика", "готика")),
     ("zastavlyayut-zadumatsya", "Книги, которые заставляют задуматься", "Романы о главном — после них долго думаешь.",
      lambda b: has(b, "интеллектуальное", "философский роман", "психологический роман", "антиутопия")),
@@ -234,6 +235,15 @@ def card(b, n=None, ann=False):
     return f'<a class="bk" href="/{u}">{inner}</a>' if u else f'<div class="bk">{inner}</div>'
 
 
+def rail(L):
+    return '<div class="rail">' + "".join(card(b) for b in L) + "</div>"
+
+
+def shelf(title, href, ds, L, all_txt="Все"):
+    return (f'<section class="shelf"><div class="hd"><h2><a href="{href}">{esc(title)}</a></h2><a class="all" href="{href}">{esc(all_txt)} →</a></div>'
+            + (f'<p class="ds">{esc(ds)}</p>' if ds else "") + rail(L) + "</section>")
+
+
 CTA = (f'<div class="ctas"><a class="btn" href="{APP}">Собрать свою полку</a>'
        f'<a class="btn ghost" href="{BOT}">{ic("tg")}Открыть в Telegram</a></div>')
 FINAL = (f'<section class="final gl"><div class="kick">Бесплатно</div><h2 style="margin-top:14px">Собери свою Нору</h2>'
@@ -275,8 +285,9 @@ def coll_card(p, t, L):
 
 urls.append(page("c/index.html", "Подборки книг", "Подборки книг по жанрам, настроениям и странам — от ромэнтези до классики.",
                  '<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><div class="kick">Что почитать</div><h1>Подборки книг</h1>'
-                 '<p class="lead">По жанрам, настроениям и странам — от ромэнтези до классики.</p></div></div><div class="colls" style="padding-bottom:40px">'
-                 + "".join(coll_card(p, t, L) for p, t, _, L in coll_data) + f"</div>{FINAL}</div>", active="/c/"))
+                 '<p class="lead">По жанрам, настроениям и странам — от ромэнтези до классики.</p></div></div><div style="display:none">'
+                 + "</div>" + "".join(shelf(t.split(":")[0], f"/c/{p}.html", lead, sorted(L[:24], key=lambda b: not img_of(b))[:14], f"Все {len(L)}") for p, t, lead, L in coll_data)
+                 + f"{FINAL}</div>", active="/c/"))
 
 pool = {}
 for b in cat_books:
@@ -325,7 +336,7 @@ def simscore(a, x):
     same_g = a["g"] == x["g"]
     if not same_g and not (LOVEY(a) and LOVEY(x)):
         return None, []
-    if len(tro) + len(spec) < 1 or len(tro) * 2 + len(spec) + gen * 0.3 < 2:
+    if len(tro) * 2 + len(spec) < 2:
         return None, []
     sc = 3 * len(tro) + 1.6 * len(spec) + 0.4 * gen + (1.5 if same_g else 0) + (1.2 if LOVEY(a) == LOVEY(x) else -2)
     if a["y"] and x["y"]:
@@ -348,12 +359,15 @@ for a_ in seeds:
         if sc is not None:
             cand.append((sc, x, why))
     cand.sort(key=lambda z: -z[0])
-    out, au = [], {}
+    out, au, sers = [], {}, set()
     for sc, x, why in cand:
+        if SER(x) in sers:
+            continue
         k = nk(x["a"])
         if k == nk(a_["a"]) and au.get(k, 0) >= 1 or au.get(k, 0) >= 2:
             continue
         au[k] = au.get(k, 0) + 1
+        sers.add(SER(x))
         out.append((x, why))
         if len(out) >= 12:
             break
@@ -405,8 +419,21 @@ for a_, _ in sim_pages:
 groups = {}
 for a_, out in sim_pages:
     groups.setdefault("Ромэнтези и любовные романы" if LOVEY(a_) else GEN.get(a_["g"], "Другое"), []).append(a_)
-toc = "".join(f'<section class="sec"><h2>{esc(g)}</h2><nav class="chips">' + "".join(f'<a href="/{SIM_URL[id(b)]}">{esc(b["t"])}</a>' for b in L) + "</nav></section>"
-              for g, L in sorted(groups.items(), key=lambda z: -len(z[1])))
+SIMS = {id(a_): out for a_, out in sim_pages}
+TORD = {k: i for i, k in enumerate(TROPES)}
+onepa = lambda L: [b for i, b in enumerate(L) if nk(b["a"]) not in {nk(x["a"]) for x in L[:i]}]  # на оглавлении — одна книга автора  # популярные современные книги из ручной разметки — первыми
+
+
+def sim_ds(a_, out):
+    from collections import Counter
+    c = Counter(lab(t) for _, w in out for t in w if t != "ромэнтези")
+    top = [k for k, _ in c.most_common(3)]
+    return (f"Книги того же настроения, что и «{a_['t']}» ({a_['a']})" + (f": {', '.join(top)}." if top else "."))
+
+
+toc = "".join(f'<div class="kick" style="margin-top:56px">{esc(g)}</div>'
+              + "".join(shelf(f"Если понравилась «{b['t']}»", "/" + SIM_URL[id(b)], sim_ds(b, SIMS[id(b)]), [x for x, _ in SIMS[id(b)]][:12], "Все похожие") for b in L)
+              for g, L in sorted(groups.items(), key=lambda z: -len(z[1])) for L in [onepa(sorted(L, key=lambda b: (TORD.get(nk(b["t"]) + "|" + b["a"].split(" ")[-1].lower().replace("ё", "е"), 999), not b["cat"], -(b["q"] or 0), -(b.get("sl") or 0))))])
 urls.append(page("p/index.html", "Что почитать после любимой книги", "Книги, похожие на популярные романы: ромэнтези, любовные романы, фэнтези, детективы и современная проза.",
                  f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><div class="kick">Похожие книги</div><h1>Что почитать после любимой книги</h1>'
                  f'<p class="lead">Выбери книгу, которая понравилась, — Шуршуня покажет похожие по настроению и сюжетным ходам.</p></div></div>{toc}{FINAL}</div>', active="/p/"))

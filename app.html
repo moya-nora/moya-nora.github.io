@@ -2851,7 +2851,7 @@ async function flEnrich(b){if(!b||!b._fl||b._rich)return b;
   try{const [w,au]=await Promise.all([flGet("/work/"+b._fl+"?extended=1"),b.c||!b._fa?Promise.resolve(null):flGet("/autor/"+b._fa).catch(()=>null)]);
     const labels=flLabels(w.classificatory);b.g=flGenre(labels,b.kind||w.work_type,b.y||w.work_year);
     if(!b.y&&w.work_year)b.y=w.work_year;if(au&&au.country_name)b.c=flCountry(au.country_name);
-    const d=String(w.work_description||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();if(d)b.ann=d.length>240?d.slice(0,d.lastIndexOf(" ",230))+"…":d;
+    const d=String(w.work_description||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();if(d)b.ann=sentCut(d,600);
     b._rich=true}catch(e){}
   if(!b.g){const own=CAT.filter(x=>norm(x.a)===norm(b.a));b.g=own.length?own[0].g:(b.y&&b.y<1945?"classic":"modern");if(!b.c&&own.length)b.c=own[0].c}
   return b}
@@ -3977,7 +3977,7 @@ function loadBig(){if(BIGP)return BIGP;
         const tags=arr(tc,tg,TGS),g=G[gi]||"modern",p=PAL[hsh(t)%PAL.length];
         const b={id:"q"+w,t,a,c:ci>=0?C[ci]:(au[1]>=0?C[au[1]]:""),y:y||null,g,tags,heavy:g==="kids"||tags.some(x=>HV0.has(x))?0:tags.some(x=>HV2.has(x))?2:1,
           len:pg?(pg<260?"short":pg>520?"long":"mid"):undefined,q,acclaim:arr(ac,aw,AW),ann:"",when:"",f:E,big:1,sl,bg:p[0],fg:p[1]};
-        if(pg)b.pg=pg;if(rw)b.rw=rw;if(o)b.o=o;if(im)b.img=im;if(an)b.ann=an;if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
+        if(pg)b.pg=pg;if(rw)b.rw=rw;if(o)b.o=o;if(im)b.img=im;if(an)b.ann=fixEll(an);if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
       if(i<R.length){setTimeout(step,0);return}
       BIGL=out;_allb=null;BIGMETA=d.meta||{};res(out);try{dispatchEvent(new Event("bigcat"))}catch(e){}};step()}));
   BIGP.catch(()=>{BIGP=null});return BIGP}
@@ -4037,7 +4037,7 @@ function pump(){while(iqn<6&&IQ.length){const {x,k}=IQ.shift();iqn++;
 addEventListener("online",()=>{iretry=0;pump()});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){iretry=0;pump()}});
 async function flj(path){const r=await fetch("https://api.fantlab.ru"+path);if(!r.ok)throw new Error(r.status);return r.json()}
-const flClean=d=>{d=String(d||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();return d.length>260?d.slice(0,d.lastIndexOf(" ",250))+"…":d};
+const flClean=d=>{d=String(d||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();return sentCut(d,600)};
 // издания произведения: берём самое свежее русское с обложкой; если все старше 1995 — null (рисованная обложка смотрится лучше)
 const EDS={};
 async function editionsOf(id){if(EDS[id])return EDS[id];const j=await flj("/work/"+id+"/extended");const L=[];Object.values(j.editions_blocks||{}).forEach(b=>(b.list||[]).forEach(e=>L.push(e)));
@@ -4068,13 +4068,15 @@ function fItem(f,kind){return {s:f.s||undefined,_f:1,t:fTitle(f),a:f.o&&f.o!==fT
     rd:f.d,r:f.r,ds:f.ds||"",wy:f.wy||"",s:f.s,src:f,kind,id:f.id,img:f.img}}
 // ---------- описания: подробное с Фантлаба (у каждой книги своё), иначе аннотация каталога ----------
 const DESC=LS.get("zal.desc",{});let descT=0;const descSave=()=>{clearTimeout(descT);descT=setTimeout(()=>LS.set("zal.desc",DESC),600)};
-const descOf=x=>{const d=DESC[ikey(x)];return (d&&d.length>(x.ds||"").length?d:"")||x.ds||x.wy||""};
+const descOf=x=>{const d=DESC[ikey(x)];return fixEll((d&&d.length>(x.ds||"").length?d:"")||x.ds||x.wy||"")};
 // коротко и цепко: аннотация каталога или первое предложение подробного описания
 const clip=(s,n)=>{s=String(s||"").trim();if(s.length<=n)return s;const c=s.slice(0,n),i=Math.max(c.lastIndexOf(". "),c.lastIndexOf("! "),c.lastIndexOf("? "));return i>n*.45?c.slice(0,i+1):c.slice(0,c.lastIndexOf(" "))+"…"};
 const hookOf=x=>wholeSent(x.ds||descOf(x)||x.wy||"",190);
 function wholeSent(t,max){t=String(t||"").replace(/\s+/g," ").trim().replace(/…$/,"");const ss=t.match(/[^.!?]+[.!?]+(?:\s|$)/g);if(!ss)return t;let out="";
   for(const z of ss){if(out&&(out+z).length>max)break;out+=z}out=out.trim();if(out.length>260){const c=out.lastIndexOf(",",240);out=(c>80?out.slice(0,c):out.slice(0,out.lastIndexOf(" ",240)))+"."}return out}
-const dClean=d=>{d=String(d||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();if(d.length<=620)return d;const cut=d.slice(0,620),i=Math.max(cut.lastIndexOf(". "),cut.lastIndexOf("! "),cut.lastIndexOf("? "));return i>200?cut.slice(0,i+1):cut.slice(0,cut.lastIndexOf(" "))+"…"};
+const sentCut=(d,n)=>{d=String(d||"").trim();if(d.length<=n)return d.replace(/\s*…$/,m=>"");const cut=d.slice(0,n),k=Math.max(cut.lastIndexOf(". "),cut.lastIndexOf("! "),cut.lastIndexOf("? "),cut.lastIndexOf("… "));return k>40?cut.slice(0,k+1):cut};
+const fixEll=d=>{d=String(d||"").trim();if(!/…$/.test(d))return d;const k=Math.max(d.lastIndexOf(". "),d.lastIndexOf("! "),d.lastIndexOf("? "));return k>40?d.slice(0,k+1):d.replace(/\s*…$/,".")};
+const dClean=d=>{d=String(d||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();return sentCut(d,2400)};
 const DQ=[],DX={};let dqn=0;
 function wantDesc(x,cb){if(!x||x._f)return;const k=ikey(x);if(DESC[k]!==undefined){if(cb)cb();return}if(DX[k]){(DX[k].cbs=DX[k].cbs||[]).push(cb);return}DX[k]={cbs:cb?[cb]:[]};DQ.push({x,k});dpump()}
 function dpump(){while(dqn<3&&DQ.length){const {x,k}=DQ.shift();dqn++;
@@ -4701,7 +4703,7 @@ const NF=Object.assign({mood:[],len:"",pace:"",era:"",cty:[],acc:"",gen:[],hide:
 const saveNF=()=>LS.set("zal.nfb",NF);
 TF=Object.assign({kind:"",mood:[],hide:[],set:""},TF);
 const has=(b,...t)=>t.some(x=>(b.tags||[]).includes(x));
-const B_MOOD=[["touch","Трогательные",b=>has(b,"грустное","взросление","война")],["warm","Светлые и тёплые",b=>has(b,"тёплое","светлое","сказка")||(b.g==="kids"&&!has(b,"мрачное","жутковатое"))],
+const B_MOOD=[["touch","Трогательные",b=>has(b,"грустное","взросление","война")],["warm","Светлые и тёплые",b=>(has(b,"тёплое","уют","сказка")||(has(b,"светлое")&&!has(b,"исторический роман","приключения","динамичное","война"))||(b.g==="kids"&&!has(b,"мрачное","жутковатое")))&&!has(b,"мрачное","война")],
   ["cozy","Уютные",b=>(has(b,"уют","тёплое","сказка")||b.g==="kids")&&!has(b,"мрачное","жутковатое","хоррор","война")],
   ["fun","Смешные",b=>has(b,"смешное","юмор","сатира")],["grip","Захватывающие",b=>has(b,"напряжённое","динамичное","триллер","приключения","детектив","хоррор")||b.g==="detective"],
   ["atm","Атмосферные",b=>has(b,"атмосферное","готика","магия","большой город","путешествия","мифология")],
@@ -4735,9 +4737,9 @@ const tropeTag=t=>"троп:"+t;
 let TROPE_N=null,TROPE_K=-1;const tropeCount=()=>{const L=ALLB();if(TROPE_K!==L.length){TROPE_K=L.length;TROPE_N={};L.forEach(b=>(b.tags||[]).forEach(t=>{if(t.startsWith("троп:"))TROPE_N[t]=(TROPE_N[t]||0)+1}))}return TROPE_N};
 const ctyTop=()=>{const c={};CAT.forEach(b=>{if(b.c)c[b.c]=(c[b.c]||0)+30});BIGL.forEach(b=>{if(b.c)c[b.c]=(c[b.c]||0)+1});return Object.entries(c).filter(x=>!NOCOUNTRY.has(x[0])).sort((a,b)=>b[1]-a[1]).slice(0,24).map(x=>x[0])};
 let B_CTY=ctyTop();
-const B_SET=[["evening","На один вечер",b=>lenIs(b,"short")&&!has(b,"эпическое фэнтези")],["calm","Если на душе неспокойно",b=>has(b,"тёплое","светлое","уют")&&!has(b,"мрачное","жутковатое","война")&&b.heavy<2],
+const B_SET=[["evening","На один вечер",b=>lenIs(b,"short")&&!has(b,"эпическое фэнтези")],["calm","Если на душе неспокойно",b=>(has(b,"тёплое","уют")||(has(b,"светлое")&&!has(b,"исторический роман","приключения","динамичное")))&&!has(b,"мрачное","жутковатое","война","грустное")&&b.heavy<2],
   ["away","Чтобы отвлечься",b=>has(b,"напряжённое","динамичное","смешное","приключения")&&b.heavy<2],["road","В дорогу",b=>has(b,"приключения","путешествия","динамичное","детектив")&&b.len!=="long"],
-  ["night","Перед сном",b=>(has(b,"уют","тёплое","светлое","сказка")||b.g==="kids")&&!has(b,"жутковатое","хоррор","напряжённое")],["weekend","Для долгих выходных",b=>lenIs(b,"long")&&lenNot(b,"short")],
+  ["night","Перед сном",b=>(has(b,"уют","тёплое")||((has(b,"светлое","сказка")||b.g==="kids")&&!has(b,"исторический роман","приключения","динамичное")))&&!has(b,"жутковатое","хоррор","напряжённое","война")],["weekend","Для долгих выходных",b=>lenIs(b,"long")&&lenNot(b,"short")],
   ["classic","Классика, до которой всё не доходят руки",b=>b.g==="classic"&&b.q>=3]];
 function bookPass(b,skip){const F=NF,find=(L,id)=>(L.find(x=>x[0]===id)||[])[2];
   if(skip!=="mood"&&F.mood.length&&!F.mood.some(m=>find(B_MOOD,m)(b)))return false;

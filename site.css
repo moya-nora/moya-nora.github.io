@@ -191,3 +191,10 @@ a.bk .cv{transition:transform .25s}a.bk:hover .cv{transform:translateY(-4px)}a.b
 .feat .ic svg{stroke:var(--gold)}
 .feat h3{color:#F3DDB0}
 .grid .bk p.why{color:#E9B866;font-size:13px;margin:6px 0 0;-webkit-line-clamp:2}
+/* полки-карусели, как в книжных приложениях: листаются вбок */
+.shelf{margin:38px 0 0}.shelf h2{padding:0;margin-left:-2px}.shelf .hd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.shelf h2{font-size:30px;line-height:1.05;margin:0}.shelf h2 a{color:inherit}.shelf .all{flex:none;font-size:14px;color:var(--gold);white-space:nowrap}
+.shelf .ds{margin:8px 0 14px;max-width:62ch;color:var(--ink2);font-size:15px;line-height:1.5}
+.rail{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:28px;scrollbar-width:none;margin:0 -28px;padding:2px 28px 10px}
+.rail::-webkit-scrollbar{display:none}.rail .bk{flex:0 0 150px;scroll-snap-align:start}.rail .bk .t{font-size:14.5px;margin-top:10px}.rail .bk .a{font-size:12.5px}
+@media (max-width:640px){.shelf h2{font-size:24px}.rail .bk{flex-basis:128px}}
