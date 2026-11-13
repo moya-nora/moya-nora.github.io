@@ -942,6 +942,7 @@ body.viewing #app .shelf-h{display:none}
 #app .sx-tabs button.on:not(.L *){background:#F5F5F7;color:#0B0B10}
 #app .sx-h:not(.L *){margin:18px 2px 4px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
 #app .sx-rec:not(.L *){display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#app .sx-mean{display:flex;flex-direction:column;gap:2px;margin:14px 0 6px;padding:12px 14px;border-radius:16px;background:rgba(226,182,107,.1);box-shadow:inset 0 0 0 1px rgba(226,182,107,.25)}#app .sx-mean b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold,#E2B66B)}#app .sx-mean span{font-size:15px;color:var(--ink,#fff)}
 #app .sx-rec button:not(.L *){padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.07);font-size:13px;color:var(--ink2)}
 #app .sx-au:not(.L *){display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-top:6px}
 #app .sx-au button:not(.L *){flex:none;display:flex;align-items:center;gap:8px;padding:7px 12px 7px 7px;border-radius:999px;background:rgba(255,255,255,.07);font-size:13.5px}
@@ -4424,14 +4425,16 @@ function sxDraw(state){const box=$("#fres");if(!box)return;const q=SX.q,F=SX.k==
     h=`<div class="sx-h">Подобрано по фильтрам</div>`+(all.length?L.map(sxRow).join("")+(all.length>L.length?`<button class="sx-moref" data-sxmore>Показать ещё</button>`:""):`<p class="hint">С такими фильтрами ничего не нашлось.${(()=>{const d=bestDrop();return d?` Попробуй убрать «${esc(d[1])}».`:""})()}</p><button class="sx-moref" data-sxfreset>Сбросить фильтры</button>`);
     box.innerHTML=h;box._l=L;return}
   if(norm(q).length<2){const rec=recentGet(),coach=!LS.get("zal.coachsx",0);SX.list=[];
-    h=(coach?`<div class="sx-feat" id="sxFeat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Шуршуня помнит каждую книгу на твоей полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`:"")+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+
+    h=(coach?`<div class="sx-feat" id="sxFeat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Шуршуня помнит каждую книгу на твоей полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`:"")+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+(F?"":`<div class="sx-h">Можно просто попросить</div><div class="sx-rec sx-ask">${MEAN_EX.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`)+
       `<div class="fwrap inl" id="fwrap">${filtersHTML()}</div>${filtersFoot(true)}`;box.innerHTML=h;box._l=[];if(coach)setTimeout(sxCoach,450);return}
+  if(SX.mean&&!F){const M=SX.mean,L=M.list.slice(0,SX.mn||12).map(b=>bItem(b,"hit"));SX.meanL=L;
+    h+=`<div class="sx-mean"><b>Шуршуня поняла</b><span>${esc((M.lab.length?M.lab:M.kw.map(w=>"«"+w+"…»")).join(" · "))}</span></div>`+L.map((x,i)=>sxRow(x,"m"+i)).join("")+(M.list.length>L.length?`<button class="sx-moref" data-sxmean>Показать ещё</button>`:"")}
   if(SX.authors.length)h+=`<div class="sx-h">Авторы</div><div class="sx-au">${SX.authors.map((a,i)=>`<button data-au="${i}"><i>${esc(a.name[0]||"?")}</i>${hl(a.name,q)}</button>`).join("")}</div>`;
   const {vis,hid}=sxVis();
-  h+=vis.length||hid.length?`<div class="sx-h">${F?"Фильмы и сериалы":"Книги"}</div>`+sxHidBar(hid)+vis.map(sxRow).join(""):"";
+  h+=vis.length||hid.length?`<div class="sx-h">${F?"Фильмы и сериалы":SX.mean?"Совпадения по названию":"Книги"}</div>`+sxHidBar(hid)+vis.map(sxRow).join(""):"";
   if(state==="done"&&sxFilt()&&SX.list.length&&!vis.length&&!hid.length)h+=`<p class="hint">Книги нашлись, но под выбранные фильтры не подходит ни одна.</p><button class="sx-moref" data-sxfreset>Искать без фильтров</button>`;
   if(state==="load")h+='<div class="sk"></div><div class="sk"></div><div class="sk"></div>';
-  if(state==="done"&&!SX.list.length&&!SX.authors.length)h+=`<p class="hint">Ничего не нашлось. Попробуй часть названия${F?"":" или фамилию автора"}.</p>${F?`<button class="sx-manual" data-man>Добавить «${esc(q.trim())}» вручную</button>`:""}`;
+  if(state==="done"&&!SX.list.length&&!SX.authors.length&&!SX.mean)h+=`<p class="hint">Ничего не нашлось. Попробуй часть названия${F?"":" или фамилию автора"}.</p>${F?`<button class="sx-manual" data-man>Добавить «${esc(q.trim())}» вручную</button>`:""}`;
   if(state==="err")h+='<p class="hint">Каталог не ответил — проверь интернет.</p>';
   box.innerHTML=h;box._l=vis}
 function sxRefilter(){tgHaptic();SX.fn=40;const b=$("#sxf");if(b)b.innerHTML=sxFbar();if(norm(SX.q).length<2)sxDraw();else sxDraw("done")}
@@ -4443,11 +4446,72 @@ const GSYN=[["nonfic","нонфикшн нонфикшен нонфик nonficti
 function genreHit(q){const n=norm(q);if(n.length<4)return null;
   for(const [g,w] of GSYN)if(w.split(" ").includes(n))return ["gen",g];
   const t=B_TROPE.find(([id,l])=>norm(l)===n||norm(l).startsWith(n)&&n.length>=8);return t?["trope",t[0]]:null}
+// ---------- смысловой поиск: «про Южную Корею», «что почитать, когда грустно», «страшное на ночь» ----------
+// разбираем просьбу на настроения, темы, страны и слова; ищем по тегам, стране и аннотациям
+const MEAN_I=[
+ [/грус|тоск|печал|хандр|депресс|плохо на душе|тяжело на душе|одинок|утеш|поддерж|поднять настроен|расстро/,"чтобы стало теплее",{"тёплое":4,"светлое":4,"уют":3,"вдохновляющее":3,"смешное":2,"юмор":2,"мрачное":-6,"война":-5,"хоррор":-6,"жутковатое":-4,"антиутопия":-4},{heavy:0}],
+ [/поплак|плак|рыда|слез|до слез|разбил.*сердц|пореветь/,"чтобы поплакать",{"грустное":5,"любовь":2,"женская судьба":1,"семейная сага":1,"смешное":-4,"юмор":-3}],
+ [/посмея|смешн|весел|юмор|ржа|угар|забавн|ирони/,"посмеяться",{"смешное":5,"юмор":5,"сатира":3,"мрачное":-4,"грустное":-2}],
+ [/страшн|жутк|ужас|хоррор|бояться|напуга|мурашк|на ночь|мистик|призрак/,"страшное",{"хоррор":5,"жутковатое":5,"мистика":3,"готика":3,"мрачное":2,"уют":-2}],
+ [/уютн|уют|плед|какао|осен|дожд|зим|снег|камин|хюгге|тепл[оа]|мандарин|новый год|рождеств/,"уютное",{"уют":5,"тёплое":4,"атмосферное":3,"светлое":2,"мрачное":-4,"война":-4}],
+ [/оторват|затягив|залпом|на одном дыхан|динамичн|скучно|захватыв|интриг|не уснуть|не спится/,"не оторваться",{"динамичное":4,"напряжённое":4,"триллер":3,"детектив":3,"приключения":2,"медленное":-4}],
+ [/отпуск|пляж|самолет|поезд|в дорог|путешеств|море|лето/,"в дорогу",{"путешествия":3,"приключения":3,"море":3,"динамичное":2,"медленное":-2}],
+ [/подумат|умн|философ|глубок|смысл жизни|интеллект|поразмышл/,"подумать",{"интеллектуальное":4,"философский роман":4,"психологический роман":2}],
+ [/вдохнов|мотивац|поверить в себя|силы жить|надежд/,"вдохновиться",{"вдохновляющее":5,"светлое":3,"биография":2,"мемуары":1}],
+ [/любов|романтик|влюб|роман про отношен|страст/,"о любви",{"любовь":5,"романтичное":4}],
+ [/коротк|небольш|на вечер|быстро прочит|на один вечер|тонк/,"на один вечер",{},{len:"short"}],
+ [/толст|больш.*книг|эпопе|надолго|на месяц|многотомн/,"надолго",{"семейная сага":2,"эпическое фэнтези":2},{len:"long"}],
+ [/войн|фронт|блокад/,"о войне",{"война":6}],[/космос|космич|звезд|планет|марс/,"о космосе",{"космос":6,"научная фантастика":2}],
+ [/еда|еде|кулинар|готовк|кухн|рецепт|ресторан/,"о еде",{"еда":6}],[/музык|музыкант|рок|джаз|оркестр/,"о музыке",{"музыка":6}],
+ [/искусств|художник|живопис|картин|музе/,"об искусстве",{"искусство":6}],[/школ|универ|студент|академи|колледж/,"о школе и учёбе",{"школа и университет":6}],
+ [/деревн|сел[оа]|провинц|глуш/,"деревня",{"деревня":6}],[/природ|животн|кошк|кот[аеуы ]|собак|пес|лес|звер/,"о природе и животных",{"природа и животные":6}],
+ [/дракон/,"драконы",{"драконы":7}],[/маги|волшеб|ведьм|колдун/,"магия",{"магия":5,"сказка":2}],[/искусственн|нейросет|робот|\bии\b/,"об ИИ",{"искусственный интеллект":7}],
+ [/путешеств.*времен|во времени|машин.*времен|попаданц/,"путешествия во времени",{"путешествия во времени":7}],[/семь|семейн|родител|мам[аеыу]|отц|отец|детств/,"о семье",{"семейная сага":4,"взросление":2}],
+ [/дружб|друз/,"о дружбе",{"дружба":6}],[/взросле|подрост|юност|первый раз/,"о взрослении",{"взросление":6}],[/город|мегаполис|нью-йорк/,"о городе",{"большой город":4}],
+ [/наук|учен|физик|биолог|мозг/,"о науке",{"наука":5}],[/психолог|травм|терап|отношени с собой/,"психология",{"психология":5,"психологический роман":2}],
+ [/миф|бог[иа]|легенд|олимп/,"мифы",{"мифология":6}],[/виктори|англи[яи] 19|xix век|19 век|джейн остин/,"викторианское",{"викторианская эпоха":5}],
+ [/антиутоп|тоталитар|будущ.*мрачн/,"антиутопия",{"антиутопия":7,"постапокалипсис":2}],[/апокалипс|конец света|зомби|выжива/,"постапокалипсис",{"постапокалипсис":7}],
+ [/детектив|расследован|убийств|сыщик|загадк/,"детектив",{"детектив":6,"триллер":2}],[/историческ|прошл|эпох|средневек|импери/,"история",{"исторический роман":5,"история":3}],
+ [/женщин|женск/,"женская судьба",{"женская судьба":6}],[/лгбт|гей|квир/,"ЛГБТ",{"ЛГБТ":7}],[/сказк/,"сказка",{"сказка":6}],[/готич|замок|поместь/,"готика",{"готика":5}],
+ [/биограф|мемуар|воспоминан|жизнь .*реальн|реальн.*истор/,"реальные истории",{"биография":5,"мемуары":5}]];
+const MEAN_C=[[/коре[яиюейц]|сеул|пусан/,["Корея","Южная Корея"],["корея","корее","корею","кореи","корейск","корейц","сеул","пусан"],"о Корее"],[/япон|токио|киото|самура|аниме/,["Япония"],["япон","токио","киото"],"о Японии"],
+ [/китай|китае|китая|пекин|шанха/,["Китай"],["китай","китае","пекин"],"о Китае"],[/инди[яию]|индийск|бомбе|дели/,["Индия"],["индия","индии","индию","индийск","бомбе"],"об Индии"],
+ [/франц|париж|прованс/,["Франция"],["франц","париж"],"о Франции"],[/итал|рим[ае ]|венеци|флоренц|сицили/,["Италия"],["итал","рим","венец","флоренц"],"об Италии"],
+ [/испан|мадрид|барселон/,["Испания"],["испан","мадрид","барселон"],"об Испании"],[/англи|лондон|британ/,["Англия","Великобритания","Шотландия","Уэльс"],["англи","лондон","британ"],"об Англии"],
+ [/шотланд|эдинбург/,["Шотландия"],["шотланд"],"о Шотландии"],[/ирланд|дублин/,["Ирландия"],["ирланд","дублин"],"об Ирландии"],
+ [/америк|сша|нью-йорк|техас|калифорн/,["США"],["америк","нью-йорк","сша"],"об Америке"],[/росси|москв|петербург|сибир|урал|советск|ссср/,["Россия"],["росси","москв","петербург","сибир","советск"],"о России"],
+ [/германи|немец|немецк|берлин/,["Германия"],["герман","берлин","немец"],"о Германии"],[/швец|стокгольм/,["Швеция"],["швец","стокгольм"],"о Швеции"],[/норвег|скандинав|фьорд/,["Норвегия","Швеция","Дания","Финляндия","Исландия"],["норвег","скандинав"],"о Скандинавии"],
+ [/исланд/,["Исландия"],["исланд"],"об Исландии"],[/турци|стамбул/,["Турция"],["турц","стамбул"],"о Турции"],[/египт|каир/,["Египет"],["египт","каир"],"о Египте"],
+ [/греци|афин|греческ/,["Греция"],["греци","афин"],"о Греции"],[/мексик/,["Мексика"],["мексик"],"о Мексике"],[/бразил|рио/,["Бразилия"],["бразил"],"о Бразилии"],
+ [/аргентин|буэнос/,["Аргентина"],["аргентин"],"об Аргентине"],[/латинск|колумби|чили|перу/,["Колумбия","Чили","Перу","Аргентина","Мексика","Бразилия","Куба","Уругвай"],["латин","колумб","чили"],"о Латинской Америке"],
+ [/израил|иерусалим/,["Израиль"],["израил","иерусал"],"об Израиле"],[/иран|перси/,["Иран"],["иран","персия","персии","персидск","тегеран"],"об Иране"],[/африк|нигери|кени|юар/,["Нигерия","ЮАР","Кения","Танзания","Египет"],["африк","нигер","кени"],"об Африке"],
+ [/польш|варшав/,["Польша"],["польш","варшав"],"о Польше"],[/австрали/,["Австралия"],["австрал"],"об Австралии"],[/канад/,["Канада"],["канад"],"о Канаде"],[/армени|ереван/,["Армения"],["армен","ереван"],"об Армении"]];
+const MEAN_STOP=new Set("хочу хочется хотела хотел почитать прочитать читать что чтото какую какие какое книга книгу книги книжку посоветуй посоветуйте подскажи найди нужна нужно можно было бы про когда если чтобы чем для мне меня мой моя это эти тот как так очень самое самый лучше лучшие лучшая главное типа вроде похожее похожие где кто его она они есть нет еще уже или при над под без".split(" "));
+function meanParse(q){const s=" "+String(q).toLowerCase().replace(/ё/g,"е")+" ";const P={lab:[],t:{},c:null,ck:[],kw:[],len:"",heavy:null};
+  MEAN_I.forEach(([rx,lab,t,o])=>{if(!rx.test(s))return;P.lab.push(lab);for(const k in t)P.t[k]=(P.t[k]||0)+t[k];if(o&&o.len)P.len=o.len;if(o&&o.heavy!=null)P.heavy=o.heavy});
+  MEAN_C.forEach(([rx,cs,kw,lab])=>{if(!rx.test(s))return;P.lab.push(lab);P.c=new Set([...(P.c||[]),...cs]);P.ck.push(...kw)});
+  // остальные значимые слова ищем в аннотациях: «про пчёл», «о маяке»
+  const used=[...MEAN_I.map(x=>x[0]),...MEAN_C.map(x=>x[0])];
+  P.kw=s.split(/[^a-zа-я0-9-]+/).filter(w=>w.length>=4&&!MEAN_STOP.has(w)&&!used.some(rx=>rx.test(" "+w+" "))).map(w=>stemRu(w)).filter(w=>w.length>=3).slice(0,4);
+  const wr=w=>new RegExp("[^а-яa-z0-9]"+w.replace(/[-]/g,"\\-"));P.ckr=new RegExp("[^а-яa-z0-9]("+(P.ck.join("|")||"\\uffff")+")");P.kwr=P.kw.map(wr);
+  P.kids=/дет|ребен|ребён|сыну|дочк|дочер|малыш/.test(s);P.nf=/нон|научпоп|документ|реальн|психолог|саморазв/.test(s);
+  P.ok=P.lab.length>0||P.kw.length>0;return P}
+function meanFind(q,k){const P=meanParse(q);if(!P.ok)return null;const W=wantNorms(),pos=Object.entries(P.t),out=[];
+  for(const b of ALLB()){const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt))continue;let s=0,hit=0;const tg=b.tags||[];
+    for(const [t,w] of pos)if(tg.includes(t)){s+=w;if(w>0)hit++}
+    if(P.c){const own=P.c.has(b.c);const an=(b.ann||"")+" "+(b.when||"");const ink=P.ckr.test(" "+an.toLowerCase().replace(/ё/g,"е"));if(own||ink){s+=own&&ink?11:ink?9:3;hit++}else continue}
+    if(P.kw.length){const an=((b.ann||"")+" "+(b.when||"")+" "+tg.join(" ")+" "+b.t).toLowerCase().replace(/ё/g,"е");let m=0;for(const r of P.kwr)if(r.test(" "+an))m++;if(m){s+=4*m;hit++}else if(!pos.length&&!P.c)continue}
+    if(P.len&&b.len){if(b.len===P.len){s+=3;hit++}else s-=3}
+    if(P.heavy!=null&&b.heavy>1)s-=4;if(b.g==="kids"&&!P.kids)s-=6;if(b.g==="nonfic"&&!P.nf)s-=3;
+    if(!hit||s<=0)continue;s+=(b.q||0)*.8+(b.acclaim&&b.acclaim.length?1.5:0)+(b.ann?1:0)+Math.random()*1.2;out.push([s,b])}
+  out.sort((a,b)=>b[0]-a[0]);const au=new Set(),L=[];for(const [,b] of out){if(au.has(b.a))continue;au.add(b.a);L.push(b);if(L.length>=(k||40))break}
+  return {lab:[...new Set(P.lab)],kw:P.kw,list:L}}
+const MEAN_EX=["Про Южную Корею","Что почитать, когда грустно","Чтобы поплакать","Страшное на ночь","Уютное на осень","На один вечер","Чтобы не оторваться","О драконах и любви"];
 function sxRun(){const q=$("#fq").value,my=++SX.seq;SX.q=q;SX.mode="q";clearTimeout(SX.t);$(".sx-clear").hidden=!q;
   {const h=SX.k!=="films"&&genreHit(q);if(h){const L=h[0]==="gen"?NF.gen:NF.trope;if(!L.includes(h[1]))L.push(h[1]);saveNF();SX.picks=true;SX.q="";$("#fq").value="";$(".sx-clear").hidden=true;
     const b=$("#sxf");if(b)b.innerHTML=sxFbar();SX.authors=[];sxDraw();tgHaptic();return}}
   if(norm(q).length<2){SX.authors=[];sxDraw();return}
-  SX.list=localFind(q);SX.authors=[];sxDraw("load");
+  SX.list=localFind(q);SX.authors=[];SX.mean=null;SX.mn=12;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=2){const M=meanFind(q,40);if(M&&M.list.length&&(M.lab.length||!SX.list.length))SX.mean=M}sxDraw("load");
   SX.t=setTimeout(async()=>{try{if(SX.k==="films")await loadFilms().catch(()=>{});if(my!==SX.seq)return;if(SX.k==="films")SX.list=localFind(q);
       const o=await (SX.k==="films"?onlineSeries(q):onlineBooks(q));if(my!==SX.seq)return;const seen=new Set(SX.list.map(x=>norm(x.t)+(x._f?x.y:"")));
       SX.list=[...SX.list,...o.works.filter(x=>{const n=norm(x.t)+(x._f?x.y:"");if(seen.has(n))return false;seen.add(n);return true})];SX.authors=o.au;sxDraw("done")}
@@ -4465,7 +4529,7 @@ function sxCoach(){const el=$("#sxFeat");if(!el||$("#sxSpot"))return;LS.set("zal
 function openSearch(keep){if(VIEW)return;if(!keep)SX.picks=false;const q0=keep?SX.q:"";SX.k=REALM;SX.q=q0;SX.mode="q";if(!keep)SX.showRead=false;SX.fn=keep?SX.fn:40;cardX=null;tgHaptic();$("#vsheet").classList.remove("filters");
   vOpen(`<div class="sx-top"><button class="sx-back" data-vclose aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div class="sbar gl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="fq" type="text" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false"><button class="sx-clear" hidden aria-label="Очистить"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
    <div class="sx-tabs" hidden><button data-sk="books">Книги</button></div><div class="sxf" id="sxf">${sxFbar()}</div><div id="fres"></div>`,true);$("#vsheet").classList.add("search");
-  const upd=()=>{document.querySelectorAll("[data-sk]").forEach(b=>b.classList.toggle("on",b.dataset.sk===SX.k));$("#fq").placeholder=SX.k==="films"?"Фильм или сериал":"Название или автор";{const ph=$("[data-photo]");if(ph)ph.hidden=SX.k==="films"}};upd();
+  const upd=()=>{document.querySelectorAll("[data-sk]").forEach(b=>b.classList.toggle("on",b.dataset.sk===SX.k));$("#fq").placeholder=SX.k==="films"?"Фильм или сериал":"Название, автор или «про что»";{const ph=$("[data-photo]");if(ph)ph.hidden=SX.k==="films"}};upd();
   $("#fq").addEventListener("input",sxRun);$("#fq").addEventListener("keydown",e=>{if(e.key==="Enter"){recentAdd($("#fq").value);$("#fq").blur()}});
   $(".sx-clear").onclick=()=>{$("#fq").value="";sxRun();$("#fq").focus()};
   document.querySelector(".sx-tabs").onclick=e=>{const b=e.target.closest("[data-sk]");if(!b||b.dataset.sk===SX.k)return;SX.k=b.dataset.sk;upd();sxRun();tgHaptic()};
@@ -4491,11 +4555,12 @@ $("#vshBody").addEventListener("click",e=>{const t=e.target;if(!$("#fres"))retur
   const fd=t.closest("[data-sxfdrop]");if(fd){dropFilter(fd.dataset.sxfdrop);sxRefilter();return}
   const fm=t.closest("[data-sxfmood]");if(fm){NF.mood.push(fm.dataset.sxfmood);saveNF();sxRefilter();$("#sxf").scrollLeft=0;return}
   if(t.closest("[data-sxmore]")){SX.fn=(SX.fn||40)+40;sxDraw("done");return}
+  if(t.closest("[data-sxmean]")){SX.mn=(SX.mn||12)+12;sxDraw("done");return}
   if(t.closest("[data-sxfreset]")){resetAll();sxRefilter();return}
   const rq=t.closest("[data-rq]");if(rq){$("#fq").value=rq.dataset.rq;sxRun();return}
   const au=t.closest("[data-au]");if(au){recentAdd($("#fq").value);sxAuthor(SX.authors[+au.dataset.au]);tgHaptic();return}
   if(t.closest("[data-man]")){const q=SX.q.trim();const x={_f:1,t:q.charAt(0).toUpperCase()+q.slice(1),id:"u"+Date.now(),kind:"man"};FM.addWant(x);vDirty=true;toast("Добавлено в избранное");sxDraw("done");return}
-  const b=t.closest("[data-sx]");const row=t.closest(".fr");if(!row)return;const x=$("#fres")._l[+row.dataset.i];if(!x)return;
+  const b=t.closest("[data-sx]");const row=t.closest(".fr");if(!row)return;const di=row.dataset.i,x=di[0]==="m"?(SX.meanL||[])[+di.slice(1)]:$("#fres")._l[+di];if(!x)return;
   if(!b){if(sxHas(x)==="read"){vClose();setTimeout(()=>openItem((SX.k==="films"?FM:BK).read().find(y=>norm(y.t)===norm(x.t)),"read"),300)}else bkcOpen(x,sxHas(x)==="want"?"top":"search");return}
   if(sxHas(x))return;recentAdd($("#fq").value);const D=SX.k==="films"?FM:BK,F=SX.k==="films";
   const done=()=>{vDirty=true;row.querySelector(".ac").innerHTML=`<em>${sxHas(x)==="read"?(F?"Просмотрено":"Прочитано"):"В избранном"}</em>`};
