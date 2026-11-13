@@ -1486,8 +1486,7 @@ html[data-theme="light"] #app .imp-to button.on{background:#14151B;color:#F3F1EC
 #app .top .addb:not(.L *),#app .top .seg:not(.L *){pointer-events:auto}
 body.col.topoff #app .top:not(.L *){transform:translateY(-110%);opacity:0}
 body.col.topoff #app .top .addb:not(.L *){pointer-events:none}
-body:not(.col):not(.sum) #app .addb{opacity:0;pointer-events:none}
-body.sum #app .addb{opacity:0;pointer-events:none}
+#app .top .addb{opacity:0!important;pointer-events:none!important}/* кнопка теперь внутри вкладки «Полки» */
 /* фильтры над карточкой, в её ширину */
 #app #s-feed .wrap{top:calc(112px + var(--sat,env(safe-area-inset-top,0px)))}
 #app .fbar{top:calc(66px + var(--sat,env(safe-area-inset-top,0px)));left:10px;right:10px;padding:0;-webkit-mask:linear-gradient(90deg,#000 90%,transparent);mask:linear-gradient(90deg,#000 90%,transparent)}
@@ -1627,6 +1626,7 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 #app .bkc-acts .btn[data-bkc=want]{flex:1.35;font-size:14px;letter-spacing:-.01em}#app .bkc-acts .btn[data-bkc=ask]+.btn,#app .bkc-acts .btn[data-bkc=want]:has(+.btn[data-bkc=ask]){flex:1}
 #app .bkc-acts .btn.sure{color:#FF8A80;box-shadow:inset 0 0 0 1px rgba(255,138,128,.5)}
 #app .swipe-go{display:flex;align-items:center;gap:14px;width:calc(100% - 44px);margin:6px 22px 26px;padding:14px 16px;border-radius:20px;text-align:left;color:var(--ink);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}#app .swipe-go svg{width:26px;height:26px;fill:none;stroke:#F3D19A;stroke-width:1.8;flex:none}#app .swipe-go span{flex:1}#app .swipe-go b{display:block;font-size:16px;font-weight:600}#app .swipe-go small{display:block;margin-top:2px;font-size:13px;color:var(--ink3)}#app .swipe-go i{font-style:normal;font-size:24px;color:var(--ink3)}body.viewing #app .swipe-go{display:none}#app #sumScroll:not(.L *){padding-top:calc(14px + var(--sat,env(safe-area-inset-top,0px)))}#app #sumScroll .shelves-h{margin-top:0}#app #sumScroll .stat-h{margin:26px 22px 4px}
+#app .shelves-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-right:22px}#app .shelves-top .shelf-h{margin-bottom:0}#app .add-in{display:flex;align-items:center;gap:5px;height:38px;padding:0 14px 0 10px;border-radius:19px;background:#F5F5F7;color:#0B0C11;font-size:14px;font-weight:700;white-space:nowrap}#app .add-in svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4}body.viewing #app .add-in{display:none}
 #app .luck-go{position:relative;display:flex;align-items:center;justify-content:space-between;width:calc(100% - 44px);min-height:132px;margin:8px 22px 28px;padding:18px 18px 18px 20px;border-radius:24px;text-align:left;color:var(--ink);overflow:hidden;
   background:radial-gradient(120% 140% at 100% 0%,rgba(150,110,255,.28),transparent 55%),radial-gradient(120% 120% at 0% 100%,rgba(243,190,120,.18),transparent 60%),rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 40px -24px rgba(0,0,0,.8)}
 #app .luck-go:active{transform:scale(.985)}
@@ -1913,7 +1913,7 @@ setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!doc
 
 <section class="screen" id="s-feed"><div class="feed" id="feed"></div><button class="ffil gl press" id="ffil" hidden aria-label="Фильтры"></button><div class="gbar" id="gbar" hidden></div><div class="dots" id="dots"></div></section>
 <section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div class="rec-h" id="recH"><span>Шуршуня</span><i>советует</i></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><button class="luck-go" id="luckGo"><span class="lg-t"><b>Книга для тебя</b><small>Шуршуня выберет одну - под твой вкус</small><i class="lg-cta">Выбрать <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></i></span><span class="lg-fan" id="lgFan"></span></button><div id="trend"></div><div id="newAu" hidden></div></div></section>
-<section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><h3 class="shelf-h shelves-h">Мои полки</h3><div class="pills" id="pills"></div><div class="grid" id="grid"></div><h3 class="shelf-h stat-h">Статистика</h3><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
+<section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><div class="shelves-top"><h3 class="shelf-h shelves-h">Мои полки</h3><button class="add-in press" id="addIn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Поставить книгу</button></div><div class="pills" id="pills"></div><div class="grid" id="grid"></div><h3 class="shelf-h stat-h">Статистика</h3><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
 
 <div class="bottom"><nav class="dock gl" aria-label="Разделы"><i class="lens lensy" id="lens"></i>
   
@@ -4454,7 +4454,7 @@ luckEl.addEventListener("click",e=>{const b=e.target.closest("[data-lk]");if(!b|
   if(a==="again"){luckRoll();return}
   if(a==="want"){BK.addWant(x);vDirty=true;toast("Добавлено в избранное");luckClose();setTimeout(refresh,300);return}
   if(a==="more"){luckClose();setTimeout(()=>bkcOpen(x,"rec"),200)}});
-$("#luckGo").addEventListener("click",()=>{tgHaptic("medium");luckOpen()});setTimeout(luckFan,1500);addEventListener("bigcat",()=>setTimeout(luckFan,500));
+$("#addIn").addEventListener("click",()=>$("#addB").click());$("#luckGo").addEventListener("click",()=>{tgHaptic("medium");luckOpen()});setTimeout(luckFan,1500);addEventListener("bigcat",()=>setTimeout(luckFan,500));
 $("#colScroll").addEventListener("scroll",()=>{document.body.classList.toggle("topoff",$("#colScroll").scrollTop>16)},{passive:true});
 $("#pills").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){if(colF===b.dataset.f)return;colF=b.dataset.f;drawCol(true);tgHaptic()}});
 // ---------- виды полки: обложки, полки по странам, лента веков, карта, авторы (из первой Норы) ----------
@@ -4668,7 +4668,7 @@ function sxRun(){const q=$("#fq").value,my=++SX.seq;SX.q=q;SX.mode="q";clearTime
     catch(e){if(my===SX.seq)sxDraw("err")}},260)}
 async function sxAuthor(a){SX.mode="au";SX.au=a;SX.list=[];sxDraw("load");const my=++SX.seq;
   try{const L=await libAuthorBooks(a.id);if(my!==SX.seq)return;SX.list=L.slice(0,30).map(x=>({t:x.t,a:x.a||a.name,y:x.y,c:x.c,kind:"fl"}));sxDraw("done")}catch(e){sxDraw("err")}}
-$("#addB").onclick=()=>{if(VIEW)return;tgHaptic();openAddBook(SCREEN==="col"&&colF==="want"?"want":"read")};
+$("#addB").onclick=()=>{if(VIEW)return;tgHaptic();openAddBook((SCREEN==="col"||SCREEN==="sum")&&colF==="want"?"want":"read")};
 $("#srchB").onclick=()=>openSearch();
 // подсветка «Здесь нет прочитанного» — один раз, при первом заходе в поиск
 function sxCoach(){const el=$("#sxFeat");if(!el||$("#sxSpot"))return;LS.set("zal.coachsx",1);document.activeElement&&document.activeElement.blur();
@@ -4886,7 +4886,6 @@ document.body.dataset.cap="c";document.body.dataset.font="1";
 // ---------- знакомство с разделами: при первом заходе подсвечиваем главное ----------
 const TOURS={
   col:[["#flow","Шуршуня советует","Листай обложки — это подборка под твой вкус. Нажми на книгу, чтобы узнать о ней больше."],
-       ["#addB","Поставить книгу на полку","Сфотографируй шкаф — Нора сама узнает книги. Или перенеси прочитанное из Литрес и Яндекс Книг."],
        ['.dock [data-s="feed"]',"Лента находок","Свайпай книги: «читала», «хочу», «не моё» — так Шуршуня быстрее поймёт твой вкус."],
        ["#srchB","Поиск и фильтры","Ищи по названию или выбирай настроение, жанр и тропы."],
        ['.dock [data-s="fr"]',"Друзья","Добавляй друзей — смотри их полки и отзывы и делись своими."]],
