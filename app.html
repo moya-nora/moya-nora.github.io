@@ -4362,7 +4362,7 @@ function trendBooks(){const L=ALLB();if(TRB&&TRK===L.length)return TRB;TRK=L.len
 // подборки на главной под «Шуршуня советует»: в тренде, тебе понравится, читают в этом месяце, книги с запахом мандаринов
 // «Читают в этом месяце» и «Книги с запахом мандаринов» — ручные списки свежих книг, которые правда любят (а не самые продаваемые на ЛитРес)
 const MONTH_L="Йеллоуфейс|Куанг;Джеймс|Эверетт;По орбите|Харви;Тайна из тайн|Браун;Человек с клеймом|Роулинг;Рассвет жатвы|Коллинз;Ветер и Правда|Сандерсон;Город и его ненадёжные стены|Мураками;Увидимся в августе|Маркес;Холли|Кинг;Песнь пророка|Линч;Перекрёсток воронов|Сапковский;Фамильяр|Бардуго;Сорока на виселице|Веркин;Дом в Мансуровском|Метлицкая;Колодец и бабочка|Михалкова;Желчный Ангел|Качур;Тени южной ночи|Устинова;Птицеед|Пехов;Седьмой|Лукьяненко;Чагин|Водолазкин;Демон Копперхед|Кингсолвер;Бегущая могила|Роулинг;Царь Скорбь|Хилл".split(";").map(s=>s.split("|"));
-const MAND_L="Легенды и латте|Болдри;Энциклопедия фей Эмили Уайлд|Фосетт;Зимнее солнцестояние|Пилчер;Вторая жизнь Уве|Бакман;Клуб убийств по четвергам|Осман;Просто вместе|Гавальда;Когда я вернусь, будь дома|Сафарли;Пока не остыл кофе|Кавагути;Магазин чудес «Намия»|Хигасино;Дом на краю лазурного моря|Клун;Под шепчущей дверью|Клун;Тринадцатая сказка|Сеттерфилд;Ежевичная зима|Джио;Незримая жизнь Адди Ларю|Шваб;Петровы в гриппе и вокруг него|Сальников;Однажды разбитое сердце|Гарбер;Загадка номера 622|Диккер;Долгий путь к маленькой сердитой планете|Чамберс;Клуб любителей книг и пирогов из картофельных очистков|Шеффер;Наши души по ночам|Харуф".split(";").map(s=>s.split("|"));
+const MAND_L="Петровы в гриппе и вокруг него|Сальников;Рождественский поросёнок|Роулинг;Зимнее солнцестояние|Пилчер;Рождество и красный кардинал|Флэгг;Притворись моим на Рождество|Винчестер;Энциклопедия фей Эмили Уайлд|Фосетт;Медведь и соловей|Арден;Охотничий дом|Фоли;Загадка номера 622|Диккер;Зимний сад|Ханна;Дневник Бриджит Джонс|Филдинг;Санта-Хрякус|Пратчетт;Рождественская шкатулка|Эванс;Рождество с неудачниками|Гришэм".split(";").map(s=>s.split("|"));
 let LBY=null,LBN=-1;
 function listBooks(LST){const L=ALLB();if(!LBY||LBN!==L.length){LBN=L.length;LBY=new Map();L.forEach(b=>{const n=b._n||norm(b.t);let v=LBY.get(n);if(!v)LBY.set(n,v=[]);v.push(b)})}
   return LST.map(([t,s])=>{const n=norm(t),sn=norm(s),ok=b=>norm(b.a||"").includes(sn);let c=(LBY.get(n)||[]).find(ok);if(!c)for(const [k,v] of LBY){if(k.startsWith(n)&&(c=v.find(ok)))break}return c}).filter(Boolean)}
@@ -4377,7 +4377,7 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   if(BOOKS.length||want.length||GP.length){const q=tasteQ();res.push(["like","Тебе понравится","По твоим полкам и оценкам",take(topK(L,120,b=>free(b)?feedScore(b,q)+(imgOf(b)?2:0):null).map(z=>z.b))])}
   const mix=arr=>arr.map(b=>({b,s:(hit(b)?1:0)+Math.random()})).sort((x,y)=>y.s-x.s).map(z=>z.b);
   res.push(["month","Читают в этом месяце","Свежие книги, которые сейчас обсуждают",take(mix(listBooks(MONTH_L)))]);
-  res.push(["mand","Книги с запахом мандаринов","Уютные и зимние - под плед и горячий чай",take(mix(listBooks(MAND_L)))]);
+  res.push(["mand","Книги с запахом мандаринов","Новый год, Рождество и снег за окном",take(mix(listBooks(MAND_L)))]);
   HSV=res.filter(r=>r[3].length>=4).map(r=>[r[0],r[1],r[2],r[3].map(b=>bItem(b,"rec"))]);return HSV}
 function drawTrend(){const el=$("#trend");if(!el)return;const S=shelvesCalc();el._s=S;
   el.innerHTML=S.map(([k,h,sub,L],j)=>`<section class="hshelf"><h3 class="shelf-h">${h}</h3><p class="tr-sub">${sub}</p><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div></section>`).join("")}
@@ -5402,8 +5402,9 @@ const trLabel=t=>t.startsWith("троп:")?((B_TROPE.find(x=>"троп:"+x[0]===
 const sameAu=(a,b)=>{a=String(a||"").trim();b=String(b||"").trim();if(!a||!b||a==="Автор не указан")return false;const A=a.split(/\s+/),B=b.split(/\s+/);return norm(A[A.length-1])===norm(B[B.length-1])&&norm(A[0])[0]===norm(B[0])[0]};
 function auBooks(x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of ALLB()){if(!sameAu(b.a,x.a))continue;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);out.push(b)}
   return out.sort((a,b)=>(+!!imgOf(b)-+!!imgOf(a))||((b.q||0)-(a.q||0))||((a.y||9999)-(b.y||9999)))}
-const ROM_T=["ромэнтези","любовный роман","любовное фэнтези","дарк роман","любовные романы"];
-function bkcTropes(x,Lk){if(x._f)return "";const tg=(catOf(x)||x).tags||x.tags||[],rom=tg.some(t=>ROM_T.includes(t)),tr=rom?tg.filter(t=>t.startsWith("троп:")&&trLabel(t)):[],th=tg.filter(t=>THEME_T.includes(t));
+// тропы — у современных (с 2000 года) ромэнтези, любовных романов, young adult и фэнтези; у классики и старых книг не показываем
+const ROM_T=["ромэнтези","любовный роман","любовное фэнтези","дарк роман","любовные романы","young adult"];
+function bkcTropes(x,Lk){if(x._f)return "";const c0=catOf(x)||x,tg=c0.tags||x.tags||[],rom=((c0.y||x.y||0)>=2000)&&(tg.some(t=>ROM_T.includes(t))||(c0.g||x.g)==="fantasy"),tr=rom?tg.filter(t=>t.startsWith("троп:")&&trLabel(t)):[],th=tg.filter(t=>THEME_T.includes(t));
   const L=[...tr,...th].filter((t,i,a)=>a.indexOf(t)===i&&!(t==="драконы"&&a.includes("троп:dragons"))).slice(0,3),au=Lk==="friend"?0:auBooks(x).length;
   if(!L.length&&!au)return "";return `<div class="bkc-tr">${L.map(t=>`<button data-bkc-tg="${esc(t)}">${esc(trLabel(t))}</button>`).join("")}${au?`<button class="au" data-bkc-au>Ещё у автора ›</button>`:""}</div>`}
 function tagBooks(t,x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of ALLB()){if(!(b.tags||[]).includes(t)||dismissed.has(b.id))continue;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);out.push(b)}
