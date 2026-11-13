@@ -4174,7 +4174,7 @@ function bookFeed(){FSHOWN=new Set();const q=tasteQ();
   feedMore=()=>{const sc=topK(ALLB(),160,b=>FSHOWN.has(b.id)||!fgPass(b)?null:feedScore(b,q));
     const out=[],au=new Set();for(const {b} of sc){if(au.has(b.a))continue;au.add(b.a);out.push(b);if(out.length>=8)break}
     out.forEach(b=>FSHOWN.add(b.id));return out.map(b=>{const it=bItem(b,"feed");it.why=whyBook(b);return it})};return feedMore()}
-function shareBook(x){learn(x,2.2);shareSheet("Переслать книгу",`«${x.t}»${x.a?" — "+x.a:""}. Нашлось в Норе`,`https://t.me/${SHARE_BOT}?startapp`,"https://nora-books.ru/")}
+function shareBook(x){learn(x,2.2);shareSheet("Переслать книгу",`«${x.t}»${x.a?" - "+x.a:""}. Нашлось в Норе`,`https://t.me/${SHARE_BOT}?startapp`,"https://nora-books.ru/")}
 const SHR='<svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M6 12v6.5A1.5 1.5 0 0 0 7.5 20h9a1.5 1.5 0 0 0 1.5-1.5V12"/></svg>';
 function filmFeed(){if(!FILMS)return [];const res=filmList();let i=0;
   feedMore=()=>{const chunk=res.slice(i,i+25);i+=25;return chunk.map(f=>fItem(f,"feed"))};return feedMore()}
@@ -5098,7 +5098,10 @@ function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
    <div class="fr-me">Тебя видят как <b>${esc(me||"без имени")}</b> <button data-fr-name>изменить</button></div>`}
 async function frInvite(){const u=NS.uid&&NS.uid();if(!u){toast("Сначала нужен вход");authShow();return}
   // в Telegram — ссылка на мини-приложение, в остальные соцсети — на сайт (откроется и без Telegram)
-  shareSheet("Пригласить в Нору","Добавь меня в друзья в Норе — будем видеть книжные полки друг друга",`https://t.me/${SHARE_BOT}?startapp=f_${u}_${frTok()}`,`https://nora-books.ru/#f=${u}&fk=${frTok()}`)}
+  // короткая ссылка nora-books.ru/i/<код>: код записан в облаке и ведёт к тебе; не записался — длинная ссылка, как раньше
+  const k=frTok();let ok=LS.get("zal.invk","")===k;if(!ok&&NS.lookupPut){try{await NS.lookupPut(["@inv:"+k]);LS.set("zal.invk",k);ok=true}catch(e){}}
+  const short="https://nora-books.ru/i/"+k;
+  shareSheet("Пригласить в Нору","Добавь меня в друзья в Норе - будем видеть книжные полки друг друга",ok?short:`https://t.me/${SHARE_BOT}?startapp=f_${u}_${k}`,ok?short:`https://nora-books.ru/#f=${u}&fk=${k}`)}
 const SHARE_TO=[["tg","Telegram",(t,u)=>"https://t.me/share/url?url="+encodeURIComponent(u)+"&text="+encodeURIComponent(t)],["wa","WhatsApp",(t,u)=>"https://wa.me/?text="+encodeURIComponent(t+" "+u)],
   ["vk","ВКонтакте",(t,u)=>"https://vk.com/share.php?url="+encodeURIComponent(u)+"&title="+encodeURIComponent(t)],["vb","Viber",(t,u)=>"viber://forward?text="+encodeURIComponent(t+" "+u)],
   ["ok","Одноклассники",(t,u)=>"https://connect.ok.ru/offer?url="+encodeURIComponent(u)+"&title="+encodeURIComponent(t)]];
@@ -5188,8 +5191,11 @@ document.addEventListener("click",e=>{const t=e.target;
   if(t.closest("[data-fr-nsave]")){const v=$("#frN").value.trim();if(v){LS.set("zal.name",v.slice(0,40));pubCheck()}vClose();drawFr();return}});
 // приглашение по ссылке: #f=<uid> или startapp=f_<uid>
 const INV=(()=>{const h=location.hash.match(/[#&]f=([A-Za-z0-9]{10,})(?:&fk=([A-Za-z0-9]+))?/);if(h){history.replaceState(null,"",location.pathname+location.search);return {uid:h[1],k:h[2]||""}}
-  const sp=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param||"";const m=sp.match(/^f_([A-Za-z0-9]{10,})(?:_([A-Za-z0-9]{4,16}))?$/);return m?{uid:m[1],k:m[2]||""}:null})();
-function inviteCheck(){if(INV&&!needAuth()&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on"))setTimeout(()=>frAddFlow(INV),400)}
+  const hi=location.hash.match(/[#&]i=([a-z0-9]{4,16})/);if(hi){history.replaceState(null,"",location.pathname+location.search);return {code:hi[1],k:hi[1]}}
+  const sp=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param||"";const ci=sp.match(/^i_([a-z0-9]{4,16})$/);if(ci)return {code:ci[1],k:ci[1]};
+  const m=sp.match(/^f_([A-Za-z0-9]{10,})(?:_([A-Za-z0-9]{4,16}))?$/);return m?{uid:m[1],k:m[2]||""}:null})();
+function inviteCheck(){if(INV&&!needAuth()&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on"))setTimeout(async()=>{
+  if(INV.code&&!INV.uid){try{INV.uid=await NS.lookup("@inv:"+INV.code)}catch(e){}if(!INV.uid){toast("Приглашение не нашлось — попроси прислать ссылку ещё раз");return}}frAddFlow(INV)},400)}
 setTimeout(frLoad,2500);setTimeout(frReqPoll,3500);setInterval(()=>{if(!document.hidden)frReqPoll()},30000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(frReqPoll,800)});
 
 
