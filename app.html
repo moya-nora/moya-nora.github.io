@@ -2172,6 +2172,9 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .hs-card i{font-style:normal;flex:none;padding:8px 14px;border-radius:16px;background:#F3D19A;color:#1A1424;font-size:13.5px;font-weight:700}
 #app .pills:not(.L *){flex-wrap:nowrap;overflow:hidden;margin-left:16px;margin-right:16px;gap:6px}
 #app .pills button:not(.L *){flex:1 1 auto;white-space:nowrap;padding:8px 10px;font-size:14px}
+#app #grid .ggen{grid-column:1/-1;margin:14px 0 2px;font-family:var(--serif);font-size:19px;font-weight:600;display:flex;align-items:baseline;gap:8px}
+#app #grid .ggen:first-child{margin-top:4px}
+#app #grid .ggen span{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink3)}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -4638,7 +4641,7 @@ function recList(){if(isF()){if(!FILMS)return [];if(!recList._f||recList._v!==FS
     const au=new Set(),out=[];for(const b of pool){if(au.has(b.a))continue;au.add(b.a);out.push(bItem(b,"rec"));if(out.length>=40)break}
     recList._b=out;recList._k=key}return recList._b}
 const flowList=()=>VIEW?(DATA().want().length?DATA().want():DATA().read().filter(x=>x.r!=null).sort((a,b)=>b.r-a.r).slice(0,20)):recList();
-const gridList=()=>colF==="want"?DATA().want():DATA().read();
+const gridList=()=>colF==="want"&&!isF()?wantGrouped().L:colF==="want"?DATA().want():DATA().read();
 function drawFlow(){const L=flowList();fi=L.length?((fi%L.length)+L.length)%L.length:0;
   $("#flow").innerHTML=L.slice(0,60).map(x=>cv(x,176)).join("");$("#flow")._sig=L.slice(0,60).map(x=>ikey(x)).join("|");$("#flow").classList.toggle("none",!L.length);$("#flowCap").classList.toggle("none",!L.length);[...$("#flow").children].forEach((c,i)=>{c.dataset.i=i});layoutFlow(true)}
 function layoutFlow(first){const L=flowList().slice(0,60),n=L.length;/* обложки и подпись всегда из одного и того же списка: если список сменился (догрузился каталог), перерисовываем */if($("#flow").children.length!==n||$("#flow")._sig!==L.map(x=>ikey(x)).join("|")){drawFlow();return}
@@ -4664,6 +4667,11 @@ function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((f
   el.addEventListener("mousedown",e=>down(e.clientX,e.clientY));addEventListener("mousemove",e=>mv(e.clientX,e.clientY,null));addEventListener("mouseup",()=>{x0=null});
   el.addEventListener("click",e=>{if(t0&&Date.now()-t0>450){t0=0;flowHold=Date.now();return}t0=0;const c=e.target.closest(".cv");if(c&&!moved&&!mode){flowHold=Date.now();const i=+c.dataset.i;if(i!==fi){fi=i;layoutFlow()}openItem(flowList()[i],"rec")}})})();
 (function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,9000)})();
+// «Хочу прочитать» по жанрам: сначала жанры, где больше книг
+const WG_ORDER=["romantasy","darkrom","romance","ya","fantasy","scifi","dystopia","detective","thriller","horror","histnov","adventure","humor","classic","rusprose","forprose","modern","kids","nonfic","bio","psy","popsci","histnf","samizdat"];
+function wantGenre(x){const c=catOf(x)||x.src||x;try{for(const g of WG_ORDER)if(genPass(c,g))return genLabel(g)}catch(e){}return c.g&&GEN[c.g]?GEN[c.g]:"Другое"}
+function wantGrouped(){const W=DATA().want(),by=new Map();W.forEach(x=>{const g=wantGenre(x);if(!by.has(g))by.set(g,[]);by.get(g).push(x)});
+  const groups=[...by.entries()].sort((a,b)=>(a[0]==="Другое")-(b[0]==="Другое")||b[1].length-a[1].length);const L=[],H={};groups.forEach(([g,arr])=>{H[L.length]=[g,arr.length];L.push(...arr)});return {L,H}}
 function pillsFit(){const p=$("#pills");if(!p)return;const B=[...p.children];B.forEach(b=>b.style.fontSize="");let f=14;requestAnimationFrame(()=>{while(f>10.5&&p.scrollWidth>p.clientWidth+1){f-=.5;B.forEach(b=>{b.style.fontSize=f+"px";b.style.paddingLeft=b.style.paddingRight=(f<12.5?7:10)+"px"})}})}
 addEventListener("resize",()=>{try{pillsFit()}catch(e){}});
 function drawCol(keepFlow){
@@ -4671,7 +4679,7 @@ function drawCol(keepFlow){
   if(colF==="diary"&&(VIEW||isF()))colF="read";$("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read],...(isF()?[]:[["diary","Читательский дневник"]])]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");pillsFit();
   {const dg=colF==="diary",cvx=$("#cviews"),ov=$("#oldv");$("#grid").classList.toggle("diary",dg);if(cvx)cvx.hidden=dg;if(ov)ov.hidden=dg;
    if(dg){$("#grid").innerHTML=diaryPage();const ds=$("#dstripB");if(ds)ds.innerHTML="";if(!keepFlow)drawFlow();drawNewAu();drawTrend();return}}
-  const G=gridList();$("#grid").innerHTML=G.map((x,i)=>`<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
+  const G=gridList(),GH=colF==="want"&&!isF()&&G.length>=4?wantGrouped().H:{};$("#grid").innerHTML=G.map((x,i)=>`${GH[i]?`<h4 class="ggen">${esc(GH[i][0])}<span>${GH[i][1]}</span></h4>`:""}<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
   {let hc=$("#hsCard");if(!hc){hc=document.createElement("div");hc.id="hsCard";const sm=$("#sumScroll .stat-h")||$("#sumMore");sm&&sm.before(hc)}hc.innerHTML=hsCan()?`<button class="hs-card" data-hs-any><img src="icons/icon-512.png?v=5" alt=""><span><b>Нора на экране «Домой»</b></span><i>Добавить</i></button>`:""}{let ac=$("#acctL");if(!ac){ac=document.createElement("div");ac.id="acctL";const st=$(".shelves-top");st&&st.after(ac)}ac.innerHTML=acctLine()}{let ds=$("#dstripB");if(!ds){ds=document.createElement("div");ds.id="dstripB";($("#oldv")||$("#grid")).after(ds)}ds.innerHTML=colF==="read"&&!VIEW?diaryStrip():""}if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
 // «Новое от твоих авторов»: свежие книги (этот и прошлый год) авторов, которых человек оценил на 4–5, и ещё не на полках
 function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a).map(b=>norm(b.a)));if(!fav.size)return [];
