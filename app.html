@@ -4689,8 +4689,13 @@ function drawNewAu(){const el=$("#newAu");if(!el)return;const L=newAuList();el.h
   el.innerHTML=`<h3 class="shelf-h">Новое от твоих авторов</h3><div class="na-row">${L.map((x,i)=>`<button data-na="${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a).split(" ").slice(-1)[0])} · ${x.y}</em></button>`).join("")}</div>`}
 $("#newAu").addEventListener("click",e=>{const b=e.target.closest("[data-na]");if(!b)return;const x=$("#newAu")._l[+b.dataset.na];if(x){tgHaptic();bkcOpen(x,"rec")}});
 // «В тренде сейчас»: о чём говорят сейчас - вперемешку громкие книги года (премии, экранизации, бестселлеры) и хиты буктока, примерно 3 к 2 (список обновляется раз в месяц). Книги ищем в каталоге по названию и фамилии автора
-const TREND="Последнее дело майора Чистова|Водолазкин;Джеймс|Эверетт;Ониксовая буря|Яррос;Невьянская башня|Иванов;Хамнет|О'Фаррелл;Незримая жизнь Адди Ларю|Шваб;Йеллоуфейс|Куанг;По орбите|Харви;Рыцарь и мотылёк|Гиллиг;Демон Копперхед|Кингсолвер;Тео из Голдена|Леви;Семь мужей Эвелин Хьюго|Рид;Проект «Аве Мария»|Вейер;Завтра, завтра, завтра|Зевин;Дом земли и крови|Маас;Уроки химии|Гармус;Птицеед|Пехов;Безмолвный пациент|Михаэлидес;Тайная история|Тартт;Маленькая жизнь|Янагихара;Верити|Гувер;Жестокий принц|Блэк;Гипотеза любви|Хейзелвуд;Четвёртое крыло|Яррос".split(";").map(s=>s.split("|"));
-let TRB=null,TRK=-1;
+const TREND="Последнее дело майора Чистова|Водолазкин;Невьянская башня|Иванов;Хамнет|О'Фаррелл;Сто лет одиночества|Маркес;Демон Копперхед|Кингсолвер;Тео из Голдена|Леви;Проект «Аве Мария»|Вейер;Мастер и Маргарита|Булгаков;Завтра, завтра, завтра|Зевин;Уроки химии|Гармус;Чагин|Водолазкин;Птицеед|Пехов;Тайная история|Тартт;Маленькая жизнь|Янагихара".split(";").map(s=>s.split("|"));
+// «Хиты буктока»: о чём говорят в буктоке и на буктюбе - отдельная подборка (обновляется раз в месяц вместе с «В тренде»)
+const BOOKTOK="Ониксовая буря|Яррос;Четвёртое крыло|Яррос;Рыцарь и мотылёк|Гиллиг;Незримая жизнь Адди Ларю|Шваб;Семь мужей Эвелин Хьюго|Рид;Королевство шипов и роз|Маас;Дом земли и крови|Маас;Мара и Морок|Арден;Демон из Пустоши|Дашкевич;Жестокий принц|Блэк;Неночь|Кристофф;Верити|Гувер;Безмолвный пациент|Михаэлидес;Гипотеза любви|Хейзелвуд".split(";").map(s=>s.split("|"));
+let TRB=null,TRK=-1,BTB=null,BTK=-1;
+function listByPairs(P){const L=ALLB(),by=new Map();L.forEach(b=>{const n=b._n||norm(b.t);let v=by.get(n);if(!v)by.set(n,v=[]);v.push(b)});
+  return P.map(([t,s])=>{const n=norm(t),sn=norm(s),ok=b=>norm(b.a||"").includes(sn);let c=(by.get(n)||[]).find(ok);if(!c)for(const [k,v] of by){if(k.startsWith(n)&&(c=v.find(ok)))break}return c}).filter(Boolean)}
+function booktokBooks(){const n=ALLB().length;if(BTB&&BTK===n)return BTB;BTK=n;return BTB=listByPairs(BOOKTOK)}
 function trendBooks(){const L=ALLB();if(TRB&&TRK===L.length)return TRB;TRK=L.length;const by=new Map();
   L.forEach(b=>{const n=b._n||norm(b.t);let v=by.get(n);if(!v)by.set(n,v=[]);v.push(b)});
   TRB=TREND.map(([t,s])=>{const n=norm(t),sn=norm(s),ok=b=>norm(b.a||"").includes(sn);let c=(by.get(n)||[]).find(ok);
@@ -4709,7 +4714,8 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   const take=(arr,k=14)=>{const out=[],au=new Set();for(const b of arr){if(out.length>=k)break;if(!free(b)||au.has(b.a))continue;au.add(b.a);out.push(b)}out.forEach(b=>seen.add(b._n||norm(b.t)));return out};
   const GP=gpref(),hit=b=>GP.some(g=>genPass(b,g)),res=[];
   // в тренде: свои жанры первыми (одного автора можно дважды — там серии)
-  {const tr=trendBooks().filter(free).slice(0,16);tr.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["trend","В тренде сейчас","О чём говорят в буктоке и на буктюбе",tr])}
+  {const tr=trendBooks().filter(free).slice(0,16);tr.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["trend","В тренде сейчас","Громкие книги, о которых сейчас говорят",tr])}
+  {const bt=booktokBooks().filter(free).slice(0,16);bt.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["booktok","Хиты буктока","О чём говорят в буктоке и на буктюбе",bt])}
   if(BOOKS.length||want.length||GP.length){const q=tasteQ();res.push(["like","Тебе понравится","По твоим полкам и оценкам",take(topK(L,120,b=>free(b)?feedScore(b,q)+(imgOf(b)?2:0):null).map(z=>z.b))])}
   const mix=arr=>arr.map(b=>({b,s:(hit(b)?1:0)+Math.random()})).sort((x,y)=>y.s-x.s).map(z=>z.b);
   res.push(["month","Читают в этом месяце","Свежие книги, которые сейчас обсуждают",take(mix(listBooks(MONTH_L)))]);
