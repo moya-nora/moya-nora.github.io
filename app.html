@@ -1638,20 +1638,20 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 #app .lg-fan span:nth-child(2){z-index:2}#app .lg-fan .cv{border-radius:6px}
 #app .luck-go:hover .lg-fan span,#app .luck-go:active .lg-fan span{transform:rotate(calc((var(--i) - 1) * 18deg)) translateX(calc((var(--i) - 1) * 18px)) translateY(-4px)}
 body.viewing #app .luck-go{display:none}
-#app .luck{position:fixed;inset:0;z-index:70;display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}#app .luck.on{display:flex}
-#app .lk-bg{position:absolute;inset:0;background:#07070C;animation:lkIn .25s ease both}@keyframes lkIn{from{opacity:0}}
+#app .luck.on{display:flex}
+@keyframes lkIn{from{opacity:0}}
 #app .lk-x{position:absolute;top:calc(14px + var(--sat,env(safe-area-inset-top,0px)));right:16px;z-index:3;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.08);display:grid;place-items:center}#app .lk-x svg{width:20px;height:20px;stroke:var(--ink);stroke-width:2}
-#app .lk-reel{position:relative;width:100%;height:240px;margin-top:-6vh;z-index:1;overflow:visible;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
-#app .luck.won .lk-reel{-webkit-mask-image:none;mask-image:none}
-#app .lk-strip{position:absolute;left:0;top:7px;display:flex;gap:12px;will-change:transform}
-#app .lk-it{flex:none;width:150px;transition:opacity .45s ease,transform .55s cubic-bezier(.2,1.2,.3,1)}#app .lk-it .cv{border-radius:8px;box-shadow:0 18px 36px -14px rgba(0,0,0,.8)}
-#app .luck.won .lk-it:not(.win){opacity:0}#app .luck.won .lk-it.win{transform:scale(1.18)}
-#app .lk-glow{position:absolute;left:50%;top:50%;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;background:radial-gradient(circle,rgba(170,130,255,.45),transparent 65%);opacity:0;transition:opacity .6s;pointer-events:none;z-index:-1}#app .luck.won .lk-glow{opacity:1}
-#app .lk-info{position:relative;z-index:2;width:100%;max-width:440px;padding:34px 24px 0;text-align:left;opacity:0;transform:translateY(16px);transition:opacity .4s,transform .4s}
-#app .luck.done .lk-info{opacity:1;transform:none}
-#app .lk-info h2{margin:0;font-family:var(--serif);font-size:30px;font-weight:600;line-height:1.05}#app .lk-a{margin-top:5px;font-size:15px;color:var(--ink2)}#app .lk-info p{margin:12px 0 0;font-size:15.5px;line-height:1.5;color:#E8E8EC}
-#app .lk-acts{display:flex;gap:10px;margin-top:18px}#app .lk-acts .btn{flex:1}#app .lk-acts .btn.w{flex:1.4}
-#app .lk-again{display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:8px 0;font-size:15px;font-weight:600;color:var(--ink2)}#app .lk-again svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+
+
+
+
+
+
+
+
+
+
+
 /* карточка книги: главное — название, описание и «Добавить в избранное»; текст по левому краю */
 #app .bkc h2,#app .bkc-a,#app .bkc-tr,#app .bkc-facts,#app .bkc-dw{width:100%;max-width:440px;text-align:left}
 #app .bkc h2{margin-top:24px;font-size:32px}#app .bkc-a{font-size:15px}
@@ -1979,6 +1979,31 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app #grid.diary .dent{display:flex;flex-direction:row;align-items:flex-start;gap:12px;aspect-ratio:auto;height:auto}
 #app #grid.diary .dtodo{flex-direction:row}#app #grid.diary .dent>div:last-child{text-align:left}
 #app #acctL{margin:0 22px}
+
+#app .luck{position:fixed;inset:0;z-index:70;display:none;flex-direction:column;overflow:hidden}
+#app .lk-bg{position:absolute;inset:0;background:#07070C;animation:lkIn .25s ease both;overflow:hidden}
+#app .lk-bg img{position:absolute;inset:-10%;width:120%;height:120%;object-fit:cover;filter:blur(38px) saturate(1.3);opacity:0;transform:scale(1.1);transition:opacity 1s ease}
+#app .lk-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,7,12,.35),rgba(7,7,12,.82) 55%,#07070C)}
+#app .luck.won .lk-bg img{opacity:.55}
+#app .lk-stage{position:relative;z-index:1;flex:none;height:56vh;padding-top:calc(58px + var(--sat,env(safe-area-inset-top,0px)));display:flex;align-items:center;justify-content:center;transition:height .55s cubic-bezier(.2,.8,.2,1)}
+#app .luck.done .lk-stage{height:52vh}
+#app .lk-deck{position:relative;height:100%;aspect-ratio:2/3;max-height:430px}
+#app .lk-c{position:absolute;inset:0;transform:rotate(var(--r,0deg));will-change:transform}
+#app .lk-c .cv{width:100%!important;height:100%!important;border-radius:10px;box-shadow:0 26px 50px -18px rgba(0,0,0,.85)}
+#app .lk-c.win{z-index:5}
+#app .lk-glow{position:absolute;left:50%;top:55%;width:80vw;height:80vw;max-width:420px;max-height:420px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(243,209,154,.35),transparent 62%);opacity:0;transition:opacity .7s;pointer-events:none}
+#app .luck.won .lk-glow{opacity:1}
+#app .lk-info{position:relative;z-index:2;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 24px 12px;text-align:left;opacity:0;transform:translateY(30px);transition:opacity .45s,transform .55s cubic-bezier(.2,.8,.2,1);-webkit-mask:linear-gradient(#000 calc(100% - 26px),transparent);mask:linear-gradient(#000 calc(100% - 26px),transparent)}
+#app .luck.done .lk-info{opacity:1;transform:none}
+#app .lk-k{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#F3D19A;opacity:.85}
+#app .lk-info h2{margin:6px 0 0;font-family:var(--serif);font-size:32px;font-weight:600;line-height:1.05}
+#app .lk-a{margin-top:6px;font-size:15px;color:var(--ink2)}
+#app .lk-info p{margin:14px 0 0;font-size:16px;line-height:1.55;color:#E8E8EC}
+#app .lk-acts{position:relative;z-index:3;flex:none;display:flex;gap:10px;align-items:center;padding:10px 20px calc(16px + env(safe-area-inset-bottom,0px));opacity:0;transform:translateY(20px);transition:opacity .4s .1s,transform .5s .1s cubic-bezier(.2,.8,.2,1)}
+#app .luck.done .lk-acts{opacity:1;transform:none}
+#app .lk-acts .btn{flex:1}#app .lk-acts .btn.w{flex:1.5}
+#app .lk-again{flex:none;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;color:var(--ink)}
+#app .lk-again svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -4473,7 +4498,7 @@ function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((f
 (function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,9000)})();
 function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
-  if(colF==="diary"&&(VIEW||isF()))colF="read";$("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read],...(isF()?[]:[["diary","Дневник"]])]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
+  if(colF==="diary"&&(VIEW||isF()))colF="read";$("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read],...(isF()?[]:[["diary","Читательский дневник"]])]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
   {const dg=colF==="diary",cvx=$("#cviews"),ov=$("#oldv");$("#grid").classList.toggle("diary",dg);if(cvx)cvx.hidden=dg;if(ov)ov.hidden=dg;
    if(dg){$("#grid").innerHTML=diaryPage();const ds=$("#dstripB");if(ds)ds.innerHTML="";if(!keepFlow)drawFlow();drawNewAu();drawTrend();return}}
   const G=gridList();$("#grid").innerHTML=G.map((x,i)=>`<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
@@ -4527,19 +4552,21 @@ function luckOpen(){if(VIEW)return;LUCK=LUCK||{seen:new Set(),n:0};goal("luck");
 function luckFan(){const el=$("#lgFan");if(!el)return;const P=luckPool().filter(b=>imgOf(b)).slice(0,3);el.innerHTML=P.map((b,i)=>`<span style="--i:${i}">${cv(bItem(b,"rec"),70)}</span>`).join("")}
 function luckRoll(first){const P=luckPool();if(!P.length){toast("Шуршуня перебрал всю стопку - загляни попозже");return}
   const pick=P[0],x=bItem(pick,"rec");LUCK.x=x;LUCK.seen.add(pick._n||norm(pick.t));LUCK.n++;
-  const reel=[];const src=P.slice(1).filter(b=>imgOf(b)).slice(0,24);for(let i=0;i<26;i++)reel.push(src.length?src[i%src.length]:pick);const T=22;reel[T]=pick;
-  luckEl.innerHTML=`<div class="lk-bg"></div><button class="lk-x" data-lk="x" aria-label="Закрыть">${IC2.x}</button>
-   <div class="lk-reel"><div class="lk-strip">${reel.map((b,i)=>`<div class="lk-it${i===T?" win":""}">${cv(i===T?x:bItem(b,"rec"),150)}</div>`).join("")}</div><div class="lk-glow"></div></div>
-   <div class="lk-info"><h2>${esc(x.t)}</h2><div class="lk-a">${esc(x.a||"")}</div><p>${esc(hookOf(x))}</p>
-   <div class="lk-acts"><button class="btn w" data-lk="want">Хочу прочитать</button><button class="btn" data-lk="more">Подробнее</button></div>
-   <button class="lk-again" data-lk="again"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>Другую</button></div>`;
-  luckEl.classList.add("on");luckEl.classList.remove("done","won");syncBack();if(!x.ds)wantDesc(x,()=>{const p=luckEl.querySelector(".lk-info p");if(p&&LUCK&&LUCK.x===x)p.textContent=hookOf(x)});
-  const st=luckEl.querySelector(".lk-strip"),W=162,off=-(T*W)+(innerWidth/2-75),dur=2600;
-  st.animate([{transform:`translateX(${innerWidth}px)`,filter:"blur(6px)"},{transform:`translateX(${off+W*.4}px)`,filter:"blur(0px)",offset:.82},{transform:`translateX(${off}px)`,filter:"blur(0px)"}],{duration:dur,easing:"cubic-bezier(.15,.75,.25,1)",fill:"forwards"});
-  // тихие «щелчки», реже к концу — как замедляющаяся лента
-  let t=0,g=40;const tick=()=>{if(t>dur-350)return;tgHaptic("soft");g*=1.22;t+=g;setTimeout(tick,g)};tick();
-  setTimeout(()=>{luckEl.classList.add("won");tgHaptic("medium")},dur-150);
-  setTimeout(()=>{luckEl.classList.add("done")},dur+200)}
+  const dec=P.slice(1).filter(b=>imgOf(b)).slice(0,6).map(b=>bItem(b,"rec")),N=dec.length,u=imgOf(x),y=(catOf(x)||x).y,pg=(catOf(x)||x).pg;
+  const rot=i=>((i*37)%13-6)*1.4;
+  luckEl.innerHTML=`<div class="lk-bg">${u?`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer">`:""}</div><button class="lk-x" data-lk="x" aria-label="Закрыть">${IC2.x}</button>
+   <div class="lk-stage"><div class="lk-glow"></div><div class="lk-deck"><div class="lk-c win">${cv(x,220)}</div>${dec.map((b,i)=>`<div class="lk-c" style="--r:${rot(i)}deg;z-index:${10+N-i}">${cv(b,220)}</div>`).join("")}</div></div>
+   <div class="lk-info"><div class="lk-k">Шуршуня выбрал для тебя</div><h2>${esc(x.t)}</h2><div class="lk-a">${esc([x.a,y,pg?pg+" стр.":""].filter(Boolean).join(" · "))}</div><p id="lkD">${esc(descOf(x)||hookOf(x))}</p></div>
+   <div class="lk-acts"><button class="btn w" data-lk="want">Хочу прочитать</button><button class="btn" data-lk="more">Подробнее</button><button class="lk-again" data-lk="again" aria-label="Другую книгу"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></button></div>`;
+  luckEl.classList.add("on");luckEl.classList.remove("done","won");syncBack();if(!x.ds)wantDesc(x,()=>{const p=$("#lkD");if(p&&LUCK&&LUCK.x===x)p.textContent=descOf(x)||hookOf(x)});
+  // колода тасуется: верхние книги по очереди улетают в стороны, последней остаётся выбранная
+  const cs=[...luckEl.querySelectorAll(".lk-c:not(.win)")],win=luckEl.querySelector(".lk-c.win"),ease="cubic-bezier(.3,.7,.2,1)";
+  const all=[win,...cs];all.forEach((c,i)=>c.animate([{transform:`translateY(40vh) rotate(${(i%2?1:-1)*14}deg) scale(.8)`,opacity:0},{transform:`rotate(var(--r,0deg))`,opacity:1}],{duration:420,delay:i*35,easing:ease,fill:"backwards"}));
+  const t0=first?520:420,gap=170;
+  cs.forEach((c,i)=>{const d=i%2?1:-1;setTimeout(()=>{tgHaptic("soft");c.animate([{transform:`rotate(${rot(i)}deg)`},{transform:`translate(${d*115}vw,${-6-i*2}vh) rotate(${d*28}deg)`}],{duration:420,easing:"cubic-bezier(.5,0,.75,.4)",fill:"forwards"})},t0+i*gap)});
+  const tw=t0+N*gap+260;
+  setTimeout(()=>{luckEl.classList.add("won");tgHaptic("medium");win.animate([{transform:"scale(1)"},{transform:"scale(1.06)"},{transform:"scale(1)"}],{duration:520,easing:"cubic-bezier(.3,1.4,.4,1)"})},tw);
+  setTimeout(()=>luckEl.classList.add("done"),tw+380)}
 function luckClose(){luckEl.classList.remove("on","done","won");setTimeout(luckFan,400);setTimeout(()=>{if(!luckEl.classList.contains("on"))luckEl.innerHTML=""},300);syncBack()}
 luckEl.addEventListener("click",e=>{const b=e.target.closest("[data-lk]");if(!b||!LUCK)return;const a=b.dataset.lk,x=LUCK.x;tgHaptic();
   if(a==="x"){luckClose();return}
@@ -5668,7 +5695,7 @@ function diaryTodo(){if(isF()||VIEW)return null;const sk=LS.get("zal.dskip",[]);
   if(!r)return null;const m=String(r.dd||r.rd||"").slice(0,7),now=new Date(),cur=now.toISOString().slice(0,7),prev=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().slice(0,7);return m===cur||m===prev?r:null}
 function dCard(b){const x=dItem(b);return `<button class="dcard" data-dopen="${esc(b.id)}"><div class="dc-t">${cv(x,46)}<div><b>${esc(b.t)}</b><small>${esc(dDate(b))}</small>${dLine(b)?`<div class="dc-r">${esc(dLine(b))}</div>`:""}</div></div>${b.n?`<p>${esc(b.n)}</p>`:""}</button>`}
 function diaryStrip(){if(isF()||VIEW)return "";const L=diaryList(),td=diaryTodo();if(!L.length&&!td)return "";
-  return `<div class="dstrip">${L.length?`<div class="dh"><h3 class="shelf-h">Дневник</h3><button data-f="diary">Все ${L.length} ›</button></div><div class="dcards">${L.slice(0,6).map(dCard).join("")}</div>`:`<div class="dh"><h3 class="shelf-h">Дневник</h3></div>`}
+  return `<div class="dstrip">${L.length?`<div class="dh"><h3 class="shelf-h">Читательский дневник</h3><button data-f="diary">Все ${L.length} ›</button></div><div class="dcards">${L.slice(0,6).map(dCard).join("")}</div>`:`<div class="dh"><h3 class="shelf-h">Читательский дневник</h3></div>`}
    ${td?`<button class="dtodo" data-dnew="${esc(td.id)}">${cv(dItem(td),30)}<span>Ты дочитала <em>«${esc(td.t)}»</em>. Запишешь, как тебе?</span><i>›</i></button>`:""}</div>`}
 function diaryPage(){const L=diaryList(),td=diaryTodo();let h=td?`<button class="dtodo" data-dnew="${esc(td.id)}">${cv(dItem(td),30)}<span>Ты дочитала <em>«${esc(td.t)}»</em>. Запишешь, как тебе?</span><i>›</i></button>`:"";
   if(!L.length)return h+`<div class="dempty"><b>Здесь будет твой читательский дневник</b><p>Открой прочитанную книгу и нажми «Записать в дневник» - оценка, настроение, отзыв и любимые цитаты останутся здесь.</p></div>`;
@@ -5745,7 +5772,7 @@ setTimeout(nickAuto,7000);setInterval(nickAuto,60000);
 
 // статус аккаунта на «Полках»: видно, сохранены ли книги
 function acctLine(){if(VIEW||!NS.on)return "";if(needAuth())return `<button class="acct off" data-acct><i></i><span>Полки сохранены только на этом устройстве</span><b>Войти</b></button>`;
-  return `<div class="acct"><i></i><span>Полки сохранены в аккаунте${NS.email?" · "+esc(NS.email):""}</span></div>`}
+  return ""}
 document.addEventListener("click",e=>{if(e.target.closest("[data-acct]")){tgHaptic();authMode=(NS.email||LS.get("zal.sync.was",0))?"in":"up";authShow()}});
 function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};LS.set("zal.cards",(+LS.get("zal.cards",0)||0)+1);goal(L==="friend"?"card_friend":"card");cardX=x;cardL=L;ambFor(x);bkcDraw();
   // обложка уже в кэше браузера — ждём её расшифровки (до 250 мс), чтобы не мелькала рисованная
