@@ -2033,7 +2033,8 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .shelves-top{justify-content:flex-end!important}
 
 /* скорость: размытие под «стеклом» - только у нижнего меню и всплывающих окон; карточки в прокрутке - плотный цвет (размытие на iPhone в Telegram тормозит прокрутку) */
-#app #sumScroll .gl,#app #colScroll .gl,#app #frScroll .gl,#app #pills .gl,#app #pills button,#app .bento .gl,#app #sumMore .gl{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background-color:rgba(255,255,255,.085)}
+#app #sumScroll .gl:not(.on),#app #colScroll .gl:not(.on),#app #frScroll .gl:not(.on),#app .bento .gl,#app #sumMore .gl{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background-color:rgba(255,255,255,.085)}
+#app #pills button{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 
 #app .lk-c.p0{transform-style:preserve-3d}
 #app .lk-c.p0 .cv{backface-visibility:hidden;-webkit-backface-visibility:hidden}
@@ -2119,6 +2120,9 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .fgen .fk:nth-child(8n+5){background:#3A3226}#app .fgen .fk:nth-child(8n+6){background:#1F3344}#app .fgen .fk:nth-child(8n+7){background:#47283A}#app .fgen .fk:nth-child(8n){background:#2C3A2E}
 #app .fgen .fk.on{background:#F4F2F7!important;color:#0B0A14}
 #app .gen-more{margin-top:8px;border:0!important;background:none!important;color:#F3D19A!important;padding:6px 2px!important;font-weight:600}
+#app .bkc .bkc-rv.add{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:2px;align-items:center}
+#app .bkc .bkc-rv.add svg{grid-row:1/3}
+#app .bkc .bkc-rv.add small{grid-column:2}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
