@@ -4766,7 +4766,7 @@ function drawTrend(){const el=$("#trend");if(!el)return;const S=shelvesCalc();el
     return `<section class="hshelf"><h3 class="shelf-h">${h}</h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div></section>`}).join("")}
 $("#trend").addEventListener("click",e=>{const a=e.target.closest("[data-trall]");if(!a)return;const S=$("#trend")._s,r=S&&S[+a.dataset.trall];if(r){tgHaptic();listSheet(r[1],r[2],r[3])}});
 $("#trend").addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(!b)return;const [j,i]=b.dataset.tr.split(":").map(Number),S=$("#trend")._s,x=S&&S[j]&&S[j][3][i];if(x){tgHaptic();bkcOpen(x,"rec")}});
-addEventListener("bigcat",()=>{TRK=-1;HSV=null;if(SCREEN==="col"){drawTrend();layoutFlow(true)}});
+addEventListener("bigcat",()=>{TRK=-1;HSV=null;AUIX=null;if(SCREEN==="col"){drawTrend();layoutFlow(true)}});
 // ---------- «Книга для тебя»: книги разлетаются вихрем, одна прилетает и переворачивается ----------
 const luckEl=document.createElement("div");luckEl.className="luck";luckEl.id="luck";$("#app").appendChild(luckEl);
 let LUCK=null;
@@ -4932,7 +4932,17 @@ function popFilms(){return POPF.map(([t,y,s])=>{if(FILMS&&!s){const f=toFilm({t,
 function localFind(q){if(SX.k==="films"){const own=[...FSEEN,...FWANT].filter(f=>nameMatches(q,fTitle(f),f.o||"")).map(f=>fItem(f,"own"));const arch=FILMS?filmSearch(q,20).map(f=>fItem(f,"arch")):[];
     const seen=new Set(),out=[];[...own,...arch].forEach(x=>{if(seen.has(x.id))return;seen.add(x.id);out.push(x)});return out.slice(0,20)}
   const own=bookHits(q,[...BOOKS,...want,...CAT],8),seen=new Set(own.map(b=>norm(b.t)+"|"+norm(b.a||"")));
-  return [...own,...bigHits(q,14).filter(b=>!seen.has(b._n+"|"+norm(b.a||"")))].slice(0,16).map(b=>bItem(b,"hit"))}
+  let res=[...own,...bigHits(q,14).filter(b=>!seen.has(b._n+"|"+norm(b.a||"")))];
+  if(res.length<3){const fz=fuzzyHits(q,12).filter(b=>!res.includes(b));res=[...res,...fz]}
+  return res.slice(0,16).map(b=>bItem(b,"hit"))}
+// опечатки в фамилии автора («Голдарт» → Голдратт): ищем фамилии, отличающиеся на 1-2 буквы, остальные слова - в названии
+let AUIX=null;
+function lev(a,b){if(Math.abs(a.length-b.length)>2)return 9;const m=a.length,n=b.length;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+function fuzzyHits(q,k){const ws=String(q).toLowerCase().replace(/ё/g,"е").split(/[^a-zа-я0-9]+/).filter(w=>w.length>2).map(norm);if(!ws.length)return [];
+  if(!AUIX){AUIX=new Map();for(const b of ALLB()){const sur=norm(String(b.a||"").split(/\s+/).slice(-1)[0]);if(sur.length<4)continue;let v=AUIX.get(sur);if(!v)AUIX.set(sur,v=[]);v.push(b)}}
+  const out=[];for(const w of ws){if(w.length<4)continue;const lim=w.length>6?2:1;for(const [sur,L] of AUIX){if(sur[0]!==w[0]||Math.abs(sur.length-w.length)>lim)continue;if(lev(w,sur)>lim)continue;
+      const rest=ws.filter(x=>x!==w);for(const b of L){const t=b._n||norm(b.t);if(rest.length&&!rest.some(r=>t.includes(r.slice(0,Math.max(3,r.length-1)))))continue;if(READ.has(t))continue;out.push(b)}}}
+  return out.sort((a,b)=>(b.sl||0)-(a.sl||0)).slice(0,k)}
 async function onlineBooks(q){const [w,a]=await Promise.all([libWorks(q).catch(()=>[]),libAuthors(q).catch(()=>[])]);
   return {works:(w||[]).slice(0,16).map(x=>({t:x.t,a:x.a,y:x.y,kind:"fl",_fl:x._fl})),au:(a||[]).slice(0,4).map(x=>({id:x.id,name:x.name}))}}
 async function onlineSeries(q){const j=await (await fetch("https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=10&gsrsearch="+encodeURIComponent(q+" сериал")+"&prop=pageimages&piprop=thumbnail&pithumbsize=400&pilicense=any")).json();
