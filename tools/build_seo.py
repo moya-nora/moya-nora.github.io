@@ -212,7 +212,7 @@ for(var i=0;i<D.length&&out.length<8;i++){var t=D[i][1];if(ws.every(function(w){
 box.innerHTML=out.map(function(x){return '<a href="'+x[2]+'"><b>'+x[0].replace(/</g,"&lt;")+'</b><span>'+x[1].replace(/</g,"&lt;")+(x[3]?" · "+x[3]:"")+'</span></a>'}).join("")+'<a class="sall" href="/app.html?app=1">Искать среди 100 000 книг в Норе</a>'})})})();</script>"""
 SN = """<!-- Cloudflare Web Analytics --><script defer type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "572d5eebd0c442bda32887c9f80bb139"}'></script><!-- End Cloudflare Web Analytics -->"""
 HEAD = f"""<link rel="icon" href="/icons/icon-192.png?v=5"><link rel="apple-touch-icon" href="/icons/icon-180.png?v=5"><meta name="theme-color" content="#05060A">
-<link rel="preload" href="/fonts/onest-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/cormorant-garamond-cyrillic-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/manrope-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/literata-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/site.css?v={VER}">"""
 NAV = [("/c/romantezi.html", "Ромэнтези"), ("/c/dark-roman.html", "Дарк роман"), ("/c/novinki.html", "Новинки"), ("/p/", "Похожие книги"), ("/c/", "Все подборки")]
 APP = "/app.html?app=1"

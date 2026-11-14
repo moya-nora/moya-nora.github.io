@@ -1192,7 +1192,7 @@ body.viewing #app .fbar{display:none}
 #app .wh-l .frv{display:block;flex-basis:100%;margin-top:4px;font-style:italic;font-size:13px;line-height:1.4;color:var(--ink2);white-space:normal}
 /* ---------- окно «Поставить книгу на полку» в стиле приложения ---------- */
 .legacy-over .sheet:has(.qform){background:rgba(17,17,25,.97);-webkit-backdrop-filter:blur(30px) saturate(1.6);backdrop-filter:blur(30px) saturate(1.6);padding-top:10px}
-.L .qform{font-family:'Inter Tight',-apple-system,system-ui,sans-serif;color:#fff}
+.L .qform{font-family:'NoraMan',-apple-system,system-ui,sans-serif;color:#fff}
 .L .qform label{font-size:11.5px;font-weight:600;letter-spacing:.09em;color:rgba(255,255,255,.5);margin-top:24px}
 .L .qform input,.L .qform textarea,.L .qform select{border:0;background:rgba(255,255,255,.08);border-radius:14px;padding:13px 15px;color:#fff;margin-top:10px}
 .L .qform input::placeholder,.L .qform textarea::placeholder{color:rgba(255,255,255,.38)}
@@ -1220,7 +1220,7 @@ body.viewing #app .fbar{display:none}
   background:linear-gradient(180deg,rgba(38,38,50,.92),rgba(16,16,24,.96));-webkit-backdrop-filter:blur(40px) saturate(1.8);backdrop-filter:blur(40px) saturate(1.8);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.1),0 30px 80px -20px rgba(0,0,0,.9)}
 .legacy-over .sheet:has(.qform) .grab{width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);margin:4px auto 10px}
-.legacy-over .sheet:has(.qform)>.sheet-h,.L .qform .qh{font-family:'Cormorant Garamond',Georgia,serif;font-size:30px;font-weight:600;line-height:1.05;margin:2px 2px 16px;color:#fff}
+.legacy-over .sheet:has(.qform)>.sheet-h,.L .qform .qh{font-family:'NoraLit',Georgia,serif;font-size:26px;font-weight:600;line-height:1.05;margin:2px 2px 16px;color:#fff}
 .L .qform label{text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:rgba(255,255,255,.6);margin:22px 2px 0}
 /* фото и перенос — одна сгруппированная карточка со строками, как в настройках */
 .L .qform .photo-btn{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:20px 20px 0 0;box-shadow:none;background:rgba(255,255,255,.08);padding:15px 40px 15px 16px;position:relative;margin:0}
@@ -2045,6 +2045,46 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .bkc .bkc-cv{transition:none}
 #app .bkc-dw.more{-webkit-mask:linear-gradient(#000 calc(100% - 18px),transparent);mask:linear-gradient(#000 calc(100% - 18px),transparent)}
 #app .bkc .bkc-law{width:100%;max-width:440px;margin:10px 0 0;font-size:10.5px;line-height:1.35;color:var(--ink3);opacity:.75;text-align:left}
+
+/* ---------- шрифты Норы: Literata (заголовки) + Manrope (текст) ---------- */
+@font-face{font-family:NoraLit;font-weight:300 700;font-display:swap;src:url(/fonts/literata-cyrillic-wght-normal.woff2) format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:NoraLit;font-weight:300 700;font-display:swap;src:url(/fonts/literata-latin-wght-normal.woff2) format("woff2")}
+@font-face{font-family:NoraLit;font-style:italic;font-weight:300 700;font-display:swap;src:url(/fonts/literata-cyrillic-wght-italic.woff2) format("woff2")}
+@font-face{font-family:NoraMan;font-weight:400;font-display:swap;src:url(/fonts/manrope-cyrillic-400-normal.woff2) format("woff2")}
+@font-face{font-family:NoraMan;font-weight:500;font-display:swap;src:url(/fonts/manrope-cyrillic-500-normal.woff2) format("woff2")}
+@font-face{font-family:NoraMan;font-weight:600;font-display:swap;src:url(/fonts/manrope-cyrillic-600-normal.woff2) format("woff2")}
+@font-face{font-family:NoraMan;font-weight:700;font-display:swap;src:url(/fonts/manrope-cyrillic-700-normal.woff2) format("woff2")}
+:root #app{--serif:'NoraStar','NoraLit',Georgia,serif;--sans:'NoraStar','NoraMan',system-ui,-apple-system,sans-serif}
+#app{font-family:var(--sans)}
+#app .shelf-h,#app .bkc h2,#app .fr-h,#app .lk-info h2,#app .flow-cap b,#app .vh,#app .dft,#app h1,#app h2,#app h3{font-family:var(--serif)}
+#app .shelf-h{font-size:24px!important;font-weight:600!important;letter-spacing:-.01em}
+#app .flow-cap b{font-size:24px!important;font-weight:600!important;line-height:1.15!important}
+
+/* ---------- карточка книги: листается целиком, как в Яндекс Книгах ---------- */
+#app .bkc .bkc-in{position:absolute;inset:0;display:block;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:calc(64px + var(--sat,env(safe-area-inset-top,0px))) 22px calc(110px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+#app .bkc .bkc-in>*{max-width:460px;margin-left:auto;margin-right:auto}
+#app .bkc .bkc-x{position:absolute;z-index:5;background:rgba(20,20,28,.75)}
+#app .bkc .bkc-cv{display:block;width:200px!important;height:300px!important;aspect-ratio:auto;margin:0 auto!important;flex:none}
+#app .bkc .bkc-cv .cv{width:200px;height:300px;border-radius:8px;box-shadow:0 26px 50px -18px rgba(0,0,0,.9)}
+#app .bkc h2{margin:24px auto 0;font-size:26px!important;font-weight:600;line-height:1.15;-webkit-line-clamp:unset;display:block;text-align:left}
+#app .bkc .bkc-a{margin-top:6px;font-size:15px;color:var(--ink2);text-align:left}
+#app .bkc .bkc-facts{margin-top:10px;justify-content:flex-start}
+#app .bkc .bkc-tr{margin-top:12px}
+#app .bkc .bkc-tools{display:flex;gap:6px;margin-top:18px;padding:4px 0;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
+#app .bkc .bkc-tools>button{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 2px;border:0!important;background:none!important;color:var(--ink2);font:500 12px var(--sans);margin:0!important;border-radius:12px}
+#app .bkc .bkc-tools>button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7}
+#app .bkc .bkc-tools>button small{display:none}
+#app .bkc .bkc-tools>button.on{color:#F3D19A}
+#app .bkc .bkc-tools>button:active{background:rgba(255,255,255,.06)!important}
+#app .bkc .bkc-dw{display:block;flex:none;overflow:visible;margin-top:18px;max-width:460px;-webkit-mask:none!important;mask:none!important}
+#app .bkc .bkc-ds{display:block;margin:0;font-size:16px;line-height:1.6;color:#ECECEF;text-align:left;white-space:pre-line}
+#app .bkc .bkc-rv{margin-top:18px}
+#app .bkc .bkc-law{margin-top:22px}
+#app .bkc .bkc-bar{position:absolute;left:0;right:0;bottom:0;z-index:4;display:flex;gap:10px;justify-content:center;padding:14px 18px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(7,8,12,0),#07080C 30%)}
+#app .bkc .bkc-bar .btn{height:52px;border-radius:26px;font-size:15px;white-space:nowrap;letter-spacing:-.01em;font-weight:600;padding:0 18px;max-width:300px;margin:0}
+#app .bkc .bkc-bar .btn.w{flex:1.6;background:#F4F2F7;color:#0B0A14;font-weight:700}
+#app .bkc .bkc-bar .btn:not(.w){flex:1;background:rgba(255,255,255,.08);color:var(--ink);border:0;box-shadow:none}
+#app .bkc .bkc-bar .btn:disabled{opacity:.45}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -2157,7 +2197,7 @@ setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!doc
 const FB={apiKey:"AIzaSyD9yfazxfKpaEk1BNFDN61dEB3pfxT9cS4",projectId:"nora-ed429"};
 const ON=!!(FB.apiKey&&FB.projectId);
 const ls=window.localStorage,P=Storage.prototype,_set=P.setItem,_rm=P.removeItem,_get=P.getItem;
-const SKIP=k=>!k||!k.startsWith("zal.")||k==="zal.img"||k==="zal.img2"||k==="zal.img3"||k==="zal.img4"||k==="zal.img5"||k==="zal.img6"||k==="zal.desc"||k==="zal.meta"||k==="zal.recent"||k.startsWith("zal.sync");
+const SKIP=k=>!k||!k.startsWith("zal.")||k==="zal.img"||k==="zal.img2"||k==="zal.img3"||k==="zal.img4"||k==="zal.img5"||k==="zal.img7"||k==="zal.desc"||k==="zal.meta"||k==="zal.recent"||k.startsWith("zal.sync");
 const jget=(k,d)=>{try{const v=_get.call(ls,k);return v?JSON.parse(v):d}catch(e){return d}};
 const jset=(k,v)=>{try{_set.call(ls,k,JSON.stringify(v))}catch(e){}};
 const TG=window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData?Telegram.WebApp:null;
@@ -4212,7 +4252,7 @@ function topK(list,k,fs){const best=[];let min=-Infinity;for(const b of list){co
   return best.sort((x,y)=>y.s-x.s).slice(0,k)}
 
 // ---------- обложки: настоящие (Фантлаб/Википедия) поверх рисованных ----------
-try{["zal.img2","zal.img3","zal.img4","zal.img5"].forEach(k=>localStorage.removeItem(k))}catch(e){}const IMG=LS.get("zal.img6",{});let imgT=0;const imgSave=()=>{clearTimeout(imgT);imgT=setTimeout(()=>LS.set("zal.img6",IMG),500)};
+try{["zal.img2","zal.img3","zal.img4","zal.img5"].forEach(k=>localStorage.removeItem(k))}catch(e){}const IMG=LS.get("zal.img7",{});let imgT=0;const imgSave=()=>{clearTimeout(imgT);imgT=setTimeout(()=>LS.set("zal.img7",IMG),500)};
 try{localStorage.removeItem("zal.img")}catch(e){}
 // выбор обложки вручную: "draw" — рисованная, иначе адрес картинки (синхронизируется)
 let COV=LS.get("zal.cov",{});const covSave=()=>LS.set("zal.cov",COV);
@@ -4261,7 +4301,7 @@ const EDS={};
 async function editionsOf(id){if(EDS[id])return EDS[id];const j=await flj("/work/"+id+"/extended");const L=[];Object.values(j.editions_blocks||{}).forEach(b=>(b.list||[]).forEach(e=>L.push(e)));
   const ok=L.filter(e=>e.pic_num>0&&(!e.lang_code||e.lang_code==="ru")&&!e.plandate).sort((a,b)=>(b.year||0)-(a.year||0)||(a.type===10?-1:1));return EDS[id]=ok}
 async function bestEdition(id){if(!id)return null;const L=await editionsOf(id);if(!L.length)return null;const fresh=L.filter(e=>(e.year||0)>=2021);
-  if(!fresh.length)return null;fresh.sort((a,b)=>(b.year||0)-(a.year||0));const single=fresh.filter(e=>e.type===10);return (single[0]||fresh[0]).edition_id}
+  if(!fresh.length)return null;fresh.sort((a,b)=>(b.year||0)-(a.year||0));const single=fresh.filter(e=>e.type===10);return single.length?single[0].edition_id:null}
 async function wikiImg(q){const j=await (await fetch("https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=5&gsrsearch="+encodeURIComponent(q)+"&prop=pageimages&piprop=thumbnail&pithumbsize=500&pilicense=any")).json();
   const p=Object.values((j.query||{}).pages||{}).sort((a,b)=>a.index-b.index).find(p=>p.thumbnail);return p?p.thumbnail.source:""}
 // null — не удалось связаться (повторим), "" — обложки нет, иначе адрес
@@ -4589,7 +4629,11 @@ function luckPool(){const W=wantNorms(),q=tasteQ(),shown=(LUCK&&LUCK.seen)||new 
   const ok=b=>{const n=b._n||norm(b.t);return !READ.has(n)&&!W.has(n)&&!dismissed.has(b.id)&&!shown.has(n)&&!!noCaps(b.ann)&&!(b.big&&!imgOf(b))};
   const sc=topK(ALLB(),80,b=>ok(b)?feedScore(b,q)+(imgOf(b)?3:0):null).map(z=>z.b);
   for(let i=sc.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sc[i],sc[j]]=[sc[j],sc[i]]}return sc}
-function luckOpen(){if(VIEW)return;LUCK={seen:(LUCK&&LUCK.seen)||new Set(),n:0,q:[]};goal("luck");luckStart()}
+// «Книга для тебя» открывается обычной карточкой книги; «Другая книга» - следующая из подборки Шуршуни
+function luckOpen(){if(VIEW)return;LUCK={seen:(LUCK&&LUCK.seen)||new Set(),n:0,q:[]};goal("luck");luckFill();const x=LUCK.q[0];if(!x){toast("Шуршуня перебрал всю стопку - загляни попозже");return}LUCK.x=x;bkcOpen(x,"luck")}
+function luckCardNext(){if(!LUCK)return;LUCK.q.shift();luckFill();const x=LUCK.q[0];if(!x){toast("Шуршуня перебрал всю стопку - загляни попозже");return}LUCK.x=x;const sc=bkcEl.querySelector(".bkc-in");
+  if(sc){sc.style.transition="opacity .18s";sc.style.opacity="0"}setTimeout(()=>{BKC={x,L:"luck"};cardX=x;ambFor(x);bkcDraw();const n=bkcEl.querySelector(".bkc-in");if(n){n.style.opacity="0";requestAnimationFrame(()=>{n.style.transition="opacity .25s";n.style.opacity="1"})}
+    wantMeta(x,()=>{if(BKC&&BKC.x===x){const f=$("#bkcFacts");if(f)f.innerHTML=bkcFacts(x)}});if(!x.ds)wantDesc(x,()=>{if(BKC&&BKC.x===x){const d=$("#bkcDs");if(d)d.textContent=descOf(x)}})},180)}
 function luckFan(){const el=$("#lgFan");if(!el)return;const P=luckPool().filter(b=>imgOf(b)).slice(0,3);el.innerHTML=P.map((b,i)=>`<span style="--i:${i}">${cv(bItem(b,"rec"),70)}</span>`).join("")}
 // «Книга для тебя»: обложка вырастает из кнопки, сзади ждут ещё две; смахни карточку - придёт следующая, вниз - закрыть
 function luckFill(){const W=wantNorms();LUCK.q=LUCK.q.filter(x=>{const n=norm(x.t);return !READ.has(n)&&!W.has(n)});
@@ -4859,7 +4903,7 @@ async function brainAsk(q){const key=norm(q);if(BRAIN[key])return BRAIN[key];try
     BRAIN[key]=out;try{sessionStorage.setItem("nora.br."+key,JSON.stringify(out.map(o=>o.b.id?{b:{t:o.b.t,a:o.b.a},w:o.w,c:1}:o)))}catch(e){}return out}
   catch(e){return []}finally{clearTimeout(tm)}}
 const brainUnpack=L=>L.map(o=>o.c?{b:ALLB().find(b=>norm(b.t)===norm(o.b.t))||o.b,w:o.w}:o);
-const MEAN_EX=["Грустно, и хочу погрустить","Научиться мыслить иначе","После тяжёлого дня","Как хороший сериал","Про Южную Корею","Что почитать, когда грустно","Чтобы поплакать","Страшное на ночь","Уютное на осень","На один вечер","Чтобы не оторваться","О драконах и любви"];
+const MEAN_EX=["Что-то лёгкое на вечер","Чтобы не оторваться до утра","Уютное на осень","Про сильную героиню","Как хороший сериал","Страшное на ночь","Умный нон-фикшн","Про Южную Корею","Чтобы поплакать","О драконах и любви"];
 function sxRun(){const q=$("#fq").value,my=++SX.seq;SX.q=q;SX.mode="q";clearTimeout(SX.t);$(".sx-clear").hidden=!q;
   {const h=SX.k!=="films"&&genreHit(q);if(h){const L=h[0]==="gen"?NF.gen:NF.trope;if(!L.includes(h[1]))L.push(h[1]);saveNF();SX.picks=true;SX.q="";$("#fq").value="";$(".sx-clear").hidden=true;
     const b=$("#sxf");if(b)b.innerHTML=sxFbar();SX.authors=[];sxDraw();tgHaptic();return}}
@@ -5690,8 +5734,9 @@ function frAsk(x){const uid=x.frR&&x.frR.uid,p=uid&&FRP[uid]||{},tg=String(p.tg|
   if(navigator.share){navigator.share({text:msg}).catch(()=>{});return}
   if(copied)toast("Текст скопирован - отправь его "+who+" в Telegram");else vOpen(`<h3 class="vh">Спросить, как тебе</h3><textarea class="sy-in" rows="3" readonly>${esc(msg)}</textarea>`)}
 function bkcSec(x,L){if(x._f||L==="friend")return "";const st=BK.has(x),on=st?isSec(x):!!(BKC&&BKC.sec);
-  return `<button class="bkc-sec${on?" on":""}" data-bkc="sec">${ICLOCK}<span>${on?(st?"Секретная книга":"Пойдёт в секретный список"):"В секретный список"}</span><small>· видите только вы</small></button>`}
+  return `<button class="bkc-sec${on?" on":""}" data-bkc="sec" aria-label="Секретный список - видите только вы">${ICLOCK}<span>${on?"Секретная":"Секретно"}</span></button>`}
 function bkcActs(x,L){const st=BK.has(x);
+  if(L==="luck")return st?`<button class="btn w" data-bkc="lnext">Другая книга</button>`:`<button class="btn w" data-bkc="want">Хочу прочитать</button><button class="btn" data-bkc="lnext">Другая книга</button>`;
   if(L==="friend"){const tw=st==="read"?`<button class="btn" disabled>Уже прочитано</button>`:st?`<button class="btn" disabled>Уже в избранном</button>`:`<button class="btn w" data-bkc="want">Тоже хочу</button>`;return tw+`<button class="btn" data-bkc="ask">Спросить, как тебе</button>`}
   if(L==="top"||L==="want"||st==="want"||x.now)return `<button class="btn w" data-bkc="read">Прочитано</button>${x.now?"":`<button class="btn" data-bkc="rm">Убрать из избранного</button>`}`;
   if(L==="read"||st==="read")return `<button class="btn" data-bkc="unread">Убрать из «Прочитано»</button>`;
@@ -5718,14 +5763,15 @@ let DRUG=null;const drugKey=(t,a)=>norm(String(t||"").split(/[:.(]/)[0])+"|"+nor
 fetch("books/drugmark.json").then(r=>r.json()).then(L=>{DRUG=new Set(L.map(([t,a])=>drugKey(t,a)))}).catch(()=>{DRUG=new Set()});
 const drugIs=x=>!!(DRUG&&x&&!x._f&&DRUG.has(drugKey(x.t,x.a)));
 function bkcDraw(){const {x,L}=BKC;
-  bkcEl.innerHTML=`<div class="bkc-in"><button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button>
-   <div class="bkc-cv">${cv(x,190)}<button class="bkc-cov" data-bkc="cov">${IC2.cov}<span>сменить обложку</span></button></div>
+  bkcEl.innerHTML=`<button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button><div class="bkc-in">
+   <div class="bkc-cv">${cv(x,200)}<button class="bkc-cov" data-bkc="cov" aria-label="Сменить обложку">${IC2.cov}<span>сменить обложку</span></button></div>
    <div class="bkc-covsw" hidden>${covRow(x)}</div>
-   <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>${bkcTropes(x,L)}
-   <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>
+   <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>
+   <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>${bkcTropes(x,L)}
+   <div class="bkc-tools"><button data-bkc="where">${IC2.pin}<span>Где прочитать</span></button>${x._f?"":`<button data-bkc="vid">${IC2.play}<span>Обзоры</span></button>`}${bkcSec(x,L)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
-   ${bkcRv(x,L)}${bkcSec(x,L)}<div class="bkc-acts">${bkcActs(x,L)}</div>
-   <div class="bkc-low"><button class="bkc-where" data-bkc="where">${IC2.pin}Где прочитать?</button>${x._f?"":`<button class="bkc-where" data-bkc="vid">${IC2.play}Обзоры</button>`}</div>${drugIs(x)?`<p class="bkc-law">${DRUG_TXT}</p>`:""}</div>`}
+   ${bkcRv(x,L)}${drugIs(x)?`<p class="bkc-law">${DRUG_TXT}</p>`:""}</div>
+   <div class="bkc-bar">${bkcActs(x,L)}</div>`;const sc=bkcEl.querySelector(".bkc-in");if(sc)sc.scrollTop=0}
 // личный отзыв: свой — пишешь в карточке прочитанной книги, отзыв друга — виден в карточке его книги
 function myRec(x){if(!x||x._f)return null;if(x.src&&BOOKS.includes(x.src))return x.src;const n=norm(x.t);return BOOKS.find(b=>norm(b.t)===n)||null}
 function bkcRv(x,L){if(x._f)return "";
@@ -5852,7 +5898,7 @@ function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};LS.set("zal.cards",(+LS.get("
 // описание занимает всё свободное место и аккуратно обрезается — карточку не нужно листать
 // карточку книги можно закрыть, смахнув вниз (если описание не прокручено)
 {let y0=null,x0=0,t0=0,dy=0,act=false;
-bkcEl.addEventListener("touchstart",e=>{y0=null;if(!BKC||e.touches.length!==1||$("#vsheet").classList.contains("on"))return;const sc=e.target.closest(".bkc-dw,.bkc-covsw");if(sc&&sc.scrollTop>2)return;
+bkcEl.addEventListener("touchstart",e=>{y0=null;if(!BKC||e.touches.length!==1||$("#vsheet").classList.contains("on"))return;const sc=bkcEl.querySelector(".bkc-in");if(sc&&sc.scrollTop>2)return;if(e.target.closest(".bkc-covsw,.bkc-tr"))return;
   y0=e.touches[0].clientY;x0=e.touches[0].clientX;t0=Date.now();dy=0;act=false},{passive:true});
 bkcEl.addEventListener("touchmove",e=>{if(y0==null)return;const d=e.touches[0].clientY-y0,dx=Math.abs(e.touches[0].clientX-x0);
   if(!act){if(d>10&&d>dx*1.4)act=true;else{if(d<-6||dx>12)y0=null;return}}dy=Math.max(0,d-10);bkcEl.style.transition="none";bkcEl.style.transform=`translateY(${dy}px)`;e.preventDefault()},{passive:false});
@@ -5864,13 +5910,7 @@ function vidOpen(x){const sur=String(x.a||"").split(" ").slice(-1)[0];
   vOpen(`<h3 class="vh">Обзоры на «${esc(x.t)}»</h3><p class="sy-note">Откроется поиск роликов о книге</p><div class="wh-l">${VIDS.map(([n,d],i)=>`<button data-vid="${i}"><b>${n}</b><small>${d}</small><i>›</i></button>`).join("")}</div>`);
   $("#vsheet").classList.add("ontop");$("#vshBody")._vq=encodeURIComponent(`${x.t} ${x.a&&x.a!=="Автор не указан"?sur:""} обзор книги`.replace(/\s+/g," "))}
 $("#vshBody").addEventListener("click",e=>{const b=e.target.closest("[data-vid]");if(!b)return;e.stopPropagation();const u=VIDS[+b.dataset.vid][2]($("#vshBody")._vq);tgHaptic();try{navigator.clipboard&&navigator.clipboard.writeText(decodeURIComponent($("#vshBody")._vq))}catch(x){}try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(x){window.open(u,"_blank")}},true);
-// описание показываем целиком без прокрутки: если не влезает - уменьшаем обложку, потом чуть-чуть шрифт
-function bkcFit(){const w=$("#bkcDw");if(!w)return;const c=bkcEl.querySelector(".bkc-cv"),d=$("#bkcDs");bkcEl.classList.remove("dsc");
-  if(c)c.style.height="";if(d){d.style.fontSize="";d.style.lineHeight=""}w.scrollTop=0;
-  const fits=()=>w.scrollHeight<=w.clientHeight+2;
-  if(c&&!fits()){const H=innerHeight;for(const v of [.29,.26,.23,.2,.17,.14,.12]){c.style.height=Math.round(H*v)+"px";if(fits())break}}
-  if(d&&!fits()){for(const [f,l] of [[15,1.45],[14,1.42],[13.5,1.4],[13,1.38]]){d.style.fontSize=f+"px";d.style.lineHeight=l;if(fits())break}}
-  const upd=()=>w.classList.toggle("more",w.scrollTop+w.clientHeight<w.scrollHeight-4);w.onscroll=upd;upd()}
+function bkcFit(){}
 addEventListener("resize",()=>{if(BKC)bkcFit()});
 function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();setTimeout(onbAsk,700);if(vDirty){vDirty=false;setTimeout(refresh,300)}}
 // отзывы читателей Фантлаба
@@ -5907,8 +5947,8 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="where"){goal("where");whereOpen(x,"");return}
   if(a==="vid"){goal("reviews");vidOpen(x);return}
   if(a==="sec"){const st=BK.has(x);if(st){const on=!isSec(x);setSec(x,on);vDirty=true;toast(on?"Теперь эту книгу видите только вы":"Книгу снова видят друзья")}else BKC.sec=!BKC.sec;const el=bkcEl.querySelector(".bkc-sec");if(el)el.outerHTML=bkcSec(x,L);return}
-  if(a==="ask"){goal("ask_friend");frAsk(x);return}if(a==="rv"){dNew(myRec(x));return}if(a==="dopen"){dOpen(myRec(x),true);return}
-  if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");bkcClose();return}
+  if(a==="ask"){goal("ask_friend");frAsk(x);return}if(a==="rv"){dNew(myRec(x));return}if(a==="lnext"){luckCardNext();return}if(a==="dopen"){dOpen(myRec(x),true);return}
+  if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");if(L==="luck"){BKC.sec=false;luckCardNext();return}bkcClose();return}
   if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
   if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
     const r=L==="read"?x:BK.read().find(y=>norm(y.t)===norm(x.t));if(r)BK.rmRead(r);vDirty=true;toast("Убрано с полки «Прочитано»");bkcClose();return}
