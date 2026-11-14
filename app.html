@@ -2031,6 +2031,9 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .bkc .bkc-cov{background:rgba(12,12,18,.6)!important;color:#fff!important;box-shadow:0 0 0 1px rgba(255,255,255,.18)!important}
 #app .bkc .bkc-cov svg{margin:0!important}
 #app .shelves-top{justify-content:flex-end!important}
+
+/* скорость: размытие под «стеклом» - только у нижнего меню и всплывающих окон; карточки в прокрутке - плотный цвет (размытие на iPhone в Telegram тормозит прокрутку) */
+#app #sumScroll .gl,#app #colScroll .gl,#app #frScroll .gl,#app #pills .gl,#app #pills button,#app .bento .gl,#app #sumMore .gl{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background-color:rgba(255,255,255,.085)}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -5432,7 +5435,7 @@ function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
    ${VIEW?"":(()=>{const nk=LS.get("zal.nick","");return nk?`<button class="fr-nick" data-nick><span>Друзья найдут тебя по нику</span><b>@${esc(nk)}</b><i>изменить</i></button>`:`<button class="fr-nick new" data-nick><span>Ник, по которому тебя найдут друзья, появится после входа</span><i>›</i></button>`})()}
    ${REQS.length?`<h3 class="fr-sec">Заявки в друзья</h3>`+REQS.map(q=>`<div class="sc gl frq">${avatar(q.n,q.f)}<span><b>${esc(q.n||"Кто-то")}</b><small>хочет добавить в друзья</small></span><button class="btn w" data-frq-yes="${esc(q.id)}">Принять</button><button class="btn" data-frq-no="${esc(q.id)}">Отклонить</button></div>`).join(""):""}
    <div class="fr-row"><button class="fr-add" data-fr-find><i class="ava plus">+</i><span>Добавить</span></button>${list.map(({f})=>`<button class="fr-av" data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid,frNew(f)?"new":"")}<span>${esc(f.n||"Друг")}</span></button>`).join("")}</div>
-   ${FRIENDS.length?"":`<div class="sc gl fr-empty"><h3>Полки друзей</h3><p>Найди друга по почте или нику в Telegram — придёт заявка прямо в Нору. Когда заявку примут, вы будете видеть полки друг друга: что прочитано, оценки, что хочется прочитать.</p><button class="btn w" data-fr-find>Добавить друга</button></div>`}
+   ${FRIENDS.length?"":`<div class="sc gl fr-empty"><h3>Полки друзей</h3><p>Найди друга по нику в Норе или по почте - придёт заявка прямо в Нору. Когда заявку примут, вы будете видеть полки друг друга: что прочитано, оценки, что хочется прочитать.</p><button class="btn w" data-fr-find>Добавить друга</button></div>`}
    ${news.length?`<h3 class="fr-sec">Что нового</h3>`+news.map(({f,p})=>{const ev=(p.ev||[]).slice(0,10),fresh=ev.filter(e=>e.ts>(FSEEN2[f.uid]||0)).length;
      return `<div class="sc gl frc"><button class="frh" data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid)}<b>${esc(f.n||"Друг")}</b><span>${whenTxt(ev[0].ts)}${fresh?` · новых: ${fresh}`:""}</span></button>
        <div class="frs">${ev.map((e,i)=>`<button class="fre" data-fr-ev="${esc(f.uid)}|${i}">${cv(fbItem(e),84)}<em>${esc(evLabel(e))}</em><small>${esc(e.t)}</small></button>`).join("")}</div></div>`}).join(""):FRIENDS.length?`<p class="fr-note">Когда друзья что-нибудь прочитают или оценят, это появится здесь.</p>`:""}
