@@ -2030,7 +2030,7 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .bkc .bkc-cov span{display:none}
 #app .bkc .bkc-cov{background:rgba(12,12,18,.6)!important;color:#fff!important;box-shadow:0 0 0 1px rgba(255,255,255,.18)!important}
 #app .bkc .bkc-cov svg{margin:0!important}
-#app .shelves-top{justify-content:flex-end!important}
+#app .shelves-top{justify-content:flex-start!important;padding-left:20px;padding-right:20px}
 
 /* скорость: размытие под «стеклом» - только у нижнего меню и всплывающих окон; карточки в прокрутке - плотный цвет (размытие на iPhone в Telegram тормозит прокрутку) */
 #app #sumScroll .gl:not(.on),#app #colScroll .gl:not(.on),#app #frScroll .gl:not(.on),#app .bento .gl,#app #sumMore .gl{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background-color:rgba(255,255,255,.085)}
@@ -2115,14 +2115,63 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .ask-f .cv:first-child{transform:rotate(-8deg)}
 #app .ask-f .cv+.cv{margin-left:-14px;transform:rotate(6deg) translateY(-6px)}
 #app .fgen{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
-#app .fgen .fk{height:54px;border-radius:14px!important;border:0!important;justify-content:flex-start;text-align:left;padding:0 14px!important;font-size:14.5px;font-weight:600;color:#F4F2F7;background:#2B2F45}
-#app .fgen .fk:nth-child(8n+2){background:#2F2A4A}#app .fgen .fk:nth-child(8n+3){background:#4A2638}#app .fgen .fk:nth-child(8n+4){background:#26343A}
-#app .fgen .fk:nth-child(8n+5){background:#3A3226}#app .fgen .fk:nth-child(8n+6){background:#1F3344}#app .fgen .fk:nth-child(8n+7){background:#47283A}#app .fgen .fk:nth-child(8n){background:#2C3A2E}
+#app .fgen .fk{height:54px;border-radius:14px!important;border:0!important;justify-content:flex-start;text-align:left;padding:0 14px!important;font-size:14.5px;font-weight:600;color:#F4F2F7;background:rgba(255,255,255,.07)}
 #app .fgen .fk.on{background:#F4F2F7!important;color:#0B0A14}
 #app .gen-more{margin-top:8px;border:0!important;background:none!important;color:#F3D19A!important;padding:6px 2px!important;font-weight:600}
 #app .bkc .bkc-rv.add{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:2px;align-items:center}
 #app .bkc .bkc-rv.add svg{grid-row:1/3}
 #app .bkc .bkc-rv.add small{grid-column:2}
+
+/* плашка «на экран Домой» */
+#app .hsb{display:flex!important;align-items:center;gap:12px;padding:10px 10px 10px 12px!important;border-radius:22px!important;background:rgba(24,22,34,.96)!important;color:#fff!important;box-shadow:0 18px 40px -12px rgba(0,0,0,.8),inset 0 0 0 1px rgba(255,255,255,.08)!important}
+#app .hsb img{width:46px!important;height:46px!important;border-radius:12px!important;flex:none}
+#app .hsb .hs-tx{flex:1;min-width:0;display:flex;flex-direction:column}
+#app .hsb .hs-tx b{font-size:15px;font-weight:700;color:#fff}
+#app .hsb .hs-tx span{font-size:12.5px;line-height:1.3;color:rgba(255,255,255,.65);margin-top:2px}
+#app .hsb .hs-go{flex:none;height:36px;padding:0 16px;border-radius:18px;background:#F3D19A;color:#1A1424;font-size:14px;font-weight:700}
+#app .hsb .hs-cl{flex:none;width:32px;height:32px;border-radius:16px;display:grid;place-items:center;background:none;color:rgba(255,255,255,.55)}
+#app .hsb .hs-cl svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+#app .hsb .hs-acts,#app .hsb .hs-x{display:none}
+/* инструкция */
+#app .hsi{text-align:center}
+#app .hsi .vh,#app .hsi .sy-note{text-align:center}
+#app .hsi-logo{width:64px;height:64px;border-radius:16px;box-shadow:0 12px 30px -8px rgba(243,209,154,.45);margin:4px auto 10px;display:block}
+#app .hsi-steps{display:flex;flex-direction:column;gap:12px;margin-top:18px;text-align:left}
+#app .hsi-st{display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;background:rgba(255,255,255,.05)}
+#app .hsi-pic{flex:none;width:118px;height:74px;border-radius:12px;background:#15141C;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;overflow:hidden}
+#app .hsi-t{font-size:14.5px;font-weight:600;line-height:1.3;display:flex;gap:10px;align-items:flex-start}
+#app .hsi-t em{flex:none;width:22px;height:22px;border-radius:11px;background:#F3D19A;color:#1A1424;font:700 12px/22px var(--sans);text-align:center;font-style:normal}
+#app .hsi svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#app .hsi-bar{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.08)}
+#app .hsi-bar i{width:12px;height:12px;border-radius:3px;background:rgba(255,255,255,.18)}
+#app .hl{color:#F3D19A;position:relative}
+#app .hsi-bar .hl{display:grid;place-items:center;width:30px;height:30px;border-radius:15px;background:rgba(243,209,154,.16);box-shadow:0 0 0 2px #F3D19A;animation:hsPulse 1.6s ease-in-out infinite}
+@keyframes hsPulse{50%{box-shadow:0 0 0 5px rgba(243,209,154,.35)}}
+#app .hsi-menu{width:104px;display:flex;flex-direction:column;gap:3px}
+#app .hsi-menu div{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:3px 6px;border-radius:6px;background:rgba(255,255,255,.07);font-size:8px;color:rgba(255,255,255,.5)}
+#app .hsi-menu div.hl{background:rgba(243,209,154,.18);color:#F3D19A;box-shadow:0 0 0 1.5px #F3D19A}
+#app .hsi-menu svg{width:11px;height:11px}
+#app .hsi-home{display:grid;grid-template-columns:repeat(4,22px);gap:7px;align-items:start}
+#app .hsi-home i{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.15)}
+#app .hsi-app{display:flex;flex-direction:column;align-items:center;gap:2px}
+#app .hsi-app img{width:22px;height:22px;border-radius:6px;box-shadow:0 0 0 2px #F3D19A}
+#app .hsi-app small{font-size:7px;color:#fff}
+#app .hsi-top{display:flex;align-items:center;justify-content:space-between;width:100px;padding:5px 6px;border-radius:8px;background:rgba(255,255,255,.08);font-size:8px;color:rgba(255,255,255,.55)}
+#app .hsi-top .hl{display:grid;place-items:center;width:22px;height:22px;border-radius:11px;box-shadow:0 0 0 2px #F3D19A}
+#app .hsi-top svg{width:14px;height:14px;fill:currentColor;stroke:none}
+#app .hsi-arrow{position:fixed;left:50%;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:120;transform:translate(-50%,20px);opacity:0;transition:opacity .3s,transform .4s;display:flex;flex-direction:column;align-items:center;gap:4px;color:#F3D19A;font-size:13px;font-weight:700;pointer-events:none;text-shadow:0 2px 8px #000}
+#app .hsi-arrow.on{opacity:1;transform:translate(-50%,0);animation:hsBob 1.2s ease-in-out .4s infinite}
+#app .hsi-arrow svg{width:30px;height:30px;stroke:#F3D19A;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+@keyframes hsBob{50%{transform:translate(-50%,8px)}}
+/* постоянная карточка на «Полках» */
+#app .hs-card{display:flex;align-items:center;gap:12px;width:calc(100% - 40px);margin:22px 20px 4px;padding:12px;border-radius:18px;background:rgba(255,255,255,.06);color:inherit;text-align:left;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+#app .hs-card img{width:44px;height:44px;border-radius:11px;flex:none}
+#app .hs-card span{flex:1;display:flex;flex-direction:column}
+#app .hs-card b{font-size:15px;font-weight:600}
+#app .hs-card small{font-size:12.5px;color:var(--ink2);margin-top:2px}
+#app .hs-card i{font-style:normal;flex:none;padding:8px 14px;border-radius:16px;background:#F3D19A;color:#1A1424;font-size:13.5px;font-weight:700}
+#app .pills:not(.L *){flex-wrap:wrap;overflow:visible;row-gap:8px}
+#app .pills button:not(.L *){font-size:14px}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -2140,7 +2189,7 @@ setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!doc
 
 <section class="screen" id="s-feed"><div class="feed" id="feed"></div><button class="ffil gl press" id="ffil" hidden aria-label="Фильтры"></button><div class="gbar" id="gbar" hidden></div><div class="dots" id="dots"></div></section>
 <section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div class="rec-h" id="recH"><span>Шуршуня</span><i>советует</i></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><button class="luck-go" id="luckGo"><span class="lg-t"><b>Книга для тебя</b><small>Шуршуня выберет одну - под твой вкус</small><i class="lg-cta">Выбрать <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></i></span><span class="lg-fan" id="lgFan"></span></button><div id="trend"></div><div id="newAu" hidden></div></div></section>
-<section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><div class="shelves-top"><button class="add-in press" id="addIn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Поставить книгу</button></div><div class="pills" id="pills"></div><div class="grid" id="grid"></div><h3 class="shelf-h stat-h">Статистика</h3><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
+<section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><div class="shelves-top"><button class="add-in press" id="addIn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Поставить книгу на полку</button></div><div class="pills" id="pills"></div><div class="grid" id="grid"></div><h3 class="shelf-h stat-h">Статистика</h3><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
 
 <div class="bottom"><nav class="dock gl" aria-label="Разделы"><i class="lens lensy" id="lens"></i>
   
@@ -4621,7 +4670,7 @@ function drawCol(keepFlow){
   {const dg=colF==="diary",cvx=$("#cviews"),ov=$("#oldv");$("#grid").classList.toggle("diary",dg);if(cvx)cvx.hidden=dg;if(ov)ov.hidden=dg;
    if(dg){$("#grid").innerHTML=diaryPage();const ds=$("#dstripB");if(ds)ds.innerHTML="";if(!keepFlow)drawFlow();drawNewAu();drawTrend();return}}
   const G=gridList();$("#grid").innerHTML=G.map((x,i)=>`<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
-  {let ac=$("#acctL");if(!ac){ac=document.createElement("div");ac.id="acctL";const st=$(".shelves-top");st&&st.after(ac)}ac.innerHTML=acctLine()}{let ds=$("#dstripB");if(!ds){ds=document.createElement("div");ds.id="dstripB";($("#oldv")||$("#grid")).after(ds)}ds.innerHTML=colF==="read"&&!VIEW?diaryStrip():""}if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
+  {let hc=$("#hsCard");if(!hc){hc=document.createElement("div");hc.id="hsCard";const sm=$("#sumScroll .stat-h")||$("#sumMore");sm&&sm.before(hc)}hc.innerHTML=hsCan()?`<button class="hs-card" data-hs-any><img src="icons/icon-512.png?v=5" alt=""><span><b>Нора на экране «Домой»</b><small>Иконка на телефоне - открывается в одно касание</small></span><i>Добавить</i></button>`:""}{let ac=$("#acctL");if(!ac){ac=document.createElement("div");ac.id="acctL";const st=$(".shelves-top");st&&st.after(ac)}ac.innerHTML=acctLine()}{let ds=$("#dstripB");if(!ds){ds=document.createElement("div");ds.id="dstripB";($("#oldv")||$("#grid")).after(ds)}ds.innerHTML=colF==="read"&&!VIEW?diaryStrip():""}if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
 // «Новое от твоих авторов»: свежие книги (этот и прошлый год) авторов, которых человек оценил на 4–5, и ещё не на полках
 function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a).map(b=>norm(b.a)));if(!fav.size)return [];
   const W=wantNorms(),seen=new Set(),out=[];for(const b of ALLB()){if(!b.y||b.y<YNOW-1||!b.a||!fav.has(norm(b.a)))continue;const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt)||seen.has(nt)||dismissed.has(b.id))continue;seen.add(nt);out.push(b);if(out.length>=8)break}
@@ -5664,26 +5713,41 @@ addEventListener("appinstalled",()=>HS.set("done",1));
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent),isAndroid=/Android/.test(navigator.userAgent);
 function hsDue(){if(VIEW||HS.get("done")||HS.get("never"))return false;if((HS.get("shows")||0)>=3)return false;
   const days=(Date.now()-HS.get("first"))/864e5;
-  if(!TG){if((HS.get("opens")||0)<2)return false;try{const D=DATA();if(D.read().length+D.want().length<5)return false}catch(e){return false}}   // без Telegram установка особенно нужна — предлагаем уже со второго захода
-  else if(days<7||(HS.get("opens")||0)<4)return false;if(Date.now()-(HS.get("last")||0)<21*864e5)return false;return true}
+  if(TG&&(days<1||(HS.get("opens")||0)<2))return false;   // без Telegram предлагаем уже в первый заход, в Telegram - со второго дня
+  if(Date.now()-(HS.get("last")||0)<7*864e5)return false;return true}
 function hsCheck(){if(!hsDue())return;if(standalone()){HS.set("done",1);return}
   if(TG&&TG.checkHomeScreenStatus){try{TG.checkHomeScreenStatus(st=>{if(st==="added"){HS.set("done",1);return}if(st==="missed")hsShow("tg");else if(st==="unsupported")return;else hsShow("tg")})}catch(e){}return}
   if(TG)return;hsShow("web")}
 const hsEl=document.createElement("div");hsEl.className="hsb";$("#app").appendChild(hsEl);
+// «Нора на экране Домой»: плашка как у больших приложений + наглядная инструкция с картинками интерфейса телефона
+const HS_SHARE='<svg viewBox="0 0 24 24"><path d="M12 3.5v11"/><path d="M8 7.5l4-4 4 4"/><path d="M7 10.5H6a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 6 20.5h12a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-1.5-1.5h-1"/></svg>',
+  HS_PLUS='<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8.5v7M8.5 12h7"/></svg>',
+  HS_DOTS='<svg viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="18.5" r="1.4"/></svg>';
 function hsShow(mode){HS.set("last",Date.now());HS.set("shows",(HS.get("shows")||0)+1);
-  hsEl.innerHTML=`<img src="icons/icon-512.png?v=5" alt=""><div class="hs-tx"><b>Нора на экране «Домой»</b><span>Открывается в одно касание, как обычное приложение.</span></div>
-   <div class="hs-acts"><button class="btn w" data-hs-go>${mode==="tg"||bip?"Добавить":"Как добавить"}</button><button class="hs-no" data-hs-later>Не сейчас</button></div><button class="hs-x" data-hs-never aria-label="Больше не показывать">Больше не показывать</button>`;
+  hsEl.innerHTML=`<img src="icons/icon-512.png?v=5" alt=""><div class="hs-tx"><b>Нора</b><span>Иконка на экране телефона - открывается как приложение</span></div>
+   <button class="hs-go" data-hs-go>${mode==="tg"||bip?"Добавить":"Установить"}</button><button class="hs-cl" data-hs-later aria-label="Закрыть">${IC2.x}</button>`;
   hsEl.dataset.mode=mode;setTimeout(()=>hsEl.classList.add("on"),50)}
-const hsHide=()=>hsEl.classList.remove("on");
-hsEl.addEventListener("click",async e=>{const t=e.target;
-  if(t.closest("[data-hs-later]")){hsHide();return}
-  if(t.closest("[data-hs-never]")){HS.set("never",1);hsHide();return}
-  if(!t.closest("[data-hs-go]"))return;hsHide();
-  if(hsEl.dataset.mode==="tg"&&TG.addToHomeScreen){try{TG.onEvent&&TG.onEvent("homeScreenAdded",()=>HS.set("done",1));TG.addToHomeScreen()}catch(x){}return}
+const hsHide=()=>hsEl.classList.remove("on");window.noraHS=hsShow;
+async function hsInstall(mode){
+  if((mode==="tg"||(TG&&!mode))&&TG&&TG.addToHomeScreen){try{TG.onEvent&&TG.onEvent("homeScreenAdded",()=>HS.set("done",1));TG.addToHomeScreen()}catch(x){}return}
   if(bip){bip.prompt();try{const r=await bip.userChoice;if(r.outcome==="accepted")HS.set("done",1)}catch(x){}bip=null;return}
-  vOpen(`<h3 class="vh">Нора на экране «Домой»</h3><ol class="hs-steps">${isIOS?`<li>Нажми кнопку «Поделиться» <span class="hs-ic">⬆</span> внизу экрана Safari.</li><li>Пролистай вниз и выбери «На экран „Домой“».</li><li>Нажми «Добавить» — иконка Норы появится рядом с другими приложениями.</li>`
-    :isAndroid?`<li>Открой меню браузера — три точки вверху справа.</li><li>Выбери «Добавить на главный экран» или «Установить приложение».</li><li>Подтверди — иконка Норы появится на рабочем столе.</li>`
-    :`<li>Открой меню браузера.</li><li>Выбери «Установить» или «Добавить на главный экран».</li><li>Подтверди — Нора появится среди приложений.</li>`}</ol>`)});
+  const icon=`<span class="hsi-app"><img src="icons/icon-512.png?v=5" alt=""><small>Нора</small></span>`;
+  const steps=isIOS?[["Нажми «Поделиться» внизу Safari",`<div class="hsi-bar"><i></i><i></i><b class="hl">${HS_SHARE}</b><i></i><i></i></div>`],
+      ["Выбери «На экран «Домой»»",`<div class="hsi-menu"><div><span>Скопировать</span></div><div class="hl"><span>На экран «Домой»</span>${HS_PLUS}</div><div><span>Добавить в закладки</span></div></div>`],
+      ["Нажми «Добавить» - готово",`<div class="hsi-home"><i></i><i></i>${icon}<i></i></div>`]]
+    :[["Открой меню браузера",`<div class="hsi-top"><span>nora-books.ru</span><b class="hl">${HS_DOTS}</b></div>`],
+      ["Выбери «Установить приложение»",`<div class="hsi-menu"><div><span>Новая вкладка</span></div><div class="hl"><span>Установить приложение</span>${HS_PLUS}</div><div><span>Настройки</span></div></div>`],
+      ["Подтверди - иконка на рабочем столе",`<div class="hsi-home"><i></i><i></i>${icon}<i></i></div>`]];
+  vOpen(`<div class="hsi"><img class="hsi-logo" src="icons/icon-512.png?v=5" alt=""><h3 class="vh">Нора на экране «Домой»</h3><p class="sy-note">Без Telegram и VPN: открывается с иконки, во весь экран, как обычное приложение.</p>
+   <div class="hsi-steps">${steps.map(([t,pic],i)=>`<div class="hsi-st"><div class="hsi-pic">${pic}</div><div class="hsi-t"><em>${i+1}</em>${t}</div></div>`).join("")}</div>
+   ${isIOS&&!/CriOS|FxiOS|YaBrowser/.test(navigator.userAgent)?"":isIOS?`<p class="sy-note">На iPhone добавить на экран можно только из Safari: открой nora-books.ru/app.html в Safari.</p>`:""}</div>`);
+  if(isIOS&&!TG){const ar=document.createElement("div");ar.className="hsi-arrow";ar.innerHTML=`<span>Кнопка «Поделиться» здесь</span><svg viewBox="0 0 24 24"><path d="M12 4v15M6 13l6 6 6-6"/></svg>`;$("#app").appendChild(ar);setTimeout(()=>ar.classList.add("on"),300);
+    const off=()=>{ar.remove();document.removeEventListener("click",off,true)};setTimeout(()=>document.addEventListener("click",off,true),400);setTimeout(off,9000)}}
+hsEl.addEventListener("click",e=>{const t=e.target;
+  if(t.closest("[data-hs-later]")){hsHide();return}
+  if(!t.closest("[data-hs-go]"))return;hsHide();hsInstall(hsEl.dataset.mode)});
+document.addEventListener("click",e=>{if(e.target.closest("[data-hs-any]")){tgHaptic();hsInstall(TG?"tg":"web")}});
+const hsCan=()=>!VIEW&&!standalone()&&!HS.get("done")&&!(TG&&!TG.addToHomeScreen);
 
 // внешние ссылки: внутри Telegram обычная ссылка не открывается — открываем через Telegram
 document.addEventListener("click",e=>{const a=e.target.closest("a[data-ext]");if(!a)return;const u=a.href;if(!TG)return;e.preventDefault();
