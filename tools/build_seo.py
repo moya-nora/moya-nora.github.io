@@ -209,7 +209,7 @@ q.addEventListener("focus",load,{once:true});if(location.hash==="#poisk")setTime
 var u=new URLSearchParams(location.search).get("q");if(u){q.value=u;load().then(function(){q.dispatchEvent(new Event("input"))})}
 q.addEventListener("input",function(){var v=nm(q.value).trim();if(v.length<2){box.innerHTML="";return}load().then(function(){var ws=v.split(/\s+/).map(function(w){return w.length>4?w.slice(0,w.length-1):w}),out=[];
 for(var i=0;i<D.length&&out.length<8;i++){var t=D[i][1];if(ws.every(function(w){return t.indexOf(w)>=0}))out.push(D[i][0])}
-box.innerHTML=out.map(function(x){return '<a href="'+x[2]+'"><b>'+x[0].replace(/</g,"&lt;")+'</b><span>'+x[1].replace(/</g,"&lt;")+(x[3]?" · "+x[3]:"")+'</span></a>'}).join("")+'<a class="sall" href="/app.html?app=1">Искать среди 100 000 книг в Норе →</a>'})})})();</script>"""
+box.innerHTML=out.map(function(x){return '<a href="'+x[2]+'"><b>'+x[0].replace(/</g,"&lt;")+'</b><span>'+x[1].replace(/</g,"&lt;")+(x[3]?" · "+x[3]:"")+'</span></a>'}).join("")+'<a class="sall" href="/app.html?app=1">Искать среди 100 000 книг в Норе</a>'})})})();</script>"""
 SN = """<!-- Cloudflare Web Analytics --><script defer type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "572d5eebd0c442bda32887c9f80bb139"}'></script><!-- End Cloudflare Web Analytics -->"""
 HEAD = f"""<link rel="icon" href="/icons/icon-192.png?v=5"><link rel="apple-touch-icon" href="/icons/icon-180.png?v=5"><meta name="theme-color" content="#05060A">
 <link rel="preload" href="/fonts/onest-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/cormorant-garamond-cyrillic-600-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -289,7 +289,7 @@ def rail(L, bare=False):
 
 
 def shelf(title, href, ds, L, all_txt="Все"):
-    return (f'<section class="shelf"><div class="shd"><h2><a href="{href}">{esc(title)}</a></h2><a class="all" href="{href}">{esc(all_txt)} →</a></div>'
+    return (f'<section class="shelf"><div class="shd"><h2><a href="{href}">{esc(title)}</a></h2><a class="all" href="{href}">{esc(all_txt)}</a></div>'
             + (f'<p class="ds">{esc(ds)}</p>' if ds else "") + rail(L, bare=True) + "</section>")
 
 
@@ -385,7 +385,7 @@ for b in cat_books:
             + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "")
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
             + WHERE(b)
-            + (f'<section class="like"><div class="shd"><h2>Понравилась книга?</h2><a class="all" data-sim href="/p/">Ещё похожие →</a></div>{rail(sim, bare=True)}</section>' if sim else "")
+            + (f'<section class="like"><div class="shd"><h2>Понравилась книга?</h2><a class="all" data-sim href="/p/">Ещё похожие</a></div>{rail(sim, bare=True)}</section>' if sim else "")
             + "</div></article>" + REVIEWS_JS
             + "</div>")
     bld = {"@context": "https://schema.org", "@type": "Book", "name": b["t"], "author": {"@type": "Person", "name": b["a"]}, "inLanguage": "ru",
@@ -480,7 +480,7 @@ for a_, out in sim_pages:
     back = BOOK_URL.get(id(a_))
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="/p/">Что почитать после</a></div>'
             f'<div class="ph"><div><div class="kick">Что почитать после</div><h1>Книги, похожие на «{esc(a_["t"])}»</h1><p class="lead">{esc(lead)}</p>'
-            + (f'<p class="lead" style="margin-top:8px"><a href="/{back}">О книге «{esc(a_["t"])}» →</a></p>' if back else "")
+            + (f'<p class="lead" style="margin-top:8px"><a href="/{back}">О книге «{esc(a_["t"])}»</a></p>' if back else "")
             + f'</div><div class="cnt gl">{len(out)} книг</div></div>'
             f'<div class="grid">{"".join(sim_card(x, w, i + 1) for i, (x, w) in enumerate(out))}</div>{FINAL}</div>')
     urls.append(page(SIM_URL[id(a_)], f"Книги, похожие на «{a_['t']}»",
@@ -493,7 +493,7 @@ for b in cat_books:
     fp = os.path.join(ROOT, BOOK_URL[id(b)])
     h = open(fp, encoding="utf-8").read()
     su = SIMB.get(BOOK_URL[id(b)])
-    h = h.replace('<a class="all" data-sim href="/p/">Ещё похожие →</a>', f'<a class="all" href="/{su}">Ещё похожие →</a>' if su else "")
+    h = h.replace('<a class="all" data-sim href="/p/">Ещё похожие</a>', f'<a class="all" href="/{su}">Ещё похожие</a>' if su else "")
     open(fp, "w", encoding="utf-8").write(h)
 # оглавление «Что почитать после»
 groups = {}
@@ -590,7 +590,7 @@ FAQ = [("Это бесплатно?", "Да. Все полки, советы, ф
        ("Как перенести книги из Литрес, Яндекс Книг или LiveLib?", "В Норе нажми «Поставить книгу на полку» → «Перенести книги»: можно вставить список или выгрузку, и Нора разложит книги сама."),
        ("Мои данные кто-то увидит?", "Только друзья, которых ты добавишь, и только то, что ты разрешишь. Подробнее — в политике конфиденциальности.")]
 def seed_card(b):
-    return f'<a class="bk" href="/{SIM_URL[id(b)]}">{cv(b)}<div class="t">{esc(b["t"])}</div><div class="a">похожие книги →</div></a>'
+    return f'<a class="bk" href="/{SIM_URL[id(b)]}">{cv(b)}<div class="t">{esc(b["t"])}</div><div class="a">похожие книги</div></a>'
 
 
 after = [b for g in groups.values() for b in g]
@@ -599,12 +599,12 @@ HOME_SHELVES = [("novogodnee-nastroenie", "Книги с запахом манд
 HOME_SHELVES = [(p, t) for p, t in HOME_SHELVES if get(p)]
 lead_of = lambda p: next(l for q, _, l, _ in coll_data if q == p)
 title_of = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
-home = (f'<div class="wrap"><section class="hero2" id="poisk"><h1>Найди свою <em>следующую</em> книгу</h1>'
+home = (f'<div class="wrap"><section class="hero2" id="poisk"><h1>Найди свою следующую книгу</h1>'
         f'<p class="lead">Подборки по настроению, новинки и книги, похожие на любимые.</p>'
         f'<div class="sbox gl">{ic("search")}<input id="q" type="search" placeholder="Название или автор" autocomplete="off" enterkeyhint="search"></div><div class="sres" id="sres"></div>'
         f'{chips("")}</section>'
         + "".join(shelf(t or title_of(p), f"/c/{p}.html", "", sorted(get(p)[:28], key=lambda b: not img_of(b))[:14]) for p, t in HOME_SHELVES)
-        + '<a class="morec" href="/c/">Посмотреть все подборки →</a>'
+        + '<a class="morec" href="/c/">Посмотреть все подборки</a>'
         + f'{FINAL}</div>' + SEARCH_JS)
 HOME_LD = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Нора", "alternateName": ["Моя Нора", "Нора — книжный советник", "Нора книги", "moya-nora"],
             "url": SITE + "/", "inLanguage": "ru", "potentialAction": {"@type": "SearchAction", "target": SITE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
