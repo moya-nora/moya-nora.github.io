@@ -6033,7 +6033,7 @@ async function nickAuto(){if(NICKBUSY||VIEW||LS.get("zal.nick","")||needAuth()||
 setTimeout(nickAuto,7000);setInterval(nickAuto,60000);
 
 // статус аккаунта на «Полках»: видно, сохранены ли книги
-function acctLine(){if(VIEW||!NS.on)return "";if(needAuth())return `<button class="acct off" data-acct><i></i><span>Полки сохранены только на этом устройстве</span><b>Войти</b></button>`;
+function acctLine(){return "";if(needAuth())return `<button class="acct off" data-acct><i></i><span>Полки сохранены только на этом устройстве</span><b>Войти</b></button>`;
   return ""}
 document.addEventListener("click",e=>{if(e.target.closest("[data-acct]")){tgHaptic();authMode=(NS.email||LS.get("zal.sync.was",0))?"in":"up";authShow()}});
 function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};LS.set("zal.cards",(+LS.get("zal.cards",0)||0)+1);goal(L==="friend"?"card_friend":"card");cardX=x;cardL=L;ambFor(x);bkcDraw();
