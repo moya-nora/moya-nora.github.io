@@ -122,14 +122,35 @@ for gid, gname, ng, tags in pick:
     print(f"  {gname}: {got}", flush=True)
 
 DRUG = []
+# прошлые аннотации и тропы берём из прежнего файла - заново запрашиваем только новые книги (иначе не успеваем за 5,5 часа)
+OLD = {}
+try:
+    _o = json.load(open(OUT, encoding="utf-8"))
+    for r in _o["b"]:
+        if len(r) > 14 and r[14]:
+            OLD[r[0]] = (r[14], [_o["tg"][k] for k in r[5] if _o["tg"][k].startswith("троп:")])
+    for t_, a_ in json.load(open(os.path.join(os.path.dirname(OUT), "drugmark.json"), encoding="utf-8")):
+        DRUG.append([t_, a_])
+except Exception as e:  # noqa: BLE001
+    print("  нет прежнего файла:", e)
+T0 = time.time()
 # аннотации — отдельным запросом к книге (целиком, до 1500 знаков по концу предложения)
 L = sorted(books.values(), key=lambda b: -b["n"])
 for i, b in enumerate(L):
+    old = OLD.get("l" + str(b["id"]))
+    if old:
+        b["d"] = old[0]
+        for tr in old[1]:
+            if tr not in b["tags"]:
+                b["tags"].append(tr)
+        continue
+    if time.time() - T0 > 3.2 * 3600:  # не хватает времени - остальные книги без аннотации, допишутся в следующий раз
+        continue
     d = get(f"arts/{b['id']}")
     x = ((d or {}).get("payload") or {}).get("data") or {}
     ann = clean(x.get("html_annotation") or x.get("annotation") or "")
     # предупреждение о наркотиках по закону (с 1 марта 2026) убираем из текста описания, но запоминаем книгу - в Норе оно показывается мелко внизу карточки
-    if re.search(r"НЕЗАКОННОЕ ПОТРЕБЛЕНИЕ НАРКОТИЧЕСКИХ СРЕДСТВ", ann, re.I):
+    if re.search(r"НЕЗАКОННОЕ ПОТРЕБЛЕНИЕ НАРКОТИЧЕСКИХ СРЕДСТВ", ann, re.I) and [b["t"], b["a"]] not in DRUG:
         DRUG.append([b["t"], b["a"]])
     ann = re.sub(r"НЕЗАКОННОЕ ПОТРЕБЛЕНИЕ НАРКОТИЧЕСКИХ СРЕДСТВ[^.]*?ОТВЕТСТВЕННОСТЬ\.?\s*", "", ann, flags=re.I).strip()
     lab = " | ".join([t.get("name", "") for t in x.get("tags") or []] + [g.get("name", "") for g in x.get("genres") or []])
