@@ -4346,7 +4346,7 @@ function loadBig(){if(BIGP)return BIGP;
     const CYR=/[а-яё]/i,HV2=new Set(["мрачное","война","хоррор","грустное","жутковатое","антиутопия","постапокалипсис"]),HV0=new Set(["юмор","смешное","сказка","уют","светлое","тёплое"]);
     const step=()=>{const end=Math.min(R.length,i+6000);
       for(;i<end;i++){const [w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o,im,an]=R[i],au=A[ai]||["",-1],a=au[0],n=norm(t);
-        const ex=CATT[n];if(ex&&(i>=NB||!ex.big)&&(!ex.a||norm(ex.a).includes(norm(String(a).split(" ").slice(-1)[0]))))continue;
+        const ex=CATT[n];if(ex&&(i>=NB||!ex.big)&&(!ex.a||norm(ex.a).includes(norm(String(a).split(" ").slice(-1)[0])))){if(im&&!ex.img&&i>=NB)ex.img=im;continue}
         const tags=arr(tc,tg,TGS),g=G[gi]||"modern",p=PAL[hsh(t)%PAL.length];
         const b={id:"q"+w,t,a,c:ci>=0?C[ci]:(au[1]>=0?C[au[1]]:""),y:y||null,g,tags,heavy:g==="kids"||tags.some(x=>HV0.has(x))?0:tags.some(x=>HV2.has(x))?2:1,
           len:pg?(pg<260?"short":pg>520?"long":"mid"):undefined,q,acclaim:arr(ac,aw,AW),ann:"",when:"",f:E,big:1,sl,bg:p[0],fg:p[1]};
@@ -4418,8 +4418,8 @@ const flClean=d=>{d=String(d||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"
 const EDS={};
 async function editionsOf(id){if(EDS[id])return EDS[id];const j=await flj("/work/"+id+"/extended");const L=[];Object.values(j.editions_blocks||{}).forEach(b=>(b.list||[]).forEach(e=>L.push(e)));
   const ok=L.filter(e=>e.pic_num>0&&(!e.lang_code||e.lang_code==="ru")&&!e.plandate).sort((a,b)=>(b.year||0)-(a.year||0)||(a.type===10?-1:1));return EDS[id]=ok}
-async function bestEdition(id){if(!id)return null;const L=await editionsOf(id);if(!L.length)return null;const fresh=L.filter(e=>(e.year||0)>=2021);
-  if(!fresh.length)return null;fresh.sort((a,b)=>(b.year||0)-(a.year||0));const single=fresh.filter(e=>e.type===10);return single.length?single[0].edition_id:null}
+async function bestEdition(id,t){if(!id)return null;const L=await editionsOf(id);if(!L.length)return null;const fresh=L.filter(e=>(e.year||0)>=2021);
+  if(!fresh.length)return null;fresh.sort((a,b)=>(b.year||0)-(a.year||0));const single=fresh.filter(e=>e.type===10);if(single.length)return single[0].edition_id;const nt=norm(t||"");const named=nt.length>=4?fresh.filter(e=>norm(e.name||"").startsWith(nt)):[];return named.length?named[0].edition_id:null}
 async function wikiImg(q){const j=await (await fetch("https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=5&gsrsearch="+encodeURIComponent(q)+"&prop=pageimages&piprop=thumbnail&pithumbsize=500&pilicense=any")).json();
   const p=Object.values((j.query||{}).pages||{}).sort((a,b)=>a.index-b.index).find(p=>p.thumbnail);return p?p.thumbnail.source:""}
 // null — не удалось связаться (повторим), "" — обложки нет, иначе адрес
@@ -4429,7 +4429,7 @@ async function findImg(x){try{
     const pick=s=>{const L=(Array.isArray(s)?s:[]).filter(pic),ex=L.filter(w=>tn(w)===nt);return L.find(w=>auOk(w)&&tn(w)===nt)||L.find(w=>auOk(w)&&tOk(w))||(ex.length===1&&nt.length>=8?ex[0]:null)};/* «Харди» и «Гарди» — один автор: точное длинное название без двойников тоже подходит */
     let w=pick(await flj("/search-works?q="+encodeURIComponent(x.t)+"&page=1&onlymatches=1"));
     if(!w){const t2=String(x.t).replace(/[«»"'’.,:;!?()—–-]+/g," ").replace(/\s+/g," ").trim();if(t2!==x.t||x.a)w=pick(await flj("/search-works?q="+encodeURIComponent(t2+(x.a?" "+String(x.a).split(" ").slice(-1)[0]:""))+"&page=1"))}
-    if(w){const ed=await bestEdition(w.work_id);return ed?IMGFL(ed):""}
+    if(w){const ed=await bestEdition(w.work_id,x.t);return ed?IMGFL(ed):""}
     return ""}
   return await wikiImg((x.t+" "+(x.y||"")+(x.s?" сериал":" фильм")).trim())}catch(e){return null}}
 // рисованная обложка рисуется в своём размере и подгоняется под ячейку
@@ -4536,7 +4536,7 @@ const POPT=new Set("Гарри Поттер и философский камен
 const popOf=b=>(POPT.has(b._n||norm(b.t))?3:0)+Math.min(1.5,Math.log2(1+(b.sl||0))*.2)+(b.acclaim&&b.acclaim.length?.5:0);
 const gpref=()=>{const v=LS.get("zal.gpref",[]);return Array.isArray(v)?v:[]};
 let IDF=null;const idf=t=>{if(!IDF){IDF={};const N=CAT.length;CAT.forEach(b=>(b.tags||[]).forEach(x=>IDF[x]=(IDF[x]||0)+1));for(const k in IDF)IDF[k]=Math.max(.25,Math.min(1.6,Math.log(N/IDF[k])/3))}return IDF[t]||1.2};
-function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;{const GP=gpref();if(GP.length&&GP.some(g=>genPass(b,g)))s+=4}
+function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;{const GP=gpref();try{if(GP.length&&GP.some(g=>genPass(b,g)))s+=4}catch(e){}}
   (b.tags||[]).forEach(t=>{s+=2*(q.tags[t]||0)*idf(t)+1.4*(TASTE.t[t]||0)*idf(t)});s+=1.2*(TASTE.g[b.g]||0)+1.5*(TASTE.a[b.a]||0);
   const w=Math.max(0,1-(+LS.get("zal.fdn",0)||0)/90);if(w>0){s+=w*3.2*popOf(b);if(!imgOf(b)&&!isCatB(b))s-=w*3}
   return s+Math.random()*2.2}
@@ -4726,10 +4726,16 @@ let TRB=null,TRK=-1,BTB=null,BTK=-1;
 function listByPairs(P){const L=ALLB(),by=new Map();L.forEach(b=>{const n=b._n||norm(b.t);let v=by.get(n);if(!v)by.set(n,v=[]);v.push(b)});
   return P.map(([t,s])=>{const n=norm(t),sn=norm(s),ok=b=>norm(b.a||"").includes(sn);let c=(by.get(n)||[]).find(ok);if(!c)for(const [k,v] of by){if(k.startsWith(n)&&(c=v.find(ok)))break}return c}).filter(Boolean)}
 // «Новинки, которые уже полюбили»: книги прошлого и этого года с большим числом оценок читателей; не больше одной книги автора и не больше пяти одного жанра
-let NLB=null,NLK=-1;
-function newLoved(){const L=ALLB();if(NLB&&NLK===L.length)return NLB;NLK=L.length;const C=L.filter(b=>(b.y||0)>=YNOW-1&&(b.sl||0)>=300&&b.g!=="nonfic"&&b.g!=="kids"&&!(b.tags||[]).includes("самиздат")&&!(()=>{const m=String(b.t).match(/(?:книга|том|часть)\s*(\d+)|-(\d+)\b/i);return m&&+(m[1]||m[2])>1})()).sort((a,b)=>(b.sl||0)-(a.sl||0));
-  const au=new Set(),gc={},out=[];for(const b of C){const k=norm(String(b.a||"").split(" ").slice(-1)[0]);const g=(b.tags||[]).some(t=>t==="любовное фэнтези"||t==="ромэнтези")?"rf":b.g;if(au.has(k)||(gc[g]||0)>=5)continue;au.add(k);gc[g]=(gc[g]||0)+1;out.push(b);if(out.length>=18)break}
-  return NLB=out}
+let NLB=null,NLK="";
+// жанр, который человек читает чаще всего (по полкам и выбранным жанрам); без полок - современная проза
+const NL_G=[["modern","Новинки современной прозы"],["detective","Новые детективы"],["thriller","Новые триллеры"],["fantasy","Новинки фэнтези"],["romantasy","Новинки ромэнтези"],["romance","Новые любовные романы"],["scifi","Новинки фантастики"],["ya","Новинки young adult"],["histnov","Новые исторические романы"],["horror","Новинки ужасов"],["nonfic","Новинки нон-фикшн"]];
+function nlGenre(){const cnt={};const add=(g,w)=>{cnt[g]=(cnt[g]||0)+w};gpref().forEach(g=>add(g,3));
+  [...BOOKS,...want].forEach(b=>{const c=catOf(b)||b.src||b;for(const [g] of NL_G){try{if(genPass(c,g)){add(g,1);break}}catch(e){}}});
+  const best=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];return best&&NL_G.find(x=>x[0]===best[0])?best[0]:"modern"}
+function newLoved(){const L=ALLB(),g=nlGenre(),key=L.length+"|"+g;if(NLB&&NLK===key)return NLB;NLK=key;
+  const C=L.filter(b=>(b.y||0)>=YNOW-1&&(b.sl||0)>=150&&b.g!=="kids"&&!(b.tags||[]).includes("самиздат")&&imgOf(b)&&(()=>{try{return genPass(b,g)}catch(e){return false}})()&&(g==="romantasy"||g==="romance"||!(b.tags||[]).some(t=>t==="любовное фэнтези"||t==="троп:popadan"||t==="любовный роман"))&&!(()=>{const m=String(b.t).match(/(?:книга|том|часть)\s*(\d+)|-(\d+)\b/i);return (m&&+(m[1]||m[2])>1)||/часть (втор|трет|четв)|книга (втор|трет)/i.test(b.t)})()).sort((a,b)=>(b.sl||0)-(a.sl||0));
+  const au=new Set(),out=[];for(const b of C){const k=norm(String(b.a||"").split(" ").slice(-1)[0]);if(au.has(k))continue;au.add(k);out.push(b);if(out.length>=16)break}
+  NLB=out;NLB.label=(NL_G.find(x=>x[0]===g)||NL_G[0])[1];return NLB}
 function booktokBooks(){const n=ALLB().length;if(BTB&&BTK===n)return BTB;BTK=n;return BTB=listByPairs(BOOKTOK)}
 function trendBooks(){const L=ALLB();if(TRB&&TRK===L.length)return TRB;TRK=L.length;const by=new Map();
   L.forEach(b=>{const n=b._n||norm(b.t);let v=by.get(n);if(!v)by.set(n,v=[]);v.push(b)});
@@ -4747,10 +4753,10 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   const W=wantNorms(),seen=new Set();try{(recList()||[]).forEach(x=>seen.add(norm(x.t)))}catch(e){}
   const free=b=>{const n=b._n||norm(b.t);return !READ.has(n)&&!W.has(n)&&!dismissed.has(b.id)&&!seen.has(n)};
   const take=(arr,k=14)=>{const out=[],au=new Set();for(const b of arr){if(out.length>=k)break;if(!free(b)||au.has(b.a))continue;au.add(b.a);out.push(b)}out.forEach(b=>seen.add(b._n||norm(b.t)));return out};
-  const GP=gpref(),hit=b=>GP.some(g=>genPass(b,g)),res=[];
+  const GP=gpref(),hit=b=>{try{return GP.some(g=>genPass(b,g))}catch(e){return false}},res=[];
   // в тренде: свои жанры первыми (одного автора можно дважды — там серии)
   {const tr=trendBooks().filter(free).slice(0,16);tr.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["trend","В тренде сейчас","Громкие книги, о которых сейчас говорят",tr])}
-  {const bt=newLoved().filter(free).slice(0,16);bt.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["newlove","Новинки с высокими оценками","Вышли недавно - и у них уже тысячи оценок читателей",bt])}
+  {const NL=newLoved(),bt=NL.filter(free).slice(0,16);bt.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["newlove",NL.label,"Вышли за последний год, и у них уже сотни и тысячи оценок читателей",bt])}
   if(BOOKS.length||want.length||GP.length){const q=tasteQ();res.push(["like","Тебе понравится","По твоим полкам и оценкам",take(topK(L,120,b=>free(b)?feedScore(b,q)+(imgOf(b)?2:0):null).map(z=>z.b))])}
   const mix=arr=>arr.map(b=>({b,s:(hit(b)?1:0)+Math.random()})).sort((x,y)=>y.s-x.s).map(z=>z.b);
   res.push(["mand","Книги с запахом мандаринов","Новый год, Рождество и снег за окном",take(mix(listBooks(MAND_L)))]);
@@ -6036,13 +6042,13 @@ function dStep(){const s=DF.step;let h="";
   if(s===3)h=`<div class="dfh"><div class="dfk">4 из 5</div><button class="dfx2" data-dfclose aria-label="Закрыть">${IC2.x}</button></div><h3 class="dft">Мой отзыв</h3><p class="dfs" id="dfWc">Без ограничений. Черновик сохраняется сам</p><textarea id="dfN" class="dfta" placeholder="Что зацепило, что нет, кому бы посоветовала">${esc(DF.n)}</textarea>
     <div class="rv-vis" id="dfVis"><button data-dfv="1" class="${DF.pub?"on":""}">Видят друзья</button><button data-dfv="0" class="${DF.pub?"":"on"}">Только я</button></div>`+dNav();
   if(s===4){const Q=bQuotes(DF.b);h=dHead("Цитаты","Сколько угодно, любой длины. Можно пропустить")+Q.map(q=>`<div class="dqc">«${esc(q.text)}»${q.page?`<small>стр. ${esc(q.page)}</small>`:""}<button class="dqx" data-dfqx="${q.ts}" aria-label="Удалить">${IC2.x}</button></div>`).join("")+
-    `<textarea id="dfQ" class="sy-in dfqt" rows="2" placeholder="Фраза, которую хочется запомнить"></textarea><div class="dfqr"><input class="sy-in" id="dfQp" inputmode="numeric" placeholder="Стр."><button class="btn" data-dfqadd>+ Добавить цитату</button></div>`+dNav(true)}
+    `<textarea id="dfQ" class="sy-in dfqt" rows="2" placeholder="Фраза, которую хочется запомнить"></textarea><div class="dfqr"><button class="btn" data-dfqadd>+ Добавить цитату</button></div>`+dNav(true)}
   vOpen(`<div class="dflow s${s}">${h}</div>`,true);$("#vsheet").classList.add("ontop");
   const t=$("#dfN");if(t){const wc=()=>{const n=(t.value.trim().match(/\S+/g)||[]).length;$("#dfWc").textContent=n?`${n} ${plural(n,"слово","слова","слов")} · черновик сохранён`:"Без ограничений. Черновик сохраняется сам"};
     t.addEventListener("input",()=>{DF.n=t.value;const d=LS.get("zal.ddraft",{});d[DF.b.id]=t.value;LS.set("zal.ddraft",d);wc()});wc();setTimeout(()=>{try{t.focus()}catch(e){}},300)}
   const q=$("#dfQ");if(q)autoGrow(q)}
 function dCollect(){const h=$("#dfHero");if(h)DF.dp.hero=h.value.trim();const t=$("#dfN");if(t)DF.n=t.value;const q=$("#dfQ");if(q&&q.value.trim())dQAdd()}
-function dQAdd(){const q=$("#dfQ");if(!q||!q.value.trim())return;const b=DF.b;quotes.push({ts:Date.now(),book:b.id||b.t,bt:b.t,ba:b.a,text:q.value.trim(),page:($("#dfQp").value||"").trim()});saveQuotes();try{renderQuotes()}catch(e){}tgHaptic()}
+function dQAdd(){const q=$("#dfQ");if(!q||!q.value.trim())return;const b=DF.b;quotes.push({ts:Date.now(),book:b.id||b.t,bt:b.t,ba:b.a,text:q.value.trim(),page:""});saveQuotes();try{renderQuotes()}catch(e){}tgHaptic()}
 function dFinish(){const b=DF.b,ch={dm:DF.dm.slice(0,3),dp:DF.dp,n:String(DF.n||"").trim(),pub:DF.pub?1:0};if(DF.r)ch.r=DF.r*2;if(!b.dd)ch.dd=new Date().toISOString().slice(0,10);
   noteLearn([ch.n,...ch.dm].join(" "),ch.r!=null?ch.r:b.r);bSave(b,ch);const d=LS.get("zal.ddraft",{});delete d[b.id];LS.set("zal.ddraft",d);goal("diary");tgHaptic("success");
   const top=DF.top;DF=null;try{rerenderAll()}catch(e){}if(BKC){try{bkcDraw();bkcFit()}catch(e){}}if(SCREEN==="sum")drawCol(true);dOpen(b,top);toast("Записано в дневник")}
