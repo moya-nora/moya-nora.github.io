@@ -6136,7 +6136,7 @@ const _openAddBook=openAddBook;openAddBook=function(target,pre){_openAddBook(tar
 // ---------- запуск ----------
 if(VIEW){document.body.classList.add("viewing");REALM="books"}
 setRealmUI(REALM);pickCol();buildFeed();
-show((()=>{try{const o=JSON.parse(localStorage.getItem("zal.sync.scr")||"null");if(o&&Date.now()-o.t<20*60e3&&["col","feed","fr","sum"].includes(o.s)&&LS.get("zal.onb",0))return o.s}catch(e){}return "col"})());
+show((()=>{try{const o=JSON.parse(localStorage.getItem("zal.sync.scr")||"null");if(o&&Date.now()-o.t<15e3&&["col","feed","fr","sum"].includes(o.s)&&LS.get("zal.onb",0))return o.s}catch(e){}return "col"})());
 if(VIEW){const sp=$("#splash");if(sp)sp.remove()}else splashStart();
 // заранее подтягиваем обложки всего, что лежит на полках (обеих)
 setTimeout(()=>{try{[BK,FM].forEach(D=>{D.want().forEach(wantImg);D.read().forEach(wantImg)})}catch(e){}},1200);
