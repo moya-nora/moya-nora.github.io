@@ -5,6 +5,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          curl -sS -m 30 -D - -H 'Origin: https://nora-books.ru' 'https://api.litres.ru/foundation/api/search?q=%D0%9A%D0%B5%D0%BD%20%D0%A0%D0%BE%D0%B1%D0%B8%D0%BD%D1%81%D0%BE%D0%BD&types=text_book&limit=5' | head -c 2500
-          echo; echo ===
-          curl -sS -m 30 -I -X OPTIONS -H 'Origin: https://nora-books.ru' -H 'Access-Control-Request-Method: GET' 'https://api.litres.ru/foundation/api/search?q=test' | head -20
+          for q in "%D0%9A%D0%B5%D0%BD%20%D0%A0%D0%BE%D0%B1%D0%B8%D0%BD%D1%81%D0%BE%D0%BD" "%D0%93%D0%BE%D0%BB%D0%B4%D1%80%D0%B0%D1%82%D1%82%20%D1%86%D0%B5%D0%BB%D1%8C"; do
+          curl -sS -m 30 -D - -H 'Origin: https://nora-books.ru' "https://www.googleapis.com/books/v1/volumes?q=$q&maxResults=8&printType=books&langRestrict=ru" | grep -i 'access-control-allow-origin\|"title"\|"authors"\|HTTP/' -A1 | head -40; echo ====; done

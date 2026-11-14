@@ -4943,8 +4943,15 @@ function fuzzyHits(q,k){const ws=String(q).toLowerCase().replace(/ё/g,"е").spl
   const out=[];for(const w of ws){if(w.length<4)continue;const lim=w.length>6?2:1;for(const [sur,L] of AUIX){if(sur[0]!==w[0]||Math.abs(sur.length-w.length)>lim)continue;if(lev(w,sur)>lim)continue;
       const rest=ws.filter(x=>x!==w);for(const b of L){const t=b._n||norm(b.t);if(rest.length&&!rest.some(r=>t.includes(r.slice(0,Math.max(3,r.length-1)))))continue;if(READ.has(t))continue;out.push(b)}}}
   return out.sort((a,b)=>(b.sl||0)-(a.sl||0)).slice(0,k)}
-async function onlineBooks(q){const [w,a]=await Promise.all([libWorks(q).catch(()=>[]),libAuthors(q).catch(()=>[])]);
-  return {works:(w||[]).slice(0,16).map(x=>({t:x.t,a:x.a,y:x.y,kind:"fl",_fl:x._fl})),au:(a||[]).slice(0,4).map(x=>({id:x.id,name:x.name}))}}
+// Google Книги - запасной поиск по всем книгам мира (нон-фикшн, бизнес, наука, учебники), когда в каталоге и на Фантлабе мало
+async function gbooks(q){const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),7000);try{
+  const j=await (await fetch("https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(q)+"&maxResults=20&printType=books&langRestrict=ru",{signal:ctl.signal})).json();
+  const seen=new Set();return (j.items||[]).map(it=>{const v=it.volumeInfo||{};if(!v.title||!(v.authors||[]).length)return null;const t=v.title+(v.subtitle&&v.title.length<18?". "+v.subtitle:""),a=v.authors[0],k=norm(v.title)+norm(a);if(seen.has(k))return null;seen.add(k);
+    const im=v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail);return {t:v.title,a,y:+(String(v.publishedDate||"").slice(0,4))||null,kind:"gb",ds:String(v.description||"").replace(/<[^>]+>/g,"").slice(0,900),img:im?im.replace(/^http:/,"https:").replace("&edge=curl",""):"",pg:v.pageCount||undefined}}).filter(Boolean)}
+  catch(e){return []}finally{clearTimeout(tm)}}
+async function onlineBooks(q){const [w,a,g]=await Promise.all([libWorks(q).catch(()=>[]),libAuthors(q).catch(()=>[]),gbooks(q)]);
+  const W=(w||[]).slice(0,16).map(x=>({t:x.t,a:x.a,y:x.y,kind:"fl",_fl:x._fl})),seen=new Set(W.map(x=>norm(x.t)));
+  return {works:[...W,...g.filter(x=>!seen.has(norm(x.t))).slice(0,12)],au:(a||[]).slice(0,4).map(x=>({id:x.id,name:x.name}))}}
 async function onlineSeries(q){const j=await (await fetch("https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=10&gsrsearch="+encodeURIComponent(q+" сериал")+"&prop=pageimages&piprop=thumbnail&pithumbsize=400&pilicense=any")).json();
   const out=[];Object.values((j.query||{}).pages||{}).sort((a,b)=>a.index-b.index).forEach(p=>{const m=p.title.match(/^(.*?)\s*\((мини-сериал|телесериал|сериал|мультсериал|аниме)(?:,\s*(\d{4}))?[^)]*\)$/i);if(!m)return;
     const x={_f:1,t:m[1],y:m[3]?+m[3]:null,s:1,img:p.thumbnail?p.thumbnail.source:"",kind:"wiki"};x.id="w"+hsh(norm(x.t)+(x.y||"")).toString(36);out.push(x)});return {works:out.slice(0,8),au:[]}}
