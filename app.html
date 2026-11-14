@@ -2189,6 +2189,15 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .add-in::before,#app .add-in::after{display:none!important}
 #app #colScroll,#app #sumScroll,#app #frScroll,#app .bkc .bkc-in,#app #vsh{overscroll-behavior-y:contain}
 body.sum #app #top,body.frs #app #top{background:none!important}
+#app .fr-priv i{color:var(--ink2)}
+#app .pv-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+#app .pv-row{display:flex;align-items:center;gap:12px;width:100%;padding:14px;border-radius:16px;background:rgba(255,255,255,.06);color:inherit;text-align:left}
+#app .pv-row span{flex:1;display:flex;flex-direction:column;gap:3px}
+#app .pv-row b{font-size:15px;font-weight:600}
+#app .pv-row small{font-size:12.5px;line-height:1.35;color:var(--ink2)}
+#app .pv-sw{flex:none;width:46px;height:28px;border-radius:14px;background:rgba(255,255,255,.18);position:relative;transition:background .2s}
+#app .pv-sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:11px;background:#fff;transition:transform .2s}
+#app .pv-sw.on{background:#8FD3A8}#app .pv-sw.on::after{transform:translateX(18px)}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -5606,7 +5615,18 @@ const hueOf=s=>hsh(String(s))%360;
 const tgMe=()=>{try{return TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user||null}catch(e){return null}};
 const avaPh=uid=>{const me=NS.uid&&NS.uid();if(uid&&uid===me){const u=tgMe();return u&&u.photo_url||""}const p=typeof FRP!=="undefined"&&FRP[uid];return p&&typeof p.ph==="string"&&/^https:\/\//.test(p.ph)?p.ph:""};
 const avatar=(n,uid,cls="")=>{const ph=avaPh(uid);return `<i class="ava ${cls}" style="--h:${hueOf(uid)}">${esc((n||"?").trim().charAt(0).toUpperCase())}${ph?`<img src="${esc(ph)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">`:""}</i>`};
-function snapNow(){return {read:BOOKS.filter(b=>!SEC.has(norm(b.t))).map(b=>({t:b.t,a:b.a||"",r:b.r??null,rd:b.rd||"",ds:(b.ann||"").slice(0,300),...(b.pub&&b.n?{rv:String(b.n).slice(0,600)}:{})})),want:want.filter(w=>!SEC.has(norm(w.t))).map(w=>({t:w.t,a:w.a||""})),now:nowBook&&nowBook.t&&!SEC.has(norm(nowBook.t))?{t:nowBook.t,a:nowBook.a||""}:null}}
+// что видят друзья: настройки в «Друзьях» (полки, оценки, отзывы)
+const PRIV=()=>Object.assign({shelf:1,rate:1,rv:1},LS.get("zal.priv",{}));
+function snapNow(){const P=PRIV(),S=snapRaw();if(!P.shelf)return {read:[],want:[],now:null,hid:1};S.read=S.read.map(b=>{const o={...b};if(!P.rate)o.r=null;if(!P.rv)delete o.rv;return o});return S}
+
+const privLabel=()=>{const P=PRIV();if(!P.shelf)return "полки скрыты";return ["полки",P.rate?"оценки":"",P.rv?"отзывы":""].filter(Boolean).join(", ")};
+function privSheet(){const P=PRIV(),row=(k,t,d)=>`<button class="pv-row" data-pv="${k}"><span><b>${t}</b><small>${d}</small></span><i class="pv-sw${P[k]?" on":""}"></i></button>`;
+  vOpen(`<h3 class="vh">Что видят друзья</h3><p class="sy-note">Можно смотреть полки друзей и ничего не показывать о себе. Друзьям об этом не сообщается.</p>
+   <div class="pv-list">${row("shelf","Мои полки","Прочитанное, «Хочу прочитать» и «Сейчас читаю». Если выключить, друзья увидят «Полки скрыты»")}
+   ${P.shelf?row("rate","Оценки","Сколько звёзд ты поставила книге")+row("rv","Отзывы","Только те, где выбрано «Видят друзья». Заметки, настроение и цитаты из дневника друзья не видят никогда"):""}</div>
+   <p class="sy-note">Отдельную книгу можно спрятать целиком: в её карточке нажми «Секретно».</p>`)}
+document.addEventListener("click",e=>{if(e.target.closest("[data-priv]")){tgHaptic();privSheet();return}const r=e.target.closest("[data-pv]");if(!r)return;const P=PRIV(),k=r.dataset.pv;P[k]=P[k]?0:1;LS.set("zal.priv",P);tgHaptic();privSheet();try{pubCheck()}catch(x){}if(SCREEN==="fr")drawFr()});
+function snapRaw(){return {read:BOOKS.filter(b=>!SEC.has(norm(b.t))).map(b=>({t:b.t,a:b.a||"",r:b.r??null,rd:b.rd||"",ds:(b.ann||"").slice(0,300),...(b.pub&&b.n?{rv:String(b.n).slice(0,600)}:{})})),want:want.filter(w=>!SEC.has(norm(w.t))).map(w=>({t:w.t,a:w.a||""})),now:nowBook&&nowBook.t&&!SEC.has(norm(nowBook.t))?{t:nowBook.t,a:nowBook.a||""}:null}}
 function pubCheck(){if(!NS.on||VIEW||!(NS.hasTok&&NS.hasTok()))return;try{notifySync()}catch(e){}
   {const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user,hs=[NS.email,u&&u.username?"@"+u.username:""].filter(Boolean),sig=hs.join("|")+"|"+NS.uid();if(hs.length&&NS.lookupPut&&localStorage.getItem("zal.sync.lk")!==sig)NS.lookupPut(hs).then(()=>localStorage.setItem("zal.sync.lk",sig)).catch(()=>{})}const cur=snapNow(),name=myName();{const u=tgMe();if(u&&u.photo_url)cur.ph=u.photo_url;if(u&&u.username)cur.tg=u.username}const sig=JSON.stringify([name,cur]);const prev=LS.get("zal.sync.pub",null);
   if(prev&&prev.sig===sig)return;const ev=prev?prev.ev||[]:[],now=Date.now(),add=[];
@@ -5614,7 +5634,7 @@ function pubCheck(){if(!NS.on||VIEW||!(NS.hasTok&&NS.hasTok()))return;try{notify
     cur.read.forEach(b=>{const o=pr.get(norm(b.t));if(!o)add.push({k:"read",t:b.t,a:b.a,r:b.r,ts:now});else if(b.r!=null&&o.r!==b.r)add.push({k:"rate",t:b.t,a:b.a,r:b.r,ts:now})});
     cur.want.forEach(w=>{if(!pw.has(norm(w.t)))add.push({k:"want",t:w.t,a:w.a,ts:now})});
     if(cur.now&&(!prev.snap.now||norm(prev.snap.now.t)!==norm(cur.now.t)))add.push({k:"now",t:cur.now.t,a:cur.now.a,ts:now})}
-  const evs=[...add,...ev].filter(e=>!SEC.has(norm(e.t||""))).slice(0,40);
+  const evs=cur.hid?[]:[...add,...ev].filter(e=>!SEC.has(norm(e.t||""))).map(e=>PRIV().rate?e:{...e,r:null}).filter(e=>PRIV().rate||e.k!=="rate").slice(0,40);
   NS.putProfile(name,{...cur,ev:evs}).then(ok=>{if(ok)localStorage.setItem("zal.sync.pub",JSON.stringify({sig,snap:cur,ev:evs}))}).catch(()=>{})}
 setInterval(pubCheck,20000);document.addEventListener("visibilitychange",()=>{if(document.hidden)pubCheck()});setTimeout(pubCheck,6000);
 async function frLoad(){if(!NS.on)return;await Promise.all(FRIENDS.map(f=>NS.getProfile(f.uid).then(p=>{if(p){FRP[f.uid]=p;if(p.n&&p.n!==f.n){f.n=p.n;frSave()}}}).catch(()=>{})));frDotUpd();if(SCREEN==="fr")drawFr()}
@@ -5629,7 +5649,7 @@ function inviteLink(){const u=NS.uid&&NS.uid();if(!u)return "";return TG?`https:
 function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
   const list=FRIENDS.map(f=>({f,p:FRP[f.uid]})),news=list.filter(x=>x.p&&(x.p.ev||[]).length).sort((a,b)=>(b.p.ev[0].ts||0)-(a.p.ev[0].ts||0));
   box.innerHTML=`<h1 class="fr-h">Друзья</h1>
-   ${VIEW?"":(()=>{const nk=LS.get("zal.nick","");return nk?`<button class="fr-nick" data-nick><span>Друзья найдут тебя по нику</span><b>@${esc(nk)}</b><i>изменить</i></button>`:`<button class="fr-nick new" data-nick><span>Ник, по которому тебя найдут друзья, появится после входа</span><i>›</i></button>`})()}
+   ${VIEW?"":(()=>{const nk=LS.get("zal.nick","");return `<button class="fr-nick fr-priv" data-priv><span>Что видят друзья</span><i>${privLabel()} ›</i></button>`+(nk?`<button class="fr-nick" data-nick><span>Друзья найдут тебя по нику</span><b>@${esc(nk)}</b><i>изменить</i></button>`:`<button class="fr-nick new" data-nick><span>Ник, по которому тебя найдут друзья, появится после входа</span><i>›</i></button>`)})()}
    ${REQS.length?`<h3 class="fr-sec">Заявки в друзья</h3>`+REQS.map(q=>`<div class="sc gl frq">${avatar(q.n,q.f)}<span><b>${esc(q.n||"Кто-то")}</b><small>хочет добавить в друзья</small></span><button class="btn w" data-frq-yes="${esc(q.id)}">Принять</button><button class="btn" data-frq-no="${esc(q.id)}">Отклонить</button></div>`).join(""):""}
    <div class="fr-row"><button class="fr-add" data-fr-find><i class="ava plus">+</i><span>Добавить</span></button>${list.map(({f})=>`<button class="fr-av" data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid,frNew(f)?"new":"")}<span>${esc(f.n||"Друг")}</span></button>`).join("")}</div>
    ${FRIENDS.length?"":`<div class="sc gl fr-empty"><h3>Полки друзей</h3><p>Найди друга по нику в Норе или по почте - придёт заявка прямо в Нору. Когда заявку примут, вы будете видеть полки друг друга: что прочитано, оценки, что хочется прочитать.</p><button class="btn w" data-fr-find>Добавить друга</button></div>`}
@@ -5663,6 +5683,7 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-shto
   openLink(url)});
 function frShelf(uid,tab){const f=FRIENDS.find(x=>x.uid===uid),p=FRP[uid];if(!f)return;FSEEN2[uid]=Date.now();frSeenSave();frDotUpd();
   if(!p){vOpen(`<h3 class="vh">${esc(f.n||"Друг")}</h3><p class="sy-note">Полки пока не загрузились — проверь интернет.</p>`);return}
+  if(p.hid){vOpen(`<button class="fr-closex" data-vclose aria-label="Закрыть">${IC2.x}</button><div class="frp">${avatar(f.n,uid,"big")}<h3 class="vh">${esc(f.n||"Друг")}</h3><p class="sy-note">Полки скрыты</p></div>`,true);$("#vshBody")._fr={uid,tab:"read"};return}
   tab=tab||"read";const L=(tab==="read"?p.read:p.want)||[];
   vOpen(`<button class="fr-closex" data-vclose aria-label="Закрыть">${IC2.x}</button><div class="frp">${avatar(f.n,uid,"big")}<h3 class="vh">${esc(f.n||"Друг")}</h3><p class="sy-note">${(p.read||[]).length} ${plural((p.read||[]).length,"книга","книги","книг")} прочитано${p.now?` · сейчас: «${esc(p.now.t)}»`:""}</p></div>
    <div class="imp-to"><button class="${tab==="read"?"on":""}" data-frt="read">Прочитано</button><button class="${tab==="want"?"on":""}" data-frt="want">Хочет прочитать</button></div>
@@ -5935,7 +5956,7 @@ function bkcRv(x,L){if(x._f)return "";
   const b=BK.has(x)==="read"?myRec(x):null;if(!b)return "";
   if(!hasEntry(b))return `<button class="bkc-rv add" data-bkc="rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Записать в дневник</span><small>отзыв, настроение, цитаты</small></button>`;
   return `<button class="bkc-rv" data-bkc="dopen"><div class="bkc-rv-h">В дневнике <span>${esc(dLine(b))}${b.n&&b.pub?" · отзыв видят друзья":""}</span></div>${b.n?`<p>${esc(b.n)}</p>`:""}</button>`}
-function rvSheet(x){const b=myRec(x);if(!b)return;let pub=b.n?!!b.pub:true;
+function rvSheet(x){const b=myRec(x);if(!b)return;let pub=b.n?!!b.pub:false;
   const draw=()=>{document.querySelectorAll("#rvVis [data-rvv]").forEach(e=>e.classList.toggle("on",(e.dataset.rvv==="1")===pub));const h=$("#rvH");if(h)h.textContent=pub?"Отзыв появится на твоей полке у друзей.":"Отзыв увидишь только ты - Нора учтёт его в советах."};
   vOpen(`<h3 class="vh">Отзыв о «${esc(b.t)}»</h3><textarea id="rvT" class="sy-in rv-ta" rows="3" maxlength="600" placeholder="Что понравилось, что нет, кому бы посоветовала">${esc(b.n||"")}</textarea>
    <div class="rv-vis" id="rvVis"><button data-rvv="1">Видят друзья</button><button data-rvv="0">Только я</button></div><p class="sy-note" id="rvH"></p>
@@ -5986,7 +6007,7 @@ function dShare(b){const dp=b.dp||{},Q=bQuotes(b);const txt=[`«${b.t}»${b.a?" 
   if(navigator.share){navigator.share({text:txt}).catch(()=>{});return}try{navigator.clipboard.writeText(txt).then(()=>toast("Скопировано - вставь в сообщение"))}catch(e){toast("Не получилось скопировать")}}
 // заполнение по шагам
 let DF=null;
-function dNew(b,step){if(!b)return;const ds=LS.get("zal.ddraft",{})[b.id];DF={b,step:step||0,r:b.r!=null?Math.round(b.r/2):0,dm:[...(b.dm||[])],dp:{...(b.dp||{})},n:ds!=null?ds:(b.n||""),pub:b.n?!!b.pub:true,top:!!BKC};dStep()}
+function dNew(b,step){if(!b)return;const ds=LS.get("zal.ddraft",{})[b.id];DF={b,step:step||0,r:b.r!=null?Math.round(b.r/2):0,dm:[...(b.dm||[])],dp:{...(b.dp||{})},n:ds!=null?ds:(b.n||""),pub:b.n?!!b.pub:false,top:!!BKC};dStep()}
 function dHead(t,sub){return `<div class="dfh"><div class="dfk">${DF.step+1} из 5</div><button class="dfx2" data-dfclose aria-label="Закрыть">${IC2.x}</button></div><div class="dfb">${cv(dItem(DF.b),40)}<div><b>${esc(DF.b.t)}</b><small>${esc(DF.b.a||"")}</small></div></div><h3 class="dft">${t}</h3>${sub?`<p class="dfs">${sub}</p>`:""}`}
 function dNav(last){return `<div class="dfn">${DF.step?`<button class="btn" data-dfback>Назад</button>`:""}<button class="btn w" data-dfnext>${last?"Сохранить в дневник":"Дальше"}</button></div>`}
 function dStep(){const s=DF.step;let h="";
