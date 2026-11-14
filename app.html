@@ -4659,14 +4659,16 @@ function recList(){if(isF()){if(!FILMS)return [];if(!recList._f||recList._v!==FS
   {const D=demoPick("rec");if(D.length)return D.map(b=>bItem(b,"rec"))}
   if(recList._k!==key&&(BOOKS.length||want.length)){const W=wantNorms(),q=tasteQ(),ok=b=>{const nt=b._n||norm(b.t);return !READ.has(nt)&&!dismissed.has(b.id)&&!W.has(nt)};
     // по вкусу: берём лучшие ~70 под полки человека и случайно перемешиваем, чтобы каждый день был новый набор
-    const sc=topK(ALLB(),70,b=>ok(b)?feedScore(b,q):null).map(z=>z.b);
+    const sc=topK(ALLB(),110,b=>ok(b)?feedScore(b,q)+(imgOf(b)?4:0):null).map(z=>z.b);
     for(let i=sc.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sc[i],sc[j]]=[sc[j],sc[i]]}
     const au=new Set(),out=[];for(const b of sc){if(au.has(b.a))continue;au.add(b.a);out.push(bItem(b,"rec"));if(out.length>=40)break}
+    {const im=out.filter(x=>imgOf(x));if(im.length>=10)out.splice(0,out.length,...im)}
     if(out.length>=8){recList._b=out;recList._k=key;return out}}
   if(recList._k!==key){const W=wantNorms(),pool=topK(ALLB(),120,b=>{const nt=b._n||norm(b.t);return !READ.has(nt)&&!dismissed.has(b.id)&&!W.has(nt)&&!b.big&&b.g!=="nonfic"?popOf(b)*2+(imgOf(b)?2:0)+(b.q||0)*.5:null}).map(z=>z.b);/* пока полок нет — известные книги, которые многие читали */
     let h=0;for(const ch of day)h=(h*31+ch.charCodeAt(0))>>>0;const rnd=()=>(h=(h*1664525+1013904223)>>>0)/4294967296;
     for(let i=pool.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
     const au=new Set(),out=[];for(const b of pool){if(au.has(b.a))continue;au.add(b.a);out.push(bItem(b,"rec"));if(out.length>=40)break}
+    {const im=out.filter(x=>imgOf(x));if(im.length>=10)out.splice(0,out.length,...im)}
     recList._b=out;recList._k=key}return recList._b}
 const flowList=()=>VIEW?(DATA().want().length?DATA().want():DATA().read().filter(x=>x.r!=null).sort((a,b)=>b.r-a.r).slice(0,20)):recList();
 const gridList=()=>colF==="want"&&!isF()?wantGrouped().L:colF==="want"?DATA().want():DATA().read();
@@ -4840,7 +4842,7 @@ function centHTML(){const dated=BOOKS.filter(b=>b.y).sort((a,b)=>a.y-b.y),byCt={
    (undated.length?`<div class="cent"><h2>Без года</h2><div class="tl">${undated.map(b=>`<button class="tl-row" data-id="${b.id}"><span class="yr">—</span>${cover(b,40)}<span class="tx"><b>${esc(b.t)}</b><span>${esc(b.a||"")}</span></span></button>`).join("")}</div></div>`:"")}
 function authorsHTML(){const by={};BOOKS.forEach(b=>{const a=b.a&&b.a!=="Автор не указан"?b.a:"Автор не указан";(by[a]=by[a]||[]).push(b)});
   return `<div class="authors">${Object.entries(by).sort((x,y)=>(y[1].length-x[1].length)||x[0].localeCompare(y[0],"ru")).map(([a,bs])=>`<div class="au-card"><h3>${esc(a)}</h3><div class="sub">${esc(bs[0].c&&!NOCOUNTRY.has(bs[0].c)?bs[0].c:"")}</div><div class="au-books">${bs.map(b=>`<button class="au-book" data-id="${b.id}">${cover(b,34)}<b>${esc(b.t)}</b></button>`).join("")}</div></div>`).join("")}</div>`}
-const SHV=()=>LS.get("zal.shelfv","covers");
+const SHV=()=>"covers"||LS.get("zal.shelfv","covers");
 function drawViews(){cvw.hidden=true;const sp=SHV()==="spines"&&gridList().length&&!isF();$("#grid").hidden=sp;oldv.hidden=!sp;
   if(sp)spDraw();else oldv.innerHTML="";return;const L=VIEW?[["grid","Обложки"],["shelves","Полки"],["cent","Века"],["map","Карта"]]:VIEWS[colF]||VIEWS.read,v=L.some(x=>x[0]===colV[colF])?colV[colF]:"grid";
   const empty=!gridList().length;cvw.hidden=empty;
@@ -5141,7 +5143,7 @@ function drawSum(){const F=isF(),r=DATA().read(),u=T[REALM].u,known=r.filter(x=>
   const eras=F?cntBy(dated,x=>Math.floor(x.y/10)*10+"-е"):cntBy(dated,x=>(ROMAN[centuryOf(x.y)]||centuryOf(x.y))+" век");
   const gens=F?cntBy(r,x=>{const g=genreList(x.g||0);return g[0]||""}):cntBy(r,x=>GEN[x.g]);const vol=F?Math.round(r.reduce((a,x)=>a+(x.m||0),0)/60):r.reduce((a,x)=>a+(x.pg||0),0);const wn=DATA().want().length;
   const inst=false?`<button class="sx-hid" data-install style="margin-top:12px"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg><span>Установить Нору на телефон — открывается как обычное приложение, без Telegram</span><u>как</u></button>`:"";
-  const links=VIEW?"":inst+`<div class="sc gl s3"><div class="themes" style="border-top:0;margin-top:0"><span>Вид полки</span>${[["covers","обложки"],["spines","корешки"]].map(([v,l])=>`<button data-shv="${v}" class="${SHV()===v?"on":""}">${l}</button>`).join("")}</div></div>`;
+  const links=VIEW?"":inst+``;
   if(!r.length){$("#sumMore").innerHTML=`<div class="sc gl"><p style="margin:0;color:var(--ink2)">Статистика появится, когда на полке будет что-то ${F?"просмотренное":"прочитанное"}.</p></div>${links}`;return}
   const avgS=rated.length?avg.toFixed(1).replace(".",","):"—";
   const head=`<div class="sc gl s1"><div class="big"><b>${r.length}</b><span>${plural(r.length,...u)}<br>${F?"посмотрено":"прочитано"}</span></div>
