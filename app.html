@@ -4688,8 +4688,8 @@ function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>
 function drawNewAu(){const el=$("#newAu");if(!el)return;const L=newAuList();el.hidden=!L.length;if(!L.length){el.innerHTML="";return}el._l=L;
   el.innerHTML=`<h3 class="shelf-h">Новое от твоих авторов</h3><div class="na-row">${L.map((x,i)=>`<button data-na="${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a).split(" ").slice(-1)[0])} · ${x.y}</em></button>`).join("")}</div>`}
 $("#newAu").addEventListener("click",e=>{const b=e.target.closest("[data-na]");if(!b)return;const x=$("#newAu")._l[+b.dataset.na];if(x){tgHaptic();bkcOpen(x,"rec")}});
-// «В тренде сейчас»: о чём в этом месяце говорят в буктоке и на буктюбе (список обновляется раз в месяц). Книги ищем в каталоге по названию и фамилии автора
-const TREND="Ониксовая буря|Яррос;Рыцарь и мотылёк|Гиллиг;Мара и Морок|Арден;Дом земли и крови|Маас;Верити|Гувер;Тео из Голдена|Леви;Проект «Аве Мария»|Вейер;Невьянская башня|Иванов;Йеллоуфейс|Куанг;Незримая жизнь Адди Ларю|Шваб;Четвёртое крыло|Яррос;Неночь|Кристофф;Жестокий принц|Блэк;Демон из Пустоши|Дашкевич;Гипотеза любви|Хейзелвуд;Королевство шипов и роз|Маас;Тайная история|Тартт;Семь мужей Эвелин Хьюго|Рид;Если все кошки в мире исчезнут|Кавамура;Безмолвный пациент|Михаэлидес".split(";").map(s=>s.split("|"));
+// «В тренде сейчас»: о чём говорят сейчас - вперемешку громкие книги года (премии, экранизации, бестселлеры) и хиты буктока, примерно 3 к 2 (список обновляется раз в месяц). Книги ищем в каталоге по названию и фамилии автора
+const TREND="Последнее дело майора Чистова|Водолазкин;Джеймс|Эверетт;Ониксовая буря|Яррос;Невьянская башня|Иванов;Хамнет|О'Фаррелл;Незримая жизнь Адди Ларю|Шваб;Йеллоуфейс|Куанг;По орбите|Харви;Рыцарь и мотылёк|Гиллиг;Демон Копперхед|Кингсолвер;Тео из Голдена|Леви;Семь мужей Эвелин Хьюго|Рид;Проект «Аве Мария»|Вейер;Завтра, завтра, завтра|Зевин;Дом земли и крови|Маас;Уроки химии|Гармус;Птицеед|Пехов;Безмолвный пациент|Михаэлидес;Тайная история|Тартт;Маленькая жизнь|Янагихара;Верити|Гувер;Жестокий принц|Блэк;Гипотеза любви|Хейзелвуд;Четвёртое крыло|Яррос".split(";").map(s=>s.split("|"));
 let TRB=null,TRK=-1;
 function trendBooks(){const L=ALLB();if(TRB&&TRK===L.length)return TRB;TRK=L.length;const by=new Map();
   L.forEach(b=>{const n=b._n||norm(b.t);let v=by.get(n);if(!v)by.set(n,v=[]);v.push(b)});
@@ -4709,7 +4709,7 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   const take=(arr,k=14)=>{const out=[],au=new Set();for(const b of arr){if(out.length>=k)break;if(!free(b)||au.has(b.a))continue;au.add(b.a);out.push(b)}out.forEach(b=>seen.add(b._n||norm(b.t)));return out};
   const GP=gpref(),hit=b=>GP.some(g=>genPass(b,g)),res=[];
   // в тренде: свои жанры первыми (одного автора можно дважды — там серии)
-  {const tr=trendBooks().filter(free).map((b,i)=>({b,s:(hit(b)?-100:0)+i})).sort((a,b)=>a.s-b.s).map(z=>z.b).slice(0,14);tr.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["trend","В тренде сейчас","О чём говорят в буктоке и на буктюбе",tr])}
+  {const tr=trendBooks().filter(free).slice(0,16);tr.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["trend","В тренде сейчас","О чём говорят в буктоке и на буктюбе",tr])}
   if(BOOKS.length||want.length||GP.length){const q=tasteQ();res.push(["like","Тебе понравится","По твоим полкам и оценкам",take(topK(L,120,b=>free(b)?feedScore(b,q)+(imgOf(b)?2:0):null).map(z=>z.b))])}
   const mix=arr=>arr.map(b=>({b,s:(hit(b)?1:0)+Math.random()})).sort((x,y)=>y.s-x.s).map(z=>z.b);
   res.push(["month","Читают в этом месяце","Свежие книги, которые сейчас обсуждают",take(mix(listBooks(MONTH_L)))]);
