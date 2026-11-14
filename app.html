@@ -2085,6 +2085,40 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .bkc .bkc-bar .btn.w{flex:1.6;background:#F4F2F7;color:#0B0A14;font-weight:700}
 #app .bkc .bkc-bar .btn:not(.w){flex:1;background:rgba(255,255,255,.08);color:var(--ink);border:0;box-shadow:none}
 #app .bkc .bkc-bar .btn:disabled{opacity:.45}
+
+#app #trend .hs-big .na-row button{width:140px}
+#app #trend .hs-list .hl{display:flex;flex-direction:column;gap:8px;padding:0 22px}
+#app #trend .hl>button{display:flex;gap:12px;align-items:center;padding:10px;border-radius:16px;background:rgba(255,255,255,.05);text-align:left;color:inherit;width:100%}
+#app #trend .hl>button .cv{width:52px;flex:none}
+#app #trend .hl span{display:flex;flex-direction:column;min-width:0}
+#app #trend .hl b{font-size:15.5px;font-weight:600;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#app #trend .hl small{font-size:13px;color:var(--ink2);margin-top:3px}
+#app #trend .hl em{font-style:normal;font-size:13px;color:#F3D19A;margin-top:6px}
+#app #trend .hl-more{margin:10px 22px 0;padding:6px 0;font-size:14px;font-weight:600;color:#F3D19A;background:none}
+#app #trend .hmand{position:relative;display:block;width:calc(100% - 44px);margin:6px 22px 0;min-height:180px;border-radius:22px;padding:20px;background:linear-gradient(160deg,#C9672A,#7A2E1A);color:#fff;text-align:left;overflow:hidden}
+#app #trend .hm-t{position:relative;z-index:2;display:block;max-width:50%}
+#app #trend .hm-t b{display:block;font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.12}
+#app #trend .hm-t small{display:block;margin-top:8px;font-size:13.5px;opacity:.85;line-height:1.35}
+#app #trend .hm-f{position:absolute;right:10px;bottom:-14px;display:flex}
+#app #trend .hm-f i{display:block;width:72px;margin-left:-22px;transform:rotate(calc((var(--i) - 1) * 9deg)) translateY(calc(var(--i) * -6px + 6px));box-shadow:0 10px 24px rgba(0,0,0,.45);border-radius:6px}
+#app #trend .hm-f i:first-child{margin-left:0}
+#app #trend .hm-f .cv{width:72px}
+
+#app .sx-h2{margin:22px 2px 12px;font-family:var(--serif);font-size:22px;font-weight:600}
+#app .sx-askg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#app .ask-c{position:relative;height:96px;border-radius:18px;background:var(--ac);color:#F4F2F7;text-align:left;padding:13px 14px;overflow:hidden;font-size:15px;font-weight:600;line-height:1.25;display:block}
+#app .ask-c:last-child:nth-child(odd){grid-column:1/-1}
+#app .ask-c span{position:relative;z-index:2;display:block;max-width:62%}
+#app .ask-f{position:absolute;right:-4px;bottom:-14px;display:flex}
+#app .ask-f .cv{width:46px;border-radius:5px;box-shadow:0 8px 18px rgba(0,0,0,.5)}
+#app .ask-f .cv:first-child{transform:rotate(-8deg)}
+#app .ask-f .cv+.cv{margin-left:-14px;transform:rotate(6deg) translateY(-6px)}
+#app .fgen{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+#app .fgen .fk{height:54px;border-radius:14px!important;border:0!important;justify-content:flex-start;text-align:left;padding:0 14px!important;font-size:14.5px;font-weight:600;color:#F4F2F7;background:#2B2F45}
+#app .fgen .fk:nth-child(8n+2){background:#2F2A4A}#app .fgen .fk:nth-child(8n+3){background:#4A2638}#app .fgen .fk:nth-child(8n+4){background:#26343A}
+#app .fgen .fk:nth-child(8n+5){background:#3A3226}#app .fgen .fk:nth-child(8n+6){background:#1F3344}#app .fgen .fk:nth-child(8n+7){background:#47283A}#app .fgen .fk:nth-child(8n){background:#2C3A2E}
+#app .fgen .fk.on{background:#F4F2F7!important;color:#0B0A14}
+#app .gen-more{margin-top:8px;border:0!important;background:none!important;color:#F3D19A!important;padding:6px 2px!important;font-weight:600}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -4618,8 +4652,18 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   res.push(["month","Читают в этом месяце","Свежие книги, которые сейчас обсуждают",take(mix(listBooks(MONTH_L)))]);
   res.push(["mand","Книги с запахом мандаринов","Новый год, Рождество и снег за окном",take(mix(listBooks(MAND_L)))]);
   HSV=res.filter(r=>r[3].length>=4).map(r=>[r[0],r[1],r[2],r[3].map(b=>bItem(b,"rec"))]);return HSV}
+// на главной у каждой подборки свой вид: тренд - крупные обложки, «Тебе понравится» - список с подсказкой, мандарины - тёплый блок
+const SIMSKIP=new Set(["классика","современная проза","роман","зарубежная проза","русская проза"]);
+function simTo(b){if(!BOOKS.length)return null;const tg=(b.tags||[]).filter(t=>!SIMSKIP.has(t)&&!/век|страна/.test(t));let best=null,bs=0;
+  for(const r of BOOKS){if(r.r!=null&&r.r<6)continue;const c=catOf(r)||r;let sc=sameAu(r.a,b.a)?3:0;const rt=c.tags||r.tags||[];for(const t of tg)if(rt.includes(t))sc+=t.startsWith("троп:")?1.5:1;if(sc>bs){bs=sc;best=r}}
+  return bs>=2.5?best:null}
 function drawTrend(){const el=$("#trend");if(!el)return;const S=shelvesCalc();el._s=S;
-  el.innerHTML=S.map(([k,h,sub,L],j)=>`<section class="hshelf"><h3 class="shelf-h">${h}</h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div></section>`).join("")}
+  el.innerHTML=S.map(([k,h,sub,L],j)=>{
+    if(k==="trend")return `<section class="hshelf hs-big"><h3 class="shelf-h">${h}</h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,140)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div></section>`;
+    if(k==="like"){const R=L.slice(0,5),used=new Set();return `<section class="hshelf hs-list"><h3 class="shelf-h">${h}</h3><div class="hl">${R.map((x,i)=>{let sm=simTo(catOf(x)||x);if(sm&&used.has(sm.t))sm=null;if(sm)used.add(sm.t);return `<button data-tr="${j}:${i}">${cv(x,52)}<span><b>${esc(x.t)}</b><small>${esc(x.a||"")}</small>${sm?`<em>Похожа на «${esc(sm.t)}»</em>`:""}</span></button>`}).join("")}</div>${L.length>5?`<button class="hl-more" data-trall="${j}">Ещё ${L.length-5}</button>`:""}</section>`}
+    if(k==="mand"){const F=L.filter(x=>imgOf(x)).slice(0,3);return `<section class="hshelf"><button class="hmand" data-trall="${j}"><span class="hm-t"><b>${h}</b><small>${esc(sub)}</small></span><span class="hm-f">${(F.length>=3?F:L.slice(0,3)).map((x,i)=>`<i style="--i:${i}">${cv(x,72)}</i>`).join("")}</span></button></section>`}
+    return `<section class="hshelf"><h3 class="shelf-h">${h}</h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div></section>`}).join("")}
+$("#trend").addEventListener("click",e=>{const a=e.target.closest("[data-trall]");if(!a)return;const S=$("#trend")._s,r=S&&S[+a.dataset.trall];if(r){tgHaptic();listSheet(r[1],r[2],r[3])}});
 $("#trend").addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(!b)return;const [j,i]=b.dataset.tr.split(":").map(Number),S=$("#trend")._s,x=S&&S[j]&&S[j][3][i];if(x){tgHaptic();bkcOpen(x,"rec")}});
 addEventListener("bigcat",()=>{TRK=-1;HSV=null;if(SCREEN==="col"){drawTrend();layoutFlow(true)}});
 // ---------- «Книга для тебя»: книги разлетаются вихрем, одна прилетает и переворачивается ----------
@@ -4802,7 +4846,7 @@ function sxDraw(state){const box=$("#fres");if(!box)return;const q=SX.q,F=SX.k==
     h=`<div class="sx-h">Подобрано по фильтрам</div>`+(all.length?L.map(sxRow).join("")+(all.length>L.length?`<button class="sx-moref" data-sxmore>Показать ещё</button>`:""):`<p class="hint">С такими фильтрами ничего не нашлось.${(()=>{const d=bestDrop();return d?` Попробуй убрать «${esc(d[1])}».`:""})()}</p><button class="sx-moref" data-sxfreset>Сбросить фильтры</button>`);
     box.innerHTML=h;box._l=L;return}
   if(norm(q).length<2){const rec=recentGet(),coach=!LS.get("zal.coachsx",0);SX.list=[];
-    h=(coach?`<div class="sx-feat" id="sxFeat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Шуршуня помнит каждую книгу на твоей полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`:"")+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+(F?"":`<div class="sx-h">Можно просто попросить</div><div class="sx-rec sx-ask">${MEAN_EX.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`)+
+    h=(coach?`<div class="sx-feat" id="sxFeat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Шуршуня помнит каждую книгу на твоей полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`:"")+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+(F?"":`<h3 class="sx-h2">Попроси Шуршуню</h3><div class="sx-askg">${MEAN_EX.map((r,i)=>`<button class="ask-c" data-rq="${esc(r)}" style="--ac:${ASKC_COL[i%ASKC_COL.length]}"><span>${esc(r)}</span><i class="ask-f" data-askf="${i}">${askCovers(i)}</i></button>`).join("")}</div>`)+
       `<div class="fwrap inl" id="fwrap">${filtersHTML()}</div>${filtersFoot(true)}`;box.innerHTML=h;box._l=[];if(coach)setTimeout(sxCoach,450);return}
   SX.st=state;if(SX.brain&&!F){if(SX.brain==="load")h+=`<div class="sx-brain ld"><b>Сверхмозг Шуршуни думает…</b><span>разбирает, чего тебе хочется - это до полуминуты</span></div>`;else if(SX.brain.length){const L=SX.brain.map(o=>{const it=bItem(o.b,"hit");it._w=o.w;return it});SX.brainL=L;h+=`<div class="sx-brain"><b>Сверхмозг Шуршуни советует</b><span>подобрано под твою просьбу</span></div>`+L.map((x,i)=>sxRow(x,"b"+i)).join("")}}
   if(SX.mean&&!F){const M=SX.mean,L=M.list.slice(0,SX.mn||12).map(b=>bItem(b,"hit"));SX.meanL=L;
@@ -4827,6 +4871,7 @@ function genreHit(q){const n=norm(q);if(n.length<4)return null;
 // ---------- смысловой поиск: «про Южную Корею», «что почитать, когда грустно», «страшное на ночь» ----------
 // разбираем просьбу на настроения, темы, страны и слова; ищем по тегам, стране и аннотациям
 const MEAN_I=[
+ [/сильн\S* (героин|женщин|девушк|девочк)|сильн\S* героиня/,"сильная героиня",{"женская судьба":4,"вдохновляющее":3,"приключения":2,"взросление":1}],
  [/погруст|грустить|продолж\S* грус|хочу\S* грус|груст\S* и хочу|меланхол|светл\S* грусть|тоскл\S* атмосфер|под дожд\S* погруст/,"погрустить",{"грустное":6,"атмосферное":2,"психологический роман":2,"медленное":1,"смешное":-5,"юмор":-4,"динамичное":-2},{sad:1}],
  [/научит\S* (мысл|дума)|тип\S* мышлен|мышлени|мыслить|думать иначе|критическ\S* мышл|логик|принима\S* решени|стратеги|прокачать (мозг|голову)|умнее/,"научиться мыслить",{"психология":5,"наука":4,"интеллектуальное":3,"философский роман":2,"история":1},{nf:1}],
  [/после тяжел|устал|выгоран|разгруз|отдохнуть головой|ничего сложного|легк\S* чтени/,"отдохнуть головой",{"светлое":4,"тёплое":3,"уют":3,"смешное":3,"динамичное":1,"интеллектуальное":-3,"мрачное":-4,"война":-5}],
@@ -4903,7 +4948,11 @@ async function brainAsk(q){const key=norm(q);if(BRAIN[key])return BRAIN[key];try
     BRAIN[key]=out;try{sessionStorage.setItem("nora.br."+key,JSON.stringify(out.map(o=>o.b.id?{b:{t:o.b.t,a:o.b.a},w:o.w,c:1}:o)))}catch(e){}return out}
   catch(e){return []}finally{clearTimeout(tm)}}
 const brainUnpack=L=>L.map(o=>o.c?{b:ALLB().find(b=>norm(b.t)===norm(o.b.t))||o.b,w:o.w}:o);
-const MEAN_EX=["Что-то лёгкое на вечер","Чтобы не оторваться до утра","Уютное на осень","Про сильную героиню","Как хороший сериал","Страшное на ночь","Умный нон-фикшн","Про Южную Корею","Чтобы поплакать","О драконах и любви"];
+// обложки на карточках просьб: две книги, которые Шуршуня нашёл бы по этой просьбе (считаем один раз и не сразу)
+const ASKC_COL=["#3B2F5C","#5A3A2A","#25485A","#4A2638","#2C3A2E"],ASKC={};
+function askCovers(i){const L=ASKC[i];if(!L){setTimeout(()=>{if(ASKC[i])return;try{const M=meanFind(MEAN_EX[i],12);ASKC[i]=(M&&M.list||[]).filter(b=>imgOf(b)).slice(0,2).map(b=>bItem(b,"hit"))}catch(e){ASKC[i]=[]}
+  const el=document.querySelector(`[data-askf="${i}"]`);if(el)el.innerHTML=askCovers(i)},120+i*90);return ""}return L.map(x=>cv(x,46)).join("")}
+const MEAN_EX=["Книга на один вечер","Не оторваться","Уютная на осень","Сильная героиня","Как хороший сериал"];
 function sxRun(){const q=$("#fq").value,my=++SX.seq;SX.q=q;SX.mode="q";clearTimeout(SX.t);$(".sx-clear").hidden=!q;
   {const h=SX.k!=="films"&&genreHit(q);if(h){const L=h[0]==="gen"?NF.gen:NF.trope;if(!L.includes(h[1]))L.push(h[1]);saveNF();SX.picks=true;SX.q="";$("#fq").value="";$(".sx-clear").hidden=true;
     const b=$("#sxf");if(b)b.innerHTML=sxFbar();SX.authors=[];sxDraw();tgHaptic();return}}
@@ -5336,7 +5385,7 @@ function filtersHTML(){if(isF()){const T=TF;
   const TR_ORD=[],tro=id=>{const i=TR_ORD.indexOf(id);return i<0?99:i};const tc=tropeCount(),tAll=B_TROPE.filter(([id])=>tc[tropeTag(id)]||F.trope.includes(id)).sort((a,b)=>tro(a[0])-tro(b[0])),tShow=FOPEN.has("tropes-all")?tAll:tAll.slice(0,6);
   const mShow=FOPEN.has("moods-all")?B_MOOD:B_MOOD.filter((m,i)=>i<6||F.mood.includes(m[0]));
   return ``+
-   fsec("Жанр",genChips.map(([id,l])=>fchip("gen",id,F.gen.includes(id),l)).join(""))+
+   fsec("Жанры",`<div class="fgen">${(FOPEN.has("gen-all")?genChips:genChips.filter((g,i)=>i<8||F.gen.includes(g[0]))).map(([id,l])=>fchip("gen",id,F.gen.includes(id),l)).join("")}</div>`+(FOPEN.has("gen-all")?"":`<button type="button" class="fk more gen-more" data-fmore="gen-all">Все жанры</button>`))+
    fsec("Настроение",mShow.map(([id,l])=>fchip("mood",id,F.mood.includes(id),l)).join("")+(mShow.length<B_MOOD.length?`<button type="button" class="fk more" data-fmore="moods-all">ещё ${B_MOOD.length-mShow.length}</button>`:""))+
    (tAll.length&&(!F.gen.length||F.gen.some(g=>["fantasy","romantasy","romance","darkrom","ya","kids"].includes(g)))?fsec("Тропы",tShow.map(([id,l])=>fchip("trope",id,F.trope.includes(id),l)).join("")+(tShow.length<tAll.length?`<button type="button" class="fk more" data-fmore="tropes-all">ещё ${tAll.length-tShow.length}</button>`:"")):"")+
    `<div class="fmore-h">Уточнить</div>`+
