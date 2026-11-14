@@ -116,6 +116,7 @@ for i, b in enumerate(L):
     d = get(f"arts/{b['id']}")
     x = ((d or {}).get("payload") or {}).get("data") or {}
     ann = clean(x.get("html_annotation") or x.get("annotation") or "")
+    ann = re.sub(r"НЕЗАКОННОЕ ПОТРЕБЛЕНИЕ НАРКОТИЧЕСКИХ СРЕДСТВ[^.]*?ОТВЕТСТВЕННОСТЬ\.?\s*", "", ann, flags=re.I).strip()
     lab = " | ".join([t.get("name", "") for t in x.get("tags") or []] + [g.get("name", "") for g in x.get("genres") or []])
     for rx, tid in TROPES:
         if rx.search(lab) and "троп:" + tid not in b["tags"]:

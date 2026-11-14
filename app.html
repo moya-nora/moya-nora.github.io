@@ -1984,18 +1984,18 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .lk-bg{position:absolute;inset:0;background:#07070C;animation:lkIn .25s ease both;overflow:hidden}
 #app .lk-bg img{position:absolute;inset:-10%;width:120%;height:120%;object-fit:cover;filter:blur(38px) saturate(1.3);opacity:0;transform:scale(1.1);transition:opacity 1s ease}
 #app .lk-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,7,12,.35),rgba(7,7,12,.82) 55%,#07070C)}
-#app .luck.won .lk-bg img{opacity:.55}
-#app .lk-stage{position:relative;z-index:1;flex:none;height:56vh;padding-top:calc(58px + var(--sat,env(safe-area-inset-top,0px)));display:flex;align-items:center;justify-content:center;transition:height .55s cubic-bezier(.2,.8,.2,1)}
-#app .luck.done .lk-stage{height:52vh}
-#app .lk-deck{position:relative;height:100%;aspect-ratio:2/3;max-height:430px}
-#app .lk-c{position:absolute;inset:0;transform:rotate(var(--r,0deg));will-change:transform}
-#app .lk-c .cv{width:100%!important;height:100%!important;border-radius:10px;box-shadow:0 26px 50px -18px rgba(0,0,0,.85)}
-#app .lk-c.win{z-index:5}
-#app .lk-glow{position:absolute;left:50%;top:55%;width:80vw;height:80vw;max-width:420px;max-height:420px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(243,209,154,.35),transparent 62%);opacity:0;transition:opacity .7s;pointer-events:none}
-#app .luck.won .lk-glow{opacity:1}
+
+
+
+
+
+
+
+
+
 #app .lk-info{position:relative;z-index:2;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 24px 12px;text-align:left;opacity:0;transform:translateY(30px);transition:opacity .45s,transform .55s cubic-bezier(.2,.8,.2,1);-webkit-mask:linear-gradient(#000 calc(100% - 26px),transparent);mask:linear-gradient(#000 calc(100% - 26px),transparent)}
 #app .luck.done .lk-info{opacity:1;transform:none}
-#app .lk-k{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#F3D19A;opacity:.85}
+
 #app .lk-info h2{margin:6px 0 0;font-family:var(--serif);font-size:32px;font-weight:600;line-height:1.05}
 #app .lk-a{margin-top:6px;font-size:15px;color:var(--ink2)}
 #app .lk-info p{margin:14px 0 0;font-size:16px;line-height:1.55;color:#E8E8EC}
@@ -2004,6 +2004,33 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .lk-acts .btn{flex:1}#app .lk-acts .btn.w{flex:1.5}
 #app .lk-again{flex:none;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;color:var(--ink)}
 #app .lk-again svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}
+
+#app .luck.done .lk-bg img{opacity:.55}
+#app .luck.out{opacity:0;transition:opacity .28s}
+#app .lk-stage{position:relative;z-index:1;flex:none;height:54vh;padding-top:calc(72px + var(--sat,env(safe-area-inset-top,0px)));display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+#app .lk-deck{position:relative;height:100%;max-height:440px;aspect-ratio:2/3}
+#app .lk-c{position:absolute;inset:0;transition:transform .5s cubic-bezier(.2,1.15,.3,1),opacity .4s ease,filter .4s;will-change:transform}
+#app .lk-c .cv{width:100%!important;height:100%!important;border-radius:12px;box-shadow:0 30px 60px -22px rgba(0,0,0,.9)}
+#app .lk-c.p0{z-index:3;touch-action:none;cursor:grab}
+#app .lk-c.p1{z-index:2;transform:translateY(-16px) scale(.93);filter:brightness(.6)}
+#app .lk-c.p2{z-index:1;transform:translateY(-30px) scale(.86);filter:brightness(.4)}
+#app .lk-c.in{opacity:0;transform:translateY(-40px) scale(.8)}
+#app .lk-hint{margin-top:12px;font-size:13px;color:var(--ink2);animation:lkH 2.4s ease-in-out .9s 2 both}
+@keyframes lkH{0%,100%{opacity:.5;transform:none}50%{opacity:1;transform:translateX(-8px)}}
+#app .lk-info{transition:opacity .3s,transform .45s cubic-bezier(.2,.8,.2,1)!important}
+#app .lk-info.sw{opacity:0!important;transform:translateY(10px)!important}
+#app .luck.done .lk-info,#app .luck.done .lk-acts{transition-delay:.05s}
+@media (prefers-reduced-motion:reduce){#app .lk-c,#app .lk-info{transition:none!important}}
+
+/* подписи разделов - обычным регистром, крупнее и спокойнее: без «служебных» капсов */
+#app .sx-h:not(.L *),#app .fwrap .fsec h4,#app .fmore-h,#app .lv-h4,#app .dmon,#app .dlbl,#app .sx-mean b,#app .flow-cap .kick:not(.L *),#app .lv-ch small,#app .lv-g small{text-transform:none!important;letter-spacing:0!important;font-size:14px!important;font-weight:600!important}
+#app .dlbl,#app .dmon{opacity:.6}
+/* «сменить обложку» - маленькая круглая кнопка в углу, не закрывает обложку */
+#app .bkc .bkc-cov{left:auto!important;right:8px!important;bottom:8px!important;transform:none!important;width:36px;height:36px;padding:0!important;border-radius:50%!important;display:grid!important;place-items:center}
+#app .bkc .bkc-cov span{display:none}
+#app .bkc .bkc-cov{background:rgba(12,12,18,.6)!important;color:#fff!important;box-shadow:0 0 0 1px rgba(255,255,255,.18)!important}
+#app .bkc .bkc-cov svg{margin:0!important}
+#app .shelves-top{justify-content:flex-end!important}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -2021,7 +2048,7 @@ setTimeout(check,2500);document.addEventListener("visibilitychange",()=>{if(!doc
 
 <section class="screen" id="s-feed"><div class="feed" id="feed"></div><button class="ffil gl press" id="ffil" hidden aria-label="Фильтры"></button><div class="gbar" id="gbar" hidden></div><div class="dots" id="dots"></div></section>
 <section class="screen on" id="s-col"><div class="scroll" id="colScroll"><div class="vbanner gl" id="vbanner" hidden></div><div class="rec-h" id="recH"><span>Шуршуня</span><i>советует</i></div><div class="flow" id="flow"></div><div class="flow-cap" id="flowCap"></div><button class="luck-go" id="luckGo"><span class="lg-t"><b>Книга для тебя</b><small>Шуршуня выберет одну - под твой вкус</small><i class="lg-cta">Выбрать <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></i></span><span class="lg-fan" id="lgFan"></span></button><div id="trend"></div><div id="newAu" hidden></div></div></section>
-<section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><div class="shelves-top"><h3 class="shelf-h shelves-h">Мои полки</h3><button class="add-in press" id="addIn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Поставить книгу</button></div><div class="pills" id="pills"></div><div class="grid" id="grid"></div><h3 class="shelf-h stat-h">Статистика</h3><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
+<section class="screen" id="s-fr"><div class="scroll" id="frScroll"><div id="frBox"></div></div></section><section class="screen" id="s-sum"><div class="scroll" id="sumScroll"><div class="shelves-top"><button class="add-in press" id="addIn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Поставить книгу</button></div><div class="pills" id="pills"></div><div class="grid" id="grid"></div><h3 class="shelf-h stat-h">Статистика</h3><div class="bento" id="bento"></div><div id="sumMore"></div></div></section>
 
 <div class="bottom"><nav class="dock gl" aria-label="Разделы"><i class="lens lensy" id="lens"></i>
   
@@ -4254,7 +4281,7 @@ const hookOf=x=>wholeSent(noCaps(x.ds)||noCaps(descOf(x))||x.wy||"",190);
 function wholeSent(t,max){t=String(t||"").replace(/\s+/g," ").trim().replace(/…$/,"");const ss=t.match(/[^.!?]+[.!?]+(?:\s|$)/g);if(!ss)return t;let out="";
   for(const z of ss){if(out&&(out+z).length>max)break;out+=z}out=out.trim();if(out.length>260){const c=out.lastIndexOf(",",240);out=(c>80?out.slice(0,c):out.slice(0,out.lastIndexOf(" ",240)))+"."}return out}
 const sentCut=(d,n)=>{d=String(d||"").trim();if(d.length<=n)return d.replace(/\s*…$/,m=>"");const cut=d.slice(0,n),k=Math.max(cut.lastIndexOf(". "),cut.lastIndexOf("! "),cut.lastIndexOf("? "),cut.lastIndexOf("… "));return k>40?cut.slice(0,k+1):cut};
-const fixEll=d=>{d=String(d||"").trim();if(!/…$/.test(d))return d;const k=Math.max(d.lastIndexOf(". "),d.lastIndexOf("! "),d.lastIndexOf("? "));return k>40?d.slice(0,k+1):d.replace(/\s*…$/,".")};
+const fixEll=d=>{d=String(d||"").replace(/НЕЗАКОННОЕ ПОТРЕБЛЕНИЕ НАРКОТИЧЕСКИХ СРЕДСТВ[^.]*?ОТВЕТСТВЕННОСТЬ\.?\s*/gi,"").trim();if(!/…$/.test(d))return d;const k=Math.max(d.lastIndexOf(". "),d.lastIndexOf("! "),d.lastIndexOf("? "));return k>40?d.slice(0,k+1):d.replace(/\s*…$/,".")};
 const dClean=d=>{d=String(d||"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();return sentCut(d,2400)};
 const DQ=[],DX={};let dqn=0;
 function wantDesc(x,cb){if(!x||x._f)return;const k=ikey(x);if(DESC[k]!==undefined){if(cb)cb();return}if(DX[k]){(DX[k].cbs=DX[k].cbs||[]).push(cb);return}DX[k]={cbs:cb?[cb]:[]};DQ.push({x,k});dpump()}
@@ -4548,30 +4575,51 @@ function luckPool(){const W=wantNorms(),q=tasteQ(),shown=(LUCK&&LUCK.seen)||new 
   const ok=b=>{const n=b._n||norm(b.t);return !READ.has(n)&&!W.has(n)&&!dismissed.has(b.id)&&!shown.has(n)&&!!noCaps(b.ann)&&!(b.big&&!imgOf(b))};
   const sc=topK(ALLB(),80,b=>ok(b)?feedScore(b,q)+(imgOf(b)?3:0):null).map(z=>z.b);
   for(let i=sc.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sc[i],sc[j]]=[sc[j],sc[i]]}return sc}
-function luckOpen(){if(VIEW)return;LUCK=LUCK||{seen:new Set(),n:0};goal("luck");luckRoll(true)}
+function luckOpen(){if(VIEW)return;LUCK={seen:(LUCK&&LUCK.seen)||new Set(),n:0,q:[]};goal("luck");luckStart()}
 function luckFan(){const el=$("#lgFan");if(!el)return;const P=luckPool().filter(b=>imgOf(b)).slice(0,3);el.innerHTML=P.map((b,i)=>`<span style="--i:${i}">${cv(bItem(b,"rec"),70)}</span>`).join("")}
-function luckRoll(first){const P=luckPool();if(!P.length){toast("Шуршуня перебрал всю стопку - загляни попозже");return}
-  const pick=P[0],x=bItem(pick,"rec");LUCK.x=x;LUCK.seen.add(pick._n||norm(pick.t));LUCK.n++;
-  const dec=P.slice(1).filter(b=>imgOf(b)).slice(0,6).map(b=>bItem(b,"rec")),N=dec.length,u=imgOf(x),y=(catOf(x)||x).y,pg=(catOf(x)||x).pg;
-  const rot=i=>((i*37)%13-6)*1.4;
+// «Книга для тебя»: обложка вырастает из кнопки, сзади ждут ещё две; смахни карточку - придёт следующая, вниз - закрыть
+function luckFill(){const W=wantNorms();LUCK.q=LUCK.q.filter(x=>{const n=norm(x.t);return !READ.has(n)&&!W.has(n)});
+  if(LUCK.q.length<4){const have=new Set(LUCK.q.map(x=>norm(x.t)));for(const b of luckPool()){const n=b._n||norm(b.t);if(have.has(n))continue;LUCK.q.push(bItem(b,"rec"));have.add(n);LUCK.seen.add(n);if(LUCK.q.length>=6)break}}}
+function luckInfo(x){const c=catOf(x)||x,y=c.y,pg=c.pg;return `<h2>${esc(x.t)}</h2><div class="lk-a">${esc([x.a,y,pg?pg+" стр.":""].filter(Boolean).join(" · "))}</div><p id="lkD">${esc(descOf(x)||hookOf(x))}</p>`}
+function luckCards(){return LUCK.q.slice(0,3).map((x,i)=>`<div class="lk-c p${i}" data-k="${esc(ikey(x))}">${cv(x,240)}</div>`).reverse().join("")}
+function luckStart(){luckFill();const x=LUCK.q[0];if(!x){toast("Шуршуня перебрал всю стопку - загляни попозже");return}LUCK.x=x;const u=imgOf(x);
   luckEl.innerHTML=`<div class="lk-bg">${u?`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer">`:""}</div><button class="lk-x" data-lk="x" aria-label="Закрыть">${IC2.x}</button>
-   <div class="lk-stage"><div class="lk-glow"></div><div class="lk-deck"><div class="lk-c win">${cv(x,220)}</div>${dec.map((b,i)=>`<div class="lk-c" style="--r:${rot(i)}deg;z-index:${10+N-i}">${cv(b,220)}</div>`).join("")}</div></div>
-   <div class="lk-info"><div class="lk-k">Шуршуня выбрал для тебя</div><h2>${esc(x.t)}</h2><div class="lk-a">${esc([x.a,y,pg?pg+" стр.":""].filter(Boolean).join(" · "))}</div><p id="lkD">${esc(descOf(x)||hookOf(x))}</p></div>
+   <div class="lk-stage"><div class="lk-deck" id="lkDeck">${luckCards()}</div>${LS.get("zal.lkhint",0)?"":`<div class="lk-hint">смахни карточку - покажу другую</div>`}</div>
+   <div class="lk-info" id="lkInfo">${luckInfo(x)}</div>
    <div class="lk-acts"><button class="btn w" data-lk="want">Хочу прочитать</button><button class="btn" data-lk="more">Подробнее</button><button class="lk-again" data-lk="again" aria-label="Другую книгу"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></button></div>`;
-  luckEl.classList.add("on");luckEl.classList.remove("done","won");syncBack();if(!x.ds)wantDesc(x,()=>{const p=$("#lkD");if(p&&LUCK&&LUCK.x===x)p.textContent=descOf(x)||hookOf(x)});
-  // колода тасуется: верхние книги по очереди улетают в стороны, последней остаётся выбранная
-  const cs=[...luckEl.querySelectorAll(".lk-c:not(.win)")],win=luckEl.querySelector(".lk-c.win"),ease="cubic-bezier(.3,.7,.2,1)";
-  const all=[win,...cs];all.forEach((c,i)=>c.animate([{transform:`translateY(40vh) rotate(${(i%2?1:-1)*14}deg) scale(.8)`,opacity:0},{transform:`rotate(var(--r,0deg))`,opacity:1}],{duration:420,delay:i*35,easing:ease,fill:"backwards"}));
-  const t0=first?520:420,gap=170;
-  cs.forEach((c,i)=>{const d=i%2?1:-1;setTimeout(()=>{tgHaptic("soft");c.animate([{transform:`rotate(${rot(i)}deg)`},{transform:`translate(${d*115}vw,${-6-i*2}vh) rotate(${d*28}deg)`}],{duration:420,easing:"cubic-bezier(.5,0,.75,.4)",fill:"forwards"})},t0+i*gap)});
-  const tw=t0+N*gap+260;
-  setTimeout(()=>{luckEl.classList.add("won");tgHaptic("medium");win.animate([{transform:"scale(1)"},{transform:"scale(1.06)"},{transform:"scale(1)"}],{duration:520,easing:"cubic-bezier(.3,1.4,.4,1)"})},tw);
-  setTimeout(()=>luckEl.classList.add("done"),tw+380)}
-function luckClose(){luckEl.classList.remove("on","done","won");setTimeout(luckFan,400);setTimeout(()=>{if(!luckEl.classList.contains("on"))luckEl.innerHTML=""},300);syncBack()}
+  luckEl.classList.remove("done");luckEl.classList.add("on");syncBack();luckDesc(x);
+  // общий элемент: верхняя карточка вылетает из веера на кнопке
+  const top=luckEl.querySelector(".lk-c.p0"),fan=document.querySelector("#lgFan span:first-child")||$("#luckGo");
+  requestAnimationFrame(()=>{const a=fan&&fan.getBoundingClientRect(),b=top.getBoundingClientRect();
+    if(a&&a.width&&!matchMedia("(prefers-reduced-motion: reduce)").matches){const sx=a.width/b.width,dx=a.left+a.width/2-(b.left+b.width/2),dy=a.top+a.height/2-(b.top+b.height/2);
+      top.animate([{transform:`translate(${dx}px,${dy}px) scale(${sx}) rotate(-6deg)`},{transform:"none"}],{duration:620,easing:"cubic-bezier(.2,1.18,.32,1)"});
+      luckEl.querySelectorAll(".lk-c.p1,.lk-c.p2").forEach((c,i)=>c.animate([{opacity:0,transform:"translateY(40px) scale(.8)"},{}],{duration:520,delay:160+i*70,easing:"cubic-bezier(.2,1,.3,1)",fill:"backwards"}))}
+    tgHaptic("medium");setTimeout(()=>luckEl.classList.add("done"),260)});
+  luckDrag()}
+function luckDesc(x){if(!x.ds)wantDesc(x,()=>{const p=$("#lkD");if(p&&LUCK&&LUCK.x===x)p.textContent=descOf(x)||hookOf(x)})}
+// следующая книга: верхняя улетает в сторону, остальные подъезжают, текст меняется
+function luckNext(dir,from){const top=luckEl.querySelector(".lk-c.p0");if(!top||LUCK.busy)return;LUCK.busy=1;dir=dir||-1;LS.set("zal.lkhint",1);const h=luckEl.querySelector(".lk-hint");if(h)h.remove();
+  const fx=from||{x:0,y:0,r:0};top.animate([{transform:`translate(${fx.x}px,${fx.y}px) rotate(${fx.r}deg)`},{transform:`translate(${dir*innerWidth*1.2}px,${fx.y-60}px) rotate(${dir*24}deg)`}],{duration:380,easing:"cubic-bezier(.4,0,.8,.6)",fill:"forwards"});tgHaptic("light");
+  LUCK.q.shift();luckFill();const x=LUCK.q[0];if(!x){LUCK.busy=0;luckClose();toast("Шуршуня перебрал всю стопку - загляни попозже");return}LUCK.x=x;
+  const info=$("#lkInfo");info.classList.add("sw");
+  setTimeout(()=>{top.remove();const d=$("#lkDeck");d.querySelectorAll(".lk-c").forEach(c=>{const k=+c.className.match(/p(\d)/)[1];c.classList.replace("p"+k,"p"+(k-1))});
+    const nx=LUCK.q[2];if(nx){d.insertAdjacentHTML("afterbegin",`<div class="lk-c p2 in" data-k="${esc(ikey(nx))}">${cv(nx,240)}</div>`);requestAnimationFrame(()=>{const n=d.querySelector(".in");n&&n.classList.remove("in")})}
+    info.innerHTML=luckInfo(x);info.scrollTop=0;info.classList.remove("sw");luckDesc(x);
+    const u=imgOf(x),bg=luckEl.querySelector(".lk-bg img");if(bg&&u){bg.style.opacity=0;setTimeout(()=>{bg.src=u;bg.style.opacity=""},250)}LUCK.busy=0;luckDrag()},260)}
+function luckDrag(){const c=luckEl.querySelector(".lk-c.p0");if(!c||c._dg)return;c._dg=1;let x0=0,y0=0,t0=0,dx=0,dy=0,on=false,arm=0;
+  c.addEventListener("pointerdown",e=>{if(LUCK.busy)return;on=true;x0=e.clientX;y0=e.clientY;t0=Date.now();dx=dy=0;arm=0;c.setPointerCapture(e.pointerId);c.style.transition="none"});
+  c.addEventListener("pointermove",e=>{if(!on)return;dx=e.clientX-x0;dy=e.clientY-y0;const r=dx/16;c.style.transform=`translate(${dx}px,${Math.max(dy*.6,dy)}px) rotate(${r}deg)`;
+    const a=Math.abs(dx)>90?1:dy>120?2:0;if(a&&a!==arm)tgHaptic("soft");arm=a});
+  const up=()=>{if(!on)return;on=false;const v=Math.abs(dx)/Math.max(1,Date.now()-t0);
+    if(Math.abs(dx)>90||(v>.6&&Math.abs(dx)>30)){c.style.transform="";luckNext(dx>0?1:-1,{x:dx,y:dy,r:dx/16});return}
+    if(dy>120&&Math.abs(dx)<80){luckClose();return}
+    c.style.transition="transform .5s cubic-bezier(.2,1.4,.35,1)";c.style.transform="";if(Math.abs(dx)<6&&Math.abs(dy)<6){luckClose();setTimeout(()=>bkcOpen(LUCK.x,"rec"),200)}};
+  c.addEventListener("pointerup",up);c.addEventListener("pointercancel",up)}
+function luckClose(){luckEl.classList.add("out");setTimeout(()=>{luckEl.classList.remove("on","done","out");luckEl.innerHTML=""},280);setTimeout(luckFan,400);syncBack()}
 luckEl.addEventListener("click",e=>{const b=e.target.closest("[data-lk]");if(!b||!LUCK)return;const a=b.dataset.lk,x=LUCK.x;tgHaptic();
   if(a==="x"){luckClose();return}
-  if(a==="again"){luckRoll();return}
-  if(a==="want"){BK.addWant(x);vDirty=true;toast("Добавлено в избранное");luckClose();setTimeout(refresh,300);return}
+  if(a==="again"){luckNext(-1);return}
+  if(a==="want"){BK.addWant(x);vDirty=true;toast("Добавлено в избранное");luckNext(1);return}
   if(a==="more"){luckClose();setTimeout(()=>bkcOpen(x,"rec"),200)}});
 $("#addIn").addEventListener("click",()=>$("#addB").click());$("#luckGo").addEventListener("click",()=>{tgHaptic("medium");luckOpen()});setTimeout(luckFan,1500);addEventListener("bigcat",()=>setTimeout(luckFan,500));
 $("#colScroll").addEventListener("scroll",()=>{document.body.classList.toggle("topoff",$("#colScroll").scrollTop>16)},{passive:true});
@@ -5020,7 +5068,7 @@ function moveLens(){const b=document.querySelector(".dock button.on"),l=$("#lens
 function show(s){SCREEN=s;if(s==="feed")setTimeout(()=>document.querySelectorAll("#app .slide").forEach(fitSlide),60);try{localStorage.setItem("zal.sync.scr",JSON.stringify({s,t:Date.now()}))}catch(e){}document.body.classList.toggle("col",s==="col");document.body.classList.toggle("sum",s==="sum");const was=document.querySelector(".dock button.on");
   document.querySelectorAll("#app .screen").forEach(x=>x.classList.toggle("on",x.id==="s-"+s));document.querySelectorAll(".dock button").forEach(b=>b.classList.toggle("on",b.dataset.s===(s==="feed"?"col":s)));tgHaptic();
   if(was&&was.dataset.s!==s){const l=$("#lens");l.classList.add("go");setTimeout(()=>l.classList.remove("go"),260)}moveLens();
-  if(s==="feed"){cur=-1;onFeedScroll();if(CO)setTimeout(coDraw,300);else coach()}else if(CO)coEl.classList.remove("on");if(s==="col")drawCol();if(s==="fr"){drawFr();frLoad()}if(s==="sum"){drawCol(true);drawSum();const x=DATA().read()[0];ambFor(x)}if(s!=="feed")setTimeout(()=>tour(s),900);try{syncBack()}catch(e){}}
+  if(s==="feed"){cur=-1;onFeedScroll();if(CO)setTimeout(coDraw,300);else coach()}else if(CO)coEl.classList.remove("on");if(s==="col")drawCol();if(s==="fr"){drawFr();frLoad()}if(s==="sum"){drawCol(true);drawSum();const x=DATA().read()[0];ambFor(x)}document.querySelectorAll(".tour").forEach(e=>e.remove());if(s!=="feed")setTimeout(()=>tour(s),900);try{syncBack()}catch(e){}}
 document.body.dataset.cap="c";document.body.dataset.font="1";
 // ---------- знакомство с разделами: при первом заходе подсвечиваем главное ----------
 const TOURS={
