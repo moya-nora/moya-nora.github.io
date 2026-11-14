@@ -2175,6 +2175,11 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app #grid .ggen{grid-column:1/-1;margin:14px 0 2px;font-family:var(--serif);font-size:19px;font-weight:600;display:flex;align-items:baseline;gap:8px}
 #app #grid .ggen:first-child{margin-top:4px}
 #app #grid .ggen span{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink3)}
+#app .au-x{position:absolute;top:calc(14px + var(--sat,env(safe-area-inset-top,0px)));right:14px;z-index:3;width:40px;height:40px;border-radius:20px;display:grid;place-items:center;background:rgba(255,255,255,.1);color:#fff}
+#app .au-x svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2}
+#app #acctL .acct{margin:12px 0 2px;font-size:13px;opacity:1}
+#app #acctL .acct.off span{opacity:.9;color:var(--ink2)}
+#app #acctL{margin:0 16px}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -5265,8 +5270,7 @@ const TOURS={
        ["#srchB","Поиск","Ищи по названию или просто попроси своими словами: «грустно, и хочу погрустить», «что-то как хороший сериал»."],
        ['.dock [data-s="sum"]',"Полки и дневник","Здесь твои книги, отзывы и читательский дневник. Сверху видно, сохранены ли полки в аккаунте."]],
   fr:[[".fr-nick,.fr-add","Друзья","Скажи другу свой ник - он найдёт тебя за секунду. Или добавь его по нику, почте или ссылке: вы увидите полки, оценки и отзывы друг друга."]],
-  sum:[["#bento","Твоя статистика","Сколько прочитано, любимые авторы, страны и века — обновляется само."],
-       ["#sumMore .stamps,#sumMore","Читательский паспорт","Собирай штампы: за классику, книги разных стран и прочитанные полки."]]};
+  sum:[]};
 function tour(name){if(!tour._ok){(window.UIREADY||Promise.resolve()).then(()=>{tour._ok=1;tour(name)});return}if(VIEW||!LS.get("zal.onb",0)||(name!=="col"&&emptyAll())||LS.get("zal.tour2."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
   if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on"))return;LS.set("zal.tour2."+name,1);let k=0;
   const ov=document.createElement("div");ov.className="tour";$("#app").appendChild(ov);
@@ -5752,7 +5756,7 @@ function hsShow(mode){HS.set("last",Date.now());HS.set("shows",(HS.get("shows")|
   hsEl.innerHTML=`<img src="icons/icon-512.png?v=5" alt=""><div class="hs-tx"><b>Нора на экране «Домой»</b></div>
    <button class="hs-go" data-hs-go>${mode==="tg"||bip?"Добавить":"Установить"}</button><button class="hs-cl" data-hs-later aria-label="Закрыть">${IC2.x}</button>`;
   hsEl.dataset.mode=mode;setTimeout(()=>hsEl.classList.add("on"),50)}
-const hsHide=()=>hsEl.classList.remove("on");window.noraHS=hsShow;
+const hsHide=()=>hsEl.classList.remove("on");window.noraHS=hsShow;window.noraAuth=()=>{authMode="up";authShow()};
 async function hsInstall(mode){
   if((mode==="tg"||(TG&&!mode))&&TG&&TG.addToHomeScreen){try{TG.onEvent&&TG.onEvent("homeScreenAdded",()=>HS.set("done",1));TG.addToHomeScreen()}catch(x){}return}
   if(bip){bip.prompt();try{const r=await bip.userChoice;if(r.outcome==="accepted")HS.set("done",1)}catch(x){}bip=null;return}
@@ -5793,7 +5797,7 @@ const signInK=async(e,p)=>{if(authCtx==="onb"&&NS.yieldLocal)NS.yieldLocal();ret
 function authShow(next,ctx){authNext=next||null;authCtx=ctx||"";if(NS.email&&authMode==="up")authMode="in";authDraw();authEl.classList.add("on")}
 function authDraw(){const up=authMode==="up";
   const ob=authCtx==="onb";
-  authEl.innerHTML=`<div class="au-in"><h1>${up?(ob?"Сохрани свою Нору":"Создай аккаунт"):"Вход"}</h1>${up?"":`<p>Почта и пароль от Норы.</p>`}
+  authEl.innerHTML=`<button class="au-x" id="auX" aria-label="Закрыть">${IC2.x}</button><div class="au-in"><h1>${up?(ob?"Сохрани свою Нору":"Создай аккаунт"):"Вход"}</h1>${up?"":`<p>Почта и пароль от Норы.</p>`}
    ${up?`<input class="sy-in" id="auN" autocomplete="given-name" placeholder="Имя" value="${esc(LS.get("zal.name",""))}">`:""}
    <input class="sy-in" id="auE" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Почта" value="${esc(up?"":showId(NS.email))}">
    <input class="sy-in" id="auP" type="password" autocomplete="${up?"new-password":"current-password"}" placeholder="${up?"Пароль, от 6 символов":"Пароль"}">
@@ -5801,6 +5805,7 @@ function authDraw(){const up=authMode==="up";
    <button class="au-sw" id="auSw">${up?"Уже есть аккаунт? Войти":"Нет аккаунта? Создать"}</button>${up?"":`<button class="au-sw" id="auR">Забыли пароль?</button>`}</div>`;
   const go=$("#auGo"),msg=$("#auM");
   $("#auSw").onclick=()=>{authMode=up?"in":"up";authDraw();tgHaptic()};
+  $("#auX").onclick=()=>{tgHaptic();authEl.classList.remove("on");try{sessionStorage.setItem("nora.an","1")}catch(e){}LS.set("zal.authskip",Date.now());const n=authNext;authNext=null;if(authCtx==="onb"&&n)n()};
   const r=$("#auR");if(r)r.onclick=async()=>{const e=$("#auE").value.trim();if(!e||!e.includes("@")||e.startsWith("@")){msg.textContent=e?"Пароль восстанавливается по почте. Если ты входила по логину — напиши в бот Норы, поможем.":"Впиши почту — придёт ссылка для нового пароля";return}try{await NS.reset(e);msg.textContent="Письмо отправлено. Задай новый пароль по ссылке и возвращайся."}catch(x){msg.textContent=x.message}};
   go.onclick=async()=>{let e=$("#auE").value.trim();const p=$("#auP").value;const nv=up?$("#auN").value.trim():"";if(up&&!nv){msg.textContent="Впиши имя — так тебя увидят друзья";$("#auN").focus();return}if(!e||!p){msg.textContent="Впиши почту и пароль";return}try{e=authId(e,up).e}catch(x){msg.textContent=x.message;return}go.disabled=true;go.textContent=up?"Создаю…":"Вхожу…";msg.textContent="";
     const nm=$("#auN");if(nm&&nm.value.trim())LS.set("zal.name",nm.value.trim().slice(0,40));
@@ -5814,7 +5819,7 @@ function bkParam(){try{const v=new URLSearchParams(location.search).get("bk");if
 // разрешение боту писать раз в неделю: спрашиваем один раз, когда на полке уже есть книги
 function askWrite(){try{if(!TG||!TG.requestWriteAccess||LS.get("zal.wa",0)||!BOOKS.length)return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#bkc.on"))return setTimeout(askWrite,20000);
   LS.set("zal.wa",1);TG.requestWriteAccess(ok=>{if(ok&&!LS.get("zal.ntf",0))setTimeout(notifyAsk,600)})}catch(e){}}
-function afterSplash(){setTimeout(()=>{if(SCREEN==="col")tour("col")},2600);setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0))authShow()}
+function afterSplash(){setTimeout(()=>{if(SCREEN==="col")tour("col")},2600);setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&Date.now()-(+LS.get("zal.authskip",0)||0)>3*864e5)authShow()}
 
 
 // ---------- смена обложки вручную: фото / рисунок / другое издание ----------
