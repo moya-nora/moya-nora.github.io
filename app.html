@@ -4695,6 +4695,11 @@ const BOOKTOK="Ониксовый шторм|Яррос;Четвёртое кр�
 let TRB=null,TRK=-1,BTB=null,BTK=-1;
 function listByPairs(P){const L=ALLB(),by=new Map();L.forEach(b=>{const n=b._n||norm(b.t);let v=by.get(n);if(!v)by.set(n,v=[]);v.push(b)});
   return P.map(([t,s])=>{const n=norm(t),sn=norm(s),ok=b=>norm(b.a||"").includes(sn);let c=(by.get(n)||[]).find(ok);if(!c)for(const [k,v] of by){if(k.startsWith(n)&&(c=v.find(ok)))break}return c}).filter(Boolean)}
+// «Новинки, которые уже полюбили»: книги прошлого и этого года с большим числом оценок читателей; не больше одной книги автора и не больше пяти одного жанра
+let NLB=null,NLK=-1;
+function newLoved(){const L=ALLB();if(NLB&&NLK===L.length)return NLB;NLK=L.length;const C=L.filter(b=>(b.y||0)>=YNOW-1&&(b.sl||0)>=300&&b.g!=="nonfic"&&b.g!=="kids"&&!(b.tags||[]).includes("самиздат")&&!(()=>{const m=String(b.t).match(/(?:книга|том|часть)\s*(\d+)|-(\d+)\b/i);return m&&+(m[1]||m[2])>1})()).sort((a,b)=>(b.sl||0)-(a.sl||0));
+  const au=new Set(),gc={},out=[];for(const b of C){const k=norm(String(b.a||"").split(" ").slice(-1)[0]);const g=(b.tags||[]).some(t=>t==="любовное фэнтези"||t==="ромэнтези")?"rf":b.g;if(au.has(k)||(gc[g]||0)>=5)continue;au.add(k);gc[g]=(gc[g]||0)+1;out.push(b);if(out.length>=18)break}
+  return NLB=out}
 function booktokBooks(){const n=ALLB().length;if(BTB&&BTK===n)return BTB;BTK=n;return BTB=listByPairs(BOOKTOK)}
 function trendBooks(){const L=ALLB();if(TRB&&TRK===L.length)return TRB;TRK=L.length;const by=new Map();
   L.forEach(b=>{const n=b._n||norm(b.t);let v=by.get(n);if(!v)by.set(n,v=[]);v.push(b)});
@@ -4715,7 +4720,7 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   const GP=gpref(),hit=b=>GP.some(g=>genPass(b,g)),res=[];
   // в тренде: свои жанры первыми (одного автора можно дважды — там серии)
   {const tr=trendBooks().filter(free).slice(0,16);tr.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["trend","В тренде сейчас","Громкие книги, о которых сейчас говорят",tr])}
-  {const bt=booktokBooks().filter(free).slice(0,16);bt.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["booktok","Хиты буктока","О чём говорят в буктоке и на буктюбе",bt])}
+  {const bt=newLoved().filter(free).slice(0,16);bt.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["newlove","Новинки, которые уже полюбили","Вышли недавно - и у них уже тысячи оценок читателей",bt])}
   if(BOOKS.length||want.length||GP.length){const q=tasteQ();res.push(["like","Тебе понравится","По твоим полкам и оценкам",take(topK(L,120,b=>free(b)?feedScore(b,q)+(imgOf(b)?2:0):null).map(z=>z.b))])}
   const mix=arr=>arr.map(b=>({b,s:(hit(b)?1:0)+Math.random()})).sort((x,y)=>y.s-x.s).map(z=>z.b);
   res.push(["mand","Книги с запахом мандаринов","Новый год, Рождество и снег за окном",take(mix(listBooks(MAND_L)))]);
