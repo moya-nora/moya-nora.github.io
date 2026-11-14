@@ -110,12 +110,16 @@ for gid, gname, ng, tags in pick:
         time.sleep(0.4)
     print(f"  {gname}: {got}", flush=True)
 
+DRUG = []
 # аннотации — отдельным запросом к книге (целиком, до 1500 знаков по концу предложения)
 L = sorted(books.values(), key=lambda b: -b["n"])
 for i, b in enumerate(L):
     d = get(f"arts/{b['id']}")
     x = ((d or {}).get("payload") or {}).get("data") or {}
     ann = clean(x.get("html_annotation") or x.get("annotation") or "")
+    # предупреждение о наркотиках по закону (с 1 марта 2026) убираем из текста описания, но запоминаем книгу - в Норе оно показывается мелко внизу карточки
+    if re.search(r"НЕЗАКОННОЕ ПОТРЕБЛЕНИЕ НАРКОТИЧЕСКИХ СРЕДСТВ", ann, re.I):
+        DRUG.append([b["t"], b["a"]])
     ann = re.sub(r"НЕЗАКОННОЕ ПОТРЕБЛЕНИЕ НАРКОТИЧЕСКИХ СРЕДСТВ[^.]*?ОТВЕТСТВЕННОСТЬ\.?\s*", "", ann, flags=re.I).strip()
     lab = " | ".join([t.get("name", "") for t in x.get("tags") or []] + [g.get("name", "") for g in x.get("genres") or []])
     for rx, tid in TROPES:
@@ -143,4 +147,5 @@ for b in L:
                  ("https://www.litres.ru" + b["cv"]) if b["cv"] else "", b.get("d") or ""])
 json.dump({"meta": {"source": "ЛитРес", "built": time.strftime("%Y-%m-%d"), "n": len(rows)}, "c": [], "g": G_, "tg": TG, "aw": [], "a": A, "b": rows},
           open(OUT, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+json.dump(DRUG, open(os.path.join(os.path.dirname(OUT), "drugmark.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 print("готово:", len(rows), "книг, самиздат:", sum(1 for b in L if b["dr"]))
