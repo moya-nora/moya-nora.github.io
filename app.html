@@ -2919,7 +2919,12 @@ function applyEdits(){Object.entries(EDITS).forEach(([id,e])=>{const i=BOOKS.fin
 if(!VIEW)applyEdits();
 function cloudChunks(prefix,arr){if(!TG||!TG.CloudStorage)return;try{const str=JSON.stringify(arr),parts=[];for(let i=0;i<str.length;i+=3800)parts.push(str.slice(i,i+3800));parts.forEach((x,i)=>TG.CloudStorage.setItem(prefix+i,x));TG.CloudStorage.setItem(prefix+"n",String(parts.length))}catch(e){}}
 function cloudRead(prefix,cb){if(!TG||!TG.CloudStorage)return;try{TG.CloudStorage.getItem(prefix+"n",(e,n)=>{n=+n;if(e||!n)return;const ks=[...Array(n)].map((_,i)=>prefix+i);TG.CloudStorage.getItems(ks,(e2,v)=>{if(e2||!v)return;try{cb(JSON.parse(ks.map(k=>v[k]||"").join("")))}catch(x){}})})}catch(e){}}
-const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+// подсказки и знакомство показываются один раз: отметки «уже видел» дублируем в хранилище Telegram - некоторые телефоны стирают память мини-приложения при закрытии
+const UIF=/^zal\.(tour2\.|coach|lkhint|onbAsk|onb$|sync\.hs$|coachsx|wa$)/,UIK=k=>"u_"+k.replace(/[^A-Za-z0-9_-]/g,"_");
+const _TGW=window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData&&Telegram.WebApp.CloudStorage&&Telegram.WebApp.isVersionAtLeast&&Telegram.WebApp.isVersionAtLeast("6.9")?Telegram.WebApp:null;
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}if(_TGW&&UIF.test(k)){try{_TGW.CloudStorage.setItem(UIK(k),JSON.stringify(v))}catch(e){}}}};
+window.UIREADY=new Promise(res=>{if(!_TGW){res();return}try{_TGW.CloudStorage.getKeys((e,K)=>{const L=(K||[]).filter(x=>x.startsWith("u_"));if(e||!L.length){res();return}
+  _TGW.CloudStorage.getItems(L,(e2,V)=>{try{if(!e2&&V)for(const ck in V){const k=ck.slice(2).replace(/^zal_/,"zal.").replace(/^zal\.tour2_/,"zal.tour2.").replace(/^zal\.sync_hs$/,"zal.sync.hs");if(V[ck]&&localStorage.getItem(k)==null)localStorage.setItem(k,V[ck])}}catch(x){}res()})})}catch(x){res()}setTimeout(res,1500)});
 const KEY="zal.want.v2";
 const hydrate=list=>list.map(x=>typeof x==="string"?(LIB[x]?{...LIB[x],id:x}:null):x).filter(Boolean);
 const compact=()=>want.map(s=>LIB[s.id]&&!s.from?s.id:(LIB[s.id]?{id:s.id,from:s.from,...LIB[s.id]}:s));
@@ -5262,7 +5267,7 @@ const TOURS={
   fr:[[".fr-nick,.fr-add","Друзья","Скажи другу свой ник - он найдёт тебя за секунду. Или добавь его по нику, почте или ссылке: вы увидите полки, оценки и отзывы друг друга."]],
   sum:[["#bento","Твоя статистика","Сколько прочитано, любимые авторы, страны и века — обновляется само."],
        ["#sumMore .stamps,#sumMore","Читательский паспорт","Собирай штампы: за классику, книги разных стран и прочитанные полки."]]};
-function tour(name){if(VIEW||!LS.get("zal.onb",0)||(name!=="col"&&emptyAll())||LS.get("zal.tour2."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
+function tour(name){if(!tour._ok){(window.UIREADY||Promise.resolve()).then(()=>{tour._ok=1;tour(name)});return}if(VIEW||!LS.get("zal.onb",0)||(name!=="col"&&emptyAll())||LS.get("zal.tour2."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
   if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on"))return;LS.set("zal.tour2."+name,1);let k=0;
   const ov=document.createElement("div");ov.className="tour";$("#app").appendChild(ov);
   const draw=()=>{const [sel,h,txt]=steps[k],t=document.querySelector(sel);if(!t){next();return}t.scrollIntoView&&t.scrollIntoView({block:"nearest"});
@@ -5725,7 +5730,7 @@ setTimeout(frLoad,2500);setTimeout(frReqPoll,3500);setInterval(()=>{if(!document
 // ---------- подсказка «Нора на экране „Домой“» ----------
 // Не в первые дни: через неделю и после нескольких открытий; «Не сейчас» — снова через 3 недели, максимум 3 раза.
 // Если уже установлено (Telegram сообщает статус, браузер — режим «приложения»), не показываем.
-const HS={get:k=>{try{return JSON.parse(localStorage.getItem("zal.sync.hs")||"{}")[k]}catch(e){}},set(k,v){let o={};try{o=JSON.parse(localStorage.getItem("zal.sync.hs")||"{}")}catch(e){}o[k]=v;localStorage.setItem("zal.sync.hs",JSON.stringify(o))}};
+const HS={get:k=>{try{return JSON.parse(localStorage.getItem("zal.sync.hs")||"{}")[k]}catch(e){}},set(k,v){let o={};try{o=JSON.parse(localStorage.getItem("zal.sync.hs")||"{}")}catch(e){}o[k]=v;LS.set("zal.sync.hs",o)}};
 if(!HS.get("first"))HS.set("first",Date.now());HS.set("opens",(HS.get("opens")||0)+1);
 const standalone=()=>!!(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
 let bip=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();bip=e});
