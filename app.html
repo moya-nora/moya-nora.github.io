@@ -4720,7 +4720,7 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   const GP=gpref(),hit=b=>GP.some(g=>genPass(b,g)),res=[];
   // в тренде: свои жанры первыми (одного автора можно дважды — там серии)
   {const tr=trendBooks().filter(free).slice(0,16);tr.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["trend","В тренде сейчас","Громкие книги, о которых сейчас говорят",tr])}
-  {const bt=newLoved().filter(free).slice(0,16);bt.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["newlove","Новинки, которые уже полюбили","Вышли недавно - и у них уже тысячи оценок читателей",bt])}
+  {const bt=newLoved().filter(free).slice(0,16);bt.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["newlove","Новинки с высокими оценками","Вышли недавно - и у них уже тысячи оценок читателей",bt])}
   if(BOOKS.length||want.length||GP.length){const q=tasteQ();res.push(["like","Тебе понравится","По твоим полкам и оценкам",take(topK(L,120,b=>free(b)?feedScore(b,q)+(imgOf(b)?2:0):null).map(z=>z.b))])}
   const mix=arr=>arr.map(b=>({b,s:(hit(b)?1:0)+Math.random()})).sort((x,y)=>y.s-x.s).map(z=>z.b);
   res.push(["mand","Книги с запахом мандаринов","Новый год, Рождество и снег за окном",take(mix(listBooks(MAND_L)))]);
