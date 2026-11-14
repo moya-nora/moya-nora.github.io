@@ -2030,7 +2030,7 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .bkc .bkc-cov span{display:none}
 #app .bkc .bkc-cov{background:rgba(12,12,18,.6)!important;color:#fff!important;box-shadow:0 0 0 1px rgba(255,255,255,.18)!important}
 #app .bkc .bkc-cov svg{margin:0!important}
-#app .shelves-top{justify-content:flex-start!important;padding-left:20px;padding-right:20px}
+#app .shelves-top{justify-content:flex-start!important;padding-left:16px;padding-right:16px}
 
 /* скорость: размытие под «стеклом» - только у нижнего меню и всплывающих окон; карточки в прокрутке - плотный цвет (размытие на iPhone в Telegram тормозит прокрутку) */
 #app #sumScroll .gl:not(.on),#app #colScroll .gl:not(.on),#app #frScroll .gl:not(.on),#app .bento .gl,#app #sumMore .gl{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background-color:rgba(255,255,255,.085)}
@@ -2170,8 +2170,8 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .hs-card b{font-size:15px;font-weight:600}
 #app .hs-card small{font-size:12.5px;color:var(--ink2);margin-top:2px}
 #app .hs-card i{font-style:normal;flex:none;padding:8px 14px;border-radius:16px;background:#F3D19A;color:#1A1424;font-size:13.5px;font-weight:700}
-#app .pills:not(.L *){flex-wrap:wrap;overflow:visible;row-gap:8px}
-#app .pills button:not(.L *){font-size:14px}
+#app .pills:not(.L *){flex-wrap:nowrap;overflow:hidden;margin-left:16px;margin-right:16px;gap:6px}
+#app .pills button:not(.L *){flex:1 1 auto;white-space:nowrap;padding:8px 10px;font-size:14px}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -4664,13 +4664,15 @@ function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((f
   el.addEventListener("mousedown",e=>down(e.clientX,e.clientY));addEventListener("mousemove",e=>mv(e.clientX,e.clientY,null));addEventListener("mouseup",()=>{x0=null});
   el.addEventListener("click",e=>{if(t0&&Date.now()-t0>450){t0=0;flowHold=Date.now();return}t0=0;const c=e.target.closest(".cv");if(c&&!moved&&!mode){flowHold=Date.now();const i=+c.dataset.i;if(i!==fi){fi=i;layoutFlow()}openItem(flowList()[i],"rec")}})})();
 (function tick(){if(!(document.hidden||!$("#s-col").classList.contains("on")||$("#vsheet").classList.contains("on")||sheetOpen||Date.now()-flowHold<6000))stepFlow(1);setTimeout(tick,9000)})();
+function pillsFit(){const p=$("#pills");if(!p)return;const B=[...p.children];B.forEach(b=>b.style.fontSize="");let f=14;requestAnimationFrame(()=>{while(f>10.5&&p.scrollWidth>p.clientWidth+1){f-=.5;B.forEach(b=>{b.style.fontSize=f+"px";b.style.paddingLeft=b.style.paddingRight=(f<12.5?7:10)+"px"})}})}
+addEventListener("resize",()=>{try{pillsFit()}catch(e){}});
 function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
-  if(colF==="diary"&&(VIEW||isF()))colF="read";$("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read],...(isF()?[]:[["diary","Читательский дневник"]])]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
+  if(colF==="diary"&&(VIEW||isF()))colF="read";$("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read],...(isF()?[]:[["diary","Читательский дневник"]])]).map(([k,l])=>`<button class="gl ${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");pillsFit();
   {const dg=colF==="diary",cvx=$("#cviews"),ov=$("#oldv");$("#grid").classList.toggle("diary",dg);if(cvx)cvx.hidden=dg;if(ov)ov.hidden=dg;
    if(dg){$("#grid").innerHTML=diaryPage();const ds=$("#dstripB");if(ds)ds.innerHTML="";if(!keepFlow)drawFlow();drawNewAu();drawTrend();return}}
   const G=gridList();$("#grid").innerHTML=G.map((x,i)=>`<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
-  {let hc=$("#hsCard");if(!hc){hc=document.createElement("div");hc.id="hsCard";const sm=$("#sumScroll .stat-h")||$("#sumMore");sm&&sm.before(hc)}hc.innerHTML=hsCan()?`<button class="hs-card" data-hs-any><img src="icons/icon-512.png?v=5" alt=""><span><b>Нора на экране «Домой»</b><small>Иконка на телефоне - открывается в одно касание</small></span><i>Добавить</i></button>`:""}{let ac=$("#acctL");if(!ac){ac=document.createElement("div");ac.id="acctL";const st=$(".shelves-top");st&&st.after(ac)}ac.innerHTML=acctLine()}{let ds=$("#dstripB");if(!ds){ds=document.createElement("div");ds.id="dstripB";($("#oldv")||$("#grid")).after(ds)}ds.innerHTML=colF==="read"&&!VIEW?diaryStrip():""}if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
+  {let hc=$("#hsCard");if(!hc){hc=document.createElement("div");hc.id="hsCard";const sm=$("#sumScroll .stat-h")||$("#sumMore");sm&&sm.before(hc)}hc.innerHTML=hsCan()?`<button class="hs-card" data-hs-any><img src="icons/icon-512.png?v=5" alt=""><span><b>Нора на экране «Домой»</b></span><i>Добавить</i></button>`:""}{let ac=$("#acctL");if(!ac){ac=document.createElement("div");ac.id="acctL";const st=$(".shelves-top");st&&st.after(ac)}ac.innerHTML=acctLine()}{let ds=$("#dstripB");if(!ds){ds=document.createElement("div");ds.id="dstripB";($("#oldv")||$("#grid")).after(ds)}ds.innerHTML=colF==="read"&&!VIEW?diaryStrip():""}if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
 // «Новое от твоих авторов»: свежие книги (этот и прошлый год) авторов, которых человек оценил на 4–5, и ещё не на полках
 function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a).map(b=>norm(b.a)));if(!fav.size)return [];
   const W=wantNorms(),seen=new Set(),out=[];for(const b of ALLB()){if(!b.y||b.y<YNOW-1||!b.a||!fav.has(norm(b.a)))continue;const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt)||seen.has(nt)||dismissed.has(b.id))continue;seen.add(nt);out.push(b);if(out.length>=8)break}
@@ -5724,7 +5726,7 @@ const HS_SHARE='<svg viewBox="0 0 24 24"><path d="M12 3.5v11"/><path d="M8 7.5l4
   HS_PLUS='<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8.5v7M8.5 12h7"/></svg>',
   HS_DOTS='<svg viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="18.5" r="1.4"/></svg>';
 function hsShow(mode){HS.set("last",Date.now());HS.set("shows",(HS.get("shows")||0)+1);
-  hsEl.innerHTML=`<img src="icons/icon-512.png?v=5" alt=""><div class="hs-tx"><b>Нора</b><span>Иконка на экране телефона - открывается как приложение</span></div>
+  hsEl.innerHTML=`<img src="icons/icon-512.png?v=5" alt=""><div class="hs-tx"><b>Нора на экране «Домой»</b></div>
    <button class="hs-go" data-hs-go>${mode==="tg"||bip?"Добавить":"Установить"}</button><button class="hs-cl" data-hs-later aria-label="Закрыть">${IC2.x}</button>`;
   hsEl.dataset.mode=mode;setTimeout(()=>hsEl.classList.add("on"),50)}
 const hsHide=()=>hsEl.classList.remove("on");window.noraHS=hsShow;
