@@ -5,5 +5,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for u in https://www.litres.ru/pub/c/cover/6028900.jpg https://www.litres.ru/pub/c/cover_415/6028900.jpg https://cv0.litres.ru/pub/c/cover_415/6028900.jpg https://www.litres.ru/pub/c/cover_330/6028900.jpg https://www.litres.ru/pub/c/cover_250/73966047.jpg https://www.litres.ru/pub/c/cover/73966047.jpg; do echo "U $u $(curl -sSL -o /tmp/c.jpg -w '%{http_code} %{size_download} %{content_type}' "$u") $(python3 -c "import struct;d=open('/tmp/c.jpg','rb').read();print(len(d))")"; done
-          curl -sS -H 'Accept: application/json' "https://api.litres.ru/foundation/api/search?q=%D0%98%D1%81%D1%87%D0%B5%D0%B7%D0%BD%D1%83%D0%B2%D1%88%D0%B0%D1%8F&types=text_book&limit=1" | python3 -c "import json,sys;x=json.load(sys.stdin)['payload']['data'][0]['instance'];print('K',sorted(x.keys()));print('P',json.dumps(x.get('persons'),ensure_ascii=False)[:400])"
+          for u in "https://www.litres.ru/pages/biblio_book/?art=6028900&lfrom=1" "https://www.litres.ru/book/6028900/" "https://www.litres.ru/6028900/"; do echo "U $u"; curl -sS -o /dev/null -L -A "Mozilla/5.0 (iPhone)" -w "R %{http_code} %{url_effective}\n" "$u"; done
