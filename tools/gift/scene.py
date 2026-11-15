@@ -34,16 +34,11 @@ def cube(name, size, loc, m):
 
 
 # ---------- материалы ----------
-wrap, wb = mat("wrap", (1, 1, 1), .28, **{"Coat Weight": .55, "Coat Roughness": .12})
-tex = wrap.node_tree.nodes.new("ShaderNodeTexImage"); tex.image = bpy.data.images.load(os.path.join(HERE, "wrap.png"))
-tco = wrap.node_tree.nodes.new("ShaderNodeTexCoord"); mp = wrap.node_tree.nodes.new("ShaderNodeMapping"); mp.inputs["Scale"].default_value = (1.4, 1.4, 1.4)
-wrap.node_tree.links.new(tco.outputs["Object"], mp.inputs["Vector"]); wrap.node_tree.links.new(mp.outputs["Vector"], tex.inputs["Vector"])
-tex.projection = "BOX"; tex.projection_blend = .2
-wrap.node_tree.links.new(tex.outputs["Color"], wb.inputs["Base Color"])
-ribbon, rb = mat("ribbon", (.75, .01, .02), .3, **{"Sheen Weight": .35, "Sheen Roughness": .4, "Coat Weight": .35, "Coat Roughness": .1, "Anisotropic": .6})
-rb.inputs["Sheen Tint"].default_value = (1, .55, .55, 1)
+wrap, wb = mat("wrap", (.86, .80, .70), .42, **{"Coat Weight": .25, "Coat Roughness": .3, "Sheen Weight": .25})  # однотонная, цвет Норы: тёплый кремовый
+ribbon, rb = mat("ribbon", (.83, .58, .26), .22, **{"Sheen Weight": .35, "Sheen Roughness": .4, "Coat Weight": .35, "Coat Roughness": .1, "Anisotropic": .6})
+rb.inputs["Sheen Tint"].default_value = (1, .9, .7, 1); rb.inputs["Metallic"].default_value = .55
 inside, ib = mat("inside", (.95, .82, .55), .7)
-snow, sb = mat("snow", (.62, .7, .9), .6, **{"Subsurface Weight": .4})
+snow, sb = mat("snow", (.30, .29, .31), .6, **{"Subsurface Weight": .4})
 sb.inputs["Subsurface Radius"].default_value = (.4, .5, .8)
 
 # ---------- подарок ----------
@@ -133,7 +128,7 @@ for p in gr.data.polygons: p.use_smooth = True
 for x, y, r in ((-1.9, .6, .5), (2.1, 1.0, .45), (-3, 2.5, .8), (3.2, 3, .9)):
     bpy.ops.mesh.primitive_uv_sphere_add(radius=r, location=(x, y, -r * .55)); m = bpy.context.object; m.scale.z = .55; m.data.materials.append(snow); bpy.ops.object.shade_smooth()
 # гирлянды вдалеке - тёплые огоньки в размытии
-cols = [(1, .7, .3), (1, .35, .25), (.4, 1, .55), (.5, .7, 1), (1, .9, .6)]
+cols = [(1, .78, .45), (1, .85, .6), (1, .7, .38), (1, .92, .75)]
 for i in range(46):
     c = cols[i % len(cols)]
     em, eb = mat(f"bulb{i}", c, .5, **{"Emission Strength": 18})
@@ -142,7 +137,7 @@ for i in range(46):
     bpy.ops.mesh.primitive_uv_sphere_add(radius=.06, location=(x, y, z)); o = bpy.context.object; o.data.materials.append(em)
 
 world = bpy.data.worlds.new("w"); sc.world = world; world.use_nodes = True
-bg = world.node_tree.nodes["Background"]; bg.inputs["Color"].default_value = (.012, .02, .06, 1); bg.inputs["Strength"].default_value = 1
+bg = world.node_tree.nodes["Background"]; bg.inputs["Color"].default_value = (.006, .006, .01, 1); bg.inputs["Strength"].default_value = 1
 
 # ---------- свет ----------
 def area(name, loc, energy, color, size, target=(0, 0, .7)):
@@ -151,8 +146,8 @@ def area(name, loc, energy, color, size, target=(0, 0, .7)):
     dvec = Vector(target) - Vector(loc); o.rotation_euler = dvec.to_track_quat("-Z", "Y").to_euler(); return o
 kl = bpy.data.lights.new("key", "SPOT"); kl.energy = 2600; kl.color = (1, .87, .72); kl.spot_size = math.radians(34); kl.spot_blend = .8; kl.shadow_soft_size = .9
 ko = bpy.data.objects.new("key", kl); bpy.context.collection.objects.link(ko); ko.location = (3.0, -3.6, 5.2); ko.rotation_euler = (Vector((0, 0, .6)) - ko.location).to_track_quat("-Z", "Y").to_euler()
-area("rim", (-3.4, 3.2, 3.2), 700, (.55, .7, 1), 2)
-area("fill", (-2.6, -4, 1.6), 60, (.7, .8, 1), 3)
+area("rim", (-3.4, 3.2, 3.2), 650, (1, .82, .62), 2)
+area("fill", (-2.6, -4, 1.6), 50, (1, .9, .8), 3)
 
 # ---------- камера ----------
 cam_d = bpy.data.cameras.new("cam"); cam_d.lens = 50; cam_d.dof.use_dof = True; cam_d.dof.aperture_fstop = 2.2
@@ -161,10 +156,10 @@ cam.location = (0, -6.6, 2.6) if not os.environ.get("CLOSE") else (0, -3.2, 2.4)
 cam_d.dof.focus_distance = (tgt - cam.location).length
 
 # ---------- конфетти ----------
-CC = [(.95, .1, .15), (1, .8, .25), (1, 1, 1), (.15, .65, .55), (1, .5, .65), (.45, .8, 1)]
+CC = [(.95, .78, .45), (1, .9, .7), (.98, .96, .92), (.85, .6, .3), (1, .84, .55), (.9, .72, .5)]
 conf = []
 for i in range(6):
-    m, b = mat(f"conf{i}", CC[i], .35, **{"Metallic": .3})
+    m, b = mat(f"conf{i}", CC[i], .25, **{"Metallic": .7})
     bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 0, -50)); o = bpy.context.object; o.scale = (.05, .08, 1); o.data.materials.append(m); conf.append(o)
 coll = bpy.data.collections.new("confetti"); sc.collection.children.link(coll)
 for o in conf:

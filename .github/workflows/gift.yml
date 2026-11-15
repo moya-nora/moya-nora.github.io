@@ -6,7 +6,7 @@ on:
       samples: { default: "64" }
 permissions:
   contents: write
-concurrency: { group: gift, cancel-in-progress: true }
+concurrency: { group: gift, cancel-in-progress: false }
 jobs:
   render:
     runs-on: ubuntu-latest
