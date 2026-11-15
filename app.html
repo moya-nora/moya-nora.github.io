@@ -1673,7 +1673,7 @@ body.viewing #app .luck-go{display:none}
 @keyframes gxIn{from{opacity:0}}
 #app .gx-snow{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #app .gx-x{position:absolute;top:calc(var(--tg-top,0px) + 14px);right:16px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.1);border:0;color:#fff;display:flex;align-items:center;justify-content:center;z-index:3}
-#app .gx-x svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round}#app .g-wrap .gx-svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45))}#app .g-wrap{width:132px;height:142px}
+#app .bkc-gn{margin-top:6px;font-size:14px;color:rgba(255,255,255,.55)}#app .gx-x svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round}#app .g-wrap .gx-svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45))}#app .g-wrap{width:132px;height:142px}
 
 
 
@@ -6145,6 +6145,11 @@ function bkcActs(x,L){const st=BK.has(x);
   return `<button class="btn w" data-bkc="want">Добавить в избранное</button><button class="btn" data-bkc="read">Прочитано</button>`}
 // тропы и темы кнопками: нажала — открылись книги с тем же тропом; рядом «Ещё у автора»
 const THEME_T=["ромэнтези","драконы","магия","школа и университет","путешествия во времени","тёмное фэнтези","городское фэнтези","эпическое фэнтези","мифология","сказка","магический реализм","готика","хоррор","мистика","антиутопия","постапокалипсис","космос","искусственный интеллект","викторианская эпоха","исторический роман","семейная сага","детектив","триллер","море","еда","музыка","искусство"];
+// жанр в карточке: самый точный из тегов, иначе общий жанр каталога
+const GN_T=[["ромэнтези","Ромэнтези"],["любовное фэнтези","Любовное фэнтези"],["дарк роман","Дарк-роман"],["любовный роман","Любовный роман"],["хоррор","Ужасы"],["триллер","Триллер"],["антиутопия","Антиутопия"],["городское фэнтези","Городское фэнтези"],["тёмное фэнтези","Тёмное фэнтези"],["эпическое фэнтези","Эпическое фэнтези"],["научная фантастика","Научная фантастика"],["young adult","Young adult"],["исторический роман","Исторический роман"],["детектив","Детектив"],["готика","Готический роман"],["биография","Биография"],["бизнес","Бизнес"],["психология","Психология"],["поэзия","Поэзия"],["драматургия","Пьеса"]];
+function genreLabel(x){if(x._f)return "";const c=catOf(x)||x.src||x,tg=c.tags||x.tags||[],g=c.g||x.g;const t=GN_T.find(([k])=>tg.includes(k));
+  const base=g==="classic"?(c.c==="Россия"||x.c==="Россия"?"Русская классика":"Классика"):GEN[g]&&g!=="unknown"?GEN[g]:"";
+  if(t&&base&&!["Фэнтези","Детектив","Фантастика"].includes(base)&&g==="classic")return base+", "+t[1].toLowerCase();return t?t[1]:base}
 const trLabel=t=>t.startsWith("троп:")?((B_TROPE.find(x=>"троп:"+x[0]===t)||[])[1]||""):t[0].toUpperCase()+t.slice(1);
 const sameAu=(a,b)=>{a=String(a||"").trim();b=String(b||"").trim();if(!a||!b||a==="Автор не указан")return false;const A=a.split(/\s+/),B=b.split(/\s+/);return norm(A[A.length-1])===norm(B[B.length-1])&&norm(A[0])[0]===norm(B[0])[0]};
 function auBooks(x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of ALLB()){if(!sameAu(b.a,x.a))continue;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);out.push(b)}
@@ -6152,7 +6157,7 @@ function auBooks(x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of 
 // тропы — у современных (с 2000 года) ромэнтези, любовных романов, young adult и фэнтези; у классики и старых книг не показываем
 const ROM_T=["ромэнтези","любовный роман","любовное фэнтези","дарк роман","любовные романы","young adult"];
 function bkcTropes(x,Lk){if(x._f)return "";const c0=catOf(x)||x,tg=c0.tags||x.tags||[],rom=((c0.y||x.y||0)>=2000)&&(tg.some(t=>ROM_T.includes(t))||(c0.g||x.g)==="fantasy"),tr=rom?tg.filter(t=>t.startsWith("троп:")&&trLabel(t)):[],th=tg.filter(t=>THEME_T.includes(t));
-  const L=[...tr,...th].filter((t,i,a)=>a.indexOf(t)===i&&!(t==="драконы"&&a.includes("троп:dragons"))).slice(0,2),au=Lk==="friend"?0:auBooks(x).length;
+  const gl=genreLabel(x).toLowerCase(),L=[...tr,...th].filter((t,i,a)=>a.indexOf(t)===i&&trLabel(t).toLowerCase()!==gl&&!(t==="драконы"&&a.includes("троп:dragons"))).slice(0,2),au=Lk==="friend"?0:auBooks(x).length;
   if(!L.length)return "";return `<div class="bkc-tr">${L.map(t=>`<button data-bkc-tg="${esc(t)}">${esc(trLabel(t))}</button>`).join("")}</div>`}
 function tagBooks(t,x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of ALLB()){if(!(b.tags||[]).includes(t)||dismissed.has(b.id))continue;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);out.push(b)}
   return topK(out,60,b=>popOf(b)*2+(imgOf(b)?2:0)+(b.q||0)+Math.random()*.5).map(z=>z.b)}
@@ -6168,7 +6173,7 @@ function bkcDraw(){const {x,L}=BKC;
   bkcEl.innerHTML=`<button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button><div class="bkc-in">
    <div class="bkc-cv">${cv(x,200)}<button class="bkc-cov" data-bkc="cov" aria-label="Сменить обложку">${IC2.cov}<span>сменить обложку</span></button></div>
    <div class="bkc-covsw" hidden>${covRow(x)}</div>
-   <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>
+   <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>${(()=>{const g=genreLabel(x);return g?`<div class="bkc-gn">${esc(g)}</div>`:""})()}
    <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>${bkcTropes(x,L)}
    <div class="bkc-tools"><button data-bkc="where">${IC2.pin}<span>Где прочитать</span></button>${x._f?"":`<button data-bkc="vid">${IC2.play}<span>Обзоры</span></button>`}${!x._f&&L!=="friend"&&BK.has(x)==="read"?`<button data-bkc="rate"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg><span>Редактировать</span></button>`:""}${bkcSec(x,L)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
