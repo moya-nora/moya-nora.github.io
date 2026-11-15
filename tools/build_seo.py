@@ -31,6 +31,28 @@ GEN = {"classic": "Классика", "modern": "Современная проз
 GEN1 = {"classic": "Классика", "modern": "Современная проза", "detective": "Детектив", "fantasy": "Фэнтези", "scifi": "Фантастика", "kids": "Детская литература", "nonfic": "Нон-фикшн"}
 
 
+def lit_id(b):
+    if _lk(b) in LCOV:
+        return LCOV[_lk(b)]
+    m_ = re.search(r"litres\.ru/pub/c/cover(?:_\d+)?/(\d+)\.jpg", b.get("img") or "")
+    return int(m_.group(1)) if m_ else None
+
+
+def lrv(b):
+    """отзывы ЛитРес и оценки LiveLib из books/rv (собирает tools/build_reviews.py)"""
+    i_ = lit_id(b)
+    fp_ = os.path.join(ROOT, "books", "rv", f"{i_}.json") if i_ else ""
+    try:
+        return json.load(open(fp_, encoding="utf-8")) if fp_ and os.path.exists(fp_) else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def plur(n, a, b_, c):
+    n = abs(n) % 100; m = n % 10
+    return c if 10 < n < 20 else b_ if 1 < m < 5 else a if m == 1 else c
+
+
 def gname(b):
     for t_, n_ in (("ромэнтези", "Ромэнтези"), ("любовное фэнтези", "Любовное фэнтези"), ("хоррор", "Ужасы"), ("young adult", "Young adult"),
                    ("антиутопия", "Антиутопия"), ("любовный роман", "Любовный роман"), ("триллер", "Триллер")):
@@ -166,6 +188,25 @@ _lk = lambda b: nk(b["t"]) + "|" + nk(str(b["a"] or "").split(" ")[-1])
 img_of = lambda b: (f"https://cv0.litres.ru/pub/c/cover_415/{LCOV[_lk(b)]}.jpg" if _lk(b) in LCOV else "") \
     or COVERS.get(_lk(b), "") or re.sub(r"^https://www\.litres\.ru/pub/c/cover/(\d+)\.jpg$", r"https://cv0.litres.ru/pub/c/cover_415/\1.jpg", b.get("img") or "") \
     or (("/img/ai/" + AIC[nk(b["t"]) + "|" + nk(b["a"] or "")]) if nk(b["t"]) + "|" + nk(b["a"] or "") in AIC else "")
+
+
+def RATE(b):
+    L_ = lrv(b)
+    vv = (L_ and (L_.get("v", 0) + L_.get("lv", 0))) or 0
+    if not vv:
+        return f'<div class="frate" id="frate" data-t="{esc(b["t"])}" data-a="{esc(b["a"].split(" ")[-1])}"></div>'
+    avg = (L_.get("r", 0) * L_.get("v", 0) + L_.get("lr", 0) * L_.get("lv", 0)) / vv
+    n_ = L_.get("n", 0)
+    return (f'<div class="frate on"><a href="#otzyvy">★ {avg:.1f} · {vv:,} {plur(vv, "оценка", "оценки", "оценок")}</a>'.replace(",", " ").replace(".", ",", 1)
+            + (f'<a href="#otzyvy">{n_} {plur(n_, "отзыв", "отзыва", "отзывов")}</a>' if n_ else "") + "</div>")
+
+
+def RVS(b):
+    L_ = lrv(b)
+    if not L_ or not L_.get("L"):
+        return ""
+    it = "".join(f'<div class="rv gl"><div class="rv-h"><b>{esc(r[0])}</b>{f"<span>★ {r[2]}</span>" if r[2] else ""}<small>{esc(r[1])}</small></div><p>{esc(r[3])}</p></div>' for r in L_["L"][:6])
+    return f'<section class="rvs" id="otzyvy"><h2>Отзывы читателей</h2>{it}<a class="btn ghost" href="{BOT}?startapp=site">Написать свой отзыв в Норе</a></section>'
 
 
 def hsh(t):
@@ -456,10 +497,10 @@ for b in cat_books:
     fl = [f for f in b.get("f", [])[:4] if len(f) > 1]
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="{GEN_URL.get(b["g"], "/c/")}">{esc(GEN.get(b["g"], "Книги"))}</a></div>'
             f'<article class="book">{f"<div class=amb style=background-image:url({esc(u)})></div>" if u else ""}<div class="cvw">{cv(b, lazy=False)}</div><div>'
-            f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>{f'<p class="gn">{esc(gname(b))}</p>' if gname(b) else ""}<div class="frate" id="frate" data-t="{esc(b["t"])}" data-a="{esc(b["a"].split(" ")[-1])}"></div>'
+            f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>{f'<p class="gn">{esc(gname(b))}</p>' if gname(b) else ""}{RATE(b)}'
             + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "")
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
-            + WHERE(b)
+            + WHERE(b) + RVS(b)
             + (f'<section class="like"><div class="shd"><h2>Похожие книги</h2><a class="all" data-sim href="/p/">Ещё похожие</a></div>{rail(sim, bare=True)}</section>' if sim else "")
             + "</div></article>" + REVIEWS_JS
             + "</div>")
