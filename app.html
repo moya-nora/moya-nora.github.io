@@ -6348,19 +6348,25 @@ async function reviewsOpen(x){const m=META[ikey(x)]||{};if(!m.w)return;tgHaptic(
 document.addEventListener("click",e=>{const b=e.target.closest("[data-rvmore]");if(!b)return;b.closest(".rv").classList.add("open");b.remove()});
 const openLink=u=>{try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(e){window.open(u,"_blank")}};
 // партнёрские ссылки: после подключения к партнёрке Литрес впиши шаблон, например "https://.../?url={url}"
-const PARTNER={litres:""};
-const pLink=(k,u)=>PARTNER[k]?PARTNER[k].replace("{url}",encodeURIComponent(u)):u;
+// Литрес: партнёрский номер (RefID) из кабинета партнёра - впиши его в litres, и ко всем ссылкам на Литрес добавится ?lfrom=номер
+// (20% с покупок новых читателей и 10% - старых, за 30 дней после перехода). Остальные магазины - шаблон "https://...{url}" из их партнёрки
+const PARTNER={litres:"",yandex:"",ozon:"",wb:"",chitai:"",bookvoed:""};
+const pLink=(k,u)=>{const p=PARTNER[k];if(!p)return u;if(p.includes("{url}"))return p.replace("{url}",encodeURIComponent(u));return u+(u.includes("?")?"&":"?")+"lfrom="+encodeURIComponent(p)};
+// прямая страница книги на Литрес, если знаем её номер (каталог Литрес или найденная обложка) - так покупают чаще, чем из поиска
+function litresId(x){const c=catOf(x)||x.src||x,id=String((c&&c.id)||x.id||"");if(/^l\d+$/.test(id))return id.slice(1);
+  try{const u=lcovFor(norm(x.t)+"|"+norm(x.a||""));const m=u&&u.match(/cover_\d+\/(\d+)\.jpg/);if(m)return m[1]}catch(e){}
+  const im=String(imgOf(x)||""),m2=im.match(/litres\.ru\/pub\/c\/cover(?:_\d+)?\/(\d+)\.jpg/);return m2?m2[1]:""}
 function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).split(" ").slice(-1)[0]:"")),qt=encodeURIComponent(x.t);
   const ic=d=>`<img class="wh-ic${d==="books.yandex.ru"?" rd":""}" src="img/where/${d}.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'wh-ic'}))">`,
     PIN='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg></span>',
     LIB='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M4 20h16M5 9h14M12 4l8 5H4l8-5zM7 9v8M12 9v8M17 9v8"/></svg></span>';
-  const ON=[[ic("litres.ru"),"ЛитРес",pLink("litres",`https://www.litres.ru/search/?q=${q}`)],[ic("books.yandex.ru"),"Яндекс Книги",`https://books.yandex.ru/search?text=${q}`],
-    [ic("ozon.ru"),"Ozon",`https://www.ozon.ru/search/?text=${q}&category=16500`],[ic("wildberries.ru"),"Wildberries",`https://www.wildberries.ru/catalog/0/search.aspx?search=${q}`],
+  const ON=[[ic("litres.ru"),"ЛитРес",pLink("litres",(lid=>lid?`https://www.litres.ru/pages/biblio_book/?art=${lid}`:`https://www.litres.ru/search/?q=${q}`)(litresId(x))),"litres"],[ic("books.yandex.ru"),"Яндекс Книги",pLink("yandex",`https://books.yandex.ru/search?text=${q}`),"yandex"],
+    [ic("ozon.ru"),"Ozon",pLink("ozon",`https://www.ozon.ru/search/?text=${q}&category=16500`),"ozon"],[ic("wildberries.ru"),"Wildberries",pLink("wb",`https://www.wildberries.ru/catalog/0/search.aspx?search=${q}`),"wb"],
     [ic("books.google.com"),"Google Книги",`https://www.google.com/search?tbm=bks&q=${q}`]];
-  const OFF=[[PIN,"Книжные рядом",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],[ic("chitai-gorod.ru"),"Читай-город",`https://www.chitai-gorod.ru/search?phrase=${q}`],
-    [ic("bookvoed.ru"),"Буквоед",`https://www.bookvoed.ru/search?q=${q}`],[LIB,"Библиотеки рядом",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
+  const OFF=[[PIN,"Книжные рядом",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],[ic("chitai-gorod.ru"),"Читай-город",pLink("chitai",`https://www.chitai-gorod.ru/search?phrase=${q}`),"chitai"],
+    [ic("bookvoed.ru"),"Буквоед",pLink("bookvoed",`https://www.bookvoed.ru/search?q=${q}`),"bookvoed"],[LIB,"Библиотеки рядом",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
   const choose=`<div class="wh-ch"><button data-wh="on"><b>Онлайн</b></button><button data-wh="off"><b>Офлайн</b></button></div>`;
-  const list=mode?`<div class="wh-l wh-sh">${(mode==="on"?ON:OFF).map(([i,n,u])=>`<button data-whu="${esc(u)}">${i}<b>${n}</b><i>›</i></button>`).join("")}</div>`:"";
+  const list=mode?`<div class="wh-l wh-sh">${(mode==="on"?ON:OFF).map(([i,n,u,k])=>`<button data-whu="${esc(u)}" data-whk="${k||n}">${i}<b>${n}</b><i>›</i></button>`).join("")}</div>`:"";
   vOpen(mode?`<div class="wh-hd"><b>${mode==="on"?"Онлайн":"Офлайн"}</b><button class="vx" data-wh="" aria-label="Назад к выбору"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`+list:choose);$("#vsheet").classList.add("ontop");$("#vshBody")._wx=x}
 bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{const g=t.closest("[data-bkc-tg]");if(g){const tg=g.dataset.bkcTg,L=tagBooks(tg,BKC.x);tgHaptic();listSheet(trLabel(tg),L.length?(tg.startsWith("троп:")?"Книги с тем же тропом":"Похожие книги"):"",L);return}}if(t.closest("[data-bkc-au]")){const L=auBooks(BKC.x);tgHaptic();listSheet(BKC.x.a||"Автор","Ещё у автора",L);return}if(t.closest("[data-bkc-rv]")){reviewsOpen(BKC.x);return}if(t.closest("[data-bkc-fr]")){const fr=frReaders(BKC.x);
     vOpen(`<h3 class="vh">Читали «${esc(BKC.x.t)}»</h3><div class="wh-l">${fr.map(({f,b})=>`<button data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid)}<b>${esc(f.n||"Друг")}</b><small>${b.r!=null?"★ "+r5(b.r):"без оценки"}</small>${b.rv?`<em class="frv">«${esc(b.rv)}»</em>`:""}<i>›</i></button>`).join("")}</div>`);$("#vsheet").classList.add("ontop");return}
@@ -6384,7 +6390,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="read"){const pre=BKC.sec?true:null;bkcClose();RMPRE=pre;rmAsk(x,null,n=>{BK.markRead(x,n*2);refresh()},"Без оценки",()=>{BK.markRead(x,null);refresh()})}});
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody"))return;
   const w=t.closest("[data-wh]");if(w){e.stopPropagation&&e.stopPropagation();whereOpen($("#vshBody")._wx,w.dataset.wh);tgHaptic();return}
-  const u=t.closest("[data-whu]");if(u){openLink(u.dataset.whu);return}});
+  const u=t.closest("[data-whu]");if(u){try{window.ym&&ym(114237349,"reachGoal","where_go",{store:u.dataset.whk})}catch(e){}openLink(u.dataset.whu);return}});
 (function(){let y0=null,dy=0;bkcEl.addEventListener("touchstart",e=>{y0=null;if(e.target.closest("button"))return;{const d=e.target.closest("#bkcDw");if(d&&(d.scrollTop>0||d.scrollHeight>d.clientHeight+2))return}y0=e.touches[0].clientY;dy=0},{passive:true});
   bkcEl.addEventListener("touchmove",e=>{if(y0==null)return;dy=Math.max(0,e.touches[0].clientY-y0);bkcEl.firstElementChild.style.transform=`translateY(${dy*.6}px)`},{passive:true});
   bkcEl.addEventListener("touchend",()=>{if(y0==null)return;y0=null;bkcEl.firstElementChild.style.transform="";if(dy>110)bkcClose()})})();
