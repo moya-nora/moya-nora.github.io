@@ -4878,7 +4878,7 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   res.push(["booktok","Хиты буктока","О них спорят в тиктоке и на ютубе",take(mix(booktokBooks()),16)]);
   res.push(["cozy","Уютные детективы","Плед, чай и убийство, которое раскроют к последней главе",take(mix(listBooks(COZY_L)))]);
   res.push(["night","Не оторваться до утра","Триллеры, после которых говоришь себе «ещё одну главу» до рассвета",take(mix(listBooks(NIGHT_L)))]);
-  res.push(["mand","Книги с запахом мандаринов","Новый год, Рождество и снег за окном",take(mix(listBooks(MAND_L)))]);
+  res.push(["mand","Книги с запахом мандаринов","Тёплые истории для длинных вечеров - с пледом, чаем и чудом",take(mix(listBooks(MAND_L)))]);
   HSV=res.filter(r=>r[3].length>=4).map(r=>[r[0],r[1],r[2],r[3].map(b=>bItem(b,"rec"))]);return HSV}
 // «Смотреть ещё»: сначала вся подборка целиком, дальше похожие книги каталога - по общим тегам и тем же жанрам, чем дальше, тем свободнее
 function shelfSeeds(k){try{

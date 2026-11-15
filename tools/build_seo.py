@@ -353,7 +353,7 @@ ny = [b for b in books if not notnovel(b) and (NY_T.search(b["t"]) or NY_A.searc
 _man = app_list("MAND_L"); _mn = {id(b) for b in _man}
 ny = _man + [b for b in sorted({id(b): b for b in ny}.values(), key=lambda b: (-(b["q"] or 0), -(b.get("sl") or 0))) if b["cat"] and id(b) not in _mn][:26]
 if len(ny) >= 8:
-    coll_data.insert(1, ("novogodnee-nastroenie", "Книги с запахом мандаринов", "Новый год, Рождество и снег за окном.", ny))
+    coll_data.insert(1, ("novogodnee-nastroenie", "Книги с запахом мандаринов", "Тёплые истории для длинных вечеров - с пледом, чаем и чудом.", ny))
 FOOT = footer([(p, t) for p, t, _, _ in coll_data])
 # книги из подборок без обложки — их обложки найдёт tools/build_covers.py в следующий раз
 want, seenw = [], set()
