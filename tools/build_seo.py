@@ -28,6 +28,17 @@ def slug(s):
 GEN = {"classic": "Классика", "modern": "Современная проза", "detective": "Детективы", "fantasy": "Фэнтези", "scifi": "Фантастика",
        "kids": "Детские и подростковые книги", "nonfic": "Нон-фикшн"}
 
+GEN1 = {"classic": "Классика", "modern": "Современная проза", "detective": "Детектив", "fantasy": "Фэнтези", "scifi": "Фантастика", "kids": "Детская литература", "nonfic": "Нон-фикшн"}
+
+
+def gname(b):
+    for t_, n_ in (("ромэнтези", "Ромэнтези"), ("любовное фэнтези", "Любовное фэнтези"), ("хоррор", "Ужасы"), ("young adult", "Young adult"),
+                   ("антиутопия", "Антиутопия"), ("любовный роман", "Любовный роман"), ("триллер", "Триллер")):
+        if t_ in b["tags"]:
+            return n_
+    return GEN1.get(b["g"], "")
+
+
 # ---------- данные: ручной каталог (с описаниями) + большой каталог + новинки ----------
 app = open(os.path.join(ROOT, "app.html"), encoding="utf-8").read()
 i = app.index("const CAT=") + len("const CAT=")
@@ -410,7 +421,7 @@ json.dump(want[:4000], open(os.path.join(ROOT, "books", "covers_want.json"), "w"
 QUICK = [p for p in ("chitayut-seychas", "novogodnee-nastroenie", "romantezi", "dark-roman", "lyubovnye-romany", "young-adult", "zhanr-fantasy", "uyutnye", "zahvatyvayuschie", "strashnye", "smeshnye", "novinki", "zhanr-classic", "zhanr-detective")
          if any(q == p for q, _, _, _ in coll_data)]
 tname = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
-chips = lambda cur: '<nav class="chips">' + "".join(f'<a href="/c/{p}.html"{" class=on" if p == cur else ""}>{esc(tname(p))}</a>' for p in QUICK) + "</nav>"
+chips = lambda cur: '<nav class="chips"><a class="find" href="/poisk.html">Найти книгу по жанру и настроению</a>' + "".join(f'<a href="/c/{p}.html"{" class=on" if p == cur else ""}>{esc(tname(p))}</a>' for p in QUICK) + "</nav>"
 for path, title, lead, L in coll_data:
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="/c/">Подборки</a></div>'
             f'<div class="ph"><div><h1>{esc(title)}</h1><p class="lead">{esc(lead)}</p></div><div class="cnt gl">{len(L)} книг</div></div>'
@@ -445,7 +456,7 @@ for b in cat_books:
     fl = [f for f in b.get("f", [])[:4] if len(f) > 1]
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="{GEN_URL.get(b["g"], "/c/")}">{esc(GEN.get(b["g"], "Книги"))}</a></div>'
             f'<article class="book">{f"<div class=amb style=background-image:url({esc(u)})></div>" if u else ""}<div class="cvw">{cv(b, lazy=False)}</div><div>'
-            f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p><div class="frate" id="frate" data-t="{esc(b["t"])}" data-a="{esc(b["a"].split(" ")[-1])}"></div>'
+            f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>{f'<p class="gn">{esc(gname(b))}</p>' if gname(b) else ""}<div class="frate" id="frate" data-t="{esc(b["t"])}" data-a="{esc(b["a"].split(" ")[-1])}"></div>'
             + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "")
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
             + WHERE(b)
@@ -595,6 +606,40 @@ for a_, _ in sim_pages:
     if k not in sseen:
         sseen.add(k); SIDX.append([a_["t"], a_["a"], "/" + SIM_URL[id(a_)], "похожие"])
 json.dump(SIDX, open(os.path.join(ROOT, "books", "search.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+# «Найти книгу»: фильтры по жанру и настроению, как в приложении
+MOODS = [("fun", "Смешное", ("юмор", "смешное", "сатира")), ("cozy", "Уютное", ("уют", "тёплое", "светлое")), ("scary", "Страшное", ("хоррор", "жутковатое", "мистика", "готика")),
+         ("sad", "Трогательное", ("грустное",)), ("page", "Не оторваться", ("напряжённое", "динамичное", "триллер")), ("deep", "Заставляет задуматься", ("философский роман", "интеллектуальное", "антиутопия")),
+         ("love", "Про любовь", ("любовь", "романтичное", "ромэнтези", "любовный роман")), ("magic", "Магия и драконы", ("магия", "драконы")), ("short", "На один вечер", ())]
+FL = []
+for b in cat_books:
+    if id(b) not in BOOK_URL:
+        continue
+    pal = PAL.get(b["g"], PAL["modern"]); c_ = pal[hsh(b["t"]) % len(pal)]
+    light = int(c_[1:3], 16) + int(c_[3:5], 16) + int(c_[5:7], 16) > 450
+    f_ = "#3A2A1C" if light else ("#F1E2C2" if hsh(b["a"]) % 2 else "#E2B66B")
+    md = "".join(k for k, _, tg_ in MOODS if (has(b, *tg_) if tg_ else 0 < (b.get("pg") or 0) <= 260))
+    FL.append([b["t"], b["a"], "/" + BOOK_URL[id(b)], b["y"] if b["y"] and b["y"] > 0 else "", gname(b), b["g"], c_, f_, img_of(b), md, b["q"] or 0])
+FL.sort(key=lambda r: (-r[10], not r[8]))
+json.dump(FL, open(os.path.join(ROOT, "books", "filter.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+_GL = sorted({r[4] for r in FL if r[4]}, key=lambda g: -sum(1 for r in FL if r[4] == g))
+FIND_JS = ("<script>(function(){var MO=" + json.dumps(MOTIF, ensure_ascii=False) + r""",G="",M="",Q="",D=null,box=document.getElementById("fres"),cnt=document.getElementById("fcnt");
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function nm(s){return String(s||"").toLowerCase().replace(/ё/g,"е")}
+function card(r){var im=r[8]?'<img src="'+esc(r[8])+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">':"";
+ return '<a class="bk" href="'+r[2]+'"><div class="cv" style="--c:'+r[6]+';--f:'+r[7]+'">'+im+'<b>'+esc(r[0])+'</b><svg class="m" viewBox="0 0 100 100">'+(MO[r[5]]||MO.modern)+'</svg><i>'+esc(r[1])+'</i></div><div class="t">'+esc(r[0])+'</div><div class="a">'+esc(r[1])+(r[4]?' · '+esc(r[4]):'')+'</div></a>'}
+function draw(){if(!D)return;var q=nm(Q).trim(),L=D.filter(function(r){return (!G||r[4]===G)&&(!M||r[9].indexOf(M)>=0)&&(!q||nm(r[0]+" "+r[1]).indexOf(q)>=0)});
+ cnt.textContent=L.length?"":"Ничего не нашлось - попробуй убрать один из фильтров";box.innerHTML=L.slice(0,60).map(card).join("")}
+document.querySelectorAll("[data-g]").forEach(function(b){b.onclick=function(){G=G===b.dataset.g?"":b.dataset.g;document.querySelectorAll("[data-g]").forEach(function(x){x.classList.toggle("on",x.dataset.g===G)});draw()}});
+document.querySelectorAll("[data-m]").forEach(function(b){b.onclick=function(){M=M===b.dataset.m?"":b.dataset.m;document.querySelectorAll("[data-m]").forEach(function(x){x.classList.toggle("on",x.dataset.m===M)});draw()}});
+var qi=document.getElementById("fq");qi.oninput=function(){Q=qi.value;draw()};
+fetch("/books/filter.json").then(function(r){return r.json()}).then(function(d){D=d;draw()})})()</script>""")
+find_body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><h1>Найти книгу</h1>'
+             f'<p class="lead">Выбери жанр и настроение - Шуршуня покажет, что подойдёт.</p></div></div>'
+             f'<div class="sbox gl">{ic("search")}<input id="fq" type="search" placeholder="Название или автор" autocomplete="off" enterkeyhint="search"></div>'
+             f'<h3 class="fh">Жанр</h3><div class="fchips">' + "".join(f'<button data-g="{esc(g)}">{esc(g)}</button>' for g in _GL[:14]) + '</div>'
+             f'<h3 class="fh">Настроение</h3><div class="fchips">' + "".join(f'<button data-m="{k}">{esc(n_)}</button>' for k, n_, _ in MOODS) + '</div>'
+             f'<p class="fcnt" id="fcnt"></p><div class="grid" id="fres"></div>{FINAL}</div>' + FIND_JS)
+urls.append(page("poisk.html", "Найти книгу по жанру и настроению", "Подбор книг по жанру и настроению: смешные, уютные, страшные, трогательные, на один вечер и другие.", find_body))
 print("в поиске сайта:", len(SIDX))
 
 # ---------- политика конфиденциальности ----------
