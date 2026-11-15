@@ -6081,9 +6081,16 @@ function afterSplash(){setTimeout(()=>{if(SCREEN==="col")tour("col")},2600);setT
 let COVX=null;
 function covRow(x){COVX=x;const c=COV[ikey(x)];const mode=c==="draw"?"draw":c?"pick":"auto";
   return `<div class="covsw"><button data-cov="auto" class="${mode==="auto"?"on":""}">авто</button><button data-cov="draw" class="${mode==="draw"?"on":""}">рисунок</button><button data-cov="next" class="${mode==="pick"?"on":""}">другое издание ↻</button></div>`}
-async function covNext(x){const k=ikey(x);const s=await flj("/search-works?q="+encodeURIComponent(x.t)+"&page=1&onlymatches=1");const sur=norm(String(x.a||"").split(" ").slice(-1)[0]);
-  const w=(Array.isArray(s)?s:[]).find(w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur))||(Array.isArray(s)?s[0]:null);if(!w)throw new Error("none");
-  const L=await editionsOf(w.work_id);if(!L.length)throw new Error("none");const cur=imgOf(x),i=L.findIndex(e=>IMGFL(e.edition_id)===cur);
+// «другое издание»: только то же произведение того же автора (без запасного «первого попавшегося» — из-за него находились чужие книги),
+// и только отдельные издания этой книги, а не сборники, где она лишь одна из многих
+async function covNext(x){const k=ikey(x),sur=norm(String(x.a||"").split(" ").slice(-1)[0]),tn=norm(x.t);
+  const au=w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur),tt=w=>{const n=norm(w.rusname||w.name||"");return n===tn||n.startsWith(tn)||tn.startsWith(n)&&n.length>3};
+  const pick=s=>{const L=Array.isArray(s)?s:[];return L.find(w=>au(w)&&tt(w))||L.find(au)};
+  let w=pick(await flj("/search-works?q="+encodeURIComponent(x.t)+"&page=1&onlymatches=1"));
+  if(!w&&x.a)w=pick(await flj("/search-works?q="+encodeURIComponent(x.t+" "+String(x.a).split(" ").slice(-1)[0])+"&page=1"));
+  if(!w)throw new Error("none");
+  const all=await editionsOf(w.work_id),one=all.filter(e=>e.type===10),L=one.length?one:all;if(!L.length)throw new Error("none");
+  const cur=imgOf(x),i=L.findIndex(e=>IMGFL(e.edition_id)===cur);
   COV[k]=IMGFL(L[(i+1)%L.length].edition_id);covSave();return L.length}
 function covApply(x){const k=ikey(x),u=imgOf(x);document.querySelectorAll(`[data-ik="${CSS.escape(k)}"]`).forEach(el=>{el.querySelectorAll("img").forEach(i=>i.remove());if(u)el.insertAdjacentHTML("beforeend",imgTag(u))});
   document.querySelectorAll(".covsw").forEach(r=>{const c=COV[k];r.querySelectorAll("[data-cov]").forEach(b=>b.classList.toggle("on",b.dataset.cov===(c==="draw"?"draw":c?"next":"auto")))});vDirty=true;clearTimeout(covApply.t);covApply.t=setTimeout(()=>{try{drawCol(true)}catch(e){}},60)}
