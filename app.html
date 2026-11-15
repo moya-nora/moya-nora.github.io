@@ -2087,7 +2087,7 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .bkc .bkc-bar .btn:not(.w){flex:1;background:rgba(255,255,255,.08);color:var(--ink);border:0;box-shadow:none}
 #app .bkc .bkc-bar .btn:disabled{opacity:.45}
 
-#app #trend .hs-big .na-row button{width:140px}
+#app #trend .hs-big .na-row button{width:140px}#app #trend .shelf-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px}#app #trend .sh-more{flex:none;background:none;border:0;padding:4px 0;font-family:inherit;font-size:14px;font-weight:600;color:#F3D19A}#app #trend .na-row .na-more{width:96px;aspect-ratio:2/3;align-self:flex-start;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:6px;border:1px solid rgba(243,209,154,.35);background:rgba(243,209,154,.06);color:#F3D19A;font-size:14px;font-weight:600;padding:10px}#app #trend .hs-big .na-row .na-more{width:140px}
 #app #trend .hs-list .hl{display:flex;flex-direction:column;gap:8px;padding:0 22px}
 #app #trend .hl>button{display:flex;gap:12px;align-items:center;padding:10px;border-radius:16px;background:rgba(255,255,255,.05);text-align:left;color:inherit;width:100%}
 #app #trend .hl>button .cv{width:52px;flex:none}
@@ -4734,8 +4734,8 @@ function nlGenre(){const cnt={};const add=(g,w)=>{cnt[g]=(cnt[g]||0)+w};gpref().
   const best=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];return best&&NL_G.find(x=>x[0]===best[0])?best[0]:"modern"}
 function newLoved(){const L=ALLB(),g=nlGenre(),key=L.length+"|"+g;if(NLB&&NLK===key)return NLB;NLK=key;
   const C=L.filter(b=>(b.y||0)>=YNOW-1&&(b.sl||0)>=150&&b.g!=="kids"&&!(b.tags||[]).includes("самиздат")&&imgOf(b)&&(()=>{try{return genPass(b,g)}catch(e){return false}})()&&(g==="romantasy"||g==="romance"||!(b.tags||[]).some(t=>t==="любовное фэнтези"||t==="троп:popadan"||t==="любовный роман"))&&!(()=>{const m=String(b.t).match(/(?:книга|том|часть)\s*(\d+)|-(\d+)\b/i);return (m&&+(m[1]||m[2])>1)||/часть (втор|трет|четв)|книга (втор|трет)/i.test(b.t)})()).sort((a,b)=>(b.sl||0)-(a.sl||0));
-  const au=new Set(),out=[];for(const b of C){const k=norm(String(b.a||"").split(" ").slice(-1)[0]);if(au.has(k))continue;au.add(k);out.push(b);if(out.length>=16)break}
-  NLB=out;NLB.label=(NL_G.find(x=>x[0]===g)||NL_G[0])[1];return NLB}
+  const au=new Set(),out=[];for(const b of C){const k=norm(String(b.a||"").split(" ").slice(-1)[0]);if(au.has(k))continue;au.add(k);out.push(b);if(out.length>=60)break}
+  NLB=out.slice(0,16);NLB.all=out;NLB.label=(NL_G.find(x=>x[0]===g)||NL_G[0])[1];return NLB}
 function booktokBooks(){const n=ALLB().length;if(BTB&&BTK===n)return BTB;BTK=n;return BTB=listByPairs(BOOKTOK)}
 function trendBooks(){const L=ALLB();if(TRB&&TRK===L.length)return TRB;TRK=L.length;const by=new Map();
   L.forEach(b=>{const n=b._n||norm(b.t);let v=by.get(n);if(!v)by.set(n,v=[]);v.push(b)});
@@ -4767,6 +4767,23 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   res.push(["night","Не оторваться до утра","Триллеры, после которых говоришь себе «ещё одну главу» до рассвета",take(mix(listBooks(NIGHT_L)))]);
   res.push(["mand","Книги с запахом мандаринов","Новый год, Рождество и снег за окном",take(mix(listBooks(MAND_L)))]);
   HSV=res.filter(r=>r[3].length>=4).map(r=>[r[0],r[1],r[2],r[3].map(b=>bItem(b,"rec"))]);return HSV}
+// «Смотреть ещё»: сначала вся подборка целиком, дальше похожие книги каталога - по общим тегам и тем же жанрам, чем дальше, тем свободнее
+function shelfSeeds(k){try{
+  if(k==="trend")return trendBooks();if(k==="newlove"){newLoved();return NLB.all||NLB}
+  if(k==="booktok")return booktokBooks();if(k==="cozy")return listBooks(COZY_L);if(k==="night")return listBooks(NIGHT_L);if(k==="mand")return listBooks(MAND_L);
+  if(k==="like"){const q=tasteQ();return topK(ALLB(),80,b=>feedScore(b,q)+(imgOf(b)?2:0)).map(z=>z.b)}}catch(e){}return []}
+function shelfMore(k){const L=ALLB(),W=wantNorms(),seeds=shelfSeeds(k),used=new Set(),out=[];
+  const ok=b=>{const n=b._n||norm(b.t);return !READ.has(n)&&!W.has(n)&&!dismissed.has(b.id)&&!used.has(n)};
+  const put=b=>{used.add(b._n||norm(b.t));out.push(b)};
+  seeds.forEach(b=>{if(ok(b))put(b)});if(k==="like")return out;
+  const tw={},gs=new Set();seeds.forEach(b=>{const c=catOf(b)||b;if(c.g)gs.add(c.g);(c.tags||[]).forEach(t=>{if(SIMSKIP.has(t)||/век|страна|^автор/.test(t))return;tw[t]=(tw[t]||0)+1})});
+  const n=Math.max(seeds.length,1),fresh=k==="newlove";
+  const sc=b=>{if(!ok(b)||b.g==="kids"||!gs.has(b.g)||(b.tags||[]).includes("самиздат"))return null;if(fresh&&(b.y||0)<YNOW-2)return null;
+    let s=0;for(const t of b.tags||[])if(tw[t])s+=tw[t]/n*(t.startsWith("троп:")?1.3:1);if(s<.35)return null;
+    return s+Math.log10((b.sl||0)+10)*.25+(imgOf(b)?.4:0)};
+  const au={};topK(L,240,sc).forEach(z=>{const a=z.b.a||"";if((au[a]=(au[a]||0)+1)>2)return;if(out.length<90)put(z.b)});
+  return out}
+function shelfOpen(j){const S=$("#trend")._s,r=S&&S[j];if(!r)return;tgHaptic();listSheet(r[1],r[2],shelfMore(r[0]))}
 // на главной у каждой подборки свой вид: тренд - крупные обложки, «Тебе понравится» - список с подсказкой, мандарины - тёплый блок
 const SIMSKIP=new Set(["классика","современная проза","роман","зарубежная проза","русская проза"]);
 function simTo(b){if(!BOOKS.length)return null;const tg=(b.tags||[]).filter(t=>!SIMSKIP.has(t)&&!/век|страна/.test(t));let best=null,bs=0;
@@ -4774,11 +4791,11 @@ function simTo(b){if(!BOOKS.length)return null;const tg=(b.tags||[]).filter(t=>!
   return bs>=2.5?best:null}
 function drawTrend(){const el=$("#trend");if(!el)return;const S=shelvesCalc();el._s=S;
   el.innerHTML=S.map(([k,h,sub,L],j)=>{
-    if(k==="trend")return `<section class="hshelf hs-big"><h3 class="shelf-h">${h}</h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,140)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div></section>`;
-    if(k==="like"){const R=L.slice(0,5),used=new Set();return `<section class="hshelf hs-list"><h3 class="shelf-h">${h}</h3><div class="hl">${R.map((x,i)=>{let sm=simTo(catOf(x)||x);if(sm&&used.has(sm.t))sm=null;if(sm)used.add(sm.t);return `<button data-tr="${j}:${i}">${cv(x,52)}<span><b>${esc(x.t)}</b><small>${esc(x.a||"")}</small>${sm?`<em>Похожа на «${esc(sm.t)}»</em>`:""}</span></button>`}).join("")}</div>${L.length>5?`<button class="hl-more" data-trall="${j}">Ещё ${L.length-5}</button>`:""}</section>`}
-    if(k==="mand"){const F=L.filter(x=>imgOf(x)).slice(0,3);return `<section class="hshelf"><button class="hmand" data-trall="${j}"><span class="hm-t"><b>${h}</b><small>${esc(sub)}</small></span><span class="hm-f">${(F.length>=3?F:L.slice(0,3)).map((x,i)=>`<i style="--i:${i}">${cv(x,72)}</i>`).join("")}</span></button></section>`}
-    return `<section class="hshelf"><h3 class="shelf-h">${h}</h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}</div></section>`}).join("")}
-$("#trend").addEventListener("click",e=>{const a=e.target.closest("[data-trall]");if(!a)return;const S=$("#trend")._s,r=S&&S[+a.dataset.trall];if(r){tgHaptic();listSheet(r[1],r[2],r[3])}});
+    if(k==="trend")return `<section class="hshelf hs-big"><h3 class="shelf-h">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,140)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`;
+    if(k==="like"){const R=L.slice(0,5),used=new Set();return `<section class="hshelf hs-list"><h3 class="shelf-h">${h}</h3><div class="hl">${R.map((x,i)=>{let sm=simTo(catOf(x)||x);if(sm&&used.has(sm.t))sm=null;if(sm)used.add(sm.t);return `<button data-tr="${j}:${i}">${cv(x,52)}<span><b>${esc(x.t)}</b><small>${esc(x.a||"")}</small>${sm?`<em>Похожа на «${esc(sm.t)}»</em>`:""}</span></button>`}).join("")}</div><button class="hl-more" data-trmore="${j}">Смотреть ещё</button></section>`}
+    if(k==="mand"){const F=L.filter(x=>imgOf(x)).slice(0,3);return `<section class="hshelf"><button class="hmand" data-trmore="${j}"><span class="hm-t"><b>${h}</b><small>${esc(sub)}</small></span><span class="hm-f">${(F.length>=3?F:L.slice(0,3)).map((x,i)=>`<i style="--i:${i}">${cv(x,72)}</i>`).join("")}</span></button></section>`}
+    return `<section class="hshelf"><h3 class="shelf-h">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`}).join("")}
+$("#trend").addEventListener("click",e=>{const m=e.target.closest("[data-trmore]");if(m){e.stopPropagation();shelfOpen(+m.dataset.trmore);return}const a=e.target.closest("[data-trall]");if(!a)return;const S=$("#trend")._s,r=S&&S[+a.dataset.trall];if(r){tgHaptic();listSheet(r[1],r[2],r[3])}});
 $("#trend").addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(!b)return;const [j,i]=b.dataset.tr.split(":").map(Number),S=$("#trend")._s,x=S&&S[j]&&S[j][3][i];if(x){tgHaptic();bkcOpen(x,"rec")}});
 addEventListener("bigcat",()=>{TRK=-1;HSV=null;AUIX=null;if(SCREEN==="col"){drawTrend();layoutFlow(true)}});
 // ---------- «Книга для тебя»: книги разлетаются вихрем, одна прилетает и переворачивается ----------
