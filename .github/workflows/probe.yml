@@ -6,20 +6,12 @@ jobs:
     steps:
       - run: |
           python3 - <<'P'
-          import json,urllib.request,collections
-          B="https://firestore.googleapis.com/v1/projects/nora-ed429/databases/(default)/documents/"
-          K="AIzaSyD9yfazxfKpaEk1BNFDN61dEB3pfxT9cS4"
-          for c in ["users","lookup","profiles","vaults","notify"]:
-              n=0;days=collections.Counter();upd=collections.Counter();page="";err=None
-              while True:
-                  u=B+c+"?pageSize=300&mask.fieldPaths=__none&key="+K+("&pageToken="+page if page else "")
-                  try: j=json.load(urllib.request.urlopen(u,timeout=30))
-                  except Exception as e: err=str(e)[:120];break
-                  for d in j.get("documents") or []:
-                      n+=1;days[d["createTime"][:10]]+=1;upd[d["updateTime"][:10]]+=1
-                  page=j.get("nextPageToken") or ""
-                  if not page: break
-              print("==",c,"всего",n,"ошибка",err)
-              print(" созданы:",sorted(days.items()))
-              print(" обновлялись:",sorted(upd.items()))
+          import json,urllib.request,urllib.parse
+          H={"User-Agent":"moya-nora-books/1.0 (https://moya-nora.github.io)","Accept":"application/json"}
+          for q in ["Исчезнувшая Флинн","Ромео и Джульетта Шекспир","Свет в августе Фолкнер"]:
+            for u in ["https://api.litres.ru/foundation/api/search?q=%s&types=text_book&limit=5","https://api.litres.ru/foundation/api/search?q=%s&limit=5"]:
+              try:
+                j=json.load(urllib.request.urlopen(urllib.request.Request(u%urllib.parse.quote(q),headers=H),timeout=30))
+                print("OK",q,u[40:70]);print(json.dumps(j,ensure_ascii=False)[:1500])
+              except Exception as e: print("ERR",q,u[40:70],e)
           P
