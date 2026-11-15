@@ -1624,7 +1624,7 @@ html[data-theme="light"] #app .hsb{background:rgba(250,249,246,.95)}
 #app .bkc-acts{display:flex;gap:10px;width:100%;max-width:420px;margin-top:auto;padding-top:16px}
 #app .bkc-acts .btn{flex:1;min-width:0;padding-left:6px;padding-right:6px;font-size:14.5px;white-space:nowrap}
 #app .bkc-acts .btn[data-bkc=want]{flex:1.35;font-size:14px;letter-spacing:-.01em}#app .bkc-acts .btn[data-bkc=ask]+.btn,#app .bkc-acts .btn[data-bkc=want]:has(+.btn[data-bkc=ask]){flex:1}
-#app .bkc-acts .btn.sure{color:#FF8A80;box-shadow:inset 0 0 0 1px rgba(255,138,128,.5)}
+#app .bkc-acts .btn.bkc-ed{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;padding-left:14px;padding-right:14px}#app .bkc-acts .btn.bkc-ed svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}#app .bkc-acts .btn.sure{color:#FF8A80;box-shadow:inset 0 0 0 1px rgba(255,138,128,.5)}
 #app .swipe-go{display:flex;align-items:center;gap:14px;width:calc(100% - 44px);margin:6px 22px 26px;padding:14px 16px;border-radius:20px;text-align:left;color:var(--ink);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}#app .swipe-go svg{width:26px;height:26px;fill:none;stroke:#F3D19A;stroke-width:1.8;flex:none}#app .swipe-go span{flex:1}#app .swipe-go b{display:block;font-size:16px;font-weight:600}#app .swipe-go small{display:block;margin-top:2px;font-size:13px;color:var(--ink3)}#app .swipe-go i{font-style:normal;font-size:24px;color:var(--ink3)}body.viewing #app .swipe-go{display:none}#app #sumScroll:not(.L *){padding-top:calc(14px + var(--sat,env(safe-area-inset-top,0px)))}#app #sumScroll .shelves-h{margin-top:0}#app #sumScroll .stat-h{margin:26px 22px 4px}
 #app .shelves-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-right:22px}#app .shelves-top .shelf-h{margin-bottom:0}#app .add-in{display:flex;align-items:center;gap:5px;height:38px;padding:0 14px 0 10px;border-radius:19px;background:#F5F5F7;color:#0B0C11;font-size:14px;font-weight:700;white-space:nowrap}#app .add-in svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4}body.viewing #app .add-in{display:none}
 #app .luck-go{position:relative;display:flex;align-items:center;justify-content:space-between;width:calc(100% - 44px);min-height:132px;margin:8px 22px 28px;padding:18px 18px 18px 20px;border-radius:24px;text-align:left;color:var(--ink);overflow:hidden;
@@ -6170,7 +6170,7 @@ function bkcDraw(){const {x,L}=BKC;
    <div class="bkc-covsw" hidden>${covRow(x)}</div>
    <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>
    <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>${bkcTropes(x,L)}
-   <div class="bkc-tools"><button data-bkc="where">${IC2.pin}<span>Где прочитать</span></button>${x._f?"":`<button data-bkc="vid">${IC2.play}<span>Обзоры</span></button>`}${bkcSec(x,L)}</div>
+   <div class="bkc-tools"><button data-bkc="where">${IC2.pin}<span>Где прочитать</span></button>${x._f?"":`<button data-bkc="vid">${IC2.play}<span>Обзоры</span></button>`}${!x._f&&L!=="friend"&&BK.has(x)==="read"?`<button data-bkc="rate"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg><span>Редактировать</span></button>`:""}${bkcSec(x,L)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
    ${bkcRv(x,L)}${drugIs(x)?`<p class="bkc-law">${DRUG_TXT}</p>`:""}</div>
    <div class="bkc-bar">${bkcActs(x,L)}</div>`;const sc=bkcEl.querySelector(".bkc-in");if(sc)sc.scrollTop=0}
@@ -6356,6 +6356,9 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
   if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
     const r=L==="read"?x:BK.read().find(y=>norm(y.t)===norm(x.t));if(r)BK.rmRead(r);vDirty=true;toast("Убрано с полки «Прочитано»");bkcClose();return}
+  // поменять оценку прочитанной книги (или убрать её)
+  if(a==="rate"){const ex=BOOKS.find(b=>norm(b.t)===norm(x.t)),it=ex&&BK.read().find(y=>y.src===ex),cur=ex&&ex.r!=null?r5(ex.r):0;bkcClose();
+    rmAsk(x,cur,n=>{BK.markRead(x,n*2);refresh();toast("Оценка изменена")},"Без оценки",()=>{if(it){BK.setR(it,null);refresh();toast("Оценка убрана")}});return}
   if(a==="read"){const pre=BKC.sec?true:null;bkcClose();RMPRE=pre;rmAsk(x,null,n=>{BK.markRead(x,n*2);refresh()},"Без оценки",()=>{BK.markRead(x,null);refresh()})}});
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody"))return;
   const w=t.closest("[data-wh]");if(w){e.stopPropagation&&e.stopPropagation();whereOpen($("#vshBody")._wx,w.dataset.wh);tgHaptic();return}
