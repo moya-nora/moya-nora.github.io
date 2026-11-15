@@ -2199,7 +2199,7 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app #trend .hm-t small{display:block;margin-top:8px;font-size:13.5px;opacity:.85;line-height:1.35}
 #app #trend .hm-f{position:absolute;right:10px;bottom:-14px;display:flex}
 #app #trend .hm-f i{display:block;width:72px;margin-left:-22px;transform:rotate(calc((var(--i) - 1) * 9deg)) translateY(calc(var(--i) * -6px + 6px));box-shadow:0 10px 24px rgba(0,0,0,.45);border-radius:6px}
-#app #trend .hm-f i:first-child{margin-left:0}#app .shelves-top{display:flex;gap:10px;align-items:center}#app .acct-in{flex:none;height:38px;padding:0 16px;margin-left:auto;border-radius:999px;background:#F5F5F7;color:#0B0C11;font:inherit;font-weight:600;font-size:15px;border:0}#app .v-snow{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;border-radius:inherit}#app #trend .hmand{cursor:pointer;-webkit-tap-highlight-color:transparent}#app #trend .hm-f{left:20px;right:auto;bottom:18px}#app #trend .hm-f i,#app #trend .hm-f .cv{width:58px!important}#app #trend .hm-f i{margin-left:-14px}#app #trend .hmand .hm-t{max-width:60%}#app #trend .hmand{min-height:272px}#app #trend .hm-gift{position:absolute;right:10px;bottom:14px;width:118px;z-index:3;filter:drop-shadow(0 12px 16px rgba(0,0,0,.45));transform-origin:50% 95%;animation:hmWig 4s ease-in-out infinite}@keyframes hmWig{0%,78%,100%{transform:none}81%{transform:rotate(-6deg) translateY(-3px)}84%{transform:rotate(6deg) translateY(-6px)}87%{transform:rotate(-4deg)}90%{transform:rotate(3deg)}93%{transform:none}}#app #trend .hm-all{display:inline-block;margin-top:14px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.18);color:#fff;font:inherit;font-size:13px;font-weight:600;border:0}@media (prefers-reduced-motion:reduce){#app #trend .hm-gift{animation:none}}
+#app #trend .hm-f i:first-child{margin-left:0}#app .shelves-top{display:flex;gap:10px;align-items:center}#app .acct-in{flex:none;height:38px;padding:0 16px;margin-left:auto;border-radius:999px;background:#F5F5F7;color:#0B0C11;font:inherit;font-weight:600;font-size:15px;border:0}#app .rv-my{width:100%;margin:4px 0 16px}#app .rv.mine{border:1px solid rgba(243,209,154,.35)}#app .v-snow{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;border-radius:inherit}#app #trend .hmand{cursor:pointer;-webkit-tap-highlight-color:transparent}#app #trend .hm-f{left:20px;right:auto;bottom:18px}#app #trend .hm-f i,#app #trend .hm-f .cv{width:58px!important}#app #trend .hm-f i{margin-left:-14px}#app #trend .hmand .hm-t{max-width:60%}#app #trend .hmand{min-height:272px}#app #trend .hm-gift{position:absolute;right:10px;bottom:14px;width:118px;z-index:3;filter:drop-shadow(0 12px 16px rgba(0,0,0,.45));transform-origin:50% 95%;animation:hmWig 4s ease-in-out infinite}@keyframes hmWig{0%,78%,100%{transform:none}81%{transform:rotate(-6deg) translateY(-3px)}84%{transform:rotate(6deg) translateY(-6px)}87%{transform:rotate(-4deg)}90%{transform:rotate(3deg)}93%{transform:none}}#app #trend .hm-all{display:inline-block;margin-top:14px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.18);color:#fff;font:inherit;font-size:13px;font-weight:600;border:0}@media (prefers-reduced-motion:reduce){#app #trend .hm-gift{animation:none}}
 #app #trend .hm-f .cv{width:72px}
 
 #app .sx-h2{margin:22px 2px 12px;font-family:var(--serif);font-size:22px;font-weight:600}
@@ -6142,11 +6142,18 @@ let BKC=null;
 const IC2={x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',cov:'<svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 3.5v17"/><path d="M15.5 9.5l2-2 2 2M17.5 7.5V13"/></svg>',
   play:'<svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="3.5"/><path d="M10.5 9.3v5.4l4.6-2.7z"/></svg>',
   pin:'<svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg>'};
-function bkcFacts(x){const m=META[ikey(x)],fr=frReaders(x),out=[];
+// отзывы и оценки читателей ЛитРес и LiveLib (books/rv/<номер>.json, собираются раз в неделю)
+const LRV={};
+function rvLoad(x,cb){const id=litresId(x);if(!id){cb&&cb(null);return}if(LRV[id]!==undefined){cb&&cb(LRV[id]);return}LRV[id]=null;
+  fetch("books/rv/"+id+".json").then(r=>r.ok?r.json():null).then(j=>{LRV[id]=j;cb&&cb(j)}).catch(()=>{cb&&cb(null)})}
+const rvOf=x=>{const id=litresId(x);return id?LRV[id]:null};
+function bkcFacts(x){const m=META[ikey(x)]||(rvOf(x)?{}:undefined),fr=frReaders(x),out=[],lr=rvOf(x);
+  if(lr===undefined||(lr===null&&litresId(x)&&LRV[litresId(x)]===undefined))rvLoad(x,()=>{if(BKC&&BKC.x===x){const f=$("#bkcFacts");if(f)f.innerHTML=bkcFacts(x)}});
   if(m===undefined)return `<span class="sk-f"></span><span class="sk-f w"></span>`;   // пока грузится — без прыжков цифр
   if(m.pg)out.push(`<span><b>${m.pg}</b> ${plural(m.pg,"страница","страницы","страниц")}</span>`);
-  if(m.r)out.push(`<span><b>★ ${(m.r/2).toFixed(1).replace(".",",")}</b> ${m.v.toLocaleString("ru-RU")} ${plural(m.v,"оценка","оценки","оценок")}</span>`);
-  if(m.r&&m.rc)out.push(`<button data-bkc-rv><b>${m.rc}</b> ${plural(m.rc,"отзыв","отзыва","отзывов")} ›</button>`);
+  {const vv=(lr&&((lr.v||0)+(lr.lv||0)))||0;if(vv>(m.v||0)){const avg=((lr.r||0)*(lr.v||0)+(lr.lr||0)*(lr.lv||0))/vv;out.push(`<span><b>★ ${avg.toFixed(1).replace(".",",")}</b> ${vv.toLocaleString("ru-RU")} ${plural(vv,"оценка","оценки","оценок")}</span>`)}
+   else if(m.r)out.push(`<span><b>★ ${(m.r/2).toFixed(1).replace(".",",")}</b> ${m.v.toLocaleString("ru-RU")} ${plural(m.v,"оценка","оценки","оценок")}</span>`)}
+  {const rc=((lr&&lr.n)||0)+((m.r&&m.rc)||0);out.push(`<button data-bkc-rv><b>${rc||""}</b> ${rc?plural(rc,"отзыв","отзыва","отзывов"):"Отзывы"} ›</button>`)}
   if(fr.length){const rv=fr.filter(z=>z.b.rv).length;out.push(`<button data-bkc-fr>Читали друзья: <b>${fr.length}</b>${rv?` · ${rv} ${plural(rv,"отзыв","отзыва","отзывов")}`:""} ›</button>`)}
   if(x.frR&&x.frR.r!=null)out.push(`<span>У ${esc(x.frR.n||"друга")}: <b>★ ${r5(x.frR.r)}</b></span>`);
   return out.join("")}
@@ -6348,12 +6355,22 @@ addEventListener("resize",()=>{if(BKC)bkcFit()});
 function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();setTimeout(onbAsk,700);if(vDirty){vDirty=false;setTimeout(refresh,300)}}
 // отзывы читателей Фантлаба
 const rvClean=s=>String(s||"").replace(/\[(\/?)(b|i|u|s|p|q|spoiler|center|right|left)[^\]]*\]/gi,"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\r/g,"").replace(/\n{3,}/g,"\n\n").trim();
-async function reviewsOpen(x){const m=META[ikey(x)]||{};if(!m.w)return;tgHaptic();
-  vOpen(`<h3 class="vh">Отзывы о «${esc(x.t)}»</h3><p class="sy-note">${m.r?`★ ${(m.r/2).toFixed(1).replace(".",",")} — средняя оценка ${m.v.toLocaleString("ru-RU")} ${plural(m.v,"читателя","читателей","читателей")} Фантлаба`:""}</p><div id="rvList"><div class="sk"></div><div class="sk"></div></div>`,true);$("#vsheet").classList.add("ontop");
+async function reviewsOpen(x){const m=META[ikey(x)]||{};tgHaptic();
+  const lr=await new Promise(r=>rvLoad(x,r)),mine=BOOKS.find(b=>norm(b.t)===norm(x.t));
+  const head=`<h3 class="vh">Отзывы о «${esc(x.t)}»</h3><button class="btn w rv-my" data-rv-write>${mine&&mine.n?"Изменить мой отзыв":"Написать свой отзыв"}</button>`+(mine&&mine.n?`<div class="rv mine"><div class="rv-h"><b>Мой отзыв</b>${mine.r!=null?`<span>★ ${r5(mine.r)}</span>`:""}</div><p class="rv-t">${esc(mine.n)}</p></div>`:"");
+  const lrHtml=lr&&lr.L&&lr.L.length?lr.L.map(r=>`<div class="rv"><div class="rv-h"><b>${esc(r[0])}</b>${r[2]?`<span>★ ${r[2]}</span>`:""}<small>${esc(r[1])}</small></div><p class="rv-t">${esc(r[3])}</p><button class="rv-more" data-rvmore>читать далее…</button></div>`).join(""):"";
+  if(!m.w){vOpen(head+(lr&&lr.n?`<p class="sy-note">${lr.n.toLocaleString("ru-RU")} ${plural(lr.n,"отзыв","отзыва","отзывов")} читателей ЛитРес, здесь самые полезные</p>`:"")+`<div id="rvList">${lrHtml||`<p class="sy-note">Отзывов пока нет. Будь первым!</p>`}</div>`,true);$("#vsheet").classList.add("ontop");
+    document.querySelectorAll("#rvList .rv").forEach(el=>{const p=el.querySelector(".rv-t");if(p&&p.scrollHeight<=p.clientHeight+2){const b=el.querySelector(".rv-more");b&&b.remove()}});return}
+  if(lrHtml){vOpen(head+`<div id="rvList">${lrHtml}<div id="rvFl"></div></div>`,true);$("#vsheet").classList.add("ontop");
+    document.querySelectorAll("#rvList .rv").forEach(el=>{const p=el.querySelector(".rv-t");if(p&&p.scrollHeight<=p.clientHeight+2){const b=el.querySelector(".rv-more");b&&b.remove()}});return}
+  vOpen(head+`<p class="sy-note">${m.r?`★ ${(m.r/2).toFixed(1).replace(".",",")} — средняя оценка ${m.v.toLocaleString("ru-RU")} ${plural(m.v,"читателя","читателей","читателей")} Фантлаба`:""}</p><div id="rvList"><div class="sk"></div><div class="sk"></div></div>`,true);$("#vsheet").classList.add("ontop");
   try{const j=await flj("/work/"+m.w+"/responses?page=1&sort=rating");const L=(j.items||[]).slice(0,20),box=$("#rvList");if(!box)return;
     box.innerHTML=L.length?L.map(r=>`<div class="rv"><div class="rv-h"><b>${esc(r.user_name||"Читатель")}</b>${r.mark?`<span>★ ${(r.mark/2).toFixed(1).replace(".",",")}</span>`:""}<small>${esc(String(r.response_date||"").slice(0,4))}</small></div><p class="rv-t">${esc(rvClean(r.response_text))}</p><button class="rv-more" data-rvmore>читать далее…</button></div>`).join(""):`<p class="sy-note">Отзывов пока нет.</p>`;
     box.querySelectorAll(".rv").forEach(el=>{const p=el.querySelector(".rv-t");if(p.scrollHeight<=p.clientHeight+2)el.querySelector(".rv-more").remove()})}
   catch(e){const box=$("#rvList");if(box)box.innerHTML=`<p class="sy-note">Отзывы не загрузились — проверь интернет.</p>`}}
+document.addEventListener("click",e=>{if(!e.target.closest("[data-rv-write]")||!BKC)return;e.stopPropagation();const x=BKC.x;tgHaptic();vClose();
+  const go=()=>{const ex=BOOKS.find(b=>norm(b.t)===norm(x.t));if(ex)setTimeout(()=>dNew(ex,3),220)};
+  if(BOOKS.some(b=>norm(b.t)===norm(x.t)))go();else setTimeout(()=>rmAsk(x,null,n=>{BK.markRead(x,n*2);refresh();go()},"Без оценки",()=>{BK.markRead(x,null);refresh();go()}),220)},true);
 document.addEventListener("click",e=>{const b=e.target.closest("[data-rvmore]");if(!b)return;b.closest(".rv").classList.add("open");b.remove()});
 // ссылка на книгу из канала и бота: t.me/Wonderbookworld_bot?startapp=b_<id> (или ?book=<id> в браузере) открывает её карточку
 (function(){let id="";try{const sp=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param||"";id=(sp.match(/^b_([A-Za-z0-9]+)$/)||[])[1]||new URLSearchParams(location.search).get("book")||""}catch(e){}if(!id||VIEW)return;
