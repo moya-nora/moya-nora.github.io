@@ -34,11 +34,11 @@ def cube(name, size, loc, m):
 
 
 # ---------- материалы ----------
-wrap, wb = mat("wrap", (.86, .80, .70), .42, **{"Coat Weight": .25, "Coat Roughness": .3, "Sheen Weight": .25})  # однотонная, цвет Норы: тёплый кремовый
+wrap, wb = mat("wrap", tuple(float(v) for v in os.environ.get("BOXC", ".24,.02,.05").split(",")), .42, **{"Coat Weight": .25, "Coat Roughness": .3, "Sheen Weight": .25})  # однотонная винная (выбрала Настя)
 ribbon, rb = mat("ribbon", (.83, .58, .26), .22, **{"Sheen Weight": .35, "Sheen Roughness": .4, "Coat Weight": .35, "Coat Roughness": .1, "Anisotropic": .6})
 rb.inputs["Sheen Tint"].default_value = (1, .9, .7, 1); rb.inputs["Metallic"].default_value = .55
 inside, ib = mat("inside", (.95, .82, .55), .7)
-snow, sb = mat("snow", (.30, .29, .31), .6, **{"Subsurface Weight": .4})
+snow, sb = mat("snow", (.17, .16, .18), .6, **{"Subsurface Weight": .4})
 sb.inputs["Subsurface Radius"].default_value = (.4, .5, .8)
 
 # ---------- подарок ----------
