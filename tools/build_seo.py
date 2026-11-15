@@ -636,7 +636,7 @@ home_path = page("index.html", "Нора — что почитать", "Что �
                  "А Шуршуня подберёт книги лично тебе.", home,
                  full_title="Нора (Моя Нора) — книжный советник: что почитать, подборки и похожие книги", ld=HOME_LD)
 idx = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
-idx = idx.replace('<meta charset="utf-8">', '<meta charset="utf-8"><script src="/ym.js"></script><meta name="google-site-verification" content="s2CdXU7z22CJQ7fqwqJNwf2nyq4VN3Jk2UEHofqjoXc"><meta name="yandex-verification" content="6a85060ff8390b92">'
+idx = idx.replace('<meta charset="utf-8">', '<meta charset="utf-8"><script src="/ym.js"></script><meta name="google-site-verification" content="s2CdXU7z22CJQ7fqwqJNwf2nyq4VN3Jk2UEHofqjoXc"><meta name="yandex-verification" content="6a85060ff8390b92"><meta name="yandex-verification" content="zy7yffs4ru1bcbt0">'
                   '<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Моя Нора">' + TG_REDIRECT, 1)
 open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(dash(idx))
 urls.insert(0, home_path)
