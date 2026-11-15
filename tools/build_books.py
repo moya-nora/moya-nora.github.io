@@ -467,6 +467,7 @@ rows = []
 for r in recs:
     ai = auix(r["a"], r["ac"])
     ci = cix(r["wc"]) if r["wc"] and r["wc"] != r["ac"] else -1
+    r["t"] = {"Задверье": "Никогде"}.get(r["t"], r["t"])  # в России книгу знают под этим названием
     rows.append([r["w"], r["t"], ai, r["y"] or 0, GI[r["g"]], [TI[t] for t in r["tags"]], r["q"], r["sl"], ci,
                  r["aw"], r["pg"], r["rw"], r["o"]])
 
