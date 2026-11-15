@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       post: { description: "файл из tools/channel (пусто - следующий пост из очереди)", default: "" }
+      edit: { description: "поправить вышедший пост: «номер_сообщения номер_в_очереди»", default: "" }
 permissions:
   contents: write
 concurrency: { group: channel, cancel-in-progress: false }
@@ -14,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          if [ -n "${{ inputs.post }}" ]; then python3 tools/channel_post.py "tools/channel/${{ inputs.post }}"; else python3 tools/channel_post.py --next; fi
+          if [ -n "${{ inputs.edit }}" ]; then python3 tools/channel_post.py --edit ${{ inputs.edit }}; elif [ -n "${{ inputs.post }}" ]; then python3 tools/channel_post.py "tools/channel/${{ inputs.post }}"; else python3 tools/channel_post.py --next; fi
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       - name: Сохранить, что вышло

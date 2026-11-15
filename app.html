@@ -5145,12 +5145,21 @@ function popBooks(){return POPB.map(t=>{const c=catOf({t,a:POPBA[t]});return c?b
 function popFilms(){return POPF.map(([t,y,s])=>{if(FILMS&&!s){const f=toFilm({t,y});if(f&&FILMS_MAP&&FILMS_MAP.get(f.id))return fItem(f,"pop")}return {_f:1,t,y,s:s?1:undefined,id:"w"+hsh(norm(t)+y).toString(36),kind:"pop"}})}
 // другие переводы названий: человек ищет «Никогде», а в каталоге книга называется «Задверье»
 const ALTT=Object.fromEntries("Задверье>Никогде;Ловец на хлебном поле>Над пропастью во ржи;Добрые предзнаменования>Благие знамения;Цветы для Алджернона>Цветы для Элджернона;Пролетая над гнездом кукушки>Над кукушкиным гнездом;Прекрасный новый мир>О дивный новый мир;Дивный новый мир>О дивный новый мир;Гордость и гордыня>Гордость и предубеждение;Повелитель мух>Повелитель мух;Властелин мух>Повелитель мух;Гарри Поттер и волшебный камень>Гарри Поттер и философский камень;Хоббит>Хоббит, или Туда и обратно;Туда и обратно>Хоббит, или Туда и обратно;Песнь льда и пламени>Игра престолов;Песнь льда и огня>Игра престолов;Эта ваша зависимость>Эта ваша зависимость;Убить насмешника>Убить пересмешника;Хижина дяди Тома>Хижина дяди Тома;Тошнота>Тошнота;Жестокий принц>Жестокий принц;Девушка в поезде>Девушка в поезде;Исчезающая>Исчезнувшая;Пропавшая>Исчезнувшая;Бегущий за ветром>Бегущий за ветром;Воздушный змей>Бегущий за ветром;Сияние>Сияние;Мизери>Мизери;Мгла>Туман;Шантарам>Шантарам".split(";").map(p=>{const [a,b]=p.split(">");return [norm(a),b]}));
-function localFind(q){if(SX.k==="films"){const own=[...FSEEN,...FWANT].filter(f=>nameMatches(q,fTitle(f),f.o||"")).map(f=>fItem(f,"own"));const arch=FILMS?filmSearch(q,20).map(f=>fItem(f,"arch")):[];
+// поиск прощает ошибки: неверная раскладка («Ujkjlyst buhs» = «Голодные игры»), опечатки в фамилии, слова в любом порядке
+const KBEN="qwertyuiop[]asdfghjkl;'zxcvbnm,.`",KBRU="йцукенгшщзхъфывапролджэячсмитьбюё";
+const kbSwap=q=>/[а-яё]/i.test(q)||!/[a-z]/i.test(q)?"":String(q).toLowerCase().split("").map(c=>{const i=KBEN.indexOf(c);return i<0?c:KBRU[i]}).join("");
+const qWords=q=>String(q||"").toLowerCase().replace(/ё/g,"е").split(/[^a-zа-я0-9]+/).filter(Boolean);
+const strongHit=(b,q)=>{const ws=qWords(q),all=qWords((b.t||"")+" "+(b.a||""));return ws.length>0&&ws.every(w=>all.some(x=>x.startsWith(w)))};
+function localFind(q){const r=localFind0(q);if(SX.k==="films")return r;const st=r.filter(b=>strongHit(b,q)).length;
+  const alt=kbSwap(q);if(alt&&st===0){const r2=localFind0(alt);if(r2.length&&r2.filter(b=>strongHit(b,alt)).length)return r2}
+  return r}
+function localFind0(q){if(SX.k==="films"){const own=[...FSEEN,...FWANT].filter(f=>nameMatches(q,fTitle(f),f.o||"")).map(f=>fItem(f,"own"));const arch=FILMS?filmSearch(q,20).map(f=>fItem(f,"arch")):[];
     const seen=new Set(),out=[];[...own,...arch].forEach(x=>{if(seen.has(x.id))return;seen.add(x.id);out.push(x)});return out.slice(0,20)}
   {const al=ALTT[norm(q)];if(al&&norm(al)!==norm(q)){const r=localFind(al);if(r.length)return r}}
   const own=bookHits(q,[...BOOKS,...want,...CAT],8),seen=new Set(own.map(b=>norm(b.t)+"|"+norm(b.a||"")));
   let res=[...own,...bigHits(q,14).filter(b=>!seen.has(b._n+"|"+norm(b.a||"")))];
-  if(res.length<3){const fz=fuzzyHits(q,12).filter(b=>!res.includes(b));res=[...res,...fz]}
+  {const fz=fuzzyHits(q,12).filter(b=>!res.includes(b)),sh=res.filter(b=>strongHit(b,q)),wk=res.filter(b=>!strongHit(b,q));res=[...sh,...fz,...wk]}
+  {const sn=new Set();res=res.filter(b=>{const k=norm(b.t)+"|"+norm(b.a||"");if(sn.has(k))return false;sn.add(k);return true})}
   return res.slice(0,16).map(b=>bItem(b,"hit"))}
 // опечатки в фамилии автора («Голдарт» → Голдратт): ищем фамилии, отличающиеся на 1-2 буквы, остальные слова - в названии
 let AUIX=null;
@@ -5292,7 +5301,7 @@ function sxRun(){const q=$("#fq").value,my=++SX.seq;SX.q=q;SX.mode="q";clearTime
   {const h=SX.k!=="films"&&genreHit(q);if(h){const L=h[0]==="gen"?NF.gen:NF.trope;if(!L.includes(h[1]))L.push(h[1]);saveNF();SX.picks=true;SX.q="";$("#fq").value="";$(".sx-clear").hidden=true;
     const b=$("#sxf");if(b)b.innerHTML=sxFbar();SX.authors=[];sxDraw();tgHaptic();return}}
   if(norm(q).length<2){SX.authors=[];sxDraw();return}
-  SX.list=localFind(q);SX.authors=[];SX.mean=null;SX.mn=12;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=2){const M=meanFind(q,40);if(M&&M.list.length&&(M.lab.length||!SX.list.length))SX.mean=M}sxDraw("load");SX.brain=null;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=3){SX.brain="load";brainAsk(q).then(L=>{if(my!==SX.seq)return;SX.brain=brainUnpack(L||[]);sxDraw(SX.st||"done")})}
+  SX.list=localFind(q);SX.authors=[];SX.mean=null;SX.mn=12;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=2&&/[а-яё]/i.test(q)&&!SX.list.slice(0,4).some(x=>strongHit(x,q))){const M=meanFind(q,40);if(M&&M.list.length&&(M.lab.length||!SX.list.length))SX.mean=M}sxDraw("load");SX.brain=null;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=3){SX.brain="load";brainAsk(q).then(L=>{if(my!==SX.seq)return;SX.brain=brainUnpack(L||[]);sxDraw(SX.st||"done")})}
   SX.t=setTimeout(async()=>{try{if(SX.k==="films")await loadFilms().catch(()=>{});if(my!==SX.seq)return;if(SX.k==="films")SX.list=localFind(q);
       const o=await (SX.k==="films"?onlineSeries(q):onlineBooks(q));if(my!==SX.seq)return;const seen=new Set(SX.list.map(x=>norm(x.t)+(x._f?x.y:"")));
       SX.list=[...SX.list,...o.works.filter(x=>{const n=norm(x.t)+(x._f?x.y:"");if(seen.has(n))return false;seen.add(n);return true})];SX.authors=o.au;sxDraw("done")}

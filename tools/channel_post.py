@@ -36,6 +36,13 @@ def post(text, photo=None, btn=None, url=None):
     print("ok", r["ok"], r["result"]["message_id"])
 
 
+if sys.argv[1:2] == ["--edit"]:  # поправить уже вышедший пост: --edit <номер сообщения> <номер в очереди>
+    Q = json.load(open(os.path.join(HERE, "channel", "queue.json"), encoding="utf-8")); p = Q[int(sys.argv[3])]
+    kb = {"inline_keyboard": [[{"text": "Открыть в Норе", "url": f"{BOT}?startapp=b_{p['book']}"}]]} if p.get("book") else None
+    m = "editMessageCaption" if p.get("photo") else "editMessageText"
+    d = {"chat_id": CH, "message_id": int(sys.argv[2]), "parse_mode": "HTML", ("caption" if p.get("photo") else "text"): p["text"]}
+    if kb: d["reply_markup"] = kb
+    print(api(m, d)["ok"]); sys.exit(0)
 if sys.argv[1:] == ["--next"]:
     Q = json.load(open(os.path.join(HERE, "channel", "queue.json"), encoding="utf-8"))
     sp = os.path.join(HERE, "channel", "sent.json")
