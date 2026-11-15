@@ -5,13 +5,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          python3 - <<'P'
-          import json,urllib.request,urllib.parse
-          H={"User-Agent":"moya-nora-books/1.0 (https://moya-nora.github.io)","Accept":"application/json"}
-          for q in ["Исчезнувшая Флинн","Ромео и Джульетта Шекспир","Свет в августе Фолкнер"]:
-            for u in ["https://api.litres.ru/foundation/api/search?q=%s&types=text_book&limit=5","https://api.litres.ru/foundation/api/search?q=%s&limit=5"]:
-              try:
-                j=json.load(urllib.request.urlopen(urllib.request.Request(u%urllib.parse.quote(q),headers=H),timeout=30))
-                print("OK",q,u[40:70]);print(json.dumps(j,ensure_ascii=False)[:1500])
-              except Exception as e: print("ERR",q,u[40:70],e)
-          P
+          for u in https://www.litres.ru/pub/c/cover/6028900.jpg https://www.litres.ru/pub/c/cover_415/6028900.jpg https://cv0.litres.ru/pub/c/cover_415/6028900.jpg https://www.litres.ru/pub/c/cover_330/6028900.jpg https://www.litres.ru/pub/c/cover_250/73966047.jpg https://www.litres.ru/pub/c/cover/73966047.jpg; do echo "U $u $(curl -sSL -o /tmp/c.jpg -w '%{http_code} %{size_download} %{content_type}' "$u") $(python3 -c "import struct;d=open('/tmp/c.jpg','rb').read();print(len(d))")"; done
+          curl -sS -H 'Accept: application/json' "https://api.litres.ru/foundation/api/search?q=%D0%98%D1%81%D1%87%D0%B5%D0%B7%D0%BD%D1%83%D0%B2%D1%88%D0%B0%D1%8F&types=text_book&limit=1" | python3 -c "import json,sys;x=json.load(sys.stdin)['payload']['data'][0]['instance'];print('K',sorted(x.keys()));print('P',json.dumps(x.get('persons'),ensure_ascii=False)[:400])"
