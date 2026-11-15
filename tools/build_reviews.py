@@ -3,7 +3,7 @@
 
 Для каждой книги с известным номером на ЛитРес (books/lcovers.json и книги каталога ЛитРес) берём оценку,
 число оценок и до 12 самых полезных отзывов. Пишем books/rv/<номер>.json:
-{"r": средняя 1-5, "v": оценок, "n": отзывов, "L": [[имя, год, оценка 1-5 или 0, текст], ...]}.
+{"r": средняя 1-5, "v": оценок, "n": отзывов на ЛитРес, "lr"/"lv": оценка и число оценок LiveLib, "L": [[имя, год, оценка 1-5 или 0, текст], ...]}.
 Свежие файлы (моложе 30 дней) не обновляем. Запуск: python3 tools/build_reviews.py [часов]."""
 import html, json, os, re, sys, time, urllib.request, urllib.error
 
@@ -53,7 +53,7 @@ for aid in ids:
         continue
     seen.add(aid)
     fp = os.path.join(OUT, f"{aid}.json")
-    if os.path.exists(fp) and time.time() - os.path.getmtime(fp) < 30 * 86400:
+    if os.path.exists(fp) and time.time() - os.path.getmtime(fp) < 30 * 86400 and '"lv"' in open(fp, encoding="utf-8").read(400):
         continue
     if time.time() - T0 > HOURS * 3600:
         break
@@ -70,12 +70,13 @@ for aid in ids:
         t = clean(x.get("text"))
         if len(t) < 40:
             continue
-        mk = x.get("rating") or x.get("user_rating") or 0
+        mk = x.get("item_rating") or 0
         out.append([x.get("user_display_name") or "Читатель", str(x.get("created_at") or "")[:4], mk if isinstance(mk, (int, float)) else 0, t])
     n += 1
     if out or rt.get("rated_total_count"):
         got += 1
-        json.dump({"r": rt.get("rated_avg") or 0, "v": rt.get("rated_total_count") or 0, "n": a.get("reviews_count") or len(out), "L": out},
+        json.dump({"r": rt.get("rated_avg") or 0, "v": rt.get("rated_total_count") or 0, "n": a.get("reviews_count") or len(out),
+                   "lr": a.get("livelib_rated_avg") or 0, "lv": a.get("livelib_rated_count") or 0, "L": out},
                   open(fp, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     if n % 200 == 0:
         print(f"  {n}: с отзывами {got}", flush=True)
