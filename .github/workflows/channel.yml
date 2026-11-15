@@ -1,13 +1,25 @@
 name: channel
 on:
+  schedule:
+    - cron: "7 15 * * *"   # каждый день в 18:07 по Москве
   workflow_dispatch:
     inputs:
-      post: { description: "файл из tools/channel", default: "intro.html" }
+      post: { description: "файл из tools/channel (пусто - следующий пост из очереди)", default: "" }
+permissions:
+  contents: write
+concurrency: { group: channel, cancel-in-progress: false }
 jobs:
   post:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 tools/channel_post.py "tools/channel/${{ inputs.post }}"
+      - run: |
+          if [ -n "${{ inputs.post }}" ]; then python3 tools/channel_post.py "tools/channel/${{ inputs.post }}"; else python3 tools/channel_post.py --next; fi
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      - name: Сохранить, что вышло
+        run: |
+          git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
+          git add tools/channel/sent.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Канал: пост вышел"
+          git pull --rebase -q && git push

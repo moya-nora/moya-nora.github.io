@@ -6346,6 +6346,9 @@ async function reviewsOpen(x){const m=META[ikey(x)]||{};if(!m.w)return;tgHaptic(
     box.querySelectorAll(".rv").forEach(el=>{const p=el.querySelector(".rv-t");if(p.scrollHeight<=p.clientHeight+2)el.querySelector(".rv-more").remove()})}
   catch(e){const box=$("#rvList");if(box)box.innerHTML=`<p class="sy-note">Отзывы не загрузились — проверь интернет.</p>`}}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-rvmore]");if(!b)return;b.closest(".rv").classList.add("open");b.remove()});
+// ссылка на книгу из канала и бота: t.me/Wonderbookworld_bot?startapp=b_<id> (или ?book=<id> в браузере) открывает её карточку
+(function(){let id="";try{const sp=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param||"";id=(sp.match(/^b_([A-Za-z0-9]+)$/)||[])[1]||new URLSearchParams(location.search).get("book")||""}catch(e){}if(!id||VIEW)return;
+  let n=0;const t=setInterval(()=>{n++;let b=null;try{b=ALLB().find(x=>x.id===id)}catch(e){}if(b){clearInterval(t);setTimeout(()=>bkcOpen(bItem(b,"rec"),"rec"),600)}else if(n>40)clearInterval(t)},500)})();
 // раздел «Обзоры» отложен (15.11): кнопки нигде нет, код оставлен - включить, поставив true
 const SHOW_VIDS=false;
 const openLink=u=>{try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(e){window.open(u,"_blank")}};
