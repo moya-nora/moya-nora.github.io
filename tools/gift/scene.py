@@ -49,9 +49,13 @@ sb.inputs["Subsurface Radius"].default_value = (.4, .5, .8)
 # ---------- подарок ----------
 W, H, L = 1.5, 1.1, .32
 root = bpy.data.objects.new("gift", None); bpy.context.collection.objects.link(root)
-body = cube("body", (W, W, H), (0, 0, H / 2), wrap); bevel(body, .04); body.parent = root
+def no_top(o):
+    bm = bmesh.new(); bm.from_mesh(o.data); top = [f for f in bm.faces if f.normal.z > .9]; bmesh.ops.delete(bm, geom=top, context="FACES"); bm.to_mesh(o.data); bm.free()
+body = cube("body", (W, W, H), (0, 0, H / 2), wrap); no_top(body); body.data.materials.append(inside)
+so = body.modifiers.new("t", "SOLIDIFY"); so.thickness = .035; so.offset = -1; so.material_offset = 1; so.material_offset_rim = 1
+bevel(body, .03); body.parent = root
 for i, (sx, sy) in enumerate(((W + .03, .3), (.3, W + .03))):
-    r = cube(f"band{i}", (sx, sy, H + .01), (0, 0, H / 2), ribbon); bevel(r, .01, 2); r.parent = root
+    r = cube(f"band{i}", (sx, sy, H + .01), (0, 0, H / 2), ribbon); no_top(r); bevel(r, .01, 2); r.parent = root
 lid = bpy.data.objects.new("lid", None); bpy.context.collection.objects.link(lid); lid.parent = root; lid.location = (0, 0, H - .06)
 lb = cube("lidbox", (W + .12, W + .12, L), (0, 0, L / 2), wrap); bevel(lb, .05); lb.parent = lid
 for i, (sx, sy) in enumerate(((W + .15, .31), (.31, W + .15))):
@@ -102,6 +106,22 @@ glow, gb = mat("glow", (1, .85, .5), .5, **{"Emission Strength": 0})
 gb.inputs["Emission Color"].default_value = (1, .78, .4, 1)
 gp = cube("glowplane", (W - .08, W - .08, .02), (0, 0, H - .02), glow); gp.parent = root
 
+# луч света из коробки
+bpy.ops.mesh.primitive_cone_add(vertices=128, radius1=.65, radius2=1.6, depth=4.2, end_fill_type="NOTHING", location=(0, 0, H + 2.1)); beam = bpy.context.object; bpy.ops.object.shade_smooth(); beam.parent = root
+bm_ = bpy.data.materials.new("beam"); bm_.use_nodes = True; nt = bm_.node_tree; nt.nodes.clear()
+o_ = nt.nodes.new("ShaderNodeOutputMaterial"); mix = nt.nodes.new("ShaderNodeMixShader"); tr = nt.nodes.new("ShaderNodeBsdfTransparent"); emn = nt.nodes.new("ShaderNodeEmission")
+emn.inputs["Color"].default_value = (1, .82, .5, 1); emn.inputs["Strength"].default_value = 4
+tc = nt.nodes.new("ShaderNodeTexCoord"); sep = nt.nodes.new("ShaderNodeSeparateXYZ"); ramp = nt.nodes.new("ShaderNodeValToRGB")
+ramp.color_ramp.elements[0].position = 0; ramp.color_ramp.elements[0].color = (.0, 0, 0, 1); ramp.color_ramp.elements[1].position = 1; ramp.color_ramp.elements[1].color = (1, 1, 1, 1)
+mapn = nt.nodes.new("ShaderNodeMapRange"); mapn.inputs["From Min"].default_value = 2.1; mapn.inputs["From Max"].default_value = -2.1
+amt = nt.nodes.new("ShaderNodeMath"); amt.operation = "MULTIPLY"; amt.inputs[1].default_value = 0
+nt.links.new(tc.outputs["Object"], sep.inputs[0]); nt.links.new(sep.outputs["Z"], mapn.inputs["Value"]); nt.links.new(mapn.outputs["Result"], amt.inputs[0])
+lw = nt.nodes.new("ShaderNodeLayerWeight"); lw.inputs["Blend"].default_value = .5; inv = nt.nodes.new("ShaderNodeMath"); inv.operation = "SUBTRACT"; inv.inputs[0].default_value = 1
+nt.links.new(lw.outputs["Facing"], inv.inputs[1]); m2_ = nt.nodes.new("ShaderNodeMath"); m2_.operation = "MULTIPLY"; nt.links.new(amt.outputs[0], m2_.inputs[0]); nt.links.new(inv.outputs[0], m2_.inputs[1])
+nt.links.new(m2_.outputs[0], mix.inputs["Fac"]); nt.links.new(tr.outputs[0], mix.inputs[1]); nt.links.new(emn.outputs[0], mix.inputs[2]); nt.links.new(mix.outputs[0], o_.inputs["Surface"])
+beam.data.materials.append(bm_); bm_.blend_method = "BLEND" if hasattr(bm_, "blend_method") else None
+for f, v in ((77, 0), (84, 0), (88, .22), (100, .13), (140, .1)):
+    amt.inputs[1].default_value = v; amt.inputs[1].keyframe_insert("default_value", frame=f)
 root.rotation_euler = (0, 0, math.radians(-24))
 
 # ---------- снег и фон ----------
@@ -153,9 +173,9 @@ for o in conf:
 bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 0, H - .1)); em = bpy.context.object; em.name = "emitter"; em.scale = (.6, .6, 1)
 ps = em.modifiers.new("p", "PARTICLE_SYSTEM").particle_system.settings
 ps.count = 420; ps.frame_start = 86; ps.frame_end = 90; ps.lifetime = 120; ps.emit_from = "FACE"
-ps.normal_factor = 9; ps.factor_random = 4; ps.render_type = "COLLECTION"; ps.instance_collection = coll; ps.use_collection_pick_random = True
+ps.normal_factor = 5.5; ps.factor_random = 2.5; ps.render_type = "COLLECTION"; ps.instance_collection = coll; ps.use_collection_pick_random = True
 ps.particle_size = 1; ps.size_random = .5; ps.use_rotations = True; ps.rotation_mode = "VEL"; ps.rotation_factor_random = 1; ps.phase_factor_random = 2
-ps.angular_velocity_mode = "RAND"; ps.angular_velocity_factor = 12; ps.effector_weights.gravity = .55; ps.drag_factor = .35
+ps.angular_velocity_mode = "RAND"; ps.angular_velocity_factor = 12; ps.effector_weights.gravity = .9; ps.drag_factor = .5
 em.show_instancer_for_render = False
 
 # ---------- анимация ----------
@@ -215,7 +235,7 @@ try:
         except Exception: pass
     tree.links.new(rl.outputs["Image"], gl.inputs["Image"]); tree.links.new(gl.outputs["Image"], out_n.inputs[0])
 except Exception as e:
-    print("без bloom:", e)
+    print("без bloom:", e, flush=True)
 os.makedirs(out, exist_ok=True)
 for f in range(f1, f2 + 1):
     sc.frame_set(f); r.filepath = os.path.join(out, f"{f:04d}.png"); bpy.ops.render.render(write_still=True)
