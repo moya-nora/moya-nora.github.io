@@ -231,6 +231,11 @@ try:
     tree.links.new(rl.outputs["Image"], gl.inputs["Image"]); tree.links.new(gl.outputs["Image"], out_n.inputs[0])
 except Exception as e:
     print("без bloom:", e, flush=True)
+if os.environ.get("TILE"):  # картинка для окошка на главной: только подарок на прозрачном фоне
+    r.film_transparent = True
+    for o_ in bpy.data.objects:
+        if o_.type == "MESH" and (o_.data.materials and o_.data.materials[0].name.startswith(("snow", "bulb"))): o_.hide_render = True
+    cam_d.dof.use_dof = False
 os.makedirs(out, exist_ok=True)
 for f in range(f1, f2 + 1):
     sc.frame_set(f); r.filepath = os.path.join(out, f"{f:04d}.png"); bpy.ops.render.render(write_still=True)
