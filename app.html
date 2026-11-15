@@ -4905,7 +4905,7 @@ function vOpen(html,tall){$("#vshBody").innerHTML=html;const sh=$("#vsheet");sh.
 function vClose(){const sh0=$("#vsheet");if(sh0.classList.contains("on")&&(sh0.classList.contains("search")||sh0.classList.contains("filters"))){try{resetAll();SX.picks=false}catch(e){}}$("#vsheet").classList.remove("on","ontop");document.activeElement&&document.activeElement.blur();syncBack();
   if(vDirty){vDirty=false;setTimeout(refresh,520)}}
 $("#vsheet").addEventListener("click",e=>{if(e.target.closest("[data-close],[data-vclose]"))vClose()});
-(function(){const el=$("#vsh");let y0=null,dy=0;el.addEventListener("touchstart",e=>{if(el.scrollTop>0||e.target.closest("input,textarea,.sx-au,.f-chips,.f-sort,.dcards"))return;y0=e.touches[0].clientY;dy=0},{passive:true});
+(function(){const el=$("#vsh");let y0=null,dy=0;el.addEventListener("touchstart",e=>{if(el.scrollTop>1||e.target.closest("input,textarea,.sx-au,.f-chips,.f-sort,.dcards"))return;y0=e.touches[0].clientY;dy=0},{passive:true});
   el.addEventListener("touchmove",e=>{if(y0==null)return;dy=Math.max(0,e.touches[0].clientY-y0);el.style.transition="none";el.style.transform=`translateY(${dy}px)`},{passive:true});
   el.addEventListener("touchend",()=>{if(y0==null)return;y0=null;
     if(dy>90){el.style.transition="transform .26s cubic-bezier(.4,0,1,1)";el.style.transform="translateY(110%)";setTimeout(()=>{el.style.transition="none";vClose();requestAnimationFrame(()=>{el.style.transform="";requestAnimationFrame(()=>{el.style.transition=""})})},250)}
@@ -5979,7 +5979,7 @@ function bkcTropes(x,Lk){if(x._f)return "";const c0=catOf(x)||x,tg=c0.tags||x.ta
   if(!L.length)return "";return `<div class="bkc-tr">${L.map(t=>`<button data-bkc-tg="${esc(t)}">${esc(trLabel(t))}</button>`).join("")}</div>`}
 function tagBooks(t,x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of ALLB()){if(!(b.tags||[]).includes(t)||dismissed.has(b.id))continue;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);out.push(b)}
   return topK(out,60,b=>popOf(b)*2+(imgOf(b)?2:0)+(b.q||0)+Math.random()*.5).map(z=>z.b)}
-function listSheet(title,sub,L){vOpen(`<h3 class="vh">${esc(title)}</h3>${sub?`<p class="sy-note">${esc(sub)}</p>`:""}<div class="tl-list">${L.map((b,i)=>{const st=BK.has(b);return `<div class="fr" data-tl="${i}">${cv(b,48)}<div class="tx"><b>${esc(b.t)}</b><span>${esc([b.a,b.y].filter(Boolean).join(" · "))}</span></div><div class="ac">${st?`<em>${st==="read"?"Прочитано":"В избранном"}</em>`:""}</div></div>`}).join("")||`<p class="sy-note">Пока ничего не нашлось.</p>`}</div>`,true);
+function listSheet(title,sub,L){vOpen(`<h3 class="vh">${esc(title)}</h3><div class="tl-list">${L.map((b,i)=>{const st=BK.has(b);return `<div class="fr" data-tl="${i}">${cv(b,48)}<div class="tx"><b>${esc(b.t)}</b><span>${esc(b.a||"")}</span></div><div class="ac">${st?`<em>${st==="read"?"Прочитано":"В избранном"}</em>`:""}</div></div>`}).join("")||`<p class="sy-note">Пока ничего не нашлось.</p>`}</div>`,true);
   $("#vsheet").classList.add("ontop");$("#vshBody")._tl=L}
 $("#vshBody").addEventListener("click",e=>{const r=e.target.closest("[data-tl]");if(!r||!$("#vshBody")._tl)return;const b=$("#vshBody")._tl[+r.dataset.tl];if(!b)return;e.stopPropagation();vClose();tgHaptic();setTimeout(()=>bkcOpen(bItem(b,"rec"),"rec"),180)},true);
 // предупреждение о наркотиках: издательства обязаны ставить его с 1 марта 2026 года; показываем мелко внизу карточки, как того требует закон

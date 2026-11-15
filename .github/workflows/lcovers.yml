@@ -1,0 +1,32 @@
+name: Обложки ЛитРес
+on:
+  schedule:
+    - cron: "23 3 * * 1"   # по понедельникам
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: lcovers, cancel-in-progress: false }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Размеры картинок
+        run: |
+          for u in https://www.litres.ru/pub/c/cover/6028900.jpg https://www.litres.ru/pub/c/cover_415/6028900.jpg https://cv0.litres.ru/pub/c/cover_415/6028900.jpg https://www.litres.ru/pub/c/cover_330/6028900.jpg; do echo "$u"; curl -sSL -o /tmp/c.jpg -w "%{http_code} %{size_download}\n" -H 'Referer: https://nora-books.ru/' "$u"; done
+          curl -sS -H 'Accept: application/json' "https://api.litres.ru/foundation/api/search?q=%D0%98%D1%81%D1%87%D0%B5%D0%B7%D0%BD%D1%83%D0%B2%D1%88%D0%B0%D1%8F&types=text_book&limit=1" | python3 -c "import json,sys;x=json.load(sys.stdin)['payload']['data'][0]['instance'];print(sorted(x.keys()));print(json.dumps(x.get('persons'),ensure_ascii=False)[:400])"
+      - name: Обложки
+        run: |
+          set -o pipefail
+          timeout 17000 python -u tools/build_lcovers.py 4.4 2>&1 | tee books/lcovers.log || true
+      - name: Сохранить
+        if: always()
+        run: |
+          git config user.name "Mayorov-Vlad"
+          git config user.email "vladislav15333@gmail.com"
+          git add books/lcovers.json books/lcovers.log 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Обложки ЛитРес: $(date +%Y-%m-%d)"
+          git pull --rebase -X theirs -q && git push
