@@ -5,4 +5,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for u in "https://api.litres.ru/foundation/api/arts/24552436/reviews?limit=3" "https://api.litres.ru/foundation/api/arts/24552436/reviews?o=1&limit=3" "https://api.litres.ru/foundation/api/arts/24552436"; do echo "U $u"; curl -sS -H 'Accept: application/json' "$u" | head -c 1500; echo; done
+          curl -sS -H 'Accept: application/json' "https://api.litres.ru/foundation/api/arts/24552436" | python3 -c "import json,sys;d=json.load(sys.stdin)['payload']['data'];print('A',{k:d[k] for k in d if 'rat' in k or 'review' in k or 'vote' in k})"
+          curl -sS -H 'Accept: application/json' "https://api.litres.ru/foundation/api/arts/24552436/reviews?limit=2&order=popular" | python3 -c "import json,sys;d=json.load(sys.stdin);print('S',d.get('status'),str(d.get('error'))[:200]);x=(d.get('payload') or {}).get('data') or [{}];print('K',{k:v for k,v in x[0].items() if k!='text'})"
