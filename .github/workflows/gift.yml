@@ -1,0 +1,40 @@
+name: Подарок (рендер Blender)
+on:
+  workflow_dispatch:
+    inputs:
+      width: { default: "540" }
+      samples: { default: "64" }
+permissions:
+  contents: write
+concurrency: { group: gift, cancel-in-progress: true }
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        part: [[1,18],[19,36],[37,48],[49,62],[63,76],[77,92],[93,108],[109,124],[125,140]]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install -q bpy==5.3.0
+      - run: python -u tools/gift/scene.py ${{ matrix.part[0] }} ${{ matrix.part[1] }} out ${{ inputs.width }} ${{ inputs.samples }} 2>&1 | grep -v "^Fra:" | tail -40
+      - uses: actions/upload-artifact@v4
+        with: { name: "f${{ matrix.part[0] }}", path: out/*.png }
+  pack:
+    needs: render
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: fr, merge-multiple: true }
+      - run: |
+          sudo apt-get -qq update && sudo apt-get -qq install -y ffmpeg >/dev/null
+          mkdir -p img/gift
+          clip(){ ffmpeg -loglevel error -y -framerate 24 -start_number $2 -i fr/%04d.png -frames:v $3 -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -movflags +faststart img/gift/$1.mp4; }
+          clip idle 1 48; clip hit1 49 14; clip hit2 63 14; clip open 77 64
+          ffmpeg -loglevel error -y -i fr/0001.png -q:v 3 img/gift/poster.jpg
+          ls -la img/gift
+          git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
+          git add img/gift; git commit -m "Подарок: ролики из Blender"; git pull --rebase -X theirs -q && git push
