@@ -19,8 +19,18 @@ def api(method, data):
 
 def post(text, photo=None, btn=None, url=None):
     kb = {"inline_keyboard": [[{"text": btn or "Подобрать книгу под мой вкус", "url": url or BOT + "?startapp=channel"}]]}
-    if photo:
-        r = api("sendPhoto", {"chat_id": CH, "photo": photo, "caption": text, "parse_mode": "HTML", "reply_markup": kb})
+    if photo:  # обложку скачиваем сами и отправляем файлом: по ссылке Telegram её не забирает
+        img = urllib.request.urlopen(urllib.request.Request(photo, headers={"User-Agent": "Mozilla/5.0"}), timeout=30).read()
+        bnd = "----nora" + str(len(img))
+        parts = []
+        for k_, v_ in (("chat_id", CH), ("caption", text), ("parse_mode", "HTML"), ("reply_markup", json.dumps(kb, ensure_ascii=False))):
+            parts.append(f'--{bnd}\r\nContent-Disposition: form-data; name="{k_}"\r\n\r\n{v_}\r\n'.encode())
+        parts.append(f'--{bnd}\r\nContent-Disposition: form-data; name="photo"; filename="cover.jpg"\r\nContent-Type: image/jpeg\r\n\r\n'.encode() + img + f"\r\n--{bnd}--\r\n".encode())
+        req = urllib.request.Request(f"https://api.telegram.org/bot{TOKEN}/sendPhoto", b"".join(parts), {"Content-Type": f"multipart/form-data; boundary={bnd}"})
+        try:
+            r = json.load(urllib.request.urlopen(req, timeout=60))
+        except urllib.error.HTTPError as e:
+            print("error", e.code, e.read().decode()); sys.exit(1)
     else:
         r = api("sendMessage", {"chat_id": CH, "text": text, "parse_mode": "HTML", "disable_web_page_preview": True, "reply_markup": kb})
     print("ok", r["ok"], r["result"]["message_id"])
