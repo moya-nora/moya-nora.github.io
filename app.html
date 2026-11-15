@@ -4637,9 +4637,21 @@ const POPT=new Set("Гарри Поттер и философский камен
 const popOf=b=>(POPT.has(b._n||norm(b.t))?3:0)+Math.min(1.5,Math.log2(1+(b.sl||0))*.2)+(b.acclaim&&b.acclaim.length?.5:0);
 const gpref=()=>{const v=LS.get("zal.gpref",[]);return Array.isArray(v)?v:[]};
 let IDF=null;const idf=t=>{if(!IDF){IDF={};const N=CAT.length;CAT.forEach(b=>(b.tags||[]).forEach(x=>IDF[x]=(IDF[x]||0)+1));for(const k in IDF)IDF[k]=Math.max(.25,Math.min(1.6,Math.log(N/IDF[k])/3))}return IDF[t]||1.2};
-function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;{const GP=gpref();try{if(GP.length&&GP.some(g=>genPass(b,g)))s+=4}catch(e){}}
+// жанры, которые человек правда читает: доля каждого жанра на полках (низкие оценки не считаем). Чужой жанр сильно опускаем,
+// чтобы любителю ужасов не прилетали «Унесённые ветром» просто потому, что это популярная книга
+let GPRO=null,GPROK="";
+function genreProfile(){const key=BOOKS.length+"|"+want.length+"|"+gpref().join();if(GPRO&&GPROK===key)return GPRO;GPROK=key;const c={};let n=0;
+  const add=(b,w)=>{const g=(catOf(b)||b.src||b).g||b.g;if(!g)return;c[g]=(c[g]||0)+w;n+=w};
+  BOOKS.forEach(b=>{const r=b.r??IMPLIED[b.id];if(r!=null&&r<=4)return;add(b,r!=null&&r>=8?1.5:1)});want.forEach(b=>add(b,.8));
+  for(const k in c)c[k]/=n||1;return GPRO={c,n}}
+function genreFit(b,q){const P=genreProfile(),GP=gpref();let hit=false;try{hit=GP.length&&GP.some(g=>genPass(b,g))}catch(e){}
+  if(hit)return 4;if(P.n<3)return GP.length?-3:0;const sh=P.c[b.g]||0;
+  let tag=0;(b.tags||[]).forEach(t=>{if(!WHY_GENERIC.has(t))tag+=(q.tags[t]||0)*idf(t)});
+  const th=tag<.8?-6:tag>=3?2:0;
+  if(sh>=.15)return 3+th;if(sh>=.06)return th;return tag>=5?-4:-10}
+function feedScore(b,q){let s=score(b,{tags:{},says:[]});if(s==null)return null;s+=genreFit(b,q);
   (b.tags||[]).forEach(t=>{s+=2*(q.tags[t]||0)*idf(t)+1.4*(TASTE.t[t]||0)*idf(t)});s+=1.2*(TASTE.g[b.g]||0)+1.5*(TASTE.a[b.a]||0);
-  const w=Math.max(0,1-(+LS.get("zal.fdn",0)||0)/90);if(w>0){s+=w*3.2*popOf(b);if(!imgOf(b)&&!isCatB(b))s-=w*3}
+  const w=Math.max(0,1-(+LS.get("zal.fdn",0)||0)/90);if(w>0){s+=w*2*popOf(b);if(!imgOf(b)&&!isCatB(b))s-=w*3}
   return s+Math.random()*2.2}
 function bookFeed(){FSHOWN=new Set();const q=tasteQ();
   {const D=demoPick("feed");if(D.length){D.forEach(b=>FSHOWN.add(b.id));const it=D.map(b=>{const x=bItem(b,"feed");x.why=whyBook(b);return x});const fm=()=>{const sc=topK(ALLB(),160,b=>FSHOWN.has(b.id)||!fgPass(b)?null:feedScore(b,q));const out=sc.slice(0,8).map(z=>z.b);out.forEach(b=>FSHOWN.add(b.id));return out.map(b=>bItem(b,"feed"))};feedMore=fm;return it}}
@@ -5999,7 +6011,7 @@ function hsShow(mode){HS.set("last",Date.now());HS.set("shows",(HS.get("shows")|
   hsEl.innerHTML=`<img src="icons/icon-512.png?v=5" alt=""><div class="hs-tx"><b>Нора на экране «Домой»</b></div>
    <button class="hs-go" data-hs-go>${mode==="tg"||bip?"Добавить":"Установить"}</button><button class="hs-cl" data-hs-later aria-label="Закрыть">${IC2.x}</button>`;
   hsEl.dataset.mode=mode;setTimeout(()=>hsEl.classList.add("on"),50)}
-const hsHide=()=>hsEl.classList.remove("on");window.noraLB=P=>listBooks(P.map(s=>s.split("|"))).map(b=>[b.t,b.a,!!imgOf(b)]);window.noraHS=hsShow;window.noraAuth=()=>{authMode="up";authShow()};
+const hsHide=()=>hsEl.classList.remove("on");window.noraRec=()=>recList().slice(0,24).map(x=>x.t+" ["+x.g+"]");window.noraLB=P=>listBooks(P.map(s=>s.split("|"))).map(b=>[b.t,b.a,!!imgOf(b)]);window.noraHS=hsShow;window.noraAuth=()=>{authMode="up";authShow()};
 async function hsInstall(mode){
   if((mode==="tg"||(TG&&!mode))&&TG&&TG.addToHomeScreen){try{TG.onEvent&&TG.onEvent("homeScreenAdded",()=>HS.set("done",1));TG.addToHomeScreen()}catch(x){}return}
   if(bip){bip.prompt();try{const r=await bip.userChoice;if(r.outcome==="accepted")HS.set("done",1)}catch(x){}bip=null;return}
@@ -6126,7 +6138,7 @@ function frAsk(x){const uid=x.frR&&x.frR.uid,p=uid&&FRP[uid]||{},tg=String(p.tg|
 function bkcSec(x,L){if(x._f||L==="friend")return "";const st=BK.has(x),on=st?isSec(x):!!(BKC&&BKC.sec);
   return `<button class="bkc-sec${on?" on":""}" data-bkc="sec" aria-label="Секретный список - видите только вы">${ICLOCK}<span>${on?"Секретная":"Секретно"}</span></button>`}
 function bkcActs(x,L){const st=BK.has(x);
-  if(L==="luck")return st?`<button class="btn w" data-bkc="lnext">Другая книга</button>`:`<button class="btn w" data-bkc="want">Хочу прочитать</button><button class="btn" data-bkc="lnext">Другая книга</button>`;
+  if(L==="luck")return st?`<button class="btn" disabled>${st==="read"?"Уже прочитано":"Уже в избранном"}</button>`:`<button class="btn w" data-bkc="want">Хочу прочитать</button>`;
   if(L==="friend"){const tw=st==="read"?`<button class="btn" disabled>Уже прочитано</button>`:st?`<button class="btn" disabled>Уже в избранном</button>`:`<button class="btn w" data-bkc="want">Тоже хочу</button>`;return tw+`<button class="btn" data-bkc="ask">Спросить, как тебе</button>`}
   if(L==="top"||L==="want"||st==="want"||x.now)return `<button class="btn w" data-bkc="read">Прочитано</button>${x.now?"":`<button class="btn" data-bkc="rm">Убрать из избранного</button>`}`;
   if(L==="read"||st==="read")return `<button class="btn" data-bkc="unread">Убрать из «Прочитано»</button>`;
@@ -6340,7 +6352,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="vid"){goal("reviews");vidOpen(x);return}
   if(a==="sec"){const st=BK.has(x);if(st){const on=!isSec(x);setSec(x,on);vDirty=true;toast(on?"Теперь эту книгу видите только вы":"Книгу снова видят друзья")}else BKC.sec=!BKC.sec;const el=bkcEl.querySelector(".bkc-sec");if(el)el.outerHTML=bkcSec(x,L);return}
   if(a==="ask"){goal("ask_friend");frAsk(x);return}if(a==="rv"){dNew(myRec(x));return}if(a==="lnext"){luckCardNext();return}if(a==="dopen"){dOpen(myRec(x),true);return}
-  if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");if(L==="luck"){BKC.sec=false;luckCardNext();return}bkcClose();return}
+  if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");bkcClose();return}
   if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
   if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
     const r=L==="read"?x:BK.read().find(y=>norm(y.t)===norm(x.t));if(r)BK.rmRead(r);vDirty=true;toast("Убрано с полки «Прочитано»");bkcClose();return}
