@@ -261,12 +261,23 @@ fetch(F+"/search-works?q="+encodeURIComponent(t)+"&page=1&onlymatches=1").then(f
   var u="/r/?w="+w.work_id+"&b="+encodeURIComponent(location.pathname);
   if(v>=5)h+='<a href="'+u+'">★ '+(r.rating/2).toFixed(1).replace(".",",")+' · '+v.toLocaleString("ru-RU")+' '+pl(v,"оценка","оценки","оценок")+'</a>';
   if(rc)h+='<a href="'+u+'">'+rc+' '+pl(rc,"отзыв","отзыва","отзывов")+'</a>';el.innerHTML=h;if(h)el.classList.add("on")})}).catch(function(){})})();</script>"""
+FUZ_JS = r'''var KE="qwertyuiop[]asdfghjkl;'zxcvbnm,.`",KR="йцукенгшщзхъфывапролджэячсмитьбюё";
+function NM(s){return String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9]+/g," ").trim()}
+function SW(q){return /[а-я]/.test(q)||!/[a-z]/.test(q)?"":q.split("").map(function(c){var i=KE.indexOf(c);return i<0?c:KR[i]}).join("")}
+function LV(a,b){if(Math.abs(a.length-b.length)>2)return 9;var p=[],i,j;for(j=0;j<=b.length;j++)p[j]=j;for(i=1;i<=a.length;i++){var c=[i];for(j=1;j<=b.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[b.length]}
+function SC(ws,words){var s=0;for(var k=0;k<ws.length;k++){var w=ws[k],best=0;for(var m=0;m<words.length;m++){var x=words[m],v=0;
+ if(x.indexOf(w)===0)v=3;else if(w.length>=4&&x.indexOf(w)>0)v=1.5;else if(w.length>=4&&/[a-zа-я]/.test(w)){var d=Math.min(LV(w,x.slice(0,w.length+1)),LV(w,x));if(d<=1||(d<=2&&w.length>=7))v=d<=1?2:1.2}
+ if(v>best)best=v}if(!best)return 0;s+=best}return s-words.length*0.02}
+function FIND(list,txt,q,lim){var v=NM(q);if(v.length<2)return [];var go=function(v){var ws=v.split(" "),out=[];for(var i=0;i<list.length;i++){var sc=SC(ws,txt(i));if(sc)out.push([sc,i])}
+ out.sort(function(a,b){return b[0]-a[0]||a[1]-b[1]});return out};var r=go(v),alt=SW(v);if(alt&&(!r.length||r[0][0]<v.split(" ").length*2)){var r2=go(alt);if(r2.length)r=r2}
+ return r.slice(0,lim).map(function(z){return z[1]})}
+'''
 SEARCH_JS = r"""<script>(function(){var q=document.getElementById("q"),box=document.getElementById("sres");if(!q)return;var D=null,nm=function(s){return String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9 ]+/g," ")};
-function load(){if(D)return Promise.resolve(D);return fetch("/books/search.json").then(function(r){return r.json()}).then(function(j){D=j.map(function(x){return [x,nm(x[0]+" "+x[1])]});return D})}
+""" + FUZ_JS + r"""
+function load(){if(D)return Promise.resolve(D);return fetch("/books/search.json").then(function(r){return r.json()}).then(function(j){D=j.map(function(x){var t=NM(x[0]+" "+x[1]);return [x,t,t.split(" ")]});return D})}
 q.addEventListener("focus",load,{once:true});if(location.hash==="#poisk")setTimeout(function(){q.focus()},300);
 var u=new URLSearchParams(location.search).get("q");if(u){q.value=u;load().then(function(){q.dispatchEvent(new Event("input"))})}
-q.addEventListener("input",function(){var v=nm(q.value).trim();if(v.length<2){box.innerHTML="";return}load().then(function(){var ws=v.split(/\s+/).map(function(w){return w.length>4?w.slice(0,w.length-1):w}),out=[];
-for(var i=0;i<D.length&&out.length<8;i++){var t=D[i][1];if(ws.every(function(w){return t.indexOf(w)>=0}))out.push(D[i][0])}
+q.addEventListener("input",function(){var v=nm(q.value).trim();if(v.length<2){box.innerHTML="";return}load().then(function(){var out=FIND(D,function(i){return D[i][2]},q.value,8).map(function(i){return D[i][0]});
 box.innerHTML=out.map(function(x){return '<a href="'+x[2]+'"><b>'+x[0].replace(/</g,"&lt;")+'</b><span>'+x[1].replace(/</g,"&lt;")+(x[3]?" · "+x[3]:"")+'</span></a>'}).join("")+'<a class="sall" href="/app.html?app=1">Искать среди 100 000 книг в Норе</a>'})})})();</script>"""
 SN = """<!-- Cloudflare Web Analytics --><script defer type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "572d5eebd0c442bda32887c9f80bb139"}'></script><!-- End Cloudflare Web Analytics -->"""
 HEAD = f"""<link rel="icon" href="/icons/icon-192.png?v=5"><link rel="apple-touch-icon" href="/icons/icon-180.png?v=5"><meta name="theme-color" content="#05060A">
@@ -449,6 +460,17 @@ _man = app_list("MAND_L"); _mn = {id(b) for b in _man}
 ny = _man + [b for b in sorted({id(b): b for b in ny}.values(), key=lambda b: (-(b["q"] or 0), -(b.get("sl") or 0))) if b["cat"] and id(b) not in _mn][:26]
 if len(ny) >= 8:
     coll_data.insert(1, ("novogodnee-nastroenie", "Книги с запахом мандаринов", "Тёплые истории для длинных вечеров - с пледом, чаем и чудом.", ny))
+# у каждой книги из подборок - своя страница (раньше их получали только книги ручного каталога, и «1984» на сайте не находилась)
+for _, _, _, L in coll_data:
+    for b in L:
+        if id(b) in BOOK_URL or not (b["ann"] or img_of(b)):
+            continue
+        s_ = slug(b["t"] + "-" + str(b["a"] or "").split(" ")[-1])
+        while s_ in used:
+            s_ += "-2"
+        used.add(s_)
+        BOOK_URL[id(b)] = f"k/{s_}.html"
+        cat_books.append(b)
 FOOT = footer([(p, t) for p, t, _, _ in coll_data])
 # книги из подборок без обложки — их обложки найдёт tools/build_covers.py в следующий раз
 want, seenw = [], set()
@@ -663,12 +685,13 @@ for b in cat_books:
 FL.sort(key=lambda r: (-r[10], not r[8]))
 json.dump(FL, open(os.path.join(ROOT, "books", "filter.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 _GL = sorted({r[4] for r in FL if r[4]}, key=lambda g: -sum(1 for r in FL if r[4] == g))
-FIND_JS = ("<script>(function(){var MO=" + json.dumps(MOTIF, ensure_ascii=False) + r""",G="",M="",Q="",D=null,box=document.getElementById("fres"),cnt=document.getElementById("fcnt");
+FIND_JS = ("<script>(function(){var MO=" + json.dumps(MOTIF, ensure_ascii=False) + r""",G="",M="",Q="",D=null;""" + FUZ_JS + r"""var _x=0,box=document.getElementById("fres"),cnt=document.getElementById("fcnt");
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function nm(s){return String(s||"").toLowerCase().replace(/ё/g,"е")}
 function card(r){var im=r[8]?'<img src="'+esc(r[8])+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">':"";
  return '<a class="bk" href="'+r[2]+'"><div class="cv" style="--c:'+r[6]+';--f:'+r[7]+'">'+im+'<b>'+esc(r[0])+'</b><svg class="m" viewBox="0 0 100 100">'+(MO[r[5]]||MO.modern)+'</svg><i>'+esc(r[1])+'</i></div><div class="t">'+esc(r[0])+'</div><div class="a">'+esc(r[1])+(r[4]?' · '+esc(r[4]):'')+'</div></a>'}
-function draw(){if(!D)return;var q=nm(Q).trim(),L=D.filter(function(r){return (!G||r[4]===G)&&(!M||r[9].indexOf(M)>=0)&&(!q||nm(r[0]+" "+r[1]).indexOf(q)>=0)});
+function draw(){if(!D)return;var F=D.filter(function(r){return (!G||r[4]===G)&&(!M||r[9].indexOf(M)>=0)}),L=F;
+ if(NM(Q).length>=2){var W=F.map(function(r){return NM(r[0]+" "+r[1]).split(" ")});L=FIND(F,function(i){return W[i]},Q,200).map(function(i){return F[i]})}
  cnt.textContent=L.length?"":"Ничего не нашлось - попробуй убрать один из фильтров";box.innerHTML=L.slice(0,60).map(card).join("")}
 document.querySelectorAll("[data-g]").forEach(function(b){b.onclick=function(){G=G===b.dataset.g?"":b.dataset.g;document.querySelectorAll("[data-g]").forEach(function(x){x.classList.toggle("on",x.dataset.g===G)});draw()}});
 document.querySelectorAll("[data-m]").forEach(function(b){b.onclick=function(){M=M===b.dataset.m?"":b.dataset.m;document.querySelectorAll("[data-m]").forEach(function(x){x.classList.toggle("on",x.dataset.m===M)});draw()}});
