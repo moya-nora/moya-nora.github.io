@@ -5,4 +5,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for u in "https://www.litres.ru/pages/biblio_book/?art=6028900&lfrom=1" "https://www.litres.ru/book/6028900/" "https://www.litres.ru/6028900/"; do echo "U $u"; curl -sS -o /dev/null -L -A "Mozilla/5.0 (iPhone)" -w "R %{http_code} %{url_effective}\n" "$u"; done
+          for u in "https://api.litres.ru/foundation/api/arts/24552436/reviews?limit=3" "https://api.litres.ru/foundation/api/arts/24552436/reviews?o=1&limit=3" "https://api.litres.ru/foundation/api/arts/24552436"; do echo "U $u"; curl -sS -H 'Accept: application/json' "$u" | head -c 1500; echo; done
