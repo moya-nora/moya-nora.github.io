@@ -99,7 +99,7 @@ COLL = [  # (адрес, заголовок, вступление, отбор)
     ("zahvatyvayuschie", "Захватывающие книги, от которых не оторваться", "Книги, которые читатели проглатывают за пару вечеров.",
      lambda b: has(b, "напряжённое", "динамичное", "триллер", "приключения") or b["g"] == "detective"),
     ("na-odin-vecher", "Книги на один вечер", "Короткие книги, которые проглатываешь за вечер.",
-     lambda b: not notnovel(b) and b["g"] != "kids" and 0 < (b.get("pg") or 0) <= 260 and not has(b, "мрачное", "война")),
+     lambda b: not notnovel(b) and b["g"] != "kids" and 0 < (b.get("pg") or 0) <= 260 and not has(b, "мрачное", "война", "поэзия", "стихи") and not re.search(r"стихотворен|поэм|^камень$", b["t"].lower())),
     ("smeshnye", "Смешные книги", "Книги, над которыми смеёшься вслух.", lambda b: has(b, "смешное", "юмор", "сатира")),
     ("uyutnye", "Уютные книги для вечера", "Тёплые и светлые книги — для пледа и чая.",
      lambda b: (has(b, "уют", "тёплое") or (has(b, "светлое", "сказка") and not has(b, "исторический роман", "приключения", "динамичное")))
@@ -147,8 +147,14 @@ try:
     AIC = {k: v for k, v in json.load(open(os.path.join(ROOT, "books", "ai_covers.json"), encoding="utf-8"))["m"].items() if v and os.path.exists(os.path.join(ROOT, "img", "ai", v)) and (v in AIOK or v.endswith("v.webp"))}
 except (FileNotFoundError, KeyError):
     AIC = {}
-img_of = lambda b: (("/img/ai/" + AIC[nk(b["t"]) + "|" + nk(b["a"] or "")]) if nk(b["t"]) + "|" + nk(b["a"] or "") in AIC else "") \
-    or COVERS.get(nk(b["t"]) + "|" + nk(str(b["a"] or "").split(" ")[-1]), "") or b.get("img", "")
+try:
+    LCOV = {k: v for k, v in json.load(open(os.path.join(ROOT, "books", "lcovers.json"), encoding="utf-8")).items() if v and k[0] != "_"}
+except FileNotFoundError:
+    LCOV = {}
+_lk = lambda b: nk(b["t"]) + "|" + nk(str(b["a"] or "").split(" ")[-1])
+img_of = lambda b: (f"https://cv0.litres.ru/pub/c/cover_415/{LCOV[_lk(b)]}.jpg" if _lk(b) in LCOV else "") \
+    or COVERS.get(_lk(b), "") or re.sub(r"^https://www\.litres\.ru/pub/c/cover/(\d+)\.jpg$", r"https://cv0.litres.ru/pub/c/cover_415/\1.jpg", b.get("img") or "") \
+    or (("/img/ai/" + AIC[nk(b["t"]) + "|" + nk(b["a"] or "")]) if nk(b["t"]) + "|" + nk(b["a"] or "") in AIC else "")
 
 
 def hsh(t):
@@ -184,8 +190,8 @@ ic = lambda k: f'<svg viewBox="0 0 24 24">{ICON[k]}</svg>'
 
 # всплывающее окно посреди визита: главное — советы лично тебе (не всем и не в Telegram-приложении)
 POPUP = """<div class="pop" id="pop" hidden><div class="pop-in gl"><button class="pop-x" aria-label="Закрыть">×</button>
-<div class="kick">Лично для тебя</div><h3>Шуршуня подберёт книги под твой вкус</h3>
-<p>Отметь 3 любимые книги — и советы будут про тебя, а не про общий топ.</p>
+<h3>Шуршуня подберёт книги под твой вкус</h3>
+<p>Отметь три любимые книги, и советы будут лично для тебя, а не из общего топа.</p>
 <div class="ctas"><a class="btn" href="https://t.me/Wonderbookworld_bot?startapp=site">Подобрать в Telegram</a><a class="btn ghost" href="/app.html?app=1">Или в браузере</a></div></div></div>
 <script>(function(){try{var L=localStorage,now=Date.now();if(L.getItem("zal.onb")||/tgWebApp/.test(location.hash))return;var off=+L.getItem("nora.pop")||0;if(now-off<3*864e5)return;
 var v=(+sessionStorage.getItem("nora.pv")||0)+1;sessionStorage.setItem("nora.pv",v);var p=document.getElementById("pop"),shown=0;
@@ -230,10 +236,15 @@ def footer(colls):
             f'А Шуршуня подберёт книги лично тебе.</p></div><div><h4>Подборки</h4>'
             + "".join(f'<a href="/c/{p}.html">{esc(t.split(":")[0])}</a>' for p, t in colls[:7])
             + f'</div><div><h4>Нора</h4><a href="{APP}">Открыть в браузере</a><a href="{BOT}">Открыть в Telegram</a><a href="/c/">Все подборки</a>'
-            f'<a href="/privacy.html">Конфиденциальность</a></div><div class="copy"><span>© {YNOW} Нора</span><span>Сделано с любовью к книгам</span></div></div></div></footer>')
+            f'<a href="/privacy.html">Конфиденциальность</a></div><div class="copy"><span>© {YNOW} Нора</span></div></div></div></footer>')
 
 
 FOOT = ""
+
+
+def dash(h):
+    """в текстах сайта - дефисы вместо длинных тире (как в приложении)"""
+    return h.replace(", — ", ", ").replace(",— ", ", ").replace(" — ", " - ").replace("—", "-").replace("–", "-")
 
 
 def page(path, title, desc, body, full_title=None, active="", img=None, ld=None):
@@ -246,7 +257,7 @@ def page(path, title, desc, body, full_title=None, active="", img=None, ld=None)
 {hdr(active)}<main>{body}</main>{FOOT}{MINE}{POPUP}{SN}</body></html>"""
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
-    open(full, "w", encoding="utf-8").write(doc)
+    open(full, "w", encoding="utf-8").write(dash(doc))
     return canon
 
 
@@ -266,7 +277,7 @@ for b in cat_books:
 def card(b, n=None, ann=False):
     u = BOOK_URL.get(id(b))
     meta = ", ".join(x for x in [b["a"], str(b["y"]) if b["y"] and b["y"] > 0 else ""] if x)
-    inner = (cv(b) + (f'<div class="num">№ {n}</div>' if n else "") + f'<div class="t">{esc(b["t"])}</div><div class="a">{esc(meta)}</div>'
+    inner = (cv(b) + f'<div class="t">{esc(b["t"])}</div><div class="a">{esc(meta)}</div>'
              + (f'<p>{esc(b["ann"])}</p>' if ann and b["ann"] else ""))
     return f'<a class="bk" href="/{u}">{inner}</a>' if u else f'<div class="bk">{inner}</div>'
 
@@ -295,8 +306,8 @@ def shelf(title, href, ds, L, all_txt="Все"):
 
 CTA = (f'<div class="ctas"><a class="btn" href="{BOT}">{ic("tg")}Подобрать в Telegram</a>'
        f'<a class="btn ghost" href="{APP}">Или в браузере</a></div>')
-FINAL = (f'<section class="final gl"><div class="kick">Лично для тебя</div><h2 style="margin-top:14px">Шуршуня знает, что тебе понравится</h2>'
-         f'<p>Отметь 3 любимые книги — получи подборку под свой вкус.</p>{CTA}</section>')
+FINAL = (f'<section class="final gl"><h2>Шуршуня знает, что тебе понравится</h2>'
+         f'<p>Отметь три любимые книги, и он подберёт книги под твой вкус.</p>{CTA}</section>')
 coll_data = []
 for path, title, lead, pred in COLL:
     L = sorted([b for b in books if pred(b)], key=rank)[:60]
@@ -323,16 +334,26 @@ for b in _lit:  # и то, о чём говорят: премии и громк�
     _au.add(nk(b["a"])); B_.append(b)
     if len(B_) >= 18:
         break
-hot = [x for pair in zip(B_, A_) for x in pair] + A_[len(B_):] + B_[len(A_):]
+# «В тренде сейчас» - тот же ручной список громких книг, что в приложении (const TREND)
+def app_list(name):
+    m = re.search(r'const ' + name + r'="([^"]+)"', open(os.path.join(ROOT, "app.html"), encoding="utf-8").read())
+    out = []
+    for pr in (m.group(1).split(";") if m else []):
+        t_, s_ = (pr.split("|") + [""])[:2]
+        c_ = [b for b in books if nk(b["t"]) == nk(t_) and nk(s_) in nk(b["a"])] or [b for b in books if nk(b["t"]).startswith(nk(t_)) and nk(s_) in nk(b["a"])]
+        if c_: out.append(sorted(c_, key=lambda b: (not b["cat"], not img_of(b)))[0])
+    return out
+hot = app_list("TREND")
 if len(hot) >= 8:
-    coll_data.insert(0, ("chitayut-seychas", f"Читают в {MON_PREP}", "Книги, о которых говорят прямо сейчас: новые романы, детективы, фантастика и нон-фикшн.", hot))
+    coll_data.insert(0, ("chitayut-seychas", "В тренде сейчас", "Громкие книги, о которых сейчас говорят: премии, экранизации, бестселлеры.", hot))
 # «Новогоднее настроение»: зима, Рождество, снег и сказка
 NY_T = re.compile(r"рождеств|нов\w* год|новогодн|сочельник|(?<![а-яё])[её]лк|снегуроч|щелкунчик|метель|снежн\w* королев|зимн|(?<![а-яё])зима\b|декабр", re.I)
 NY_A = re.compile(r"рождеств|новогодн|нов\w* год[а-я]*\b|сочельник|под ёлк|наряжа\w* ёлк", re.I)
 ny = [b for b in books if not notnovel(b) and (NY_T.search(b["t"]) or NY_A.search(b["ann"] or "")) and (b["ann"] or img_of(b))]
-ny = sorted({id(b): b for b in ny}.values(), key=lambda b: (not b["cat"], -(b["q"] or 0), -(b.get("sl") or 0)))[:40]
+_man = app_list("MAND_L"); _mn = {id(b) for b in _man}
+ny = _man + [b for b in sorted({id(b): b for b in ny}.values(), key=lambda b: (-(b["q"] or 0), -(b.get("sl") or 0))) if b["cat"] and id(b) not in _mn][:26]
 if len(ny) >= 8:
-    coll_data.insert(1, ("novogodnee-nastroenie", "Книги с запахом мандаринов", "Зима, Рождество, снег за окном и немного чуда — книги, с которыми наступает праздник.", ny))
+    coll_data.insert(1, ("novogodnee-nastroenie", "Книги с запахом мандаринов", "Новый год, Рождество и снег за окном.", ny))
 FOOT = footer([(p, t) for p, t, _, _ in coll_data])
 # книги из подборок без обложки — их обложки найдёт tools/build_covers.py в следующий раз
 want, seenw = [], set()
@@ -349,7 +370,7 @@ tname = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
 chips = lambda cur: '<nav class="chips">' + "".join(f'<a href="/c/{p}.html"{" class=on" if p == cur else ""}>{esc(tname(p))}</a>' for p in QUICK) + "</nav>"
 for path, title, lead, L in coll_data:
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="/c/">Подборки</a></div>'
-            f'<div class="ph"><div><div class="kick">Подборка</div><h1>{esc(title)}</h1><p class="lead">{esc(lead)}</p></div><div class="cnt gl">{len(L)} книг</div></div>'
+            f'<div class="ph"><div><h1>{esc(title)}</h1><p class="lead">{esc(lead)}</p></div><div class="cnt gl">{len(L)} книг</div></div>'
             f'{chips(path)}<div class="grid">{"".join(card(b, i + 1, True) for i, b in enumerate(L))}</div>{FINAL}</div>')
     urls.append(page(f"c/{path}.html", title, lead + " " + ", ".join(b["t"] for b in L[:5]) + ".", body, active=f"/c/{path}.html",
                      img=img_of(L[0]) or None))
@@ -362,7 +383,7 @@ def coll_card(p, t, L):
 
 
 urls.append(page("c/index.html", "Подборки книг", "Подборки книг по жанрам, настроениям и странам — от ромэнтези до классики.",
-                 '<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><div class="kick">Что почитать</div><h1>Подборки книг</h1>'
+                 '<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><h1>Подборки книг</h1>'
                  '<p class="lead">По жанрам, настроениям и странам — от ромэнтези до классики.</p></div></div><div style="display:none">'
                  + "</div>" + "".join(shelf(t.split(":")[0], f"/c/{p}.html", "", sorted(L[:24], key=lambda b: not img_of(b))[:14], f"Все {len(L)}") for p, t, lead, L in coll_data)
                  + f"{FINAL}</div>", active="/c/"))
@@ -385,7 +406,7 @@ for b in cat_books:
             + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "")
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
             + WHERE(b)
-            + (f'<section class="like"><div class="shd"><h2>Понравилась книга?</h2><a class="all" data-sim href="/p/">Ещё похожие</a></div>{rail(sim, bare=True)}</section>' if sim else "")
+            + (f'<section class="like"><div class="shd"><h2>Похожие книги</h2><a class="all" data-sim href="/p/">Ещё похожие</a></div>{rail(sim, bare=True)}</section>' if sim else "")
             + "</div></article>" + REVIEWS_JS
             + "</div>")
     bld = {"@context": "https://schema.org", "@type": "Book", "name": b["t"], "author": {"@type": "Person", "name": b["a"]}, "inLanguage": "ru",
@@ -402,7 +423,8 @@ GENERIC = {"любовь", "романтичное", "атмосферное", "
            "социальный роман", "классика", "магия", "мистика", "жутковатое", "уют", "детектив", "триллер", "психология", "самиздат"}
 lab = lambda t: TROPE_RU.get(t[5:], t[5:]).lower() if t.startswith("троп:") else t
 LOVEY = lambda b: has(b, "любовное фэнтези", "любовный роман", "ромэнтези") or (love(b) and any(t.startswith("троп:") for t in b["tags"]))
-SPOOL = [b for b in books if (b["q"] or 0) >= 2 and len(b["tags"]) >= 2 and (b["ann"] or img_of(b)) and not notnovel(b)]
+SEQ = re.compile(r"(книга|том|часть)\s*\d|\b\d+\s*$|–\s*\d|-\s*\d+\s*$", re.I)
+SPOOL = [b for b in books if (b["q"] or 0) >= 2 and len(b["tags"]) >= 2 and (b["ann"] or img_of(b)) and not notnovel(b) and "самиздат" not in b["tags"] and not SEQ.search(b["t"])]
 print("книг для «похожих»:", len(SPOOL))
 
 
@@ -426,9 +448,10 @@ def simscore(a, x):
     return sc, tro + spec
 
 
+SEQ = re.compile(r"(книга|том|часть)\s*\d|\b\d+\s*$|–\s*\d|-\s*\d+\s*$", re.I)
 SER = lambda b: nk(b["a"]) + "|" + nk(re.split(r"[.:—–(]|\s\d|\sкнига|\sтом", b["t"].lower())[0])
 seeds = [b for b in books if ((b["q"] or 0) >= 3 or ((b["q"] or 0) >= 2 and (LOVEY(b) or b["g"] == "fantasy"))) and (b["y"] or 0) >= 1980 and not notnovel(b)
-         and len(b["tags"]) >= 3 and (img_of(b) or b["ann"])]
+         and len(b["tags"]) >= 3 and (img_of(b) or b["ann"]) and "самиздат" not in b["tags"] and not SEQ.search(b["t"])]
 _ss = set()
 seeds = [b for b in sorted(seeds, key=lambda b: (not b["cat"], -(b["q"] or 0))) if not (SER(b) in _ss or _ss.add(SER(b)))]
 seeds = sorted(seeds, key=lambda b: (not LOVEY(b), not (b["g"] in ("fantasy", "kids") and (b["y"] or 0) >= 2000), -(b["q"] or 0), -(b.get("sl") or 0)))[:int(os.environ.get("SIM_N", "700"))]
@@ -467,7 +490,7 @@ def sim_card(x, why, n):
     meta = ", ".join(v for v in [x["a"], str(x["y"]) if x["y"] and x["y"] > 0 else ""] if v)
     w = ", ".join(list(dict.fromkeys(lab(t) for t in why if t != "ромэнтези"))[:3])
     ann = x["ann"] if len(x["ann"]) <= 240 else x["ann"][:240].rsplit(" ", 1)[0] + "…"
-    inner = (cv(x) + f'<div class="num">№ {n}</div><div class="t">{esc(x["t"])}</div><div class="a">{esc(meta)}</div>'
+    inner = (cv(x) + f'<div class="t">{esc(x["t"])}</div><div class="a">{esc(meta)}</div>'
              + (f'<p class="why">Тоже: {esc(w)}</p>' if w else "") + (f'<p>{esc(ann)}</p>' if ann else ""))
     return f'<a class="bk" href="/{u}">{inner}</a>' if u else f'<div class="bk">{inner}</div>'
 
@@ -475,13 +498,12 @@ def sim_card(x, why, n):
 for a_, out in sim_pages:
     au_ = a_["a"]
     tops = ", ".join(f"«{x['t']}»" for x, _ in out[:4])
-    lead = (f"Если понравилась «{a_['t']}» ({au_}), вот {len(out)} книг с похожим настроением и сюжетными ходами — Шуршуня подобрала их по жанру, "
-            f"тропам и тому, что ценят читатели. Самые близкие: {tops}.")
+    lead = f"Если понравилась «{a_['t']}» ({au_}), вот книги с похожим настроением и сюжетом. Шуршуня подобрал их по жанру, тропам и отзывам читателей." 
     back = BOOK_URL.get(id(a_))
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="/p/">Что почитать после</a></div>'
-            f'<div class="ph"><div><div class="kick">Что почитать после</div><h1>Книги, похожие на «{esc(a_["t"])}»</h1><p class="lead">{esc(lead)}</p>'
+            f'<div class="ph"><div><h1>Книги, похожие на «{esc(a_["t"])}»</h1><p class="lead">{esc(lead)}</p>'
             + (f'<p class="lead" style="margin-top:8px"><a href="/{back}">О книге «{esc(a_["t"])}»</a></p>' if back else "")
-            + f'</div><div class="cnt gl">{len(out)} книг</div></div>'
+            + f'</div></div>'
             f'<div class="grid">{"".join(sim_card(x, w, i + 1) for i, (x, w) in enumerate(out))}</div>{FINAL}</div>')
     urls.append(page(SIM_URL[id(a_)], f"Книги, похожие на «{a_['t']}»",
                      f"Что почитать после «{a_['t']}» ({au_}): {', '.join(x['t'] for x, _ in out[:6])} и ещё {max(0, len(out) - 6)} похожих книг.", body,
@@ -494,7 +516,7 @@ for b in cat_books:
     h = open(fp, encoding="utf-8").read()
     su = SIMB.get(BOOK_URL[id(b)])
     h = h.replace('<a class="all" data-sim href="/p/">Ещё похожие</a>', f'<a class="all" href="/{su}">Ещё похожие</a>' if su else "")
-    open(fp, "w", encoding="utf-8").write(h)
+    open(fp, "w", encoding="utf-8").write(dash(h))
 # оглавление «Что почитать после»
 groups = {}
 for a_, out in sim_pages:
@@ -515,7 +537,7 @@ toc = "".join(f'<div class="kick" style="margin-top:56px">{esc(g)}</div>'
               + "".join(shelf(f"Если понравилась «{b['t']}»", "/" + SIM_URL[id(b)], sim_ds(b, SIMS[id(b)]), [x for x, _ in SIMS[id(b)]][:12], "Все похожие") for b in L)
               for g, L in sorted(groups.items(), key=lambda z: -len(z[1])) for L in [onepa(sorted(L, key=lambda b: (TORD.get(nk(b["t"]) + "|" + b["a"].split(" ")[-1].lower().replace("ё", "е"), 999), not b["cat"], -(b["q"] or 0), -(b.get("sl") or 0))))])
 urls.append(page("p/index.html", "Что почитать после любимой книги", "Книги, похожие на популярные романы: ромэнтези, любовные романы, фэнтези, детективы и современная проза.",
-                 f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><div class="kick">Похожие книги</div><h1>Что почитать после любимой книги</h1>'
+                 f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><h1>Что почитать после любимой книги</h1>'
                  f'<p class="lead">Выбери книгу, которая понравилась, — Шуршуня покажет похожие по настроению и сюжетным ходам.</p></div></div>{toc}{FINAL}</div>', active="/p/"))
 print("страниц «похожие на»:", len(sim_pages))
 
@@ -543,7 +565,7 @@ POLICY = [
     ("Как удалить данные", "Напиши в бот Норы — удалим аккаунт и все полки в течение 30 дней."),
     ("Связаться с нами", f'Вопросы и просьбы — {SUPPORT}.'),
 ]
-pol = ('<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><div class="kick">Документы</div><h1>Политика конфиденциальности</h1>'
+pol = ('<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><h1>Политика конфиденциальности</h1>'
        f'<p class="lead">Коротко: что Нора знает о тебе и как это удалить. Обновлено {time.strftime("%d.%m.%Y")}.</p></div></div><div class="legal">'
        + "".join(f"<section class='gl'><h2>{h}</h2>{t if t.startswith('<') else '<p>' + t + '</p>'}</section>" for h, t in POLICY) + "</div></div>")
 RV_JS = r"""<script>(function(){var q=new URLSearchParams(location.search),w=+q.get("w")||0,b=q.get("b")||"",F="https://api.fantlab.ru",L=document.getElementById("rvl"),M=document.getElementById("rvmore"),pg=1;
@@ -595,12 +617,12 @@ def seed_card(b):
 
 after = [b for g in groups.values() for b in g]
 after = onepa(sorted(after, key=lambda b: (TORD.get(nk(b["t"]) + "|" + b["a"].split(" ")[-1].lower().replace("ё", "е"), 999), not b["cat"], -(b["q"] or 0))))[:16]
-HOME_SHELVES = [("novogodnee-nastroenie", "Книги с запахом мандаринов"), ("chitayut-seychas", None), ("zhanr-fantasy", "Популярное фэнтези"), ("na-odin-vecher", None)]
+HOME_SHELVES = [("chitayut-seychas", None), ("novogodnee-nastroenie", "Книги с запахом мандаринов"), ("zhanr-fantasy", "Популярное фэнтези"), ("na-odin-vecher", None)]
 HOME_SHELVES = [(p, t) for p, t in HOME_SHELVES if get(p)]
 lead_of = lambda p: next(l for q, _, l, _ in coll_data if q == p)
 title_of = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
 home = (f'<div class="wrap"><section class="hero2" id="poisk"><h1>Найди свою следующую книгу</h1>'
-        f'<p class="lead">Подборки по настроению, новинки и книги, похожие на любимые.</p>'
+        f'<p class="lead">Подборки по настроению и книги, похожие на любимые.</p>'
         f'<div class="sbox gl">{ic("search")}<input id="q" type="search" placeholder="Название или автор" autocomplete="off" enterkeyhint="search"></div><div class="sres" id="sres"></div>'
         f'{chips("")}</section>'
         + "".join(shelf(t or title_of(p), f"/c/{p}.html", "", sorted(get(p)[:28], key=lambda b: not img_of(b))[:14]) for p, t in HOME_SHELVES)
@@ -616,7 +638,7 @@ home_path = page("index.html", "Нора — что почитать", "Что �
 idx = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
 idx = idx.replace('<meta charset="utf-8">', '<meta charset="utf-8"><script src="/ym.js"></script><meta name="google-site-verification" content="s2CdXU7z22CJQ7fqwqJNwf2nyq4VN3Jk2UEHofqjoXc"><meta name="yandex-verification" content="6a85060ff8390b92">'
                   '<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Моя Нора">' + TG_REDIRECT, 1)
-open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(idx)
+open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(dash(idx))
 urls.insert(0, home_path)
 
 now = time.strftime("%Y-%m-%d")
@@ -625,3 +647,15 @@ open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8").write(
     + "".join(f"<url><loc>{u}</loc><lastmod>{now}</lastmod></url>\n" for u in urls) + "</urlset>\n")
 open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8").write(f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n")
 print("страниц:", len(urls), "подборок:", len(coll_data))
+# старые страницы, которых больше нет в сборке: не оставляем устаревший текст - ведём на раздел (страницы-переадресации из REDIR не трогаем)
+_live = {u.replace(SITE + "/", "") for u in urls}
+for _d, _to in (("p", "/p/"), ("k", "/")):
+    for _f in os.listdir(os.path.join(ROOT, _d)):
+        _rel = f"{_d}/{_f}"
+        if not _f.endswith(".html") or _f == "index.html" or _rel in _live:
+            continue
+        _fp = os.path.join(ROOT, _rel)
+        if 'http-equiv="refresh"' in open(_fp, encoding="utf-8").read(2000):
+            continue
+        open(_fp, "w", encoding="utf-8").write(f'<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="robots" content="noindex">'
+                                               f'<meta http-equiv="refresh" content="0;url={_to}"><link rel="canonical" href="{SITE}{_to}"></head><body></body></html>')
