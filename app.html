@@ -6190,7 +6190,7 @@ function bkcDraw(){const {x,L}=BKC;
    <div class="bkc-covsw" hidden>${covRow(x)}</div>
    <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>${(()=>{const g=genreLabel(x);return g?`<div class="bkc-gn">${esc(g)}</div>`:""})()}
    <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>${bkcTropes(x,L)}
-   <div class="bkc-tools"><button data-bkc="where">${IC2.pin}<span>Где прочитать</span></button>${x._f?"":`<button data-bkc="vid">${IC2.play}<span>Обзоры</span></button>`}${bkcSec(x,L)}</div>
+   <div class="bkc-tools"><button data-bkc="where">${IC2.pin}<span>Где прочитать</span></button>${(x._f||!SHOW_VIDS)?"":`<button data-bkc="vid">${IC2.play}<span>Обзоры</span></button>`}${bkcSec(x,L)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
    ${bkcRv(x,L)}${drugIs(x)?`<p class="bkc-law">${DRUG_TXT}</p>`:""}</div>
    <div class="bkc-bar">${bkcActs(x,L)}</div>`;const sc=bkcEl.querySelector(".bkc-in");if(sc)sc.scrollTop=0}
@@ -6346,6 +6346,8 @@ async function reviewsOpen(x){const m=META[ikey(x)]||{};if(!m.w)return;tgHaptic(
     box.querySelectorAll(".rv").forEach(el=>{const p=el.querySelector(".rv-t");if(p.scrollHeight<=p.clientHeight+2)el.querySelector(".rv-more").remove()})}
   catch(e){const box=$("#rvList");if(box)box.innerHTML=`<p class="sy-note">Отзывы не загрузились — проверь интернет.</p>`}}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-rvmore]");if(!b)return;b.closest(".rv").classList.add("open");b.remove()});
+// раздел «Обзоры» отложен (15.11): кнопки нигде нет, код оставлен - включить, поставив true
+const SHOW_VIDS=false;
 const openLink=u=>{try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(e){window.open(u,"_blank")}};
 // партнёрские ссылки: после подключения к партнёрке Литрес впиши шаблон, например "https://.../?url={url}"
 // Литрес: партнёрский номер (RefID) из кабинета партнёра - впиши его в litres, и ко всем ссылкам на Литрес добавится ?lfrom=номер
