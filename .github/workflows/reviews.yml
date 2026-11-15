@@ -1,0 +1,25 @@
+name: Отзывы ЛитРес
+on:
+  schedule:
+    - cron: "41 2 * * 3"   # по средам
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: reviews, cancel-in-progress: false }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          curl -sS -H 'Accept: application/json' "https://api.litres.ru/foundation/api/arts/24552436" | python3 -c "import json,sys;d=json.load(sys.stdin)['payload']['data'];print({k:d[k] for k in d if 'rat' in k or 'review' in k})"
+          curl -sS -H 'Accept: application/json' "https://api.litres.ru/foundation/api/arts/24552436/reviews?limit=2&order=popular" | python3 -c "import json,sys;d=json.load(sys.stdin);print(str(d)[:300]);x=d['payload']['data'][0];print(sorted(x.keys()))"
+      - run: timeout 17500 python3 -u tools/build_reviews.py 4.6 || true
+      - name: Сохранить
+        if: always()
+        run: |
+          git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
+          git add books/rv 2>/dev/null || true
+          git diff --cached --quiet || git commit -q -m "Отзывы ЛитРес: $(date +%Y-%m-%d)"
+          git pull --rebase -X theirs -q && git push
