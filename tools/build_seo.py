@@ -460,6 +460,23 @@ _man = app_list("MAND_L"); _mn = {id(b) for b in _man}
 ny = _man + [b for b in sorted({id(b): b for b in ny}.values(), key=lambda b: (-(b["q"] or 0), -(b.get("sl") or 0))) if b["cat"] and id(b) not in _mn][:26]
 if len(ny) >= 8:
     coll_data.insert(1, ("novogodnee-nastroenie", "Книги с запахом мандаринов", "Тёплые истории для длинных вечеров - с пледом, чаем и чудом.", ny))
+# сезонные подборки под зимний поисковый спрос (ноябрь-январь)
+SEASON = [
+ ("chto-pochitat-na-novogodnie-kanikuly", "Что почитать на новогодние каникулы", "Большие истории, в которые можно уйти на все праздники: магия, тайны, любовь и пара книг, которые не отпустят до утра.",
+  "Шестёрка воронов|Бардуго;Четвёртое крыло|Яррос;Королевство шипов и роз|Маас;Ночной цирк|Моргенштерн;Тень ветра|Сафон;Цирцея|Миллер;Жестокий принц|Блэк;Гарри Поттер и философский камень|Роулинг;Граф Монте-Кристо|Дюма;Проект «Аве Мария»|Вейер;Тайная история|Тартт;Там, где раки поют|Оуэнс;Клуб убийств по четвергам|Осман;Полночная библиотека|Хейг;Мастер и Маргарита|Булгаков;Хоббит, или Туда и обратно|Толкин;Сто лет одиночества|Маркес;Маленькие женщины|Олкотт;Пока не остыл кофе|Кавагути;Голодные игры|Коллинз",
+  "Что почитать на новогодние каникулы: 20 книг на праздники"),
+ ("knigi-dlya-zimnih-vecherov", "Книги для зимних вечеров", "Снег за окном, плед и чай: книги, в которых зима - почти отдельный герой.",
+  "Зимний сад|Ханна;Медведь и соловей|Арден;Снежная королева|Андерсен;Рождественская песнь в прозе|Диккенс;Щелкунчик и мышиный король|Гофман;Зимнее солнцестояние|Пилчер;Ночь перед Рождеством|Гоголь;Анна Каренина|Толстой;Доктор Живаго|Пастернак;Джейн Эйр|Бронте;Грозовой перевал|Бронте;Ребекка|дю Морье;Убийство в «Восточном экспрессе»|Кристи;Террор|Симмонс;Дом в лазурном море|Клун;Энциклопедия фей Эмили Уайлд|Фосетт;Маленькие женщины|Олкотт;Рождество и красный кардинал|Флэгг",
+  "Книги для зимних вечеров: что почитать зимой под пледом"),
+ ("knigi-v-podarok-na-novyy-god", "Книги в подарок на Новый год", "Книги, которые приятно дарить и получать: любимые многими, красивые и без риска промахнуться.",
+  "Маленький принц|Сент-Экзюпери;Мастер и Маргарита|Булгаков;Гарри Поттер и философский камень|Роулинг;Книжный вор|Зусак;Цветы для Элджернона|Киз;Тень ветра|Сафон;Пока не остыл кофе|Кавагути;Вторая жизнь Уве|Бакман;Кафе на краю земли|Стрелеки;Шантарам|Робертс;Четвёртое крыло|Яррос;Проект «Аве Мария»|Вейер;Хоббит, или Туда и обратно|Толкин;Sapiens|Харари;Полночная библиотека|Хейг;Ночной цирк|Моргенштерн;Маленькая жизнь|Янагихара;Сто лет одиночества|Маркес",
+  "Какую книгу подарить на Новый год: 18 беспроигрышных книг в подарок"),
+]
+SEO_T = {"novogodnee-nastroenie": "Книги с новогодней атмосферой: что почитать под Новый год"}
+for _i, (_p, _t, _l, _txt, _ft) in enumerate(SEASON):
+    _L = pairs_list(_txt)
+    if len(_L) >= 8:
+        coll_data.insert(2 + _i, (_p, _t, _l, _L)); SEO_T[_p] = _ft
 # у каждой книги из подборок - своя страница (раньше их получали только книги ручного каталога, и «1984» на сайте не находилась)
 for _, _, _, L in coll_data:
     for b in L:
@@ -481,7 +498,7 @@ for _, _, _, L in coll_data:
             seenw.add(k)
             want.append([b["t"], b["a"]])
 json.dump(want[:4000], open(os.path.join(ROOT, "books", "covers_want.json"), "w", encoding="utf-8"), ensure_ascii=False)
-QUICK = [p for p in ("chitayut-seychas", "novogodnee-nastroenie", "romantezi", "dark-roman", "lyubovnye-romany", "young-adult", "zhanr-fantasy", "uyutnye", "zahvatyvayuschie", "strashnye", "smeshnye", "novinki", "zhanr-classic", "zhanr-detective")
+QUICK = [p for p in ("chitayut-seychas", "novogodnee-nastroenie", "chto-pochitat-na-novogodnie-kanikuly", "knigi-dlya-zimnih-vecherov", "knigi-v-podarok-na-novyy-god", "romantezi", "dark-roman", "lyubovnye-romany", "young-adult", "zhanr-fantasy", "uyutnye", "zahvatyvayuschie", "strashnye", "smeshnye", "novinki", "zhanr-classic", "zhanr-detective")
          if any(q == p for q, _, _, _ in coll_data)]
 tname = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
 chips = lambda cur: '<nav class="chips"><a class="find" href="/poisk.html">Найти книгу по жанру и настроению</a>' + "".join(f'<a href="/c/{p}.html"{" class=on" if p == cur else ""}>{esc(tname(p))}</a>' for p in QUICK) + "</nav>"
@@ -490,7 +507,7 @@ for path, title, lead, L in coll_data:
             f'<div class="ph"><div><h1>{esc(title)}</h1><p class="lead">{esc(lead)}</p></div><div class="cnt gl">{len(L)} книг</div></div>'
             f'{chips(path)}<div class="grid">{"".join(card(b, i + 1, True) for i, b in enumerate(L))}</div>{FINAL}</div>')
     urls.append(page(f"c/{path}.html", title, lead + " " + ", ".join(b["t"] for b in L[:5]) + ".", body, active=f"/c/{path}.html",
-                     img=img_of(L[0]) or None))
+                     img=img_of(L[0]) or None, full_title=(SEO_T[path] + " — Нора") if path in SEO_T else None))
 
 
 def coll_card(p, t, L):
@@ -624,7 +641,7 @@ for a_, out in sim_pages:
             f'<div class="grid">{"".join(sim_card(x, w, i + 1) for i, (x, w) in enumerate(out))}</div>{FINAL}</div>')
     urls.append(page(SIM_URL[id(a_)], f"Книги, похожие на «{a_['t']}»",
                      f"Что почитать после «{a_['t']}» ({au_}): {', '.join(x['t'] for x, _ in out[:6])} и ещё {max(0, len(out) - 6)} похожих книг.", body,
-                     full_title=f"Книги, похожие на «{a_['t']}» — что почитать после | Нора", img=img_of(a_) or None))
+                     full_title=f"Книги, похожие на «{a_['t']}» ({a_['a'].split(' ')[-1]}): что почитать после — Нора", img=img_of(a_) or None))
 
 # ссылка «Ещё похожие» на странице книги — на страницу «Книги, похожие на…», если она есть
 SIMB = {BOOK_URL[id(a_)]: SIM_URL[id(a_)] for a_, _ in sim_pages if id(a_) in BOOK_URL}
