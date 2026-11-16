@@ -1,0 +1,31 @@
+name: Автопроверка приложения и сайта
+# После каждого обновления приложения или сайта: открыть приложение на экране телефона, найти книгу, открыть карточку,
+# проверить главные страницы сайта. Если что-то сломалось - бот пишет владелице.
+on:
+  push:
+    branches: [main]
+    paths: [app.html, index.html, site.css, tools/build_seo.py, tools/smoke_test.py, .github/workflows/test.yml]
+  workflow_dispatch:
+concurrency: { group: smoke, cancel-in-progress: true }
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -q playwright && python -m playwright install --with-deps chromium >/dev/null
+      - name: Проверка
+        run: |
+          set -o pipefail
+          python -u tools/smoke_test.py 2>&1 | tee smoke.log
+      - name: Сообщить владелице, если сломалось
+        if: failure()
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          OWNER=$(python3 -c "import json;print(json.load(open('tools/bot_state.json')).get('owner',''))")
+          [ -n "$OWNER" ] || exit 0
+          TEXT="Нора: автопроверка после обновления нашла ошибку. $(grep '^FAIL' smoke.log | head -5 | tr '\n' ' ')"
+          curl -sS -o /dev/null "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" --data-urlencode "chat_id=${OWNER}" --data-urlencode "text=${TEXT}"

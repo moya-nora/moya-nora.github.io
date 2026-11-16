@@ -10,7 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 -u tools/build_litres.py
+      - run: python3 -u tools/litres_lite.py   # лёгкая копия каталога для приложения + полные аннотации по частям
       - run: |
           git config user.email noreply@anthropic.com; git config user.name Claude
-          git add books/litres.json books/drugmark.json && git commit -qm "Книги ЛитРес: обновление" || exit 0
-          git pull -q --rebase -X theirs && git push
+          git add books/litres.json books/litres.lite.json books/ann books/drugmark.json && git commit -qm "Книги ЛитРес: обновление" || exit 0
+          git pull -q --rebase --autostash -X theirs && git push

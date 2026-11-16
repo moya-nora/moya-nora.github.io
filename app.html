@@ -4435,18 +4435,18 @@ function catMerge(d,n){if(!n||!Array.isArray(n.b)||!n.b.length)return d;d.nBig=d
 function tagMerge(d,t){if(!t||!t.m||!Array.isArray(t.tg))return d;const tm=t.tg.map(x=>{let j=d.tg.indexOf(x);if(j<0){d.tg.push(x);j=d.tg.length-1}return j});
   d.b.forEach(r=>{const e=t.m[r[0]];if(e&&e[2]&&e[2].length){const add=e[2].map(j=>tm[j]).filter(j=>j!=null&&!r[5].includes(j));if(add.length)r[5]=r[5].concat(add)}});return d}
 function loadBig(){if(BIGP)return BIGP;
-  const lr=fetch("books/litres.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),nw=fetch("books/new.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),tgs=fetch("books/tags.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
+  const lr=fetch("books/litres.lite.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),nw=fetch("books/new.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),tgs=fetch("books/tags.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
   BIGP=fetch("books/books.json").then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>tgs.then(t=>tagMerge(d,t))).then(d=>nw.then(n=>catMerge(d,n))).then(d=>lr.then(n=>catMerge(d,n))).then(d=>new Promise(res=>{
     const C=d.c,G=d.g,TGS=d.tg,AW=d.aw,A=d.a,R=d.b,NB=d.nBig||R.length,tc=new Map(),ac=new Map(),E=[],out=[];let i=0;
     const arr=(cache,ix,src)=>{if(!ix||!ix.length)return E;const k=ix.join(",");let v=cache.get(k);if(!v){v=ix.map(j=>src[j]).filter(Boolean);cache.set(k,v)}return v};
     const CYR=/[а-яё]/i,HV2=new Set(["мрачное","война","хоррор","грустное","жутковатое","антиутопия","постапокалипсис"]),HV0=new Set(["юмор","смешное","сказка","уют","светлое","тёплое"]);
     const step=()=>{const end=Math.min(R.length,i+6000);
       for(;i<end;i++){const [w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o,im,an]=R[i],au=A[ai]||["",-1],a=au[0],n=norm(t);
-        const ex=CATT[n];if(ex&&(i>=NB||!ex.big)&&(!ex.a||norm(ex.a).includes(norm(String(a).split(" ").slice(-1)[0])))){if(im&&!ex.img&&i>=NB)ex.img=im;continue}
+        const ex=CATT[n];if(ex&&(i>=NB||!ex.big)&&(!ex.a||norm(ex.a).includes(norm(String(a).split(" ").slice(-1)[0])))){if(im&&!ex.img&&i>=NB)ex.img=im===1?"https://www.litres.ru/pub/c/cover/"+String(w).slice(1)+".jpg":im;continue}
         const tags=arr(tc,tg,TGS),g=G[gi]||"modern",p=PAL[hsh(t)%PAL.length];
         const b={id:"q"+w,t,a,c:ci>=0?C[ci]:(au[1]>=0?C[au[1]]:""),y:y||null,g,tags,heavy:g==="kids"||tags.some(x=>HV0.has(x))?0:tags.some(x=>HV2.has(x))?2:1,
           len:pg?(pg<260?"short":pg>520?"long":"mid"):undefined,q,acclaim:arr(ac,aw,AW),ann:"",when:"",f:E,big:1,sl,bg:p[0],fg:p[1]};
-        if(pg)b.pg=pg;if(rw)b.rw=rw;if(o)b.o=o;if(im)b.img=im;if(an)b.ann=fixEll(an);if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
+        if(pg)b.pg=pg;if(rw)b.rw=rw;if(o)b.o=o;if(im)b.img=im===1?"https://www.litres.ru/pub/c/cover/"+String(w).slice(1)+".jpg":im;if(an){b.ann=fixEll(an);if(/…$/.test(an)&&/^l\d+$/.test(String(w)))b.annCut=String(w)}if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
       if(i<R.length){setTimeout(step,0);return}
       BIGL=out;_allb=null;BIGMETA=d.meta||{};res(out);try{dispatchEvent(new Event("bigcat"))}catch(e){}};step()}));
   BIGP.catch(()=>{BIGP=null});return BIGP}
@@ -6327,7 +6327,12 @@ setTimeout(nickAuto,7000);setInterval(nickAuto,60000);
 function acctLine(){return "";if(needAuth())return `<button class="acct off" data-acct><i></i><span>Полки сохранены только на этом устройстве</span><b>Войти</b></button>`;
   return ""}
 document.addEventListener("click",e=>{if(e.target.closest("[data-acct]")){tgHaptic();authMode=(NS.email||LS.get("zal.sync.was",0))?"in":"up";authShow()}});
-function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};LS.set("zal.cards",(+LS.get("zal.cards",0)||0)+1);goal(L==="friend"?"card_friend":"card");cardX=x;cardL=L;ambFor(x);bkcDraw();
+// полная аннотация книг ЛитРес лежит отдельно (books/ann/<k>.json): в лёгком каталоге только первые ~200 знаков
+const ANNS={};
+function annFull(x){const b=x&&x.src;if(!b||!b.annCut)return;const w=b.annCut,k=(+w.slice(1))%64;
+  (ANNS[k]=ANNS[k]||fetch("books/ann/"+k+".json").then(r=>r.ok?r.json():{}).catch(()=>{delete ANNS[k];return {}})).then(m=>{const f=m[w];if(!f)return;b.ann=fixEll(f);b.annCut=0;x.ds=b.ann;
+    if(BKC&&BKC.x===x){const d=$("#bkcDs");if(d)d.textContent=descOf(x)}})}
+function bkcOpen(x,L){if(!x||VIEW)return;BKC={x,L};LS.set("zal.cards",(+LS.get("zal.cards",0)||0)+1);goal(L==="friend"?"card_friend":"card");cardX=x;cardL=L;ambFor(x);bkcDraw();annFull(x);
   // обложка уже в кэше браузера — ждём её расшифровки (до 250 мс), чтобы не мелькала рисованная
   const im=bkcEl.querySelector(".bkc-cv img"),show=()=>{if(BKC&&BKC.x===x){bkcEl.classList.add("on");syncBack()}};
   if(im&&im.decode)Promise.race([im.decode().catch(()=>{}),new Promise(r=>setTimeout(r,250))]).then(show);else show();tgHaptic("medium");
@@ -6355,11 +6360,13 @@ addEventListener("resize",()=>{if(BKC)bkcFit()});
 function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();setTimeout(onbAsk,700);if(vDirty){vDirty=false;setTimeout(refresh,300)}}
 // отзывы читателей Фантлаба
 const rvClean=s=>String(s||"").replace(/\[(\/?)(b|i|u|s|p|q|spoiler|center|right|left)[^\]]*\]/gi,"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\r/g,"").replace(/\n{3,}/g,"\n\n").trim();
+// чужой отзыв целиком не перепечатываем: короткая выдержка и ссылка на источник
+const rvExc=t=>{t=String(t||"").replace(/\s+/g," ").trim();return t.length<=420?t:t.slice(0,420).replace(/\s+\S*$/,"").replace(/[ ,.;:-]+$/,"")+"…"};
 async function reviewsOpen(x){const m=META[ikey(x)]||{};tgHaptic();
   const lr=await new Promise(r=>rvLoad(x,r)),mine=BOOKS.find(b=>norm(b.t)===norm(x.t));
   const head=`<h3 class="vh">Отзывы о «${esc(x.t)}»</h3><button class="btn w rv-my" data-rv-write>${mine&&mine.n?"Изменить мой отзыв":"Написать свой отзыв"}</button>`+(mine&&mine.n?`<div class="rv mine"><div class="rv-h"><b>Мой отзыв</b>${mine.r!=null?`<span>★ ${r5(mine.r)}</span>`:""}</div><p class="rv-t">${esc(mine.n)}</p></div>`:"");
-  const lrHtml=lr&&lr.L&&lr.L.length?lr.L.filter((r,i,a)=>a.findIndex(x=>x[0]===r[0])===i).map(r=>`<div class="rv"><div class="rv-h"><b>${esc(r[0])}</b>${r[2]?`<span>★ ${r[2]}</span>`:""}<small>${esc(r[1])}</small></div><p class="rv-t">${esc(r[3])}</p><button class="rv-more" data-rvmore>читать далее…</button></div>`).join(""):"";
-  if(!m.w){vOpen(head+(lr&&lr.n?`<p class="sy-note">${lr.n.toLocaleString("ru-RU")} ${plural(lr.n,"отзыв","отзыва","отзывов")} читателей ЛитРес, здесь самые полезные</p>`:"")+`<div id="rvList">${lrHtml||`<p class="sy-note">Отзывов пока нет. Будь первым!</p>`}</div>`,true);$("#vsheet").classList.add("ontop");
+  const lrHtml=lr&&lr.L&&lr.L.length?lr.L.filter((r,i,a)=>a.findIndex(x=>x[0]===r[0])===i).map(r=>`<div class="rv"><div class="rv-h"><b>${esc(r[0])}</b>${r[2]?`<span>★ ${r[2]}</span>`:""}<small>${esc(r[1])}</small></div><p class="rv-t">${esc(rvExc(r[3]))}</p></div>`).join("")+(litresId(x)?`<p class="sy-note">Отзывы читателей ЛитРес, в сокращении. <a href="https://www.litres.ru/pages/biblio_book/?art=${litresId(x)}" data-ext target="_blank" rel="noopener" style="text-decoration:underline">Читать полностью на ЛитРес</a></p>`:""):"";
+  if(!m.w){vOpen(head+(lr&&lr.n?`<p class="sy-note">${lr.n.toLocaleString("ru-RU")} ${plural(lr.n,"отзыв","отзыва","отзывов")} читателей ЛитРес, здесь самые полезные - коротко</p>`:"")+`<div id="rvList">${lrHtml||`<p class="sy-note">Отзывов пока нет. Будь первым!</p>`}</div>`,true);$("#vsheet").classList.add("ontop");
     document.querySelectorAll("#rvList .rv").forEach(el=>{const p=el.querySelector(".rv-t");if(p&&p.scrollHeight<=p.clientHeight+2){const b=el.querySelector(".rv-more");b&&b.remove()}});return}
   if(lrHtml){vOpen(head+`<div id="rvList">${lrHtml}<div id="rvFl"></div></div>`,true);$("#vsheet").classList.add("ontop");
     document.querySelectorAll("#rvList .rv").forEach(el=>{const p=el.querySelector(".rv-t");if(p&&p.scrollHeight<=p.clientHeight+2){const b=el.querySelector(".rv-more");b&&b.remove()}});return}

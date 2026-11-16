@@ -211,12 +211,18 @@ def _uniq(L):
     return out
 
 
+def _exc(t, n=300):
+    """короткая выдержка из отзыва: чужой текст целиком не перепечатываем"""
+    t = " ".join(str(t or "").split())
+    return t if len(t) <= n else t[:n].rsplit(" ", 1)[0].rstrip(" ,.;:-") + "…"
+
+
 def RVS(b):
     L_ = lrv(b)
     if not L_ or not L_.get("L"):
         return ""
-    it = "".join(f'<div class="rv gl"><div class="rv-h"><b>{esc(r[0])}</b>{f"<span>★ {r[2]}</span>" if r[2] else ""}<small>{esc(r[1])}</small></div><p>{esc(r[3])}</p></div>' for r in _uniq(L_["L"])[:6])
-    return f'<section class="rvs" id="otzyvy"><h2>Отзывы читателей</h2>{it}<a class="btn ghost" href="{BOT}?startapp=site">Написать свой отзыв в Норе</a></section>'
+    it = "".join(f'<div class="rv gl"><div class="rv-h"><b>{esc(r[0])}</b>{f"<span>★ {r[2]}</span>" if r[2] else ""}<small>{esc(r[1])}</small></div><p>{esc(_exc(r[3]))}</p></div>' for r in _uniq(L_["L"])[:6])
+    return f'<section class="rvs" id="otzyvy"><h2>Отзывы читателей</h2>{it}<p class="rv-src">Отзывы читателей ЛитРес, в сокращении. <a href="https://www.litres.ru/pages/biblio_book/?art={lit_id(b)}" rel="nofollow noopener" target="_blank">Читать полностью на ЛитРес</a></p><a class="btn ghost" href="{BOT}?startapp=site">Написать свой отзыв в Норе</a></section>'
 
 
 def hsh(t):
@@ -576,7 +582,7 @@ def simscore(a, x):
     if x is a or nk(x["t"]) == nk(a["t"]) or SER(x) == SER(a):
         return None, []
     ta, tx = set(a["tags"]), set(x["tags"])
-    sh = ta & tx
+    sh = sorted(ta & tx)   # в одном и том же порядке при каждой сборке, иначе сотни страниц меняются без причины
     tro = [t for t in sh if t.startswith("троп:")]
     spec = [t for t in sh if not t.startswith("троп:") and t not in GENERIC]
     gen = len(sh) - len(tro) - len(spec)
