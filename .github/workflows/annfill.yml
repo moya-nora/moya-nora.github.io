@@ -1,0 +1,17 @@
+name: Описания для книг без описания
+on:
+  workflow_dispatch:
+  schedule: [{cron: "37 4 12 * *"}]   # 12-го числа, после обновления каталогов
+permissions: {contents: write}
+jobs:
+  fill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -u tools/fill_ann.py
+      - run: |
+          git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
+          git add books/ann_extra.json
+          git diff --cached --quiet || git commit -qm "Описания книг: дополнение"
+          git pull -q --rebase --autostash -X theirs && git push

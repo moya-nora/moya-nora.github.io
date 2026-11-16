@@ -283,3 +283,6 @@ h1{letter-spacing:-.015em}h1,h2,h3{font-weight:600}
 .rvs{margin:44px 0 0}.rvs h2{font:600 26px var(--serif);margin:0 0 16px}.rvs .rv{padding:16px 18px;border-radius:18px;margin:0 0 12px}.rvs .rv-h{display:flex;gap:10px;align-items:baseline}.rvs .rv-h span{color:#F3D19A}.rvs .rv-h small{margin-left:auto;color:rgba(255,255,255,.5)}.rvs .rv p{margin:8px 0 0;line-height:1.5;white-space:pre-line}.rvs .btn{margin-top:8px}
 
 .rv-src{margin:14px 0 16px;font-size:14px;opacity:.7}.rv-src a{text-decoration:underline;text-underline-offset:3px}
+.rvs .rv-more{margin-top:6px;padding:0;border:0;background:none;color:var(--ink2);font:600 14px var(--f,inherit);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.who{margin:44px 0 0}.who:first-of-type{margin-top:28px}.who h2{font:600 28px var(--serif);margin:0 0 6px}.who .lead{margin:0 0 18px;max-width:640px}
+.whonav{margin-top:10px}.who{scroll-margin-top:16px}
