@@ -22,4 +22,4 @@ jobs:
           git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
           git add books/rv 2>/dev/null || true
           git diff --cached --quiet || git commit -q -m "Отзывы ЛитРес: $(date +%Y-%m-%d)"
-          git pull --rebase -X theirs -q && git push
+          git pull --rebase --autostash -X theirs -q && git push

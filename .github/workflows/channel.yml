@@ -23,4 +23,4 @@ jobs:
           git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
           git add tools/channel/sent.json 2>/dev/null || true
           git diff --cached --quiet || git commit -m "Канал: пост вышел"
-          git pull --rebase -q && git push
+          git pull --rebase --autostash -q && git push

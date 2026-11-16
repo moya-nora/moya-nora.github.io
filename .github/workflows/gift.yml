@@ -39,4 +39,4 @@ jobs:
           ffmpeg -loglevel error -y -i fr/0001.png -q:v 3 img/gift/poster.jpg
           ls -la img/gift
           git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
-          git add img/gift; git commit -m "Подарок: ролики из Blender"; git pull --rebase -X theirs -q && git push
+          git add img/gift; git commit -m "Подарок: ролики из Blender"; git pull --rebase --autostash -X theirs -q && git push

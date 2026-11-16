@@ -29,4 +29,4 @@ jobs:
           git add books/enrich.log
           if [ -f books/tags.json ]; then git add books/tags.json; fi
           git diff --cached --quiet || git commit -m "Настроения книг: обновление $(date +%Y-%m-%d)"
-          git pull --rebase -X theirs -q && git push
+          git pull --rebase --autostash -X theirs -q && git push

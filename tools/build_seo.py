@@ -201,11 +201,21 @@ def RATE(b):
             + (f'<a href="#otzyvy">{n_} {plur(n_, "отзыв", "отзыва", "отзывов")}</a>' if n_ else "") + "</div>")
 
 
+def _uniq(L):
+    """один отзыв от одного читателя (ЛитРес отдаёт по несколько от одного автора)"""
+    seen, out = set(), []
+    for r in L:
+        if r[0] in seen:
+            continue
+        seen.add(r[0]); out.append(r)
+    return out
+
+
 def RVS(b):
     L_ = lrv(b)
     if not L_ or not L_.get("L"):
         return ""
-    it = "".join(f'<div class="rv gl"><div class="rv-h"><b>{esc(r[0])}</b>{f"<span>★ {r[2]}</span>" if r[2] else ""}<small>{esc(r[1])}</small></div><p>{esc(r[3])}</p></div>' for r in L_["L"][:6])
+    it = "".join(f'<div class="rv gl"><div class="rv-h"><b>{esc(r[0])}</b>{f"<span>★ {r[2]}</span>" if r[2] else ""}<small>{esc(r[1])}</small></div><p>{esc(r[3])}</p></div>' for r in _uniq(L_["L"])[:6])
     return f'<section class="rvs" id="otzyvy"><h2>Отзывы читателей</h2>{it}<a class="btn ghost" href="{BOT}?startapp=site">Написать свой отзыв в Норе</a></section>'
 
 
@@ -532,7 +542,7 @@ for b in cat_books:
     u = img_of(b)
     facts = ([f'<a href="{GEN_URL[b["g"]]}">{esc(GEN[b["g"]])}</a>'] if b["g"] in GEN_URL else []) + \
             [f"<span>{esc(x)}</span>" for x in [b["c"], str(b["y"]) if b["y"] and b["y"] > 0 else ""] + b["tags"][:4] if x]
-    desc = b["ann"] or f"«{b['t']}» — {b['a']}."
+    desc = b["ann"] or f"«{b['t']}», {b['a']}: оценки и отзывы читателей, похожие книги и где прочитать."
     fl = [f for f in b.get("f", [])[:4] if len(f) > 1]
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="{GEN_URL.get(b["g"], "/c/")}">{esc(GEN.get(b["g"], "Книги"))}</a></div>'
             f'<article class="book">{f"<div class=amb style=background-image:url({esc(u)})></div>" if u else ""}<div class="cvw">{cv(b, lazy=False)}</div><div>'
@@ -814,7 +824,7 @@ now = time.strftime("%Y-%m-%d")
 open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8").write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     + "".join(f"<url><loc>{u}</loc><lastmod>{now}</lastmod></url>\n" for u in urls) + "</urlset>\n")
-open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8").write(f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n")
+open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8").write(f"User-agent: *\nAllow: /\nDisallow: /old/\nDisallow: /v2/\nDisallow: /v3/\nDisallow: /v4/\nDisallow: /v5/\nDisallow: /v6/\nDisallow: /tools/\nDisallow: /notes/\nDisallow: /mockups/\nSitemap: {SITE}/sitemap.xml\n")
 print("страниц:", len(urls), "подборок:", len(coll_data))
 # старые страницы, которых больше нет в сборке: не оставляем устаревший текст - ведём на раздел (страницы-переадресации из REDIR не трогаем)
 _live = {u.replace(SITE + "/", "") for u in urls}
