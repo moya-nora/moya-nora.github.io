@@ -1,0 +1,22 @@
+name: Обложки для макетов итогов года
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  get:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p img/wrapped
+          for id in 69747151 21560936 33813424 66731102 74705221 74737486 57364375 25206619 30791774 8954714 3090095 51590152 48882939 143699 65950129 9308621 6257491 55339991 66986536 24434994 70273471 69289261 73953262 74574626 63786406 6037310 42990767 9600850 119845 24971845; do
+            curl -sSL -A "Mozilla/5.0" -o img/wrapped/$id.jpg "https://cv0.litres.ru/pub/c/cover_415/$id.jpg" || true
+            [ -s img/wrapped/$id.jpg ] || rm -f img/wrapped/$id.jpg
+          done
+          ls -la img/wrapped
+      - run: |
+          git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
+          git add img/wrapped
+          git diff --cached --quiet || git commit -m "Обложки для макетов итогов года"
+          git pull --rebase -q && git push
