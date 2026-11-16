@@ -32,7 +32,7 @@ def clean(t):
     t = re.sub(r"<br\s*/?>|</p>\s*<p>", "\n", t or "")
     t = html.unescape(re.sub(r"<[^>]+>", "", t)).strip()
     t = re.sub(r"\n{3,}", "\n\n", t)
-    return t[:900].rsplit(" ", 1)[0] + "…" if len(t) > 900 else t
+    return t[:6000].rsplit(" ", 1)[0] + "…" if len(t) > 6000 else t   # отзыв целиком (раньше обрезали на 900 знаках)
 
 
 ids = []
@@ -53,7 +53,7 @@ for aid in ids:
         continue
     seen.add(aid)
     fp = os.path.join(OUT, f"{aid}.json")
-    if os.path.exists(fp) and time.time() - os.path.getmtime(fp) < 30 * 86400 and '"lv"' in open(fp, encoding="utf-8").read(400):
+    if os.path.exists(fp) and time.time() - os.path.getmtime(fp) < 30 * 86400 and '"full"' in open(fp, encoding="utf-8").read(400):
         continue
     if time.time() - T0 > HOURS * 3600:
         break
@@ -76,7 +76,7 @@ for aid in ids:
     if out or rt.get("rated_total_count"):
         got += 1
         json.dump({"r": rt.get("rated_avg") or 0, "v": rt.get("rated_total_count") or 0, "n": a.get("reviews_count") or len(out),
-                   "lr": a.get("livelib_rated_avg") or 0, "lv": a.get("livelib_rated_count") or 0, "L": out},
+                   "full": 1, "lr": a.get("livelib_rated_avg") or 0, "lv": a.get("livelib_rated_count") or 0, "L": out},
                   open(fp, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     if n % 200 == 0:
         print(f"  {n}: с отзывами {got}", flush=True)
