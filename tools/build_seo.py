@@ -533,6 +533,9 @@ for _i, (_p, _t, _l, _txt, _ft) in enumerate(SEASON):
         _L = pairs_list(_txt)
     if len(_L) >= 8:
         coll_data.insert(2 + _i, (_p, _t, _l, _L)); SEO_T[_p] = _ft
+# в подборках только книги с описанием: карточка без описания никому не помогает выбрать
+coll_data = [(p_, t_, l_, [b for b in L_ if b["ann"]]) for p_, t_, l_, L_ in coll_data]
+coll_data = [c for c in coll_data if len(c[3]) >= 6]
 # у каждой книги из подборок - своя страница (раньше их получали только книги ручного каталога, и «1984» на сайте не находилась)
 for _, _, _, L in coll_data:
     for b in L:
