@@ -88,6 +88,7 @@
    0/1025
    100/1025
    200/1025
+  https://api.fantlab.ru/work/2441220/extended: URLError(TimeoutError('_ssl.c:994: The handshake operation timed out')), повтор
    300/1025
    400/1025
    500/1025
