@@ -332,7 +332,7 @@ def footer(colls):
     return (f'<footer class="ft"><div class="wrap"><div class="in gl"><div><div class="logo"><img src="/icons/icon-192.png?v=5" alt="">Нора</div><p>Подборки, новинки и книги, похожие на любимые. '
             f'А Шуршуня подберёт книги лично тебе.</p></div><div><h4>Подборки</h4>'
             + "".join(f'<a href="/c/{p}.html">{esc(t.split(":")[0])}</a>' for p, t in colls[:7])
-            + f'</div><div><h4>Нора</h4><a href="{APP}">Открыть в браузере</a><a href="{BOT}">Открыть в Telegram</a><a href="/c/">Все подборки</a><a href="/knizhnyy-klub.html">Книжный клуб</a><a href="/voprosy/">Вопросы для обсуждения</a>'
+            + f'</div><div><h4>Нора</h4><a href="{APP}">Открыть в браузере</a><a href="{BOT}">Открыть в Telegram</a><a href="/c/">Все подборки</a><a href="/knizhnyy-klub.html">Книжный клуб</a><a href="/voprosy/">Вопросы для обсуждения</a><a href="/poryadok/">Порядок чтения серий</a><a href="/test.html">Тест: что почитать</a>'
             f'<a href="/privacy.html">Конфиденциальность</a></div><div class="copy"><span>© {YNOW} Нора</span><span>Сделано с любовью к книгам</span></div></div></div></footer>')
 
 
@@ -891,6 +891,100 @@ urls.append(page("voprosy/index.html", "Вопросы для обсуждени
                  full_title="Вопросы для обсуждения книг в книжном клубе — Нора"))
 print("страниц с вопросами:", len(VQ_BOOKS))
 
+# вопросы - ещё и в приложение: клуб, который читает эту книгу, получает их вместо общих
+json.dump(VQ, open(os.path.join(ROOT, "books", "voprosy.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+
+# ---------- в каком порядке читать серию ----------
+SERIES = [
+    ("empirey-yarros", "«Эмпирей» Ребекки Яррос", "Ребекка Яррос", "Цикл о военной академии Басгиат и всадниках драконов. Читать строго по порядку выхода: каждая книга начинается там, где закончилась предыдущая. Автор обещала пять книг - вышло три.",
+     [("Четвёртое крыло", 2023, ""), ("Железное пламя", 2023, ""), ("Ониксовый шторм", 2025, "")]),
+    ("korolevstvo-shipov-i-roz-maas", "«Королевство шипов и роз» Сары Дж. Маас", "Сара Дж. Маас", "История Фейры и Дворов фэйри. Первые три книги - основная трилогия, четвёртая - короткая повесть-мостик, пятая рассказывает уже о Несте и Кассиане.",
+     [("Королевство шипов и роз", 2015, ""), ("Королевство гнева и тумана", 2016, "встречается и под названием «Королевство тумана и ярости»"), ("Королевство крыльев и руин", 2017, ""),
+      ("Королевство стужи и звёздного света", 2018, "небольшая повесть между трилогией и следующим романом"), ("Королевство серебряного пламени", 2021, "главные герои - Неста и Кассиан")]),
+    ("garri-potter", "«Гарри Поттер» Джоан Роулинг", "Джоан Роулинг", "Семь книг - семь лет в Хогвартсе. Читать по порядку: герои взрослеют вместе с читателем, а история становится темнее с каждым томом.",
+     [("Гарри Поттер и философский камень", 1997, ""), ("Гарри Поттер и Тайная комната", 1998, ""), ("Гарри Поттер и узник Азкабана", 1999, ""), ("Гарри Поттер и Кубок огня", 2000, ""),
+      ("Гарри Поттер и Орден Феникса", 2003, ""), ("Гарри Поттер и Принц-полукровка", 2005, ""), ("Гарри Поттер и Дары Смерти", 2007, "")]),
+    ("vedmak-sapkovskiy", "«Ведьмак» Анджея Сапковского", "Анджей Сапковский", "Начинать нужно с двух сборников рассказов - в них завязка всей саги и знакомство с Геральтом, Йеннифэр и Цири. Дальше идут пять романов, а «Сезон гроз» - отдельная история, которую лучше читать последней.",
+     [("Последнее желание", 1993, "сборник рассказов, с него начинается всё"), ("Меч Предназначения", 1992, "сборник рассказов"), ("Кровь эльфов", 1994, "первый роман саги"), ("Час Презрения", 1995, ""),
+      ("Крещение огнём", 1996, ""), ("Башня Ласточки", 1997, ""), ("Владычица Озера", 1999, "финал саги"), ("Сезон гроз", 2013, "отдельный роман о более ранних событиях")]),
+    ("golodnye-igry-kollinz", "«Голодные игры» Сьюзен Коллинз", "Сьюзен Коллинз", "Сначала трилогия о Китнисс, потом приквелы: они рассказывают о прошлом Панема и раскрывают то, что в трилогии остаётся загадкой.",
+     [("Голодные игры", 2008, ""), ("И вспыхнет пламя", 2009, ""), ("Сойка-пересмешница", 2010, ""), ("Баллада о змеях и певчих птицах", 2020, "приквел о молодом Сноу"), ("Рассвет жатвы", 2025, "приквел о Хеймитче")]),
+    ("pesn-lda-i-plameni-martin", "«Песнь льда и пламени» Джорджа Мартина", "Джордж Р. Р. Мартин", "Пять вышедших романов читаются по порядку. Цикл не закончен: шестую книгу, «Ветра зимы», автор пишет много лет.",
+     [("Игра престолов", 1996, ""), ("Битва королей", 1998, ""), ("Буря мечей", 2000, ""), ("Пир стервятников", 2005, ""), ("Танец с драконами", 2011, "")]),
+    ("sredizemye-tolkin", "Книги Толкина о Средиземье", "Джон Р. Р. Толкин", "Проще всего начать с «Хоббита», потом читать три части «Властелина колец», а «Сильмариллион» оставить напоследок: это предыстория мира, написанная как свод легенд.",
+     [("Хоббит, или Туда и обратно", 1937, ""), ("Братство Кольца", 1954, "первая часть «Властелина колец»"), ("Две крепости", 1954, "вторая часть"), ("Возвращение короля", 1955, "третья часть"), ("Сильмариллион", 1977, "предыстория Средиземья")]),
+    ("hroniki-narnii-lyuis", "«Хроники Нарнии» Клайва Льюиса", "Клайв Стейплз Льюис", "Есть два порядка. Мы советуем тот, в котором книги выходили: так тайны Нарнии раскрываются постепенно. По времени действия первой идёт «Племянник чародея».",
+     [("Лев, колдунья и платяной шкаф", 1950, ""), ("Принц Каспиан", 1951, ""), ("Покоритель зари, или Плавание на край света", 1952, ""), ("Серебряное кресло", 1953, ""),
+      ("Конь и его мальчик", 1954, ""), ("Племянник чародея", 1955, "о том, как появилась Нарния"), ("Последняя битва", 1956, "")]),
+    ("grishavers-barduго".replace("го", "go"), "Гришаверс Ли Бардуго", "Ли Бардуго", "Три истории в одном мире. Начать можно с трилогии «Тень и кость» или сразу с дилогии «Шестёрка воронов» - она понятна и без трилогии. «Король шрамов» читают последним: в нём сходятся герои обеих историй.",
+     [("Тень и кость", 2012, "трилогия, книга 1"), ("Штурм и буря", 2013, "трилогия, книга 2"), ("Крах и восход", 2014, "трилогия, книга 3"), ("Шестёрка воронов", 2015, "дилогия, книга 1"),
+      ("Продажное королевство", 2016, "дилогия, книга 2"), ("Король шрамов", 2019, "дилогия о Николае, книга 1"), ("Правление волков", 2021, "дилогия о Николае, книга 2")]),
+    ("sumerki-mayer", "«Сумерки» Стефани Майер", "Стефани Майер", "Четыре романа читаются по порядку. «Солнце полуночи» - первая книга, рассказанная от лица Эдварда: её читают после всей саги.",
+     [("Сумерки", 2005, ""), ("Новолуние", 2006, ""), ("Затмение", 2007, ""), ("Рассвет", 2008, ""), ("Солнце полуночи", 2020, "события первой книги глазами Эдварда")]),
+    ("dyuna-herbert", "«Дюна» Фрэнка Герберта", "Фрэнк Герберт", "Шесть романов самого Герберта читаются по порядку. Первые три - история Пола Атрейдеса и его детей, дальше действие уходит на тысячи лет вперёд.",
+     [("Дюна", 1965, ""), ("Мессия Дюны", 1969, ""), ("Дети Дюны", 1976, ""), ("Бог-император Дюны", 1981, ""), ("Еретики Дюны", 1984, ""), ("Капитул Дюны", 1985, "")]),
+    ("vozdushnyy-narod-blek", "«Воздушный народ» Холли Блэк", "Холли Блэк", "Трилогия о Джуд и принце Кардане читается по порядку выхода.",
+     [("Жестокий принц", 2018, ""), ("Злой король", 2019, ""), ("Королева ничего", 2019, "")]),
+]
+_bt = {}
+for b in cat_books:
+    _bt.setdefault(nk(b["t"]), b)
+_bt.setdefault(nk("Королевство гнева и тумана"), _bt.get(nk("Королевство тумана и ярости")))
+def ser_row(i, t, y, note):
+    b = _bt.get(nk(t))
+    name = f'<a href="/{BOOK_URL[id(b)]}">{esc(t)}</a>' if b is not None and id(b) in BOOK_URL else esc(t)
+    return f'<li><b>{name}</b> <span class="yr">{y}</span>' + (f'<br><span class="nt">{esc(note)}</span>' if note else "") + "</li>"
+SER_URL = [(f"poryadok/{sl}.html", ti) for sl, ti, *_ in SERIES]
+for sl, ti, au, intro, L in SERIES:
+    first = _bt.get(nk(L[0][0]))
+    href = "/app.html?app=1" + ("&bk=" + urllib.parse.quote(first["t"] + "|" + first["a"]) if first is not None else "")
+    go = 'onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}"'
+    cov = [b for b in (_bt.get(nk(t)) for t, _, _ in L) if b is not None and id(b) in BOOK_URL]
+    body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="/poryadok/">Порядок чтения</a></div>'
+            f'<div class="ph"><div><h1>{esc(ti)}: в каком порядке читать</h1><p class="lead">{esc(intro)}</p></div></div>'
+            f'<div class="legal"><section class="gl"><h2>Порядок чтения</h2><ol class="ser">' + "".join(ser_row(i, *x) for i, x in enumerate(L)) + '</ol></section></div>'
+            f'<div class="hook gl"><div><b>Отмечай прочитанные части</b><p>В Норе видно, что из серии уже прочитано и что дальше. А когда серия закончится, Шуршуня подберёт похожую. Бесплатно, прямо в браузере.</p></div>'
+            f'<div class="ctas"><a class="btn" href="{href}" {go}>Начать с первой книги</a></div></div>'
+            + (f'<section class="shelf"><div class="shd"><h2>Книги серии</h2></div>{rail(cov, bare=True)}</section>' if len(cov) >= 2 else "")
+            + '<section class="shelf"><div class="shd"><h2>Другие серии</h2><a class="all" href="/poryadok/">Все</a></div><div class="fchips">'
+            + "".join(f'<a href="/{u}">{esc(t2)}</a>' for u, t2 in SER_URL if u != f"poryadok/{sl}.html") + '</div></section></div>')
+    ld = [{"@context": "https://schema.org", "@type": "ItemList", "name": f"{ti}: порядок чтения", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": t} for i, (t, _, _) in enumerate(L)]}]
+    urls.append(page(f"poryadok/{sl}.html", f"{ti}: в каком порядке читать", f"{ti} - порядок чтения книг: " + ", ".join(t for t, _, _ in L) + ". " + intro, body,
+                     full_title=f"{ti}: в каком порядке читать книги — Нора", ld=ld))
+urls.append(page("poryadok/index.html", "В каком порядке читать серии книг", "Порядок чтения популярных книжных серий: «Гарри Поттер», «Ведьмак», «Королевство шипов и роз», «Эмпирей» и другие.",
+                 '<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><h1>В каком порядке читать</h1><p class="lead">Популярные серии: с какой книги начать и что читать дальше.</p></div></div>'
+                 '<div class="legal">' + "".join(f'<section class="gl"><h2><a href="/{u}">{esc(t2)}</a></h2></section>' for u, t2 in SER_URL) + f'</div>{FINAL}</div>',
+                 full_title="В каком порядке читать книжные серии — Нора"))
+
+# ---------- тест «Какая книга тебе сейчас подойдёт» ----------
+TEST_JS = r"""<script>(function(){var A={},D=null,S=document.getElementById("tst"),Q=[
+["Какое сейчас настроение?",[["fun","Хочу посмеяться"],["cozy","Хочу уюта"],["page","Чтобы не оторваться"],["love","Про любовь"],["deep","Подумать о важном"],["scary","Пощекотать нервы"]]],
+["Какой жанр ближе?",[["fantasy","Фэнтези"],["detective","Детектив"],["modern","Современная проза"],["classic","Классика"],["scifi","Фантастика"],["","Неважно"]]],
+["Насколько известную книгу?",[["hit","Проверенный хит"],["new","Что-то менее очевидное"],["","Неважно"]]]],i=0;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function card(r){var im=r[8]?'<img src="'+esc(r[8])+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':"";
+ return '<a class="bk" href="'+r[2]+'"><div class="cv" style="--c:'+r[6]+';--f:'+r[7]+'">'+im+'<b>'+esc(r[0])+'</b><i>'+esc(r[1])+'</i></div><div class="t">'+esc(r[0])+'</div><div class="a">'+esc(r[1])+'</div></a>'}
+function step(){if(i>=Q.length)return res();var q=Q[i];S.innerHTML='<p class="tn">Вопрос '+(i+1)+' из '+Q.length+'</p><h2>'+q[0]+'</h2><div class="tq">'+q[1].map(function(o,j){return '<button data-j="'+j+'">'+o[1]+'</button>'}).join("")+'</div>';
+ S.querySelectorAll("button").forEach(function(b){b.onclick=function(){A[i]=q[1][+b.dataset.j][0];i++;step()}})}
+function res(){if(!D){S.innerHTML='<p class="tn">Подбираю…</p>';return setTimeout(res,300)}
+ var f=function(g,h){return D.filter(function(r){return (!A[0]||r[9].indexOf(A[0])>=0)&&(!g||r[5]===g)&&(!h||(h==="hit"?r[10]>=4:r[10]<4))&&r[8]})};
+ var L=f(A[1],A[2]);if(L.length<4)L=f(A[1],"");if(L.length<4)L=f("","");var d=new Date(),sd=d.getDate()+d.getMonth()*31;L=L.map(function(r,k){return [((k*7919+sd*104729)%1009),r]}).sort(function(a,b){return a[0]-b[0]}).slice(0,6).map(function(x){return x[1]});
+ var bk=L[0]?"&bk="+encodeURIComponent(L[0][0]+"|"+L[0][1]):"";try{ym(114237349,"reachGoal","test_done")}catch(e){}
+ S.innerHTML='<h2>Тебе подойдут эти книги</h2><div class="grid">'+L.map(card).join("")+'</div><div class="hook gl"><div><b>Сохрани подборку</b><p>Поставь книги на свою полку в Норе - и Шуршуня будет подбирать такие же каждый день, уже зная твой вкус.</p></div><div class="ctas"><a class="btn" href="/app.html?app=1'+bk+'" onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}">Открыть в Норе</a><button class="btn ghost" id="tagain">Пройти ещё раз</button></div></div>';
+ document.getElementById("tagain").onclick=function(){i=0;A={};step()}}
+fetch("/books/filter.json").then(function(r){return r.json()}).then(function(d){D=d});step()})()</script>"""
+urls.append(page("test.html", "Тест: какая книга тебе сейчас подойдёт", "Три вопроса - и подборка книг под твоё настроение: смешные, уютные, захватывающие, про любовь. Без регистрации.",
+                 '<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><h1>Какая книга тебе сейчас подойдёт</h1><p class="lead">Три вопроса - и подборка под твоё настроение.</p></div></div>'
+                 '<div class="tst gl" id="tst"></div></div>' + TEST_JS, full_title="Тест: какую книгу почитать - подбор по настроению — Нора"))
+
+# ---------- итоги года: страница-приглашение ----------
+urls.append(page("itogi-goda.html", "Книжные итоги года", "Собери свои книжные итоги года в Норе: сколько книг и страниц прочитано, любимый жанр, книга года и читательский тип - красивой картинкой для сторис.",
+                 f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><h1>Твои книжные итоги года</h1><p class="lead">Сколько книг и страниц, самый читающий месяц, любимый жанр, книга года и твой читательский тип - карточками, как сторис, и картинкой, которой можно поделиться.</p></div></div>'
+                 f'<p class="itg"><img src="/img/itogi/primer.jpg" alt="Пример картинки «Мой год в книгах»" width="270" height="480" loading="lazy"></p>'
+                 f'<div class="legal"><section class="gl"><h2>Как собрать свои</h2><ol><li>Открой Нору и отметь книги, прочитанные в этом году, - можно перенести списком из Литрес, Яндекс Книг или LiveLib.</li><li>Зайди в «Статистику» и нажми «Итоги года».</li><li>Листай карточки и жми «Поделиться» на последней.</li></ol></section></div>'
+                 f'<section class="final gl"><h2>Собери свои итоги</h2><p>Бесплатно, прямо в браузере.</p>{CTA}</section></div>',
+                 full_title=f"Книжные итоги {YNOW} года: сколько я прочитала — Нора"))
+
 # ---------- политика конфиденциальности ----------
 POLICY = [
     ("Что мы храним", "<ul><li>Почту и пароль — чтобы ты могла войти с любого устройства. Пароль зашифрован, его не видим даже мы.</li><li>Если ты включишь новости о книгах в Telegram — ещё твой Telegram ID, названия из избранного, любимых авторов, список друзей в Норе и твой книжный клуб, чтобы бот мог прислать новости и напомнить о сроке книги и встрече клуба. Выключишь — удалим.</li>"
@@ -958,12 +1052,17 @@ HOME_SHELVES = [("chitayut-seychas", None), ("novogodnee-nastroenie", "Книг�
 HOME_SHELVES = [(p, t) for p, t in HOME_SHELVES if get(p)]
 lead_of = lambda p: next(l for q, _, l, _ in coll_data if q == p)
 title_of = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
+# книга дня: одна из сильных книг с обложкой, меняется каждый день (выбор - в браузере, по дате)
+_bod = [b for b in sorted(cat_books, key=rank) if img_of(b) and b["ann"] and id(b) in BOOK_URL and b["g"] != "kids"][:90]
+BOD = ('<section class="bod gl" id="bod" hidden></section><script>(function(){var L=' + json.dumps([[b["t"], b["a"], "/" + BOOK_URL[id(b)], img_of(b), b["ann"]] for b in _bod], ensure_ascii=False)
+       + r""",d=new Date(),r=L[Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5)%L.length],e=document.getElementById("bod"),x=function(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+if(!r)return;e.innerHTML='<a class="bodc" href="'+r[2]+'"><img src="'+x(r[3])+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()"></a><div><span class="bodk">Книга дня</span><h2><a href="'+r[2]+'">'+x(r[0])+'</a></h2><p class="boda">'+x(r[1])+'</p><p>'+x(r[4])+'</p><div class="ctas"><a class="btn" href="/app.html?app=1&bk='+encodeURIComponent(r[0]+"|"+r[1])+'" onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}">На мою полку</a><a class="btn ghost" href="'+r[2]+'">О книге</a></div></div>';e.hidden=false})()</script>""")
 home = (f'<div class="wrap"><section class="hero2" id="poisk"><h1>Найди свою следующую книгу</h1>'
         f'<p class="lead">Подборки по настроению и книги, похожие на любимые.</p>'
         f'<div class="sbox gl">{ic("search")}<input id="q" type="search" placeholder="Название или автор" autocomplete="off" enterkeyhint="search"></div><div class="sres" id="sres"></div>'
-        f'{chips("")}</section>'
+        f'{chips("")}</section>{BOD}'
         + "".join(shelf(t or title_of(p), f"/c/{p}.html", "", sorted(get(p)[:28], key=lambda b: not img_of(b))[:14]) for p, t in HOME_SHELVES)
-        + '<a class="morec" href="/c/">Посмотреть все подборки</a>'
+        + '<a class="morec" href="/c/">Посмотреть все подборки</a><a class="morec" href="/test.html">Тест: какая книга тебе подойдёт</a><a class="morec" href="/poryadok/">В каком порядке читать серии</a>'
         + '<a class="morec" href="/knizhnyy-klub.html">Книжный клуб с друзьями</a>'
         + f'{FINAL}</div>' + SEARCH_JS)
 HOME_LD = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Нора", "alternateName": ["Моя Нора", "Нора — книжный советник", "Нора книги", "moya-nora"],

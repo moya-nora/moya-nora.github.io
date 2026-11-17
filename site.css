@@ -297,3 +297,16 @@ h1{letter-spacing:-.015em}h1,h2,h3{font-weight:600}
 .vql a{color:#F3D19A}
 .legal ol{margin:0;padding-left:22px}
 .legal ol li{margin:0 0 12px;line-height:1.5;font-size:17px}
+
+/* порядок чтения серий, тест, книга дня, итоги */
+.ser li{margin:0 0 14px}.ser .yr{opacity:.6;font-size:14px;margin-left:6px}.ser .nt{font-size:14px;opacity:.72}.ser a{color:#F3D19A}
+.shelf .fchips a{padding:9px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;font-size:14px;text-decoration:none}
+.tst{padding:24px 20px;border-radius:24px;margin:10px 0 60px}.tst h2{margin:0 0 16px;font-size:26px;line-height:1.15}.tst .tn{margin:0 0 8px;font-size:14px;opacity:.65}
+.tq{display:flex;flex-direction:column;gap:10px}.tq button{min-height:52px;padding:10px 18px;border-radius:26px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;font:inherit;font-size:16px;font-weight:600;text-align:left;cursor:pointer}
+.tq button:hover{background:rgba(243,209,154,.14);border-color:rgba(243,209,154,.5)}.tst .grid{margin:0 0 20px}.tst .hook .btn{cursor:pointer}
+.bod{margin:26px 0 8px;padding:20px;border-radius:24px;display:flex;gap:18px;align-items:flex-start}.bod[hidden]{display:none}
+.bodc{flex:none;width:112px;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:#1a1b22;display:block}.bodc img{width:100%;height:100%;object-fit:cover;display:block}
+.bod>div{min-width:0}.bodk{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#F3D19A}.bod h2{margin:6px 0 2px;font-size:24px;line-height:1.15}.bod h2 a{color:inherit;text-decoration:none}
+.boda{margin:0 0 8px;opacity:.7;font-size:15px}.bod p{margin:0 0 12px;font-size:15px;line-height:1.45}.bod .ctas{margin:0;justify-content:flex-start}
+@media(max-width:560px){.bod{flex-direction:column}.bodc{width:96px}}
+.itg{margin:10px 0 24px;text-align:center}.itg img{max-width:270px;width:70%;height:auto;border-radius:18px;box-shadow:0 30px 60px -24px #000}
