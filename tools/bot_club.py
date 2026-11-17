@@ -52,7 +52,7 @@ def club_msgs(name, d, members, uid, now):
         ttl = f"«{b['t']}»" + (f" - {b['a']}" if b.get("a") else "")
         if now - d["start"] < 36 * 3600 * 1000:
             out.append((f"st:{b['k']}", f"📖 Клуб «{name}» начал новую книгу: {ttl}.\n"
-                        + (f"Читаем целиком, срок - до {dm(due(1), tz)}." if parts == 1 else f"Читаем по частям, их {parts}. Первая - до {dm(due(1), tz)}.")))
+                        + (f"Срок - до {dm(due(1), tz)}." if parts == 1 else f"Читаем по частям, их {parts}. Первая - до {dm(due(1), tz)}.")))
         if done < parts:
             nxt = due(done + 1); left = day_no(nxt, tz) - today
             what = f"по книге «{b['t']}»" if parts == 1 else f"по части {done + 1} из {parts} книги «{b['t']}»"
@@ -68,9 +68,12 @@ def club_msgs(name, d, members, uid, now):
         mine = (me.get("rs") or {}).get(str(m["ts"]))
         about = f" Обсуждаем «{b['t']}»." if b else ""
         if left == 1:
-            out.append((f"m1:{m['ts']}", f"📅 Завтра в {hm(m['ts'], tz)} встреча клуба «{name}».{about}" + ("" if mine in (0, 1) else "\nОтметь в клубе, придёшь ли.")))
+            out.append((f"m1:{m['ts']}", f"📅 Завтра в {hm(m['ts'], tz)} встреча клуба «{name}».{about}" + ("" if mine in (0, 1) else "\nОтметь, придёшь ли ты.")))
         elif left == 0:
-            out.append((f"m0:{m['ts']}", f"📅 Сегодня в {hm(m['ts'], tz)} встреча клуба «{name}».{about}" + (f"\nСобираются прийти: {go}." if go else "")))
+            out.append((f"m0:{m['ts']}", f"📅 Сегодня клуб «{name}» собирается в {hm(m['ts'], tz)}.{about}" + (f"\nПридут: {go}." if go else "")))
+    opts = sorted(t for t in (d.get("mopts") or []) if t > now)
+    if opts and not (m and m.get("ts", 0) > now) and not [t for t in (me.get("mv") or []) if t in opts]:
+        out.append((f"mv:{opts[0]}", f"🗳 Клуб «{name}» выбирает время встречи. Отметь, когда тебе удобно:\n" + "\n".join(f"• {dm(t, tz)}, {hm(t, tz)}" for t in opts)))
     return out
 
 
