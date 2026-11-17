@@ -1941,19 +1941,12 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .shv.out{opacity:0;transition:opacity .4s ease}
 #app .shv video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
 #app .shv-vig{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 42%,transparent 55%,rgba(0,0,0,.55));pointer-events:none}
-#app .shv-b{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0;perspective:900px;will-change:transform,opacity}
-#app .shv-3d{position:absolute;left:0;top:-120px;width:160px;height:240px;transform-style:preserve-3d;transform-origin:0 50% 0}
-#app .shv-f,#app .shv-s{position:absolute;top:0;height:240px;font-style:normal;backface-visibility:hidden;-webkit-backface-visibility:hidden}
-#app .shv-f{left:0;width:160px;transform:translateZ(17px);border-radius:1px 4px 4px 1px;overflow:hidden;box-shadow:0 30px 50px -18px rgba(0,0,0,.85)}
-#app .shv-f .cv{width:160px!important;height:240px}
-#app .shv-f::after{content:"";position:absolute;inset:0;z-index:3;background:#050304;opacity:var(--fd,0);pointer-events:none}
-#app .shv-f::before{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,rgba(0,0,0,.4),transparent 8%,rgba(255,255,255,.06) 10%,transparent 16%);pointer-events:none}
-#app .shv-s{left:-17px;width:34px;transform:rotateY(-90deg);background-color:var(--sb,#3a2a22);background-size:auto 100%;background-position:left center;border-radius:5px 5px 3px 3px;overflow:hidden}
-#app .shv-s::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.62),rgba(0,0,0,.18) 30%,rgba(255,240,215,.14) 52%,rgba(0,0,0,.28) 78%,rgba(0,0,0,.6)),linear-gradient(rgba(255,214,160,.16),transparent 45%)}
-#app .shv-s::after{content:"";position:absolute;left:4px;right:4px;top:14px;bottom:14px;border-top:1.5px solid #D9AE6A;border-bottom:1.5px solid #D9AE6A;box-shadow:inset 0 3px 0 -1.5px rgba(0,0,0,0),0 -4px 0 -2.5px #D9AE6A,0 4px 0 -2.5px #D9AE6A;opacity:.95}
-#app .shv-s b{position:absolute;left:50%;top:50%;width:190px;transform:translate(-50%,-50%) rotate(-90deg);text-align:center;font:600 15px/1.1 var(--serif);color:#F3DDB0;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.5)}
-#app .shv-s{box-shadow:inset 0 0 0 1px rgba(0,0,0,.35)}
-#app .shv-s{filter:brightness(calc(1 - var(--sd,0) * .6))}
+#app .shv-b{position:absolute;left:0;top:0;width:34px;height:240px;border-radius:5px 5px 3px 3px;overflow:hidden;background-color:var(--sb,#3a2a22);background-size:auto 100%;background-position:left center;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35),0 18px 30px -10px rgba(0,0,0,.8);transform:translate3d(var(--x),var(--y0),0) scale(var(--s));will-change:transform;backface-visibility:hidden}
+#app .shv.fly .shv-b{animation:shvFly .93s cubic-bezier(.5,0,.85,.6) .23s both}
+@keyframes shvFly{0%{transform:translate3d(var(--x),var(--y0),0) scale(var(--s)) rotate(-9deg)}70%{transform:translate3d(var(--x),calc(var(--y0)*.3 + var(--y1)*.7),0) scale(var(--s)) rotate(-2deg)}100%{transform:translate3d(var(--x),var(--y1),0) scale(var(--s)) rotate(0)}}
+#app .shv-b::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,.18) 30%,rgba(255,240,215,.14) 52%,rgba(0,0,0,.28) 78%,rgba(0,0,0,.6)),linear-gradient(rgba(255,214,160,.16),transparent 45%)}
+#app .shv-b::after{content:"";position:absolute;left:4px;right:4px;top:14px;bottom:14px;border-top:1.5px solid #D9AE6A;border-bottom:1.5px solid #D9AE6A}
+#app .shv-b b{position:absolute;left:50%;top:50%;width:190px;transform:translate(-50%,-50%) rotate(-90deg);text-align:center;font:600 15px/1.1 var(--serif);color:#F3DDB0;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.5)}
 #app .shv-t{position:absolute;left:24px;right:24px;text-align:center;opacity:0;transform:translateY(8px);transition:opacity .5s ease .25s,transform .6s cubic-bezier(.2,.8,.2,1) .25s;pointer-events:none}
 #app .shv.land .shv-t{opacity:1;transform:none}
 #app .shv-t b{display:block;font:600 26px/1.15 var(--serif);color:#F7F1E6;text-wrap:balance;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -2367,8 +2360,6 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .cb-bx b{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.15;letter-spacing:-.01em;overflow-wrap:break-word}
 #app .cb-bx span{font-size:15px;color:var(--ink2)}
 #app .cb-bx .cb-part{margin-top:auto;padding-top:10px;font-size:16px;font-weight:600;color:#fff}
-#app #clBox .cb-where{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:44px;margin:2px 0 4px;border-radius:22px;background:rgba(255,255,255,.08);font-size:14px;font-weight:600;color:var(--ink)}
-#app #clBox .cb-where svg{width:18px;height:18px;opacity:.8}
 #app .cb-bx .cb-due,#app .cb-gold{font-size:15px;font-weight:600;color:#F3D19A}
 #app #clBox .cb-bars{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;width:100%;padding:12px 0;margin:-6px 0}
 #app .cb-bars i{display:block;height:6px;border-radius:3px;background:rgba(255,255,255,.2)}
@@ -6705,32 +6696,23 @@ shEl.addEventListener("click",()=>shEl.classList.remove("go"));
 // новая версия: видео полки из Blender (tools/shelf) и настоящая книга поверх - обложка разворачивается корешком и садится в щель между соседями
 const SHVD="img/shelf/";let SHG=null,SHX=null;
 function shvInit(){if(SHX)return SHX;fetch(SHVD+"gap.json").then(r=>r.json()).then(j=>{SHG=j}).catch(()=>{});
-  const el=document.createElement("div");el.className="shv";el.innerHTML=`<video src="${SHVD}put.mp4" muted playsinline preload="auto" disablepictureinpicture></video><div class="shv-vig"></div><div class="shv-b"><div class="shv-3d"><i class="shv-f"></i><i class="shv-s"><b></b></i></div></div><div class="shv-t"><b></b><span></span></div>`;
+  const el=document.createElement("div");el.className="shv";el.innerHTML=`<video src="${SHVD}put.mp4" muted playsinline preload="auto" disablepictureinpicture></video><div class="shv-vig"></div><div class="shv-b"><b></b></div><div class="shv-t"><b></b><span></span></div>`;
   $("#app").appendChild(el);el.addEventListener("click",()=>shvEnd(true));SHX={el,v:el.querySelector("video"),run:0};return SHX}
 setTimeout(()=>{if(!RM)try{shvInit()}catch(e){}},4000);
-function shvEnd(fast){const X=SHX;if(!X||!X.run)return;X.run=0;cancelAnimationFrame(X.raf);clearTimeout(X.t);X.el.classList.add("out");setTimeout(()=>{X.el.classList.remove("on","out");try{X.v.pause()}catch(e){}},fast?220:420)}
+function shvEnd(fast){const X=SHX;if(!X||!X.run)return;X.run=0;clearTimeout(X.t);clearTimeout(X.t2);X.el.classList.add("out");setTimeout(()=>{X.el.classList.remove("on","out","fly","land");try{X.v.pause()}catch(e){}},fast?220:420)}
 function shelfAnim(x,lab){if(RM)return;const X=shvInit(),v=X.v;
   if(!SHG||v.readyState<2){shelfAnim0(x,lab);return}
-  const el=X.el,u=imgOf(x),c=catOf(x)||{},bg=x.bg||c.bg||palOf(x.t)[0],fg=x.fg||c.fg||palOf(x.t)[1];
-  const f0=el.querySelector(".shv-f"),sp=el.querySelector(".shv-s");
-  f0.innerHTML=cv(x,160);sp.style.setProperty("--sb",bg);sp.style.backgroundImage=u?`url("${u.replace(/"/g,"%22")}")`:"none";sp.querySelector("b").textContent=x.t;
+  const el=X.el,u=imgOf(x),c=catOf(x)||{},bg=x.bg||c.bg||palOf(x.t)[0],sp=el.querySelector(".shv-b");
+  sp.style.setProperty("--sb",bg);sp.style.backgroundImage=u?`url("${u.replace(/"/g,"%22")}")`:"none";sp.querySelector("b").textContent=x.t;
   el.querySelector(".shv-t b").textContent=x.t;el.querySelector(".shv-t span").textContent=lab||"теперь на полке «Прочитано»";
-  el.classList.remove("out","land");el.classList.add("on");X.run=1;try{v.currentTime=0}catch(e){}
-  const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{el.classList.remove("on");X.run=0;shelfAnim0(x,lab)});
-  const G=SHG.gap,N=G.length,LAND=SHG.land,b3=el.querySelector(".shv-3d"),bx=el.querySelector(".shv-b"),tx=el.querySelector(".shv-t");let landed=0;
-  const E=t=>t<0?0:t>1?1:t*t*(3-2*t),EI=t=>t<0?0:t>1?1:t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-  const tick=()=>{if(!X.run)return;const W=el.clientWidth,H=el.clientHeight,k=Math.max(W/540,H/960),dw=540*k,dh=960*k,ox=(W-dw)/2,oy=(H-dh)/2;
-    const fr=Math.max(1,Math.min(N,v.currentTime*SHG.fps+1)),g=G[Math.round(fr)-1],gx=ox+(g[0]+g[2])/2*dw,gy=oy+(g[1]+g[3])/2*dh,s1=(g[3]-g[1])*dh/240;
-    const s0=Math.min(.3*dh,.42*H)/240,sx=W/2-80*s0,sy=oy+.19*dh;
-    const ap=E((fr-3)/6),mv=EI((fr-12)/(LAND-12)),rot=90*EI((fr-11)/(LAND-15)),bob=Math.sin(fr/7)*4*(1-mv);
-    const s=s0+(s1-s0)*mv,ax=sx+(gx-sx)*mv,ay=sy+(gy-sy)*mv+bob-(1-mv)*(1-ap)*30;
-    bx.style.transform=`translate(${ax}px,${ay}px) scale(${s})`;bx.style.opacity=ap;b3.style.transform=`rotateY(${rot}deg)`;
-    b3.style.setProperty("--fd",(Math.sin(rot*Math.PI/180)*.7).toFixed(3));b3.style.setProperty("--sd",(Math.cos(rot*Math.PI/180)*.8).toFixed(3));
-    tx.style.top=(oy+.655*dh)+"px";
-    if(!landed&&fr>=LAND){landed=1;el.classList.add("land");tgHaptic("rigid");setTimeout(()=>tgHaptic("light"),90)}
-    if(v.ended||fr>=N){X.t=setTimeout(()=>shvEnd(),700);return}
-    X.raf=requestAnimationFrame(tick)};
-  tick();tgHaptic("light")}
+  // книга летит корешком сверху экрана прямо в щель; движение целиком на CSS - без рывков
+  const W=innerWidth,H=innerHeight,k=Math.max(W/540,H/960),dw=540*k,dh=960*k,ox=(W-dw)/2,oy=(H-dh)/2,g=SHG.gap[SHG.land-1],sc=(g[3]-g[1])*dh/240;
+  sp.style.setProperty("--x",(ox+(g[0]+g[2])/2*dw-17).toFixed(1)+"px");sp.style.setProperty("--y1",(oy+(g[1]+g[3])/2*dh-120).toFixed(1)+"px");
+  sp.style.setProperty("--y0",(-240*sc-140).toFixed(1)+"px");sp.style.setProperty("--s",sc.toFixed(3));el.querySelector(".shv-t").style.top=(oy+.655*dh)+"px";
+  clearTimeout(X.t);clearTimeout(X.t2);el.classList.remove("out","land","fly");void el.offsetWidth;el.classList.add("on","fly");X.run=1;try{v.currentTime=0}catch(e){}
+  const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{el.classList.remove("on","fly");X.run=0;shelfAnim0(x,lab)});
+  const T=(SHG.land-1)/SHG.fps*1000;X.t2=setTimeout(()=>{if(!X.run)return;el.classList.add("land");tgHaptic("rigid")},T);
+  X.t=setTimeout(()=>shvEnd(),SHG.frames/SHG.fps*1000+500);tgHaptic("light")}
 // цели в Метрике: какие действия люди делают (без личных данных)
 const goal=n=>{try{window.ym&&ym(114237349,"reachGoal",n)}catch(e){}};
 // аккаунт предлагаем сразу после первой книги на полке (и снова при следующем запуске, если вход слетел)
@@ -6809,7 +6791,7 @@ const cbPl=(n,f)=>{const a=Math.abs(n)%100,b=a%10;return f[a>10&&a<20?2:b===1?0:
 const CB_MG=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"],CB_MN=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
 const cbDay=ts=>{const d=new Date(ts);return d.getDate()+" "+CB_MG[d.getMonth()]};
 const cbMk=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")};
-const CB_ON=()=>!!(LS.get("zal.who","")==="owner"||LS.get("zal.clubon",0)||CB.id);
+const CB_ON=()=>true; // раздел открыт всем
 const CB_IC={x:`<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>`,trash:`<svg viewBox="0 0 24 24"><path d="M4.5 7h15M10 7V4.8h4V7M6.5 7l.9 12.2h9.2L17.5 7M10 10.5v5.5M14 10.5v5.5"/></svg>`,chev:`<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>`,back:`<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>`,plus:`<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>`,
   check:`<svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></svg>`,lock:`<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`,
   laurel:`<svg viewBox="0 0 24 24"><path d="M8 20c-3-1.5-5-4.6-5-8.2 0-2 .6-3.9 1.6-5.5"/><path d="M16 20c3-1.5 5-4.6 5-8.2 0-2-.6-3.9-1.6-5.5"/><path d="M4.2 10.5c1.4.2 2.5 1.2 2.8 2.6"/><path d="M4.8 15c1.4-.1 2.7.7 3.2 2"/><path d="M19.8 10.5c-1.4.2-2.5 1.2-2.8 2.6"/><path d="M19.2 15c-1.4-.1-2.7.7-3.2 2"/><path d="M12 5.5l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg>`,
@@ -6880,7 +6862,6 @@ function cbReadHTML(){const d=CB.d,b=d.book,own=cbOwner();let h="";
   if(b){const n=cbParts(),p=cbMyP(),my=cbMyD().r[b.k]||0;
     h+=`<div class="cb-book"><button class="cb-cvw" data-cb="book" aria-label="Открыть книгу">${cv(cbBook(b),128)}${cbSeal("",46)}</button><div class="cb-bx"><b>${esc(b.t)}</b><span>${esc(b.a)}</span>
       ${p<n?`<div class="cb-part">${n===1?"Читаем целиком":`Часть ${p+1} из ${n}`}</div><div class="cb-due">до ${cbDay(cbDue(p+1))}</div>`:`<div class="cb-part">Книга прочитана</div>`}</div></div>
-     ${p<n?`<button class="cb-where" data-cb="where">${IC2.pin}<span>Где взять книгу</span></button>`:""}
      ${n>1?`<button class="cb-bars" data-cb="parts" aria-label="Прочитано частей: ${p} из ${n}. Изменить">${Array.from({length:n},(_,i)=>`<i${i<p?` class="on"`:""}></i>`).join("")}</button>`:""}`;
     h+=p<n?`<button class="cb-b w" data-cb="part">${n===1?"Книга прочитана":`Часть ${p+1} прочитана`}</button>`:`<div class="cb-card"><div class="cb-ch"><h2>Твоя оценка</h2></div><div class="cb-stars">${[1,2,3,4,5].map(i=>`<button data-cb="rate" data-r="${i}" aria-label="Оценка ${i}"${i<=my?` class="on"`:""}>★</button>`).join("")}</div></div>${n===1?`<button class="cb-link" data-cb="setp" data-p="0">Ещё читаю</button>`:""}`;
     if(own)h+=`<button class="cb-b" data-cb="finish">Клуб дочитал книгу</button>`}
@@ -6989,7 +6970,6 @@ document.addEventListener("click",async e=>{const tb=e.target.closest("[data-cbt
   if(a==="members"){CB.view="members";cbDraw();$("#clScroll").scrollTop=0;return}
   if(a==="rank"){CB.view="rank";cbDraw();$("#clScroll").scrollTop=0;cbRankLoad();return}
   if(a==="rk"){CB.rk=el.dataset.v;cbDraw();return}
-  if(a==="where"&&d.book){tgHaptic();try{goal("club_where")}catch(e){}whereOpen(bItem(catOf(d.book)||cbBook(d.book),"rec"));return}
   if(a==="book"&&d.book){bkcOpen(bItem(catOf(d.book)||cbBook(d.book),"rec"),"rec");return}
   if(a==="sbook"){const x=(d.shelf||[]).find(b=>b.k===el.dataset.k);if(x)bkcOpen(bItem(catOf(x)||cbBook(x),"rec"),"rec");return}
   if(a==="part"&&d.book){const p=cbMyP()+1;me.p[d.book.k]=p;cbDraw();const ok=await cbPutMe(me);if(!ok)toast("Не сохранилось - проверь интернет");else if(p>=cbParts())toast("Книга прочитана - поставь оценку");return}
