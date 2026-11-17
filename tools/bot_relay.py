@@ -145,6 +145,9 @@ def handle(m):
         if rep and tag:
             ok = api("copyMessage", chat_id=int(tag.group(1)), from_chat_id=chat, message_id=m["message_id"])
             api("sendMessage", chat_id=chat, text="✓ Отправлено" if ok else "Не получилось отправить - человек мог остановить бота.", reply_to_message_id=m["message_id"])
+        elif text.startswith("/test"):  # тестовая версия приложения - только владелице
+            api("sendMessage", chat_id=chat, text="Тестовая версия Норы (с меткой вверху). Всё, что отмечаешь, сохраняется по-настоящему.",
+                reply_markup={"inline_keyboard": [[{"text": "Открыть тестовую версию", "web_app": {"url": "https://nora-books.ru/app-dev.html?app=1"}}]]})
         elif text.startswith("/refund"):
             pr = text.split()
             ok = len(pr) == 3 and api("refundStarPayment", user_id=int(pr[1]), telegram_payment_charge_id=pr[2])

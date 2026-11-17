@@ -36,6 +36,8 @@ def main():
     key = re.search(r'apiKey:"([^"]+)"', app).group(1)
     j, c = http("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + key,
                 {"email": BOTMAIL, "password": pw, "returnSecureToken": True})
+    if c != 200 and "EMAIL_NOT_FOUND" in str(j) or c != 200 and "INVALID_LOGIN_CREDENTIALS" in str(j):  # аккаунта бота ещё нет - создаём
+        j, c = http("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + key, {"email": BOTMAIL, "password": pw, "returnSecureToken": True})
     if c != 200:
         print("вход бота не удался:", c, str(j)[:200]); return
     H = {"Authorization": "Bearer " + j["idToken"]}
