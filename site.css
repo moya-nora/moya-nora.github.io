@@ -286,3 +286,9 @@ h1{letter-spacing:-.015em}h1,h2,h3{font-weight:600}
 .rvs .rv-more{margin-top:6px;padding:0;border:0;background:none;color:var(--ink2);font:600 14px var(--f,inherit);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .who{margin:44px 0 0}.who:first-of-type{margin-top:28px}.who h2{font:600 28px var(--serif);margin:0 0 6px}.who .lead{margin:0 0 18px;max-width:640px}
 .whonav{margin-top:10px}.who{scroll-margin-top:16px}
+
+/* приманка на странице книги: поставить книгу на свою полку в Норе */
+.hook{margin:22px 0 0;padding:20px;border-radius:22px;display:flex;flex-direction:column;gap:14px;border:1px solid rgba(243,209,154,.28);background:linear-gradient(135deg,rgba(243,209,154,.12),rgba(107,33,64,.18))}
+.hook b{display:block;font-family:var(--serif,Georgia,serif);font-size:22px;line-height:1.15}
+.hook p{margin:6px 0 0;font-size:15px;line-height:1.45;opacity:.82}
+.hook .ctas{margin:0;justify-content:flex-start}

@@ -587,6 +587,14 @@ urls.append(page("c/index.html", "Подборки книг", "Подборки 
                  + "</div>" + "".join(shelf(t.split(":")[0], f"/c/{p}.html", "", sorted(L[:24], key=lambda b: not img_of(b))[:14], f"Все {len(L)}") for p, t, lead, L in coll_data)
                  + f"{FINAL}</div>", active="/c/"))
 
+def HOOK(b):
+    """приманка на странице книги: поставить эту книгу на свою полку в Норе (открывает приложение сразу на её карточке)"""
+    href = "/app.html?app=1&bk=" + urllib.parse.quote(b["t"] + "|" + b["a"])
+    go = 'onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}"'
+    return (f'<div class="hook gl"><div><b>Не потеряй эту книгу</b><p>Поставь её на свою полку в Норе - и Шуршуня подберёт похожие книги лично тебе. Бесплатно, прямо в браузере.</p></div>'
+            f'<div class="ctas"><a class="btn" href="{href}" {go}>Хочу прочитать</a><a class="btn ghost" href="{href}" {go}>Уже прочитано</a></div></div>')
+
+
 pool = {}
 for b in cat_books:
     pool.setdefault(b["g"], []).append(b)
@@ -604,7 +612,7 @@ for b in cat_books:
             f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>{f'<p class="gn">{esc(gname(b))}</p>' if gname(b) else ""}{RATE(b)}'
             + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "")
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
-            + WHERE(b) + RVS(b)
+            + WHERE(b) + HOOK(b) + RVS(b)
             + (f'<section class="like"><div class="shd"><h2>Похожие книги</h2><a class="all" data-sim href="/p/">Ещё похожие</a></div>{rail(sim, bare=True)}</section>' if sim else "")
             + "</div></article>" + REVIEWS_JS
             + "</div>")
