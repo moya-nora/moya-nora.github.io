@@ -573,7 +573,10 @@ chips = lambda cur: '<nav class="chips"><a class="find" href="/poisk.html">На�
 for path, title, lead, L in coll_data:
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="/c/">Подборки</a></div>'
             f'<div class="ph"><div><h1>{esc(title)}</h1><p class="lead">{esc(lead)}</p></div><div class="cnt gl">{len(L)} книг</div></div>'
-            f'{chips(path)}' + ('<nav class="chips whonav">' + "".join(f'<a href="#who{n_}">{esc(h_)}</a>' for n_, (h_, _, _) in enumerate(SECTS[path])) + '</nav>' + "".join(f'<section class="who" id="who{n_}"><h2>{esc(h_)}</h2><p class="lead">{esc(sub_)}</p><div class="grid">{"".join(card(b, i + 1, True) for i, b in enumerate(l_))}</div></section>' for n_, (h_, sub_, l_) in enumerate(SECTS[path])) if path in SECTS else f'<div class="grid">{"".join(card(b, i + 1, True) for i, b in enumerate(L))}</div>') + f'{FINAL}</div>')
+            f'{chips(path)}' + ('<nav class="chips whonav">' + "".join(f'<a href="#who{n_}">{esc(h_)}</a>' for n_, (h_, _, _) in enumerate(SECTS[path])) + '</nav>' + "".join(f'<section class="who" id="who{n_}"><h2>{esc(h_)}</h2><p class="lead">{esc(sub_)}</p><div class="grid">{"".join(card(b, i + 1, True) for i, b in enumerate(l_))}</div></section>' for n_, (h_, sub_, l_) in enumerate(SECTS[path])) if path in SECTS else f'<div class="grid">{"".join(card(b, i + 1, True) for i, b in enumerate(L))}</div>')
+            + '<div class="hook gl"><div><b>Хочешь ещё таких же?</b><p>Отметь в Норе пару книг из этой подборки - и Шуршуня будет приносить похожие, которых ещё нет на твоей полке.</p></div>'
+              '<div class="ctas"><a class="btn" href="/app.html?app=1" onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}">Подобрать под мой вкус</a><a class="btn ghost" href="/test.html">Пройти тест</a></div></div>'
+            + f'{FINAL}</div>')
     urls.append(page(f"c/{path}.html", title, lead + " " + ", ".join(b["t"] for b in L[:5]) + ".", body, active=f"/c/{path}.html",
                      img=img_of(L[0]) or None, full_title=(SEO_T[path] + " — Нора") if path in SEO_T else None))
 
@@ -594,6 +597,20 @@ VQ = json.load(open(os.path.join(ROOT, "tools", "voprosy.json"), encoding="utf-8
 _vq_by = {nk(b["t"]): b for b in reversed(cat_books)}
 VQ_BOOKS = [(_vq_by[nk(t)], qs) for t, qs in VQ.items() if nk(t) in _vq_by]
 VQ_URL = {id(b): "voprosy/" + BOOK_URL[id(b)].split("/", 1)[1] for b, _ in VQ_BOOKS}
+
+
+def WHO(b, sim):
+    """«Кому понравится»: по настроениям и темам книги и по двум самым близким книгам"""
+    tg = [t for t in b["tags"] if not re.search(r"век|страна|премия", t)][:4]
+    near = [x for x in sim[:6] if id(x) in BOOK_URL and len(set(x["tags"]) & set(b["tags"])) >= 2][:2]
+    if len(tg) < 2 and not near:
+        return ""
+    out = "<b>Кому понравится.</b> "
+    if len(tg) >= 2:
+        out += "Тем, кому близко такое: " + ", ".join(esc(t) for t in tg) + ". "
+    if near:
+        out += "Стоит попробовать, если понравились " + " и ".join(f'<a href="/{BOOK_URL[id(x)]}">«{esc(x["t"])}»</a>' for x in near) + "."
+    return f'<p class="who2">{out}</p>'
 
 
 def VQLINK(b):
@@ -623,7 +640,7 @@ for b in cat_books:
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="{GEN_URL.get(b["g"], "/c/")}">{esc(GEN.get(b["g"], "Книги"))}</a></div>'
             f'<article class="book">{f"<div class=amb style=background-image:url({esc(u)})></div>" if u else ""}<div class="cvw">{cv(b, lazy=False)}</div><div>'
             f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>{f'<p class="gn">{esc(gname(b))}</p>' if gname(b) else ""}{RATE(b)}'
-            + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "")
+            + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "") + WHO(b, sim)
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
             + WHERE(b) + HOOK(b) + VQLINK(b) + RVS(b)
             + (f'<section class="like"><div class="shd"><h2>Похожие книги</h2><a class="all" data-sim href="/p/">Ещё похожие</a></div>{rail(sim, bare=True)}</section>' if sim else "")
