@@ -7,6 +7,7 @@ Disallow: /v4/
 Disallow: /v5/
 Disallow: /v6/
 Disallow: /tools/
+Disallow: /app-dev.html
 Disallow: /notes/
 Disallow: /mockups/
 Sitemap: https://nora-books.ru/sitemap.xml

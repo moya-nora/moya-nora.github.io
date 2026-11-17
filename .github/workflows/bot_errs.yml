@@ -1,0 +1,16 @@
+name: Бот — сводка ошибок приложения
+on:
+  schedule:
+    - cron: "37 7 * * *"   # каждый день, 10:37 по Москве
+  workflow_dispatch:
+concurrency: {group: bot-errs, cancel-in-progress: false}
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Сводка
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          BOT_FB_PASS: ${{ secrets.BOT_FB_PASS }}
+        run: python3 -u tools/bot_errs.py

@@ -4,7 +4,7 @@ name: Автопроверка приложения и сайта
 on:
   push:
     branches: [main]
-    paths: [app.html, index.html, site.css, tools/build_seo.py, tools/smoke_test.py, .github/workflows/test.yml]
+    paths: [app.html, app-dev.html, index.html, site.css, tools/build_seo.py, tools/smoke_test.py, .github/workflows/test.yml]
   workflow_dispatch:
 concurrency: { group: smoke, cancel-in-progress: true }
 jobs:
@@ -20,6 +20,8 @@ jobs:
         run: |
           set -o pipefail
           python -u tools/smoke_test.py 2>&1 | tee smoke.log
+          echo "--- тестовая версия ---" | tee -a smoke.log
+          APP=app-dev.html python -u tools/smoke_test.py 2>&1 | sed 's/^FAIL /FAIL (тестовая) /' | tee -a smoke.log
       - name: Сообщить владелице, если сломалось
         if: failure()
         env:

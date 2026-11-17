@@ -15,6 +15,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PORT = 8799
+APP = os.environ.get("APP", "app.html")  # тестовая версия: APP=app-dev.html
 fails = []
 
 
@@ -46,7 +47,7 @@ def main():
         js = pg.evaluate
 
         # --- приложение ---
-        pg.goto(base + "app.html?app=1")
+        pg.goto(base + APP + "?app=1")
         pg.wait_for_timeout(6000)
         js("(document.getElementById('auX')||{click(){}}).click();document.querySelectorAll('.coach,.tour').forEach(e=>e.remove())")
         check("приложение: главная нарисовалась", js("document.querySelectorAll('#app h2, #app h3').length>2"))
@@ -62,6 +63,20 @@ def main():
         check("приложение: карточка книги", "Шестёрка воронов" in (js("(document.querySelector('#bkc h2')||{}).textContent") or ""))
         check("приложение: описание в карточке", len(js("(document.querySelector('#bkcDs')||{textContent:''}).textContent")) > 40)
         check("приложение: кнопки карточки", js("[...document.querySelectorAll('#bkc button')].filter(b=>b.offsetParent).length>=4"))
+        js("window.__op=[];window.open=u=>{window.__op.push(u);return null}")
+        js("(document.querySelector('[data-bkc=\"where\"]')||{click(){}}).click()")
+        pg.wait_for_timeout(600)
+        js("(document.querySelector('[data-wh=\"on\"]')||{click(){}}).click()")
+        pg.wait_for_timeout(600)
+        n = js("document.querySelectorAll('[data-whu]').length")
+        check("приложение: «Где прочитать» - магазины", n >= 3, n)
+        ok = js("""(()=>{let k=0;for(const b of document.querySelectorAll('[data-whu]')){const r=b.getBoundingClientRect(),el=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);if(el&&b.contains(el))k++}return k})()""")
+        check("приложение: «Где прочитать» - все магазины нажимаются", ok == n, f"{ok} из {n}")
+        js("(document.querySelector('[data-whk=\"ozon\"]')||{click(){}}).click()")
+        pg.wait_for_timeout(300)
+        check("приложение: «Где прочитать» - магазин открывается", js("window.__op.length") >= 1)
+        js("(document.querySelector('#vsheet [data-close]')||{click(){}}).click()")
+        pg.wait_for_timeout(500)
         js("(document.querySelector('[data-bkc=\"close\"]')||{click(){}}).click()")
         pg.wait_for_timeout(500)
         js("document.querySelector('#clubDock').click()")
@@ -71,6 +86,14 @@ def main():
             js("t=>[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===t).click()", tab)
             pg.wait_for_timeout(700)
         check("приложение: вкладки переключаются", True)
+        js("document.querySelector('.dock [data-s=acc]').click()")
+        pg.wait_for_timeout(600)
+        check("приложение: «Аккаунт» - пункты на месте", js("['Поддержка','Конфиденциальность'].every(t=>document.querySelector('#accBox').textContent.includes(t))"))
+        js("document.querySelector('.dock [data-s=sum]').click()")
+        pg.wait_for_timeout(600)
+        js("document.querySelector('#sumScroll [data-sht=fr]').click()")
+        pg.wait_for_timeout(600)
+        check("приложение: «Полки друзей» открываются", js("document.querySelector('#s-fr').classList.contains('on')&&document.querySelector('.dock button.on').dataset.s==='sum'"))
         check("приложение: нет ошибок в коде", not errs, errs)
 
         # --- сайт ---

@@ -930,7 +930,7 @@ now = time.strftime("%Y-%m-%d")
 open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8").write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     + "".join(f"<url><loc>{u}</loc><lastmod>{now}</lastmod></url>\n" for u in urls) + "</urlset>\n")
-open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8").write(f"User-agent: *\nAllow: /\nDisallow: /old/\nDisallow: /v2/\nDisallow: /v3/\nDisallow: /v4/\nDisallow: /v5/\nDisallow: /v6/\nDisallow: /tools/\nDisallow: /notes/\nDisallow: /mockups/\nSitemap: {SITE}/sitemap.xml\n")
+open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8").write(f"User-agent: *\nAllow: /\nDisallow: /old/\nDisallow: /v2/\nDisallow: /v3/\nDisallow: /v4/\nDisallow: /v5/\nDisallow: /v6/\nDisallow: /tools/\nDisallow: /app-dev.html\nDisallow: /notes/\nDisallow: /mockups/\nSitemap: {SITE}/sitemap.xml\n")
 print("страниц:", len(urls), "подборок:", len(coll_data))
 # старые страницы, которых больше нет в сборке: не оставляем устаревший текст - ведём на раздел (страницы-переадресации из REDIR не трогаем)
 _live = {u.replace(SITE + "/", "") for u in urls}
