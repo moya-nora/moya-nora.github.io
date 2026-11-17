@@ -6267,6 +6267,7 @@ const fbItem=b=>{const it=bItem({...b,id:b.id||"f"+hsh(norm(b.t)).toString(36)},
 // своя метка приглашения: по ней Нора узнаёт, что заявку приняли именно по нашей ссылке
 const frTok=()=>{let k=LS.get("zal.frtok","");if(!k){k=Math.random().toString(36).slice(2,10);LS.set("zal.frtok",k)}return k};
 function inviteLink(){const u=NS.uid&&NS.uid();if(!u)return "";return TG?`https://t.me/${SHARE_BOT}?startapp=f_${u}_${frTok()}`:`https://nora-books.ru/#f=${u}&fk=${frTok()}`}
+document.addEventListener("click",e=>{if(e.target.closest("[data-fr-all]")){window.FR_ALL=!window.FR_ALL;tgHaptic();drawFr()}});
 function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
   const list=FRIENDS.map(f=>({f,p:FRP[f.uid]})),news=list.filter(x=>x.p&&(x.p.ev||[]).length).sort((a,b)=>(b.p.ev[0].ts||0)-(a.p.ev[0].ts||0));
   if(SCREEN==="acc")drawAcc();
@@ -6274,9 +6275,9 @@ function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
    ${REQS.length?`<button class="fr-nick fr-rq" data-sht="acc"><span>Заявки в друзья: ${REQS.length}</span><i>›</i></button>`:""}
    <div class="fr-row"><button class="fr-add" data-fr-find><i class="ava plus">+</i><span>Добавить</span></button>${list.map(({f})=>`<button class="fr-av" data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid,frNew(f)?"new":"")}<span>${esc(f.n||"Друг")}</span></button>`).join("")}</div>
    ${FRIENDS.length?"":`<div class="sc gl fr-empty"><h3>Полки друзей</h3><p>Найди друга по нику в Норе или по почте - придёт заявка прямо в Нору. Когда заявку примут, вы будете видеть полки друг друга: что прочитано, оценки, что хочется прочитать.</p><button class="btn w" data-fr-find>Добавить друга</button></div>`}
-   ${news.length?`<h3 class="fr-sec">Что нового</h3>`+news.map(({f,p})=>{const ev=(p.ev||[]).slice(0,10),fresh=ev.filter(e=>e.ts>(FSEEN2[f.uid]||0)).length;
+   ${news.length?`<h3 class="fr-sec">Что нового</h3>`+(window.FR_ALL?news:news.slice(0,3)).map(({f,p})=>{const ev=(p.ev||[]).slice(0,10),fresh=ev.filter(e=>e.ts>(FSEEN2[f.uid]||0)).length;
      return `<div class="sc gl frc"><button class="frh" data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid)}<b>${esc(f.n||"Друг")}</b><span>${whenTxt(ev[0].ts)}${fresh?` · новых: ${fresh}`:""}</span></button>
-       <div class="frs">${ev.map((e,i)=>`<button class="fre" data-fr-ev="${esc(f.uid)}|${i}">${cv(fbItem(e),84)}<em>${esc(evLabel(e))}</em><small>${esc(e.t)}</small></button>`).join("")}</div></div>`}).join(""):FRIENDS.length?`<p class="fr-note">Когда друзья что-нибудь прочитают или оценят, это появится здесь.</p>`:""}
+       <div class="frs">${ev.map((e,i)=>`<button class="fre" data-fr-ev="${esc(f.uid)}|${i}">${cv(fbItem(e),84)}<em>${esc(evLabel(e))}</em><small>${esc(e.t)}</small></button>`).join("")}</div></div>`}).join("")+(news.length>3?`<button class="sx-moref" data-fr-all>${window.FR_ALL?"Свернуть":"Показать всех друзей - "+news.length}</button>`:""):FRIENDS.length?`<p class="fr-note">Когда друзья что-нибудь прочитают или оценят, это появится здесь.</p>`:""}
 `}
 async function frInvite(){goal("invite");const u=NS.uid&&NS.uid();if(!u){toast("Сначала нужен вход");authShow();return}
   // в Telegram — ссылка на мини-приложение, в остальные соцсети — на сайт (откроется и без Telegram)
