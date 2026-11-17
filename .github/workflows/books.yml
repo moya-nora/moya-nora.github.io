@@ -28,6 +28,6 @@ jobs:
           git config user.name "Mayorov-Vlad"
           git config user.email "vladislav15333@gmail.com"
           git add books/build.log
-          if [ -f books/books.json ]; then git add books/books.json; fi
+          if [ -f books/books.json ]; then python3 tools/split_books.py && git add books/books.json books/books.core.json books/books.rest.json; fi
           git diff --cached --quiet || git commit -m "Книжный каталог: обновление $(date +%Y-%m-%d)"
           git pull --rebase --autostash -q && git push

@@ -53,7 +53,7 @@ def main():
         check("приложение: главная нарисовалась", js("document.querySelectorAll('#app h2, #app h3').length>2"))
         js("document.querySelector('#srchB').click()")
         pg.wait_for_timeout(700)
-        for q, want in (("Мастер и Маргорита", "Мастер и Маргарита"), ("Ujkjlyst buhs", "Голодные игры"), ("Шестёрка воронов", "Шестёрка воронов")):
+        for q, want in (("Мастер и Маргорита", "Мастер и Маргарита"), ("Ujkjlyst buhs", "Голодные игры"), ("Телефон мистера Харригана", "Телефон мистера Харригана"), ("Шестёрка воронов", "Шестёрка воронов")):
             js("q=>{const f=document.querySelector('#fq');f.value=q;f.dispatchEvent(new Event('input'))}", q)
             pg.wait_for_timeout(2500)
             got = js("(document.querySelector('#fres .fr[data-i]')||{textContent:''}).textContent")
