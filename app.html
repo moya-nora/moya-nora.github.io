@@ -2694,7 +2694,11 @@ S.lookupPut=async handles=>{if(!tok.uid)return;for(const h of handles){const k=h
   await authed("lookup/"+id,{method:"PATCH",body:JSON.stringify({fields:{u:{stringValue:tok.uid}}})}).catch(()=>{})}};
 S.nickKey=n=>String(n||"").trim().toLowerCase().replace(/^@/,"").replace(/ё/g,"е");
 S.nickGet=async n=>{const k=S.nickKey(n);if(k.length<3)return null;const r=await fetch(base()+"lookup/"+(await sha("n:"+k))+"?key="+FB.apiKey,{cache:"no-store"});if(r.status===404)return null;if(!r.ok)throw new Error("HTTP "+r.status);const j=await r.json();return j.fields&&j.fields.u&&j.fields.u.stringValue||null};
-S.nickPut=async n=>{if(!tok.uid)throw new Error("noauth");const k=S.nickKey(n);const r=await authed("lookup/"+(await sha("n:"+k)),{method:"PATCH",body:JSON.stringify({fields:{u:{stringValue:tok.uid}}})});if(!r.ok)throw new Error("HTTP "+r.status);return true};
+// ник один на всю Нору: запись создаётся только если такой ещё нет (проверяет сервер), чужой ник перезаписать нельзя
+S.nickPut=async n=>{if(!tok.uid)throw new Error("noauth");const k=S.nickKey(n),p="lookup/"+(await sha("n:"+k)),o={method:"PATCH",body:JSON.stringify({fields:{u:{stringValue:tok.uid}}})};
+  let r=await authed(p+"?currentDocument.exists=false",o);
+  if(!r.ok){const u=await S.nickGet(k);if(u===tok.uid)return true;if(u)throw new Error("taken");r=await authed(p,o);if(!r.ok)throw new Error("HTTP "+r.status);const u2=await S.nickGet(k);if(u2&&u2!==tok.uid)throw new Error("taken")}
+  return true};
 S.lookup=async h=>{const k=hkey(h);if(!k)return null;const r=await fetch(base()+"lookup/"+(await sha(k))+"?key="+FB.apiKey,{cache:"no-store"});if(r.status===404)return null;if(!r.ok)throw new Error("HTTP "+r.status);const j=await r.json();return j.fields&&j.fields.u&&j.fields.u.stringValue||null};
 const reqDoc=f=>({f:f.f.stringValue,t:f.t.stringValue,n:f.n?f.n.stringValue:"",s:f.s.stringValue,k:f.k?f.k.stringValue:"",ts:f.ts?+f.ts.integerValue:0});
 S.reqSend=async(to,name,s,k)=>{const fields={f:{stringValue:tok.uid},t:{stringValue:to},n:{stringValue:name||""},s:{stringValue:s||"p"},ts:{integerValue:String(Date.now())}};if(k)fields.k={stringValue:k};
@@ -6533,7 +6537,9 @@ function nickSheet(){if(needAuth()){authShow();return}const cur=LS.get("zal.nick
   vOpen(`<h3 class="vh">Твой ник в Норе</h3><input class="sy-in" id="nkI" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="например, oksana.reads" value="${esc(cur)}"><p class="sy-msg" id="nkM"></p><div class="rv-one"><button class="btn w" id="nkS">Сохранить</button></div>`);
   const i=$("#nkI"),m=$("#nkM");setTimeout(()=>{try{i.focus()}catch(e){}},200);i.onkeydown=e=>{if(e.key==="Enter")$("#nkS").click()};
   $("#nkS").onclick=async()=>{const v=NS.nickKey(i.value);if(!NICK_RX.test(v)){m.textContent=v.length<3?"Хотя бы 3 знака":"Только буквы, цифры, точка, дефис или подчёркивание";return}
-    if(v===cur){vClose();return}m.textContent="Проверяю…";try{const u=await NS.nickGet(v);if(u&&u!==NS.uid()){m.textContent="Этот ник уже занят - попробуй другой";return}await NS.nickPut(v);LS.set("zal.nick",v);tgHaptic("success");vClose();try{pubCheck()}catch(e){}toast("Готово - тебя можно найти по @"+v);drawFr()}catch(e){m.textContent="Не получилось сохранить - проверь интернет"}}}
+    if(v===cur){vClose();return}m.textContent="Проверяю…";try{const u=await NS.nickGet(v);if(u&&u!==NS.uid()){m.textContent="Этот ник уже занят - попробуй другой";return}
+      if(/[а-я]/.test(v)){const tv=v.split("").map(c=>TRL[c]!=null?TRL[c]:c).join("");const u2=tv.length>=3?await NS.nickGet(tv):null;if(u2&&u2!==NS.uid()){m.textContent="Этот ник уже занят - попробуй другой";return}}
+      await NS.nickPut(v);LS.set("zal.nick",v);tgHaptic("success");vClose();try{pubCheck()}catch(e){}toast("Готово - тебя можно найти по @"+v);drawFr()}catch(e){m.textContent=e&&e.message==="taken"?"Этот ник уже занят - попробуй другой":"Не получилось сохранить - проверь интернет"}}}
 document.addEventListener("click",e=>{if(e.target.closest("[data-nick]")){tgHaptic();nickSheet()}});
 // ник выдаём сам: из имени (Настя → nastya), а если занят - nastya2, nastya3…; поменять можно в «Друзьях»
 const TRL={а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"e",ж:"zh",з:"z",и:"i",й:"y",к:"k",л:"l",м:"m",н:"n",о:"o",п:"p",р:"r",с:"s",т:"t",у:"u",ф:"f",х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sch",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya"};
@@ -6541,7 +6547,7 @@ const nickBase=()=>{const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;let b=
   b=String(b).toLowerCase().split("").map(c=>TRL[c]!=null?TRL[c]:c).join("").replace(/[^a-z0-9._-]+/g,"").replace(/^[._-]+/,"").slice(0,18);return b.length>=3?b:(b+"reader").slice(0,18)};
 let NICKBUSY=false;
 async function nickAuto(){if(NICKBUSY||VIEW||LS.get("zal.nick","")||needAuth()||!NS.nickGet||!(NS.uid&&NS.uid()))return;NICKBUSY=true;
-  try{const b=nickBase();for(let i=1;i<40;i++){const v=i===1?b:b+(i<10?i:Math.floor(Math.random()*900+100));const u=await NS.nickGet(v);if(!u||u===NS.uid()){await NS.nickPut(v);LS.set("zal.nick",v);try{pubCheck()}catch(e){}if(SCREEN==="fr")drawFr();break}}}catch(e){}finally{NICKBUSY=false}}
+  try{const b=nickBase();for(let i=1;i<40;i++){const v=i===1?b:b+(i<10?i:Math.floor(Math.random()*900+100));const u=await NS.nickGet(v);if(!u||u===NS.uid()){try{await NS.nickPut(v)}catch(e){if(e&&e.message==="taken")continue;throw e}LS.set("zal.nick",v);try{pubCheck()}catch(e){}if(SCREEN==="fr")drawFr();break}}}catch(e){}finally{NICKBUSY=false}}
 setTimeout(nickAuto,7000);setInterval(nickAuto,60000);
 
 // статус аккаунта на «Полках»: видно, сохранены ли книги
