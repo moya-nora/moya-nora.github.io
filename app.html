@@ -6532,13 +6532,12 @@ $("#sumScroll").addEventListener("click",e=>{const t=e.target;const op=t.closest
   const nw=t.closest("[data-dnew]");if(nw){tgHaptic();dNew(BOOKS.find(b=>b.id===nw.dataset.dnew));return}
   const f=t.closest(".dstrip [data-f]");if(f){colF="diary";drawCol(true);$("#sumScroll").scrollTo({top:0,behavior:"smooth"});tgHaptic()}});
 // свой ник в Норе: по нему друзья находят друг друга без почты
-const NICK_RX=/^[a-zа-я0-9._-]{3,24}$/i;
+const NICK_RX=/^[a-z0-9._-]{3,24}$/;
 function nickSheet(){if(needAuth()){authShow();return}const cur=LS.get("zal.nick","");
   vOpen(`<h3 class="vh">Твой ник в Норе</h3><input class="sy-in" id="nkI" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="например, oksana.reads" value="${esc(cur)}"><p class="sy-msg" id="nkM"></p><div class="rv-one"><button class="btn w" id="nkS">Сохранить</button></div>`);
   const i=$("#nkI"),m=$("#nkM");setTimeout(()=>{try{i.focus()}catch(e){}},200);i.onkeydown=e=>{if(e.key==="Enter")$("#nkS").click()};
-  $("#nkS").onclick=async()=>{const v=NS.nickKey(i.value);if(!NICK_RX.test(v)){m.textContent=v.length<3?"Хотя бы 3 знака":"Только буквы, цифры, точка, дефис или подчёркивание";return}
+  $("#nkS").onclick=async()=>{const v=NS.nickKey(i.value);if(!NICK_RX.test(v)){m.textContent=/[а-я]/.test(v)?"Только латинские буквы, например nastya":v.length<3?"Хотя бы 3 знака":"Только латинские буквы, цифры, точка, дефис или подчёркивание";return}
     if(v===cur){vClose();return}m.textContent="Проверяю…";try{const u=await NS.nickGet(v);if(u&&u!==NS.uid()){m.textContent="Этот ник уже занят - попробуй другой";return}
-      if(/[а-я]/.test(v)){const tv=v.split("").map(c=>TRL[c]!=null?TRL[c]:c).join("");const u2=tv.length>=3?await NS.nickGet(tv):null;if(u2&&u2!==NS.uid()){m.textContent="Этот ник уже занят - попробуй другой";return}}
       await NS.nickPut(v);LS.set("zal.nick",v);tgHaptic("success");vClose();try{pubCheck()}catch(e){}toast("Готово - тебя можно найти по @"+v);drawFr()}catch(e){m.textContent=e&&e.message==="taken"?"Этот ник уже занят - попробуй другой":"Не получилось сохранить - проверь интернет"}}}
 document.addEventListener("click",e=>{if(e.target.closest("[data-nick]")){tgHaptic();nickSheet()}});
 // ник выдаём сам: из имени (Настя → nastya), а если занят - nastya2, nastya3…; поменять можно в «Друзьях»
