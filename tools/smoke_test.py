@@ -67,7 +67,7 @@ def main():
         js("document.querySelector('#clubDock').click()")
         pg.wait_for_timeout(700)
         check("приложение: раздел «Клуб» открывается", js("!!document.querySelector('#clBox .cb-seal')&&!!document.querySelector('#clBox [data-cb=new]')"))
-        for tab in ("Полки", "Друзья", "Нора"):
+        for tab in ("Полки", "Аккаунт", "Нора"):
             js("t=>[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===t).click()", tab)
             pg.wait_for_timeout(700)
         check("приложение: вкладки переключаются", True)
