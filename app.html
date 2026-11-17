@@ -2212,10 +2212,13 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .ask-c{position:relative;height:96px;border-radius:18px;background:var(--ac);color:#F4F2F7;text-align:left;padding:13px 14px;overflow:hidden;font-size:15px;font-weight:600;line-height:1.25;display:block}
 #app .ask-c:last-child:nth-child(odd){grid-column:1/-1}
 #app .ask-c span{position:relative;z-index:2;display:block;max-width:62%}
-#app .ask-f{position:absolute;right:-4px;bottom:-14px;display:flex}
-#app .ask-f .cv{width:46px;border-radius:5px;box-shadow:0 8px 18px rgba(0,0,0,.5)}
-#app .ask-f .cv:first-child{transform:rotate(-8deg)}
-#app .ask-f .cv+.cv{margin-left:-14px;transform:rotate(6deg) translateY(-6px)}
+#app .ask-c{height:136px;display:flex;align-items:flex-start;font-size:16px}
+#app .ask-c span{max-width:100%}
+#app .ask-f{position:absolute;right:-8px;bottom:-20px;display:flex;align-items:flex-end;pointer-events:none}
+#app .ask-f img{display:block;flex:none;width:56px;height:84px;object-fit:cover;border-radius:6px;background:#1a1b22;box-shadow:0 8px 18px rgba(0,0,0,.55)}
+#app .ask-f img:nth-child(1){transform:rotate(-9deg) translateY(8px)}
+#app .ask-f img:nth-child(2){margin-left:-18px;transform:rotate(-1deg) translateY(-2px);z-index:1}
+#app .ask-f img:nth-child(3){margin-left:-18px;transform:rotate(8deg) translateY(6px)}
 #app .fgen{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
 #app .fgen .fk{height:54px;border-radius:14px!important;border:0!important;justify-content:flex-start;text-align:left;padding:0 14px!important;font-size:14.5px;font-weight:600;color:#F4F2F7;background:rgba(255,255,255,.07)}
 #app .fgen .fk.on{background:#F4F2F7!important;color:#0B0A14}
@@ -3225,6 +3228,10 @@ const NEWSHELF="Новые поступления",NOCOUNTRY=new Set(["Нера�
 // Свои книги, добавленные в приложении
 const UKEY="zal.mine";
 let mine=(()=>{try{const v=localStorage.getItem(UKEY);return v?JSON.parse(v):[]}catch(e){return []}})();
+// одна и та же книга на полке «Прочитано» стоит один раз: лишние копии убираем, оценку и отзыв сохраняем
+const mineKey=b=>norm(b.t)+"|"+norm(String(b.a||"").trim().split(" ").slice(-1)[0]);
+function mineDedupe(){const seen=new Map(),out=[];(Array.isArray(mine)?mine:[]).forEach(b=>{if(!b||!b.t)return;const k=mineKey(b),e=seen.get(k);if(!e){seen.set(k,b);out.push(b)}else{if(e.r==null&&b.r!=null)e.r=b.r;if(!e.n&&b.n){e.n=b.n;if(b.pub)e.pub=b.pub}}});const ch=out.length!==mine.length;mine=out;return ch}
+let MINE_FIX=false;try{if(Array.isArray(mine)){MINE_FIX=mineDedupe();if(MINE_FIX)localStorage.setItem(UKEY,JSON.stringify(mine))}else mine=[]}catch(e){}
 function prepUser(b){const p=PAL[hsh(b.t+b.a)%PAL.length];const o={pg:300,f:[],n:"",r:null,c:NEWSHELF,g:"modern",...b,bg:b.bg||p[0],fg:b.fg||p[1],user:true};if(b.m)o._m=b.m;return o}
 if(!VIEW)mine.forEach(b=>BOOKS.push(prepUser(b)));
 // Правки «родных» книг (оценка, страна, жанр…) и снятые с полки
@@ -3257,7 +3264,7 @@ function rerenderAll(){renderShelves();renderTime();renderWant()}
 function noteLearn(n,r){try{window.noteLearn2&&window.noteLearn2(n,r)}catch(e){}}
 const nVisPub=()=>{const o=document.querySelector("#nVis .on");return !!o&&o.dataset.nv==="1"};
 document.addEventListener("click",e=>{const b=e.target.closest("#nVis [data-nv]");if(!b)return;document.querySelectorAll("#nVis [data-nv]").forEach(x=>x.classList.toggle("on",x===b));const h=document.getElementById("nVisH");if(h)h.textContent=b.dataset.nv==="1"?"Его увидят другие читатели — пока твои друзья в Норе.":"Нора учтёт отзыв в советах. Никто, кроме тебя, его не увидит."});
-let _uid=0;function addBook(b){const rec={id:"u"+Date.now()+"_"+(_uid++),rd:new Date().toISOString().slice(0,7),...b};if(b.n)noteLearn(b.n,b.r);mine.push(rec);BOOKS.push(prepUser(rec));READ.add(norm(rec.t));saveMine();rerenderAll();setTimeout(checkStamps,1600);return rec}
+let _uid=0;function addBook(b){{const k=mineKey(b),ex=mine.find(m=>mineKey(m)===k);if(ex){const bb=BOOKS.find(x=>x.id===ex.id);[ex,bb].forEach(o=>{if(!o)return;if(b.r!=null)o.r=b.r;if(b.n){o.n=b.n;if(b.pub)o.pub=b.pub}});saveMine();rerenderAll();return ex}}const rec={id:"u"+Date.now()+"_"+(_uid++),rd:new Date().toISOString().slice(0,7),...b};if(b.n)noteLearn(b.n,b.r);mine.push(rec);BOOKS.push(prepUser(rec));READ.add(norm(rec.t));saveMine();rerenderAll();setTimeout(checkStamps,1600);return rec}
 const haptic=(t="light")=>{try{TG&&TG.HapticFeedback&&(t==="ok"?TG.HapticFeedback.notificationOccurred("success"):TG.HapticFeedback.impactOccurred(t))}catch(e){}};
 
 const $=s=>document.querySelector(s);
@@ -4397,6 +4404,7 @@ if(TG){
 renderShelves();renderTime();shuffleMoods();renderWant();discRestore();renderQuotes();restoreQuotes();
 if(!VIEW&&!Object.keys(EDITS).length)cloudRead("e",o=>{if(o&&typeof o==="object"&&Object.keys(o).length&&!Object.keys(EDITS).length){EDITS=o;LS.set("zal.edits",EDITS);applyEdits();READ.clear();BOOKS.forEach(b=>READ.add(norm(b.t)));rerenderAll()}});
 if(!VIEW)checkStamps(true);
+if(!VIEW&&MINE_FIX)setTimeout(()=>{try{saveMine();pubCheck()}catch(e){}},5000);
 if(!VIEW&&!mine.length)cloudRead("m",arr=>{if(Array.isArray(arr)&&arr.length&&!mine.length){mine=arr;mine.forEach(b=>{BOOKS.push(prepUser(b));READ.add(norm(b.t))});LS.set(UKEY,mine);rerenderAll();checkStamps(true)}});
 if(TG&&TG.CloudStorage&&!themePref()){try{TG.CloudStorage.getItem("theme",(e,v)=>{if(!e&&(v==="dark"||v==="light")){try{localStorage.setItem("zal.theme",v)}catch(x){}applyTheme()}})}catch(e){}}
 if(TG&&TG.CloudStorage&&!LS.get("zal.now",null)){try{TG.CloudStorage.getItem("now",(e,v)=>{if(!e&&v){try{const o=JSON.parse(v);nowBook=o==="none"?null:o;LS.set("zal.now",o);renderWant()}catch(x){}}})}catch(e){}}
@@ -5338,7 +5346,7 @@ const POPBA={"Мастер и Маргарита":"Михаил Булгаков
 function popBooks(){return POPB.map(t=>{const c=catOf({t,a:POPBA[t]});return c?bItem(c,"pop"):{t,a:POPBA[t],kind:"pop"}})}
 function popFilms(){return POPF.map(([t,y,s])=>{if(FILMS&&!s){const f=toFilm({t,y});if(f&&FILMS_MAP&&FILMS_MAP.get(f.id))return fItem(f,"pop")}return {_f:1,t,y,s:s?1:undefined,id:"w"+hsh(norm(t)+y).toString(36),kind:"pop"}})}
 // другие переводы названий: человек ищет «Никогде», а в каталоге книга называется «Задверье»
-const ALTT=Object.fromEntries("Задверье>Никогде;Ловец на хлебном поле>Над пропастью во ржи;Добрые предзнаменования>Благие знамения;Цветы для Алджернона>Цветы для Элджернона;Пролетая над гнездом кукушки>Над кукушкиным гнездом;Прекрасный новый мир>О дивный новый мир;Дивный новый мир>О дивный новый мир;Гордость и гордыня>Гордость и предубеждение;Повелитель мух>Повелитель мух;Властелин мух>Повелитель мух;Гарри Поттер и волшебный камень>Гарри Поттер и философский камень;Хоббит>Хоббит, или Туда и обратно;Туда и обратно>Хоббит, или Туда и обратно;Песнь льда и пламени>Игра престолов;Песнь льда и огня>Игра престолов;Эта ваша зависимость>Эта ваша зависимость;Убить насмешника>Убить пересмешника;Хижина дяди Тома>Хижина дяди Тома;Тошнота>Тошнота;Жестокий принц>Жестокий принц;Девушка в поезде>Девушка в поезде;Исчезающая>Исчезнувшая;Пропавшая>Исчезнувшая;Бегущий за ветром>Бегущий за ветром;Воздушный змей>Бегущий за ветром;Сияние>Сияние;Мизери>Мизери;Мгла>Туман;Шантарам>Шантарам".split(";").map(p=>{const [a,b]=p.split(">");return [norm(a),b]}));
+const ALTT=Object.fromEntries("Задверье>Никогде;Ловец на хлебном поле>Над пропастью во ржи;Добрые предзнаменования>Благие знамения;Цветы для Алджернона>Цветы для Элджернона;Пролетая над гнездом кукушки>Над кукушкиным гнездом;Прекрасный новый мир>О дивный новый мир;Дивный новый мир>О дивный новый мир;Гордость и гордыня>Гордость и предубеждение;Повелитель мух>Повелитель мух;Властелин мух>Повелитель мух;Гарри Поттер и волшебный камень>Гарри Поттер и философский камень;Хоббит>Хоббит, или Туда и обратно;Туда и обратно>Хоббит, или Туда и обратно;Песнь льда и пламени>Игра престолов;Песнь льда и огня>Игра престолов;Эта ваша зависимость>Эта ваша зависимость;Убить насмешника>Убить пересмешника;Хижина дяди Тома>Хижина дяди Тома;Тошнота>Тошнота;Жестокий принц>Жестокий принц;Девушка в поезде>Девушка в поезде;Исчезающая>Исчезнувшая;Пропавшая>Исчезнувшая;Бегущий за ветром>Бегущий за ветром;Воздушный змей>Бегущий за ветром;Сияние>Сияние;Мизери>Мизери;Мгла>Туман;Шантарам>Шантарам;Нарния>Хроники Нарнии;Рожденный туманом>Пепел и сталь;Ешь молись люби>Есть, молиться, любить;Ешь, молись, люби>Есть, молиться, любить;12 стульев>Двенадцать стульев;Жутко громко>Жутко громко и запредельно близко;Мастер и Маргорита>Мастер и Маргарита;50 оттенков серого>Пятьдесят оттенков серого;451 по Фаренгейту>451 градус по Фаренгейту;Игра Эндера>Игра Эндера".split(";").map(p=>{const [a,b]=p.split(">");return [norm(a),b]}));
 // поиск прощает ошибки: неверная раскладка («Ujkjlyst buhs» = «Голодные игры»), опечатки в фамилии, слова в любом порядке
 const KBEN="qwertyuiop[]asdfghjkl;'zxcvbnm,.`",KBRU="йцукенгшщзхъфывапролджэячсмитьбюё";
 const kbSwap=q=>/[а-яё]/i.test(q)||!/[a-z]/i.test(q)?"":String(q).toLowerCase().split("").map(c=>{const i=KBEN.indexOf(c);return i<0?c:KBRU[i]}).join("");
@@ -5353,6 +5361,21 @@ function localFind0(q){if(SX.k==="films"){const own=[...FSEEN,...FWANT].filter(f
   const own=bookHits(q,[...BOOKS,...want,...CAT],8),seen=new Set(own.map(b=>norm(b.t)+"|"+norm(b.a||"")));
   let res=[...own,...bigHits(q,14).filter(b=>!seen.has(b._n+"|"+norm(b.a||"")))];
   {const fz=fuzzyHits(q,12).filter(b=>!res.includes(b)),sh=res.filter(b=>strongHit(b,q)),wk=res.filter(b=>!strongHit(b,q));res=[...sh,...fz,...wk]}
+  // порядок выдачи: книги автора, если набрана фамилия; точное название - первым («Динка» раньше, чем «Динка прощается с детством»);
+  // книги одной серии - по году выхода (первая часть раньше продолжений); сборники, спектакли и пересказы - после самих книг
+  {const v=norm(q),ws=qWords(q),nt=b=>norm(b.t||""),cl=b=>norm(String(b.t||"").replace(/\s*\((повесть|роман|рассказ|сказка|поэма|пьеса|роман в стихах)\)/gi," ")),
+    low=b=>/\((сборник|комплект|спектакль|адаптир|инсценир|пересказ)[^)]*\)|комплект из|\(\d+ (книг|том)|краткий пересказ|^пересказ /i.test(b.t||""),
+    tS=b=>{const tw=qWords(b.t||"");return ws.length>0&&ws.every(w=>tw.some(x=>x.startsWith(w)))},lastW=b=>{const w=qWords(b.a||"");return w[w.length-1]||""};
+   if(v.length>=3){const S=res.filter(b=>strongHit(b,q)),W=res.filter(b=>!strongHit(b,q));
+     const E0=S.filter(b=>nt(b)===v),E1=S.filter(b=>!E0.includes(b)&&!low(b)&&(cl(b)===v||nt(b).startsWith(v+"или"))),E=[...E0,...E1];
+     const R=S.filter(b=>!E.includes(b)),T=R.filter(b=>tS(b)&&!low(b)),A=R.filter(b=>!tS(b)&&!low(b)),L=R.filter(low);
+     // серия одного автора: по году
+     {const by={};T.forEach((b,i)=>{if(!b.y||!(CATMAP[b.id]===b||b.user||BOOKS.includes(b)))return;const k=lastW(b);(by[k]=by[k]||[]).push(i)});
+      Object.values(by).forEach(ix=>{if(ix.length<3)return;const g=ix.map(i=>T[i]).sort((x,y)=>x.y-y.y);ix.forEach((i,j)=>T[i]=g[j])})}
+     res=[...E,...T,...A,...L,...(E.length&&S.length>=1?W.filter(b=>false):W)]}
+   // набрана одна фамилия («пушкин», «кинг») - сначала книги этого автора, потом книги о нём
+   if(ws.length===1&&v.length>=4){const au=CAT.filter(b=>lastW(b)===ws[0]&&!READ.has(b._n)).sort((x,y)=>(y.q||0)-(x.q||0)).slice(0,8);
+     if(au.length>=2){const ex=res.filter(b=>nt(b)===v&&!au.includes(b)).slice(0,1);res=[...au,...ex,...res.filter(b=>!au.includes(b)&&!ex.includes(b))]}}}
   {const sn=new Set();res=res.filter(b=>{if(/^(саммари|краткое содержание|summary)(\s|$)|нейроспринт/i.test(b.t||""))return false;const k=norm(b.t)+"|"+norm(b.a||"");if(sn.has(k))return false;sn.add(k);return true})}
   return res.slice(0,16).map(b=>bItem(b,"hit"))}
 // опечатки в фамилии автора («Голдарт» → Голдратт): ищем фамилии, отличающиеся на 1-2 буквы, остальные слова - в названии
@@ -5488,8 +5511,12 @@ async function brainAsk(q){const key=norm(q);if(BRAIN[key])return BRAIN[key];try
 const brainUnpack=L=>L.map(o=>o.c?{b:ALLB().find(b=>norm(b.t)===norm(o.b.t))||o.b,w:o.w}:o);
 // обложки на карточках просьб: две книги, которые Шуршуня нашёл бы по этой просьбе (считаем один раз и не сразу)
 const ASKC_COL=["#3B2F5C","#5A3A2A","#25485A","#4A2638","#2C3A2E"],ASKC={};
-function askCovers(i){const L=ASKC[i];if(!L){setTimeout(()=>{if(ASKC[i])return;try{const M=meanFind(MEAN_EX[i],12);ASKC[i]=(M&&M.list||[]).filter(b=>imgOf(b)).slice(0,2).map(b=>bItem(b,"hit"))}catch(e){ASKC[i]=[]}
-  const el=document.querySelector(`[data-askf="${i}"]`);if(el)el.innerHTML=askCovers(i)},120+i*90);return ""}return L.map(x=>cv(x,46)).join("")}
+const ASKU=new Set();
+function askCovers(i){const L=ASKC[i];if(!L){setTimeout(()=>{if(ASKC[i])return;try{const M=meanFind(MEAN_EX[i],40),out=[],au=new Set();
+    // только настоящие обложки изданий, у каждой плитки свои книги, авторы не повторяются
+    for(const b of (M&&M.list||[])){const u=imgOf(b);if(!u||u.indexOf("img/ai/")>=0||ASKU.has(u)||au.has(b.a))continue;ASKU.add(u);au.add(b.a);out.push(u);if(out.length>=3)break}ASKC[i]=out}catch(e){ASKC[i]=[]}
+  const el=document.querySelector(`[data-askf="${i}"]`);if(el)el.innerHTML=askCovers(i)},120+i*90);return ""}
+  return L.map(u=>`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer" decoding="async" onerror="this.remove()">`).join("")}
 const MEAN_EX=["Книга на один вечер","Не оторваться","Уютная на осень","Сильная героиня","Как хороший сериал"];
 function sxRun(){const q=$("#fq").value,my=++SX.seq;SX.q=q;SX.mode="q";clearTimeout(SX.t);$(".sx-clear").hidden=!q;
   {const h=SX.k!=="films"&&genreHit(q);if(h){const L=h[0]==="gen"?NF.gen:NF.trope;if(!L.includes(h[1]))L.push(h[1]);saveNF();SX.picks=true;SX.q="";$("#fq").value="";$(".sx-clear").hidden=true;
@@ -5921,9 +5948,9 @@ function filtersHTML(){if(isF()){const T=TF;
   const TR_ORD=[],tro=id=>{const i=TR_ORD.indexOf(id);return i<0?99:i};const tc=tropeCount(),tAll=B_TROPE.filter(([id])=>tc[tropeTag(id)]||F.trope.includes(id)).sort((a,b)=>tro(a[0])-tro(b[0])),tShow=FOPEN.has("tropes-all")?tAll:tAll.slice(0,6);
   const mShow=FOPEN.has("moods-all")?B_MOOD:B_MOOD.filter((m,i)=>i<6||F.mood.includes(m[0]));
   return ``+
-   fsec("Жанры",`<div class="fgen">${(FOPEN.has("gen-all")?genChips:genChips.filter((g,i)=>i<8||F.gen.includes(g[0]))).map(([id,l])=>fchip("gen",id,F.gen.includes(id),l)).join("")}</div>`+(FOPEN.has("gen-all")?"":`<button type="button" class="fk more gen-more" data-fmore="gen-all">Все жанры</button>`))+
-   fsec("Настроение",mShow.map(([id,l])=>fchip("mood",id,F.mood.includes(id),l)).join("")+(mShow.length<B_MOOD.length?`<button type="button" class="fk more" data-fmore="moods-all">ещё ${B_MOOD.length-mShow.length}</button>`:""))+
-   (tAll.length&&(!F.gen.length||F.gen.some(g=>["fantasy","romantasy","romance","darkrom","ya","kids"].includes(g)))?fsec("Тропы",tShow.map(([id,l])=>fchip("trope",id,F.trope.includes(id),l)).join("")+(tShow.length<tAll.length?`<button type="button" class="fk more" data-fmore="tropes-all">ещё ${tAll.length-tShow.length}</button>`:"")):"")+
+   fsec("Жанры",`<div class="fgen">${(FOPEN.has("gen-all")?genChips:genChips.filter((g,i)=>i<8||F.gen.includes(g[0]))).map(([id,l])=>fchip("gen",id,F.gen.includes(id),l)).join("")}</div>`+`<button type="button" class="fk more gen-more" data-fmore="gen-all">${FOPEN.has("gen-all")?"Свернуть":"Все жанры"}</button>`)+
+   fsec("Настроение",mShow.map(([id,l])=>fchip("mood",id,F.mood.includes(id),l)).join("")+(mShow.length<B_MOOD.length?`<button type="button" class="fk more" data-fmore="moods-all">ещё ${B_MOOD.length-mShow.length}</button>`:FOPEN.has("moods-all")&&B_MOOD.length>6?`<button type="button" class="fk more" data-fmore="moods-all">Свернуть</button>`:""))+
+   (tAll.length&&(!F.gen.length||F.gen.some(g=>["fantasy","romantasy","romance","darkrom","ya","kids"].includes(g)))?fsec("Тропы",tShow.map(([id,l])=>fchip("trope",id,F.trope.includes(id),l)).join("")+(tShow.length<tAll.length?`<button type="button" class="fk more" data-fmore="tropes-all">ещё ${tAll.length-tShow.length}</button>`:FOPEN.has("tropes-all")&&tAll.length>6?`<button type="button" class="fk more" data-fmore="tropes-all">Свернуть</button>`:"")):"")+
    `<div class="fmore-h">Уточнить</div>`+
    acc("set","Подборки",lab(B_SET,F.set)||"",B_SET.map(([id,l])=>fchip("set",id,F.set===id,l)).join(""))+
    acc("len","Объём и темп",[lab(B_LEN,F.len),lab(B_PACE,F.pace)].filter(Boolean).join(", "),B_LEN.map(([id,l])=>fchip("len",id,F.len===id,l)).join("")+B_PACE.map(([id,l])=>fchip("pace",id,F.pace===id,l)).join(""))+
@@ -5934,7 +5961,7 @@ function filtersHTML(){if(isF()){const T=TF;
 // раскрытые разделы помнятся, пока открыт лист
 const FOPEN=new Set();
 $("#vshBody").addEventListener("toggle",e=>{const d=e.target;if(!d.matches||!d.matches("details[data-facc]"))return;d.open?FOPEN.add(d.dataset.facc):FOPEN.delete(d.dataset.facc)},true);
-$("#vshBody").addEventListener("click",e=>{const m=e.target.closest("[data-fmore]");if(!m)return;FOPEN.add(m.dataset.fmore);redrawFilters()},true);
+$("#vshBody").addEventListener("click",e=>{const m=e.target.closest("[data-fmore]");if(!m)return;const k=m.dataset.fmore;FOPEN.has(k)?FOPEN.delete(k):FOPEN.add(k);tgHaptic();redrawFilters()},true);
 // «Не показывать»: свои слова — автор, тема, слово из названия
 const fhwAdd=()=>{const i=$("#fHideW");if(!i)return;const v=i.value.trim().slice(0,40);if(v.length<3||NF.hideW.includes(v))return;NF.hideW.push(v);saveNF();tgHaptic();redrawFilters()};
 $("#vshBody").addEventListener("click",e=>{if(e.target.closest("[data-fhwadd]")){fhwAdd();return}const x=e.target.closest("[data-fhw]");if(x){NF.hideW=NF.hideW.filter(w=>w!==x.dataset.fhw);saveNF();tgHaptic();redrawFilters()}},true);
@@ -6120,6 +6147,7 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-shto
 function frShelf(uid,tab){const f=FRIENDS.find(x=>x.uid===uid),p=FRP[uid];if(!f)return;FSEEN2[uid]=Date.now();frSeenSave();frDotUpd();
   if(!p){vOpen(`<h3 class="vh">${esc(f.n||"Друг")}</h3><p class="sy-note">Полки пока не загрузились — проверь интернет.</p>`);return}
   if(p.hid){vOpen(`<button class="fr-closex" data-vclose aria-label="Закрыть">${IC2.x}</button><div class="frp">${avatar(f.n,uid,"big")}<h3 class="vh">${esc(f.n||"Друг")}</h3><p class="sy-note">Полки скрыты</p></div>`,true);$("#vshBody")._fr={uid,tab:"read"};return}
+  {const dd=A=>{const S=new Set();return (A||[]).filter(b=>{const k=norm(b.t)+"|"+norm(b.a||"");if(S.has(k))return false;S.add(k);return true})};p.read=dd(p.read);p.want=dd(p.want)}
   tab=tab||"read";const L=(tab==="read"?p.read:p.want)||[];
   vOpen(`<button class="fr-closex" data-vclose aria-label="Закрыть">${IC2.x}</button><div class="frp">${avatar(f.n,uid,"big")}<h3 class="vh">${esc(f.n||"Друг")}</h3><p class="sy-note">${(p.read||[]).length} ${plural((p.read||[]).length,"книга","книги","книг")} прочитано${p.now?` · сейчас: «${esc(p.now.t)}»`:""}</p></div>
    <div class="imp-to"><button class="${tab==="read"?"on":""}" data-frt="read">Прочитано</button><button class="${tab==="want"?"on":""}" data-frt="want">Хочет прочитать</button></div>
