@@ -61,8 +61,16 @@ def club_msgs(name, d, members, uid, now):
             elif left == 0:
                 out.append((f"d0:{b['k']}:{done + 1}", f"🔔 Клуб «{name}»: сегодня срок {what}.\n"
                             + ("Если книга дочитана - отметь это в клубе и поставь оценку." if parts == 1 else "Если часть дочитана - отметь её в клубе, и откроются вопросы для обсуждения.")))
+    # варианты времени предлагают участники; встреча - назначенная ведущим или время, которое подошло всем
+    opts = {t for t in (d.get("mopts") or []) if t > now}
+    for x in members.values():
+        opts |= {t for t in (x.get("mo") or []) if t > now}
+    votes = lambda t: sum(1 for x in members.values() if t in (x.get("mv") or []))
     m = d.get("meet")
-    if m and m.get("ts", 0) > now:
+    if not (m and m.get("ts", 0) > now):
+        full = sorted(t for t in opts if len(members) >= 2 and votes(t) >= len(members))
+        m = {"ts": full[0]} if full else None
+    if m:
         left = day_no(m["ts"], tz) - today
         go = sum(1 for x in members.values() if (x.get("rs") or {}).get(str(m["ts"])) == 1)
         mine = (me.get("rs") or {}).get(str(m["ts"]))
@@ -71,9 +79,11 @@ def club_msgs(name, d, members, uid, now):
             out.append((f"m1:{m['ts']}", f"📅 Завтра в {hm(m['ts'], tz)} встреча клуба «{name}».{about}" + ("" if mine in (0, 1) else "\nОтметь, придёшь ли ты.")))
         elif left == 0:
             out.append((f"m0:{m['ts']}", f"📅 Сегодня клуб «{name}» собирается в {hm(m['ts'], tz)}.{about}" + (f"\nПридут: {go}." if go else "")))
-    opts = sorted(t for t in (d.get("mopts") or []) if t > now)
-    if opts and not (m and m.get("ts", 0) > now) and not [t for t in (me.get("mv") or []) if t in opts]:
-        out.append((f"mv:{opts[0]}", f"🗳 Клуб «{name}» выбирает время встречи. Отметь, когда тебе удобно:\n" + "\n".join(f"• {dm(t, tz)}, {hm(t, tz)}" for t in opts)))
+        elif left > 1 and not d.get("meet"):
+            out.append((f"ma:{m['ts']}", f"✅ Клуб «{name}» выбрал время встречи: {dm(m['ts'], tz)}, {hm(m['ts'], tz)} - оно подошло всем."))
+    elif opts and not [t for t in (me.get("mv") or []) if t in opts]:
+        L = sorted(opts, key=lambda t: (-votes(t), t))
+        out.append((f"mv:{min(opts)}", f"🗳 Клуб «{name}» выбирает время встречи. Отметь, когда тебе удобно:\n" + "\n".join(f"• {dm(t, tz)}, {hm(t, tz)}" for t in L)))
     return out
 
 

@@ -2256,7 +2256,8 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .hsb img{width:46px!important;height:46px!important;border-radius:12px!important;flex:none}
 #app .hsb .hs-tx{flex:1;min-width:0;display:flex;flex-direction:column}
 #app .hsb .hs-tx b{font-size:15px;font-weight:700;color:#fff}
-#app .hsb .hs-tx span{font-size:12.5px;line-height:1.3;color:rgba(255,255,255,.65);margin-top:2px}
+#app .hsb .hs-tx span{font-size:14px;line-height:1.3;color:rgba(255,255,255,.7);margin-top:2px}
+#app .hs-card small{display:block;margin-top:2px;font-size:14px;line-height:1.3;color:var(--ink2);font-weight:400}
 #app .hsb .hs-go{flex:none;height:36px;padding:0 16px;border-radius:18px;background:#F3D19A;color:#1A1424;font-size:14px;font-weight:700}
 #app .hsb .hs-cl{flex:none;width:32px;height:32px;border-radius:16px;display:grid;place-items:center;background:none;color:rgba(255,255,255,.55)}
 #app .hsb .hs-cl svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
@@ -2399,9 +2400,6 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app #clBox .cb-b,#app .cb-sh .cb-b{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;padding:8px 18px;border-radius:26px;background:rgba(255,255,255,.08);color:#fff;font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1.2;text-align:center}
 #app #clBox .cb-b.w,#app .cb-sh .cb-b.w{background:#F4F2F7;color:#0B0A14;font-weight:700}
 #app #clBox .cb-b:disabled,#app .cb-sh .cb-b:disabled{opacity:.6}
-#app #clBox .cb-where{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:44px;margin:2px 0 4px;border-radius:22px;background:rgba(255,255,255,.08);font-size:14px;font-weight:600;color:var(--ink)}
-#app #clBox .cb-where svg{width:18px;height:18px;opacity:.8}
-#app #clBox .cb-b svg,#app .cb-sh .cb-b svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;flex:none}
 #app #clBox .cb-link,#app .cb-sh .cb-link{min-height:44px;padding:0 8px;font-size:14px;font-weight:600;color:#F3D19A}
 #app .cb-head{display:flex;align-items:center;gap:14px}
 #app .cb-hx{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
@@ -2557,7 +2555,8 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .cb-mot span{font-size:14px;color:var(--ink2)}
 #app #clBox .cb-vote{flex:none;display:flex;align-items:center;gap:6px;height:44px;padding:0 14px;border-radius:22px;background:rgba(255,255,255,.08);border:1px solid transparent;font-size:14px;font-weight:600;color:#fff;white-space:nowrap}
 #app #clBox .cb-vote.on{background:rgba(243,209,154,.14);border-color:rgba(243,209,154,.5);color:#F3D19A;font-weight:700}
-#app #clBox .cb-pick{flex-basis:100%;text-align:left;min-height:44px;font-size:14px;font-weight:600;color:#F3D19A}
+#app #clBox .cb-pick{align-self:flex-start;text-align:left;min-height:36px;font-size:14px;font-weight:600;color:#F3D19A}
+#app .cb-ch{flex-wrap:wrap}
 @media (max-width:359px){
 #app #clScroll{padding-left:16px;padding-right:16px}
 #app .cb-hx h1,#app .cb-bx b,#app .cb-vx b,#app .cb-q p,#app .cb-pod b,#app .cb-r b,#app .cb-sh h3{-webkit-hyphens:auto;hyphens:auto}
@@ -5120,7 +5119,7 @@ function drawCol(keepFlow){
   {const dg=colF==="diary",cvx=$("#cviews"),ov=$("#oldv");$("#grid").classList.toggle("diary",dg);if(cvx)cvx.hidden=dg;if(ov)ov.hidden=dg;
    if(dg){$("#grid").innerHTML=diaryPage();const ds=$("#dstripB");if(ds)ds.innerHTML="";if(!keepFlow)drawFlow();drawNewAu();drawTrend();return}}
   const G=gridList(),GH=colF==="want"&&!isF()&&G.length>=4?wantGrouped().H:{};$("#grid").innerHTML=G.map((x,i)=>`${GH[i]?`<h4 class="ggen">${esc(GH[i][0])}</h4>`:""}<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
-  {let hc=$("#hsCard");if(!hc){hc=document.createElement("div");hc.id="hsCard";const sm=$("#sumScroll .stat-h")||$("#sumMore");sm&&sm.before(hc)}hc.innerHTML=hsCan()?`<button class="hs-card" data-hs-any><img src="icons/icon-512.png?v=5" alt=""><span><b>Нора на экране «Домой»</b></span><i>Добавить</i></button>`:""}{let ac=$("#acctL");if(!ac){ac=document.createElement("div");ac.id="acctL";const st=$(".shelves-top");st&&st.after(ac)}ac.innerHTML=acctLine()}{let ds=$("#dstripB");if(!ds){ds=document.createElement("div");ds.id="dstripB";($("#oldv")||$("#grid")).after(ds)}ds.innerHTML=colF==="read"&&!VIEW?diaryStrip():""}if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
+  {let hc=$("#hsCard");if(!hc){hc=document.createElement("div");hc.id="hsCard";const sm=$("#sumScroll .stat-h")||$("#sumMore");sm&&sm.before(hc)}hc.innerHTML=hsCan()?`<button class="hs-card" data-hs-any><img src="icons/icon-512.png?v=5" alt=""><span><b>Нора как приложение</b><small>Иконка на экране «Домой» - открывается в одно касание${TG?"":", без Telegram и VPN"}</small></span><i>Добавить</i></button>`:""}{let ac=$("#acctL");if(!ac){ac=document.createElement("div");ac.id="acctL";const st=$(".shelves-top");st&&st.after(ac)}ac.innerHTML=acctLine()}{let ds=$("#dstripB");if(!ds){ds=document.createElement("div");ds.id="dstripB";($("#oldv")||$("#grid")).after(ds)}ds.innerHTML=colF==="read"&&!VIEW?diaryStrip():""}if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
 // «Новое от твоих авторов»: свежие книги (этот и прошлый год) авторов, которых человек оценил на 4–5, и ещё не на полках
 function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a).map(b=>norm(b.a)));if(!fav.size)return [];
   const W=wantNorms(),seen=new Set(),out=[];for(const b of ALLB()){if(!b.y||b.y<YNOW-1||!b.a||!fav.has(norm(b.a)))continue;const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt)||seen.has(nt)||dismissed.has(b.id))continue;seen.add(nt);out.push(b);if(out.length>=8)break}
@@ -6341,7 +6340,7 @@ const HS_SHARE='<svg viewBox="0 0 24 24"><path d="M12 3.5v11"/><path d="M8 7.5l4
   HS_PLUS='<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8.5v7M8.5 12h7"/></svg>',
   HS_DOTS='<svg viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="18.5" r="1.4"/></svg>';
 function hsShow(mode){HS.set("last",Date.now());HS.set("shows",(HS.get("shows")||0)+1);
-  hsEl.innerHTML=`<img src="icons/icon-512.png?v=5" alt=""><div class="hs-tx"><b>Нора на экране «Домой»</b></div>
+  hsEl.innerHTML=`<img src="icons/icon-512.png?v=5" alt=""><div class="hs-tx"><b>Нора как приложение</b><span>${mode==="tg"?"Иконка на экране - открывается в одно касание":"Иконка на экране: без Telegram и VPN"}</span></div>
    <button class="hs-go" data-hs-go>${mode==="tg"||bip?"Добавить":"Установить"}</button><button class="hs-cl" data-hs-later aria-label="Закрыть">${IC2.x}</button>`;
   hsEl.dataset.mode=mode;setTimeout(()=>hsEl.classList.add("on"),50)}
 const hsHide=()=>hsEl.classList.remove("on");window.noraRec=()=>recList().slice(0,24).map(x=>x.t+" ["+x.g+"]");window.noraLB=P=>listBooks(P.map(s=>s.split("|"))).map(b=>[b.t,b.a,!!imgOf(b)]);window.noraHS=hsShow;window.noraAuth=()=>{authMode="up";authShow()};
@@ -6916,9 +6915,6 @@ const cbDec=d=>{const o={},f=(d&&d.fields)||{};for(const k in f){const v=f[k];o[
 async function cbReq(path,opt={}){let t="";try{t=NS.token?await NS.token():""}catch(e){}const h={"Content-Type":"application/json"};if(t)h.Authorization="Bearer "+t;
   const url=(path[0]===":"?CB_API.slice(0,-1):CB_API)+path+(t?"":(path.includes("?")?"&":"?")+"key="+CB_KEY);return fetch(url,{cache:"no-store",...opt,headers:h})}
 const CB={id:LS.get("zal.club",""),club:null,d:{},mem:[],sug:[],qs:[],tab:"read",view:"main",busy:false,err:"",t:0,rank:null,rk:"m",qp:0,sheet:"",cand:[],setup:null,res:[]};
-// последний загруженный клуб храним на устройстве: раздел открывается сразу, свежие данные подтягиваются следом
-function cbCacheSave(){try{localStorage.setItem("zal.clubc",JSON.stringify({id:CB.id,club:CB.club,d:CB.d,mem:CB.mem.map(m=>({...m,d:"",x:{...m.x,h:[]}})),sug:CB.sug,qs:CB.qs}))}catch(e){}}
-(function(){try{const c=JSON.parse(localStorage.getItem("zal.clubc")||"null");if(c&&c.id&&c.id===CB.id&&c.club){CB.club=c.club;CB.d=c.d||{};CB.mem=c.mem||[];CB.sug=c.sug||[];CB.qs=c.qs||[]}}catch(e){}})();
 const cbUid=()=>(NS.uid&&NS.uid())||"";
 const cbK=(t,a)=>"b"+hsh(norm(t)+"|"+norm(String(a||"").trim().split(/\s+/).pop()||"")).toString(36);
 const cbJ=(s,d)=>{try{return JSON.parse(s)||d}catch(e){return d}};
@@ -6948,16 +6944,14 @@ async function cbPutMe(x){const u=cbUid();if(!u||!CB.id)return false;let m=cbMe(
   try{const r=await cbReq("clubs/"+CB.id+"/m/"+u,{method:"PATCH",body:cbEnc({n:m.n,d:JSON.stringify(m.x),u:Date.now()})});return r.ok}catch(e){return false}}
 async function cbPutClub(){if(!cbOwner())return false;const c=CB.club;
   try{const r=await cbReq("clubs/"+CB.id,{method:"PATCH",body:cbEnc({n:c.n,o:c.o,pub:!!c.pub,fin:c.fin||0,mk:c.mk||"",mf:c.mf||0,d:JSON.stringify(CB.d),u:Date.now()})});if(!r.ok)toast("Не сохранилось - проверь интернет");return r.ok}catch(e){toast("Не сохранилось - проверь интернет");return false}}
-function cbForget(){try{localStorage.removeItem("zal.clubc")}catch(e){}CB.id="";CB.club=null;CB.mem=[];CB.sug=[];CB.qs=[];CB.view="main";try{localStorage.removeItem("zal.club")}catch(e){}}
+function cbForget(){CB.id="";CB.club=null;CB.mem=[];CB.sug=[];CB.qs=[];CB.view="main";try{localStorage.removeItem("zal.club")}catch(e){}}
 async function cbLoad(){if(!CB.id||CB.busy||needAuth())return;CB.busy=true;
-  try{const id=CB.id,pr=cbReq("clubs/"+id),pl=Promise.all(["m","s","q"].map(c=>cbReq("clubs/"+id+"/"+c+"?pageSize=300").then(x=>x.ok?x.json():{}).catch(()=>({}))));
-    const r=await pr;if(r.status===404){cbForget();toast("Клуб не нашёлся");return}if(!r.ok)throw new Error("HTTP "+r.status);
-    const club=cbDec(await r.json());const L=await pl;if(CB.id!==id)return;
+  try{const r=await cbReq("clubs/"+CB.id);if(r.status===404){cbForget();toast("Клуб не нашёлся");return}if(!r.ok)throw new Error("HTTP "+r.status);
+    const club=cbDec(await r.json());const L=await Promise.all(["m","s","q"].map(c=>cbReq("clubs/"+CB.id+"/"+c+"?pageSize=300").then(x=>x.ok?x.json():{}).catch(()=>({}))));
     CB.club=club;CB.d=Object.assign({book:null,parts:4,per:7,start:0,meet:null,chat:"",shelf:[],cr:0},cbJ(club.d,{}));
     CB.mem=(L[0].documents||[]).map(cbDec).map(m=>(m.x=Object.assign({p:{},v:[],rs:{},r:{},h:[]},cbJ(m.d,{})),m));
     CB.sug=(L[1].documents||[]).map(cbDec);CB.qs=(L[2].documents||[]).map(cbDec).sort((a,b)=>(a.ts||0)-(b.ts||0));CB.err="";
-    cbCacheSave();
-    const me=cbMe(),h=cbReadH();if(!me||me.n!==(myName()||"Читатель")||me.x.h.join()!==h.join()){const x=me?me.x:{p:{},v:[],rs:{},r:{},h:[]};x.h=h;cbPutMe(x).then(()=>{if(SCREEN==="club")cbDraw()})}}
+    const me=cbMe(),h=cbReadH();if(!me||me.n!==(myName()||"Читатель")||me.x.h.join()!==h.join()){const x=me?me.x:{p:{},v:[],rs:{},r:{},h:[]};x.h=h;await cbPutMe(x)}}
   catch(e){CB.err="Клуб пока не открывается - проверь интернет"}
   finally{CB.busy=false;CB.t=Date.now();try{notifySync()}catch(e){}if(SCREEN==="club")cbDraw();if(CB.sheet==="vote"&&$("#vsheet").classList.contains("on")&&!$("#vshBody").contains(document.activeElement))cbVoteDraw()}}
 function clubOpen(){cbDraw();if(CB.id&&Date.now()-CB.t>4000)cbLoad()}
@@ -7001,23 +6995,23 @@ function cbReadHTML(){const d=CB.d,b=d.book,own=cbOwner();let h="";
   if(b){const n=cbParts(),p=cbMyP(),my=cbMyD().r[b.k]||0;
     h+=`<div class="cb-book"><button class="cb-cvw" data-cb="book" aria-label="Открыть книгу">${cv(cbBook(b),128)}${cbSeal("",46)}</button><div class="cb-bx"><b>${esc(b.t)}</b><span>${esc(b.a)}</span>
       ${p<n?`<div class="cb-part">${n===1?"Читаем целиком":`Часть ${p+1} из ${n}`}</div><div class="cb-due">до ${cbDay(cbDue(p+1))}</div>`:`<div class="cb-part">Книга прочитана</div>`}</div></div>
-     ${p<n?`<button class="cb-where" data-cb="where">${IC2.pin}<span>Где взять книгу</span></button>`:""}
      ${n>1?`<button class="cb-bars" data-cb="parts" aria-label="Прочитано частей: ${p} из ${n}. Изменить">${Array.from({length:n},(_,i)=>`<i${i<p?` class="on"`:""}></i>`).join("")}</button>`:""}`;
     h+=p<n?`<button class="cb-b w" data-cb="part">${n===1?"Книга прочитана":`Часть ${p+1} прочитана`}</button>`:`<div class="cb-card"><div class="cb-ch"><h2>Твоя оценка</h2></div><div class="cb-stars">${[1,2,3,4,5].map(i=>`<button data-cb="rate" data-r="${i}" aria-label="Оценка ${i}"${i<=my?` class="on"`:""}>★</button>`).join("")}</div></div>${n===1?`<button class="cb-link" data-cb="setp" data-p="0">Ещё читаю</button>`:""}`;
     if(own)h+=`<button class="cb-b" data-cb="finish">Клуб дочитал книгу</button>`}
   else h+=`<div class="cb-card"><div class="cb-ch"><h2>Книга ещё не выбрана</h2></div>${own?`<button class="cb-b w" data-cb="vote">Выбрать книгу</button>`:`<p class="cb-note">Предложи свою и проголосуй - ведущий выберет из списка.</p>`}</div>`;
-  const m=d.meet;if(m&&m.ts>Date.now()-864e5){const rs=cbMyD().rs[m.ts],dt=new Date(m.ts),go=CB.mem.filter(x=>x.x.rs&&x.x.rs[m.ts]===1).length;
-    h+=`<div class="cb-card"><div class="cb-ch"><h2>Встреча ${cbDay(m.ts)}, ${String(dt.getHours()).padStart(2,"0")}:${String(dt.getMinutes()).padStart(2,"0")}</h2>${own?`<button class="cb-link" data-cb="meet">Изменить</button>`:""}</div>
-      <div class="cb-two"><button data-cb="rsvp" data-v="1"${rs===1?` class="on"`:""}>Буду${go?" · "+go:""}</button><button data-cb="rsvp" data-v="0"${rs===0?` class="on"`:""}>Не смогу</button></div></div>`}
-  else{const O=cbOpts(),mv=cbMyD().mv||[],n=Math.max(1,CB.mem.length);
-    if(O.length)h+=`<div class="cb-card"><div class="cb-ch"><h2>Когда встречаемся</h2>${own?`<button class="cb-link" data-cb="meet">Изменить</button>`:""}</div>
-      ${O.map(ts=>{const on=mv.includes(ts),v=CB.mem.filter(x=>(x.x.mv||[]).includes(ts)).length;return `<div class="cb-mo"><div class="cb-mot"><b>${cbDay(ts)}, ${cbHM(ts)}</b><span>${v} из ${n}</span></div><button class="cb-vote${on?" on":""}" data-cb="mv" data-ts="${ts}" aria-pressed="${on}">${on?CB_IC.check+"Мне удобно":"Мне удобно"}</button>${own?`<button class="cb-pick" data-cb="mset" data-ts="${ts}">Назначить</button>`:""}</div>`}).join("")}</div>`;
-    else if(own)h+=`<button class="cb-b" data-cb="meet">Назначить встречу</button>`}
+  const m=cbMeetNow(),hostMe=own&&cbHost();
+  if(m){const rs=cbMyD().rs[m.ts],go=CB.mem.filter(x=>x.x.rs&&x.x.rs[m.ts]===1).length;
+    h+=`<div class="cb-card"><div class="cb-ch"><h2>Встреча ${cbDay(m.ts)}, ${cbHM(m.ts)}</h2>${hostMe||m.auto?`<button class="cb-link" data-cb="meet">${hostMe?"Изменить":"Другое время"}</button>`:""}</div>
+      ${m.auto?`<p class="cb-note">Это время подошло всем.</p>`:""}<div class="cb-two"><button data-cb="rsvp" data-v="1"${rs===1?` class="on"`:""}>Буду${go?" · "+go:""}</button><button data-cb="rsvp" data-v="0"${rs===0?` class="on"`:""}>Не смогу</button></div></div>`}
+  else{const O=cbOpts(),n=Math.max(1,CB.mem.length);
+    if(O.length)h+=`<div class="cb-card"><div class="cb-ch"><h2>Когда встречаемся</h2><button class="cb-link" data-cb="meet">Предложить</button></div>
+      ${O.map((o,i)=>`<div class="cb-mo"><div class="cb-mot"><b>${cbDay(o.ts)}, ${cbHM(o.ts)}</b><span>${o.v} из ${n}${cbHost()&&!o.host?" · ведущий пока не отметил":i===0&&o.v>1?" · лидирует":""}</span>${hostMe?`<button class="cb-pick" data-cb="mset" data-ts="${o.ts}">Назначить</button>`:""}</div><button class="cb-vote${o.on?" on":""}" data-cb="mv" data-ts="${o.ts}" aria-pressed="${o.on}">${o.on?CB_IC.check:""}Мне удобно</button></div>`).join("")}</div>`;
+    else h+=`<button class="cb-b" data-cb="meet">${hostMe?"Назначить встречу":"Предложить время встречи"}</button>`}
   const C=cbCand();
   h+=`<div class="cb-card"><div class="cb-ch"><h2>Что читаем дальше</h2><button class="cb-link" data-cb="vote">Голосовать</button></div>
     <div class="cb-row">${C.slice(0,4).map(x=>cv(cbBook(x),62)).join("")}<button class="cb-plus" data-cb="suggest" aria-label="Предложить книгу">${CB_IC.plus}</button></div></div>
-    <button class="cb-b" data-cb="invite">${CB_IC.plus}Пригласить в клуб</button>
-`;
+    <button class="cb-b" data-cb="invite">Позвать в клуб</button>
+    ${TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user&&!LS.get("zal.ntf",0)?`<button class="cb-b" data-cb="ntf">Напоминания в Telegram</button>`:""}`;
   return h}
 function cbAskHTML(){const b=CB.d.book;if(!b)return `<div class="cb-card"><p class="cb-note">Вопросы появятся, когда клуб выберет книгу.</p></div>`;
   const n=cbParts(),p=cbMyP();
@@ -7038,10 +7032,10 @@ function cbShelfHTML(){const S=CB.d.shelf||[],b=CB.d.book;if(!S.length&&!b)retur
 function cbMembersHTML(){const u=cbUid(),o=CB.club.o,L=CB.mem.slice().sort((a,b)=>(b._id===o)-(a._id===o)||(b._id===u)-(a._id===u)||String(a.n).localeCompare(String(b.n),"ru"));
   return `<div class="cb-top"><button class="cb-back" data-cb="main" aria-label="Назад в клуб">${CB_IC.back}</button><h1>Участники</h1></div>
    <div class="cb-list">${L.map(m=>{const me=m._id===u,fr=FRIENDS.some(f=>f.uid===m._id),out=FROUT.some(x=>x.uid===m._id);
-     return `<div class="cb-m">${avatar(m.n,m._id)}<b>${me?"Ты":esc(m.n||"Читатель")}</b>${m._id===o?`<span class="cb-tag">${me?"ведёшь клуб":"ведущий"}</span>`:""}${me?"":fr?`<i>У вас в друзьях</i>`:out?`<i class="dim">Заявка отправлена</i>`:`<button data-cb="friend" data-u="${esc(m._id)}" data-n="${esc(m.n||"")}">Добавить в друзья</button>`}</div>`}).join("")}</div>
-   <button class="cb-b w" data-cb="invite">${CB_IC.plus}Пригласить в клуб</button>
+     return `<div class="cb-m">${avatar(m.n,m._id)}<b>${me?"Ты":esc(m.n||"Читатель")}</b>${m._id===o&&cbHost()?`<span class="cb-tag">${me?"ведёшь клуб":"ведущий"}</span>`:""}${me?"":fr?`<i>У вас в друзьях</i>`:out?`<i class="dim">Заявка отправлена</i>`:`<button data-cb="friend" data-u="${esc(m._id)}" data-n="${esc(m.n||"")}">Добавить в друзья</button>`}</div>`}).join("")}</div>
+   <button class="cb-b w" data-cb="invite">Позвать в клуб</button>
    ${CB.d.chat?`<button class="cb-b" data-cb="chat">Чат клуба</button>`:""}
-   ${cbOwner()?`<button class="cb-b" data-cb="chatset">${CB.d.chat?"Изменить ссылку на чат":"Добавить ссылку на чат клуба"}</button><button class="cb-b" data-cb="pub">${CB.club.pub?"Убрать клуб из рейтинга":"Участвовать в рейтинге клубов"}</button>`:""}
+   ${cbOwner()?`<button class="cb-b" data-cb="chatset">${CB.d.chat?"Изменить ссылку на чат":"Добавить ссылку на чат клуба"}</button><button class="cb-b" data-cb="demo">${CB.d.demo?"Вернуть клубу ведущего":"В клубе нет ведущего - решаем вместе"}</button><button class="cb-b" data-cb="pub">${CB.club.pub?"Убрать клуб из рейтинга":"Участвовать в рейтинге клубов"}</button>`:""}
    <button class="cb-link" data-cb="leave">Выйти из клуба</button>`}
 function cbRankHTML(){const R=CB.rank,mk=cbMk(),mon=CB_MN[new Date().getMonth()];let body="";
   if(!R)body=`<div class="cb-card"><p class="cb-note">Загружаю рейтинг...</p></div>`;
@@ -7083,14 +7077,20 @@ function cbSetupSheet(x){const o=CB.setup&&CB.setup.x.k===x.k?CB.setup:{whole:1,
 function cbPartsSheet(){const n=cbParts(),p=cbMyP();cbSheet(`<h3>Что уже прочитано</h3><div class="cb-list">${Array.from({length:n},(_,i)=>`<button class="cb-pl${i<p?" done":""}${i===p?" on":""}" data-cb="setp" data-p="${i+1}">${i<p?CB_IC.done:CB_IC.ring}<b>Часть ${i+1}</b><span>до ${cbDay(cbDue(i+1))}</span></button>`).join("")}</div>
    ${p?`<button class="cb-link" data-cb="setp" data-p="0">Ещё не читаю</button>`:""}`,"parts")}
 const cbHM=ts=>{const d=new Date(ts);return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
-const cbOpts=()=>(CB.d.mopts||[]).filter(t=>t>Date.now()).sort((a,b)=>a-b);
-function cbMeetSheet(){const m=CB.d.meet,f=m&&m.ts>Date.now(),d=new Date(f?m.ts:Date.now()+7*864e5),z=x=>String(x).padStart(2,"0"),t=new Date(),iso=q=>`${q.getFullYear()}-${z(q.getMonth()+1)}-${z(q.getDate())}`,O=cbOpts();
-  cbSheet(`<h3>Встреча клуба</h3><div class="cb-dt"><input class="cb-inp" id="cbMeetD" type="date" value="${iso(d)}" min="${iso(t)}" aria-label="День встречи"><input class="cb-inp" id="cbMeetT" type="time" value="${f?z(d.getHours())+":"+z(d.getMinutes()):"20:00"}" aria-label="Время встречи"></div>
-   <button class="cb-b w" data-cb="meetsave">Назначить на это время</button>${O.length<4?`<button class="cb-b" data-cb="mopt">Предложить клубу на выбор</button>`:""}
-   ${O.length?`<p class="cb-sub">Клуб выбирает из этих вариантов</p><div class="cb-list">${O.map(ts=>`<div class="cb-m"><b>${cbDay(ts)}, ${cbHM(ts)}</b><button data-cb="moptdel" data-ts="${ts}" aria-label="Убрать вариант">Убрать</button></div>`).join("")}</div>`:""}
-   ${m?`<button class="cb-link" data-cb="meetdel">Отменить встречу</button>`:""}`,"meet")}
+const cbHost=()=>!CB.d.demo;   // у клуба есть ведущий (иначе всё решаем вместе)
+// варианты времени встречи: предлагает любой участник; сверху - время, удобное большему числу людей (с ведущим - сначала то, что удобно ему)
+function cbOpts(){const now=Date.now(),S=new Set((CB.d.mopts||[]).filter(t=>t>now)),o=CB.club.o,u=cbUid();CB.mem.forEach(m=>(m.x.mo||[]).forEach(t=>{if(t>now)S.add(t)}));
+  return [...S].map(ts=>{const V=CB.mem.filter(m=>(m.x.mv||[]).includes(ts));return {ts,v:V.length,host:V.some(m=>m._id===o),mine:(cbMyD().mo||[]).includes(ts),on:V.some(m=>m._id===u)}})
+    .sort((a,b)=>(cbHost()?(b.host-a.host):0)||b.v-a.v||a.ts-b.ts)}
+// встреча: назначенная ведущим или время, которое подошло всем, - его приложение выбирает само
+function cbMeetNow(){const m=CB.d.meet;if(m&&m.ts>Date.now()-864e5)return m;const n=CB.mem.length;if(n<2)return null;const A=cbOpts().filter(o=>o.v>=n).sort((a,b)=>a.ts-b.ts)[0];return A?{ts:A.ts,auto:1}:null}
+function cbMeetSheet(){const m=CB.d.meet,f=m&&m.ts>Date.now(),d=new Date(f?m.ts:Date.now()+7*864e5),z=x=>String(x).padStart(2,"0"),t=new Date(),iso=q=>`${q.getFullYear()}-${z(q.getMonth()+1)}-${z(q.getDate())}`,hostMe=cbOwner()&&cbHost(),O=cbOpts().filter(o=>o.mine||(hostMe&&(CB.d.mopts||[]).includes(o.ts)));
+  cbSheet(`<h3>${hostMe?"Встреча клуба":"Предложить время"}</h3><div class="cb-dt"><input class="cb-inp" id="cbMeetD" type="date" value="${iso(d)}" min="${iso(t)}" aria-label="День встречи"><input class="cb-inp" id="cbMeetT" type="time" value="${f?z(d.getHours())+":"+z(d.getMinutes()):"20:00"}" aria-label="Время встречи"></div>
+   ${hostMe?`<button class="cb-b w" data-cb="meetsave">Назначить на это время</button><button class="cb-b" data-cb="mopt">Предложить клубу на выбор</button>`:`<button class="cb-b w" data-cb="mopt">Предложить</button>`}
+   ${O.length?`<p class="cb-sub">Твои варианты</p><div class="cb-list">${O.map(o=>`<div class="cb-m"><b>${cbDay(o.ts)}, ${cbHM(o.ts)}</b><button data-cb="moptdel" data-ts="${o.ts}" aria-label="Убрать вариант">Убрать</button></div>`).join("")}</div>`:""}
+   ${hostMe&&m?`<button class="cb-link" data-cb="meetdel">Отменить встречу</button>`:""}`,"meet")}
 function cbInviteSheet(){const L=FRIENDS.filter(f=>!CB.mem.some(m=>m._id===f.uid));
-  cbSheet(`<h3>Пригласить в клуб</h3><button class="cb-b w" data-cb="invlink">${CB_IC.plus}Пригласить по ссылке</button>${L.length?`<p class="cb-sub">Друзья в Норе</p><div class="cb-list">${L.map(f=>`<div class="cb-m">${avatar(f.n,f.uid)}<b>${esc(f.n||"Читатель")}</b><button data-cb="invfr" data-u="${esc(f.uid)}">+ Пригласить</button></div>`).join("")}</div>`:""}`,"invite",L.length>3)}
+  cbSheet(`<h3>Позвать в клуб</h3><button class="cb-b w" data-cb="invlink">Отправить ссылку</button>${L.length?`<p class="cb-sub">Друзья в Норе</p><div class="cb-list">${L.map(f=>`<div class="cb-m">${avatar(f.n,f.uid)}<b>${esc(f.n||"Читатель")}</b><button data-cb="invfr" data-u="${esc(f.uid)}">Позвать</button></div>`).join("")}</div>`:""}`,"invite",L.length>3)}
 const cbInvText=()=>`Приходи в мой книжный клуб «${CB.club.n}» в Норе - будем читать одну книгу вместе`;
 const cbLink=()=>`https://t.me/${SHARE_BOT}?startapp=cl_${CB.id}`,cbWeb=()=>`https://nora-books.ru/app.html#cl=${CB.id}`;
 // ---- действия ----
@@ -7119,14 +7119,13 @@ document.addEventListener("click",async e=>{const tb=e.target.closest("[data-cbt
   if(a==="members"){CB.view="members";cbDraw();$("#clScroll").scrollTop=0;return}
   if(a==="rank"){CB.view="rank";cbDraw();$("#clScroll").scrollTop=0;cbRankLoad();return}
   if(a==="rk"){CB.rk=el.dataset.v;cbDraw();return}
-  if(a==="where"&&d.book){tgHaptic();try{goal("club_where")}catch(e){}whereOpen(bItem(catOf(d.book)||cbBook(d.book),"rec"));return}
   if(a==="book"&&d.book){bkcOpen(bItem(catOf(d.book)||cbBook(d.book),"rec"),"rec");return}
   if(a==="sbook"){const x=(d.shelf||[]).find(b=>b.k===el.dataset.k);if(x)bkcOpen(bItem(catOf(x)||cbBook(x),"rec"),"rec");return}
   if(a==="part"&&d.book){const p=cbMyP()+1;me.p[d.book.k]=p;cbDraw();const ok=await cbPutMe(me);if(!ok)toast("Не сохранилось - проверь интернет");else if(p>=cbParts())toast("Книга прочитана - поставь оценку");return}
   if(a==="parts"&&d.book){cbPartsSheet();return}
   if(a==="setp"&&d.book){me.p[d.book.k]=+el.dataset.p;if($("#vsheet").classList.contains("on"))vClose();cbDraw();if(!(await cbPutMe(me)))toast("Не сохранилось - проверь интернет");return}
   if(a==="rate"&&d.book){const r=+el.dataset.r;me.r[d.book.k]=me.r[d.book.k]===r?0:r;cbDraw();cbPutMe(me);return}
-  if(a==="rsvp"&&d.meet){const v=+el.dataset.v;me.rs={[d.meet.ts]:me.rs[d.meet.ts]===v?-1:v};cbDraw();cbPutMe(me);return}
+  if(a==="rsvp"&&cbMeetNow()){const v=+el.dataset.v,mt=cbMeetNow().ts;me.rs={[mt]:me.rs[mt]===v?-1:v};cbDraw();cbPutMe(me);return}
   if(a==="vote"){cbVoteDraw();return}
   if(a==="v"){const k=el.dataset.k;me.v=(me.v||[]).includes(k)?me.v.filter(x=>x!==k):[...(me.v||[]),k];cbPutMe(me);cbVoteDraw();if(SCREEN==="club")cbDraw();return}
   if(a==="suggest"){cbCand();cbSuggestSheet();return}
@@ -7144,12 +7143,15 @@ document.addEventListener("click",async e=>{const tb=e.target.closest("[data-cbt
   if(a==="start"&&CB.setup&&cbOwner()){const s=CB.setup,x=s.x;el.disabled=true;if(d.book&&!(d.shelf||[]).some(b=>b.k===d.book.k))cbShelve();
     d.book={t:x.t,a:x.a,k:x.k};d.parts=s.whole?1:s.parts;d.per=s.whole?s.wper:s.per;d.tz=-new Date().getTimezoneOffset();d.start=Date.now();d.meet=null;if(await cbPutClub()){cbReq("clubs/"+CB.id+"/s/"+x.k,{method:"DELETE"}).catch(()=>{});CB.sug=CB.sug.filter(q=>q._id!==x.k);CB.setup=null;CB.tab="read";CB.qp=0;vClose();cbDraw();toast("Клуб начал новую книгу")}else el.disabled=false;return}
   if(a==="finish"&&cbOwner()&&d.book){if(el.dataset.ok!=="1"){el.dataset.ok="1";el.textContent="Точно дочитали? Нажми ещё раз";return}cbShelve();d.book=null;d.meet=null;if(await cbPutClub()){CB.tab="shelf";cbDraw();toast("Книга встала на полку клуба")}return}
-  if(a==="meet"&&cbOwner()){cbMeetSheet();return}
-  if(a==="mopt"&&cbOwner()){const dv=$("#cbMeetD").value,tv=$("#cbMeetT").value||"20:00",ts=dv?new Date(dv+"T"+tv).getTime():0;if(!ts||isNaN(ts)||ts<Date.now()){toast("Выбери день и время");return}
-    const O=cbOpts();if(O.includes(ts)){toast("Такой вариант уже есть");return}d.mopts=[...O,ts].slice(0,4);d.meet=null;d.tz=-new Date().getTimezoneOffset();if(await cbPutClub()){cbMeetSheet();cbDraw()}return}
-  if(a==="moptdel"&&cbOwner()){d.mopts=cbOpts().filter(t=>t!==+el.dataset.ts);if(await cbPutClub()){cbMeetSheet();cbDraw()}return}
+  if(a==="meet"){cbMeetSheet();return}
+  if(a==="mopt"){const dv=$("#cbMeetD").value,tv=$("#cbMeetT").value||"20:00",ts=dv?new Date(dv+"T"+tv).getTime():0,now=Date.now();if(!ts||isNaN(ts)||ts<now){toast("Выбери день и время");return}
+    if(cbOpts().some(o=>o.ts===ts)){if(!(me.mv||[]).includes(ts)){me.mv=[...(me.mv||[]),ts];cbPutMe(me)}vClose();cbDraw();toast("Такой вариант уже есть - он отмечен как удобный тебе");return}
+    me.mo=[...(me.mo||[]).filter(t=>t>now),ts].slice(-3);me.mv=[...(me.mv||[]).filter(t=>t>now),ts];vClose();cbDraw();
+    if(await cbPutMe(me)){if(cbOwner()&&d.tz==null){d.tz=-new Date().getTimezoneOffset();cbPutClub()}toast("Вариант добавлен")}else toast("Не сохранилось - проверь интернет");return}
+  if(a==="moptdel"){const ts=+el.dataset.ts;me.mo=(me.mo||[]).filter(t=>t!==ts);me.mv=(me.mv||[]).filter(t=>t!==ts);await cbPutMe(me);if(cbOwner()&&(d.mopts||[]).includes(ts)){d.mopts=d.mopts.filter(t=>t!==ts);await cbPutClub()}cbMeetSheet();cbDraw();return}
   if(a==="mv"){const ts=+el.dataset.ts;me.mv=(me.mv||[]).includes(ts)?me.mv.filter(t=>t!==ts):[...(me.mv||[]).filter(t=>t>Date.now()),ts];cbDraw();cbPutMe(me);return}
-  if(a==="mset"&&cbOwner()){d.meet={ts:+el.dataset.ts};d.mopts=[];d.tz=-new Date().getTimezoneOffset();if(await cbPutClub()){cbDraw();toast("Встреча назначена")}return}
+  if(a==="mset"&&cbOwner()&&cbHost()){d.meet={ts:+el.dataset.ts};d.mopts=[];d.tz=-new Date().getTimezoneOffset();if(await cbPutClub()){cbDraw();toast("Встреча назначена")}return}
+  if(a==="demo"&&cbOwner()){d.demo=d.demo?0:1;if(d.demo)d.meet=null;if(await cbPutClub()){cbDraw();toast(d.demo?"Теперь клуб решает вместе":"У клуба снова есть ведущий")}return}
   if(a==="meetsave"&&cbOwner()){const dv=$("#cbMeetD").value,tv=$("#cbMeetT").value||"20:00",ts=dv?new Date(dv+"T"+tv).getTime():0;if(!ts||isNaN(ts)){toast("Выбери день и время");return}d.meet={ts};d.mopts=[];d.tz=-new Date().getTimezoneOffset();if(await cbPutClub()){vClose();cbDraw()}return}
   if(a==="meetdel"&&cbOwner()){d.meet=null;if(await cbPutClub()){vClose();cbDraw()}return}
   if(a==="qp"){CB.qp=+el.dataset.p;cbDraw();return}
@@ -7160,10 +7162,10 @@ document.addEventListener("click",async e=>{const tb=e.target.closest("[data-cbt
   if(a==="invite"){cbInviteSheet();if(FRIENDS.some(f=>!FRP[f.uid]))try{frLoad()}catch(x2){}return}
   if(a==="ntf"){cbSheet(`<h3>Напоминания клуба</h3><p class="cb-sub">Бот Норы напомнит о сроке книги и о встрече клуба, а раз в неделю пришлёт новости о твоих книгах.</p><p class="cb-note">Для этого мы сохраним для бота твой клуб, названия из избранного, любимых авторов и список друзей в Норе. Выключить можно в любой момент внизу «Статистики».</p><button class="cb-b w" data-cb="ntfon">Включить</button>`,"ntf");return}
   if(a==="ntfon"){vClose();try{notifySet(true)}catch(x2){}cbDraw();return}
-  if(a==="invlink"){shareSheet("Пригласить в клуб",cbInvText(),cbLink(),cbWeb());return}
+  if(a==="invlink"){shareSheet("Позвать в клуб",cbInvText(),cbLink(),cbWeb());return}
   if(a==="invfr"){const u=el.dataset.u;let p=FRP[u];if(!p){el.disabled=true;try{p=await NS.getProfile(u);if(p)FRP[u]=p}catch(x2){}el.disabled=false}
     if(p&&p.tg){const url="https://t.me/"+encodeURIComponent(p.tg)+"?text="+encodeURIComponent(cbInvText()+" "+cbLink());try{if(TG&&TG.openTelegramLink)TG.openTelegramLink(url);else window.open(url,"_blank")}catch(x2){location.href=url}}
-    else shareSheet("Пригласить в клуб",cbInvText(),cbLink(),cbWeb());return}
+    else shareSheet("Позвать в клуб",cbInvText(),cbLink(),cbWeb());return}
   if(a==="chat"&&d.chat){try{if(TG&&/^https:\/\/t\.me\//.test(d.chat))TG.openTelegramLink(d.chat);else window.open(d.chat,"_blank")}catch(x2){location.href=d.chat}return}
   if(a==="chatset"&&cbOwner()){cbSheet(`<h3>Чат клуба</h3><input class="cb-inp" id="cbChat" inputmode="url" placeholder="Ссылка на чат" aria-label="Ссылка на чат клуба" value="${esc(d.chat||"")}" autocomplete="off"><button class="cb-b w" data-cb="chatsave">Сохранить</button>`,"chat");return}
   if(a==="chatsave"&&cbOwner()){let v=$("#cbChat").value.trim();if(v&&!/^https?:\/\//i.test(v))v="https://"+v.replace(/^@/,"t.me/");if(v&&!/^https:\/\/[\w.-]+\.[a-z]{2,}\//i.test(v+"/")){toast("Похоже, в ссылке опечатка");return}d.chat=v;if(await cbPutClub()){vClose();cbDraw()}return}

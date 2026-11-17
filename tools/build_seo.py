@@ -275,7 +275,7 @@ ic = lambda k: f'<svg viewBox="0 0 24 24">{ICON[k]}</svg>'
 POPUP = """<div class="pop" id="pop" hidden><div class="pop-in gl"><button class="pop-x" aria-label="Закрыть">×</button>
 <h3>Шуршуня подберёт книги под твой вкус</h3>
 <p>Отметь три любимые книги, и советы будут лично для тебя, а не из общего топа.</p>
-<div class="ctas"><a class="btn" href="https://t.me/Wonderbookworld_bot?startapp=site">Подобрать в Telegram</a><a class="btn ghost" href="/app.html?app=1">Или в браузере</a></div></div></div>
+<div class="ctas"><a class="btn" href="/app.html?app=1">Открыть Нору</a><a class="btn ghost" href="https://t.me/Wonderbookworld_bot?startapp=site">Или в Telegram</a></div></div></div>
 <script>(function(){try{var L=localStorage,now=Date.now();if(L.getItem("zal.onb")||/tgWebApp/.test(location.hash))return;var off=+L.getItem("nora.pop")||0;if(now-off<3*864e5)return;
 var v=(+sessionStorage.getItem("nora.pv")||0)+1;sessionStorage.setItem("nora.pv",v);var p=document.getElementById("pop"),shown=0;
 function show(){if(shown)return;shown=1;p.hidden=false;requestAnimationFrame(function(){p.classList.add("on")});L.setItem("nora.pop",now)}
@@ -398,8 +398,8 @@ def shelf(title, href, ds, L, all_txt="Все"):
             + (f'<p class="ds">{esc(ds)}</p>' if ds else "") + rail(L, bare=True) + "</section>")
 
 
-CTA = (f'<div class="ctas"><a class="btn" href="{BOT}">{ic("tg")}Подобрать в Telegram</a>'
-       f'<a class="btn ghost" href="{APP}">Или в браузере</a></div>')
+CTA = (f'<div class="ctas"><a class="btn" href="{APP}">Открыть Нору</a>'
+       f'<a class="btn ghost" href="{BOT}">{ic("tg")}Или в Telegram</a></div>')
 FINAL = (f'<section class="final gl"><h2>Шуршуня знает, что тебе понравится</h2>'
          f'<p>Отметь три любимые книги, и он подберёт книги под твой вкус.</p>{CTA}</section>')
 coll_data = []
@@ -791,8 +791,8 @@ print("в поиске сайта:", len(SIDX))
 # ---------- книжный клуб: страница для поисковиков ----------
 CLUB_TG = BOT + "?startapp=club"
 CLUB_WEB = "/app.html?app=1&club=1"
-CLUB_CTA = (f'<div class="ctas"><a class="btn" href="{CLUB_TG}">{ic("tg")}Создать клуб в Telegram</a>'
-            f'<a class="btn ghost" href="{CLUB_WEB}">Или в браузере</a></div>')
+CLUB_CTA = (f'<div class="ctas"><a class="btn" href="{CLUB_WEB}">Создать клуб</a>'
+            f'<a class="btn ghost" href="{CLUB_TG}">{ic("tg")}Или в Telegram</a></div>')
 _cl_t = ["Маленькая жизнь", "Тайная история", "Щегол", "Нормальные люди", "Сто лет одиночества", "Зулейха открывает глаза", "Убить пересмешника",
          "Цветы для Элджернона", "Над пропастью во ржи", "Мастер и Маргарита", "Бегущий за ветром", "Книжный вор", "Дом, в котором…", "Пикник на обочине", "Шантарам", "Вино из одуванчиков"]
 _cl_by = {}
@@ -817,7 +817,7 @@ CLUB_Q = ["Что зацепило тебя на первых страницах
           "Понравился ли тебе финал? Каким он мог бы быть ещё?", "Что из этой книги останется с тобой надолго?",
           "Кому ты посоветуешь эту книгу, а кому - нет?", "Хочется ли читать этого автора дальше?"]
 CLUB_FAQ = [("Это бесплатно?", "Да. Создать клуб, позвать друзей, голосовать за книги и вести полку клуба можно бесплатно."),
-            ("Нужен ли Telegram?", "Нет. Нора работает и в Telegram, и в браузере на телефоне или компьютере - участники могут быть в разных."),
+            ("Нужен ли Telegram?", "Нет. Нора открывается в обычном браузере на телефоне или компьютере, её можно поставить иконкой на экран «Домой». В Telegram она тоже есть - участники клуба могут быть и там, и там."),
             ("Где клуб общается?", "Там, где вам удобно: в своём чате в Telegram, WhatsApp или где угодно. Ссылку на чат можно добавить в клуб, а вопросы к книге Нора отправит туда одной кнопкой."),
             ("Сколько человек может быть в клубе?", "Ограничений нет. Для живого обсуждения лучше всего 4-10 человек."),
             ("Можно ли читать по частям?", "Да. Ведущий выбирает: читаете книгу целиком к общему сроку или делите её на 2-8 частей со сроком на каждую."),
