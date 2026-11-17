@@ -1831,7 +1831,8 @@ html,body{overscroll-behavior:none}#app .scroll{overscroll-behavior-y:contain}#a
 #app .wh-ch b{display:block;font-size:16px}#app .wh-ch small{display:block;margin-top:4px;font-size:12.5px;color:var(--ink3)}
 #app .wh-l{display:flex;flex-direction:column;gap:2px;margin-top:14px}
 #app .wh-l button{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
-#app .wh-l b{font-size:15.5px}#app .wh-l small{flex:1;font-size:13px;color:var(--ink3)}#app .wh-l i{font-style:normal;color:var(--ink3);font-size:20px}
+#app .wh-l b{font-size:15.5px}
+#app .wh-l .wh-pr{display:block;margin-top:3px;font-size:12.5px;font-weight:500;color:var(--ink2);line-height:1.35}#app .wh-l .wh-pr span{display:block;font-size:11px;color:var(--ink3)}#app .wh-l small{flex:1;font-size:13px;color:var(--ink3)}#app .wh-l i{font-style:normal;color:var(--ink3);font-size:20px}
 #app .wh-l .ava{width:36px;height:36px;font-size:16px}
 #app #newAu{margin-bottom:6px}#app #newAu .na-row{padding-left:22px;padding-right:22px}#app #trend{margin:10px 0 0}#app .hshelf{margin:0 0 26px}#app #trend .shelf-h{margin-bottom:12px}#app #trend .na-row{padding-left:22px;padding-right:22px;scroll-padding:0 22px;gap:14px}#app #trend .na-row button{width:112px}#app #newAu .na-row{gap:14px}#app #newAu .na-row button{width:112px}#app #newAu .na-row small{font-size:14px;font-weight:500;color:var(--ink);line-height:1.25;margin-top:8px}#app #newAu .na-row em{font-size:13px;margin-top:3px}#app #newAu .shelf-h{margin-bottom:12px}#app #trend .na-row small{font-size:14px;font-weight:500;color:var(--ink);line-height:1.25;margin-top:8px}#app #trend .na-row em{font-size:13px;margin-top:3px}#app .bkc-tr{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:10px auto 0;max-width:420px}#app .bkc-tr button{height:30px;padding:0 12px;border-radius:15px;font-size:13px;font-weight:500;color:var(--ink);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);white-space:nowrap}#app .bkc-tr button.au{color:var(--ink2);background:none}#app .onb-gen{display:flex!important;flex-wrap:wrap;gap:10px;align-content:flex-start}#app .onb-gen .fgc{height:46px;padding:0 18px;border-radius:23px;font-size:16px;font-weight:500;color:var(--ink);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}#app .onb-gen .fgc.on{background:#F5F5F7;color:#0B0C11;border-color:transparent}#app .na-row{display:flex;align-items:flex-start;gap:12px;overflow-x:auto;scrollbar-width:none;padding:2px 0 6px}
 #app .na-row button{flex:none;width:96px;text-align:left;display:flex;flex-direction:column;justify-content:flex-start}#app .na-row button>.cv{width:100%}#app .na-row small{display:block;margin-top:6px;font-size:12.5px;line-height:1.25;max-height:2.5em;overflow:hidden}#app .na-row em{display:block;font-style:normal;font-size:11.5px;color:var(--ink3);margin-top:2px}
@@ -2398,6 +2399,8 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app #clBox .cb-b,#app .cb-sh .cb-b{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;padding:8px 18px;border-radius:26px;background:rgba(255,255,255,.08);color:#fff;font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1.2;text-align:center}
 #app #clBox .cb-b.w,#app .cb-sh .cb-b.w{background:#F4F2F7;color:#0B0A14;font-weight:700}
 #app #clBox .cb-b:disabled,#app .cb-sh .cb-b:disabled{opacity:.6}
+#app #clBox .cb-where{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:44px;margin:2px 0 4px;border-radius:22px;background:rgba(255,255,255,.08);font-size:14px;font-weight:600;color:var(--ink)}
+#app #clBox .cb-where svg{width:18px;height:18px;opacity:.8}
 #app #clBox .cb-b svg,#app .cb-sh .cb-b svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;flex:none}
 #app #clBox .cb-link,#app .cb-sh .cb-link{min-height:44px;padding:0 8px;font-size:14px;font-weight:600;color:#F3D19A}
 #app .cb-head{display:flex;align-items:center;gap:14px}
@@ -5748,7 +5751,7 @@ $("#vshBody").addEventListener("click",e=>{const t=e.target;if(t.closest("[data-
 $("#sumMore").addEventListener("click",e=>{const t=e.target;
   if(syncClick(t))return;
   if(t.closest("[data-goal]")){goalOpen();return}
-  if(t.closest("[data-ntf]")){if(LS.get("zal.ntf",0))notifySet(false);else notifyAsk();return}
+  if(t.closest("[data-ntf]")){notifySet(!LS.get("zal.ntf",0));return}
   {const c=t.closest("[data-chgo]");if(c){const [k,v]=c.dataset.chgo.split(":");resetAll();if(k==="gen"&&v!=="new")NF.gen=[v];else if(k==="len")NF.len=v;else if(k==="cty")NF.cty=["Япония","Южная Корея","Китай","Индия"];saveNF();if(v==="new"){FG.gen=["new"];fgSave();show("feed");return}SX.picks=true;openSearch(true);return}}
   if(t.closest("[data-import]")){importOpen();return}
   if(t.closest("[data-qadd]")){openQuoteForm();return}if(t.closest("[data-qall]")){openSheet(`<h3 class="sheet-h">Цитаты</h3><div class="qlist" id="qlist">${quotesListHTML()}</div>`);return}
@@ -6402,8 +6405,10 @@ function bkParam(){try{const v=new URLSearchParams(location.search).get("bk");if
   if(b)bkcOpen(bItem(b,"rec"),"rec");history.replaceState(null,"",location.pathname+"?app=1")}catch(e){}}
 // разрешение боту писать раз в неделю: спрашиваем один раз, когда на полке уже есть книги
 function askWrite(){try{if(!TG||!TG.requestWriteAccess||LS.get("zal.wa",0)||!BOOKS.length)return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#bkc.on"))return setTimeout(askWrite,20000);
-  LS.set("zal.wa",1);TG.requestWriteAccess(ok=>{if(ok&&!LS.get("zal.ntf",0))setTimeout(notifyAsk,600)})}catch(e){}}
-function afterSplash(){setTimeout(()=>{if(SCREEN==="col")tour("col")},2600);setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&Date.now()-(+LS.get("zal.authskip",0)||0)>3*864e5)authShow()}
+  LS.set("zal.wa",1);TG.requestWriteAccess(ok=>{if(ok&&localStorage.getItem("zal.ntf")==null){LS.set("zal.ntf",1);notifySync(true)}})}catch(e){}}
+// напоминания бота включены по умолчанию у всех в Telegram; выключить - внизу «Статистики»
+function ntfDefault(){try{const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(u&&localStorage.getItem("zal.ntf")==null){LS.set("zal.ntf",1);notifySync(true)}}catch(e){}}
+function afterSplash(){setTimeout(ntfDefault,6000);setTimeout(()=>{if(SCREEN==="col")tour("col")},2600);setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&Date.now()-(+LS.get("zal.authskip",0)||0)>3*864e5)authShow()}
 
 
 // ---------- смена обложки вручную: фото / рисунок / другое издание ----------
@@ -6713,17 +6718,19 @@ const pLink=(k,u)=>{const p=PARTNER[k];if(!p)return u;if(p.includes("{url}"))ret
 function litresId(x){const c=catOf(x)||x.src||x,id=String((c&&c.id)||x.id||"");if(/^l\d+$/.test(id))return id.slice(1);
   try{const u=lcovFor(norm(x.t)+"|"+norm(x.a||""));const m=u&&u.match(/cover_\d+\/(\d+)\.jpg/);if(m)return m[1]}catch(e){}
   const im=String(imgOf(x)||""),m2=im.match(/litres\.ru\/pub\/c\/cover(?:_\d+)?\/(\d+)\.jpg/);return m2?m2[1]:""}
+// промокод Яндекс Дистрибуции: подписка Плюс для Яндекс Книг; erid - метка рекламы из ОРД Яндекса (по закону о рекламе)
+const YA_PROMO="NORABOOKS",YA_ERID="MvGzQC9JbZnS6fV7C3kuqYFB";
 function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).split(" ").slice(-1)[0]:"")),qt=encodeURIComponent(x.t);
   const ic=d=>`<img class="wh-ic${d==="books.yandex.ru"?" rd":""}" src="img/where/${d}.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'wh-ic'}))">`,
     PIN='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg></span>',
     LIB='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M4 20h16M5 9h14M12 4l8 5H4l8-5zM7 9v8M12 9v8M17 9v8"/></svg></span>';
-  const ON=[[ic("litres.ru"),"ЛитРес",pLink("litres",(lid=>lid?`https://www.litres.ru/pages/biblio_book/?art=${lid}`:`https://www.litres.ru/search/?q=${q}`)(litresId(x))),"litres"],[ic("books.yandex.ru"),"Яндекс Книги",pLink("yandex",`https://books.yandex.ru/search?text=${q}`),"yandex"],
+  const ON=[[ic("litres.ru"),"ЛитРес",pLink("litres",(lid=>lid?`https://www.litres.ru/pages/biblio_book/?art=${lid}`:`https://www.litres.ru/search/?q=${q}`)(litresId(x))),"litres"],[ic("books.yandex.ru"),"Яндекс Книги",pLink("yandex",`https://books.yandex.ru/search?text=${q}`),"yandex",`до 45 дней бесплатно по промокоду ${YA_PROMO}<span>Реклама · erid: ${YA_ERID}</span>`],
     [ic("ozon.ru"),"Ozon",pLink("ozon",`https://www.ozon.ru/search/?text=${q}&category=16500`),"ozon"],
     [ic("books.google.com"),"Google Книги",`https://www.google.com/search?tbm=bks&q=${q}`]];
   const OFF=[[PIN,"Книжные рядом",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],[ic("chitai-gorod.ru"),"Читай-город",pLink("chitai",`https://www.chitai-gorod.ru/search?phrase=${q}`),"chitai"],
     [ic("bookvoed.ru"),"Буквоед",pLink("bookvoed",`https://www.bookvoed.ru/search?q=${q}`),"bookvoed"],[LIB,"Библиотеки рядом",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
   const choose=`<div class="wh-ch"><button data-wh="on"><b>Онлайн</b></button><button data-wh="off"><b>Офлайн</b></button></div>`;
-  const list=mode?`<div class="wh-l wh-sh">${(mode==="on"?ON:OFF).map(([i,n,u,k])=>`<button data-whu="${esc(u)}" data-whk="${k||n}">${i}<b>${n}</b><i>›</i></button>`).join("")}</div>`:"";
+  const list=mode?`<div class="wh-l wh-sh">${(mode==="on"?ON:OFF).map(([i,n,u,k,sub])=>`<button data-whu="${esc(u)}" data-whk="${k||n}">${i}<b>${n}${sub?`<small class="wh-pr">${sub}</small>`:""}</b><i>›</i></button>`).join("")}</div>`:"";
   vOpen(mode?`<div class="wh-hd"><b>${mode==="on"?"Онлайн":"Офлайн"}</b><button class="vx" data-wh="" aria-label="Назад к выбору"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`+list:choose);$("#vsheet").classList.add("ontop");$("#vshBody")._wx=x}
 bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{const g=t.closest("[data-bkc-tg]");if(g){const tg=g.dataset.bkcTg,L=tagBooks(tg,BKC.x);tgHaptic();listSheet(trLabel(tg),L.length?(tg.startsWith("троп:")?"Книги с тем же тропом":"Похожие книги"):"",L);return}}if(t.closest("[data-bkc-au]")){const L=auBooks(BKC.x);tgHaptic();listSheet(BKC.x.a||"Автор","Ещё у автора",L);return}if(t.closest("[data-bkc-rv]")){reviewsOpen(BKC.x);return}if(t.closest("[data-bkc-fr]")){const fr=frReaders(BKC.x);
     vOpen(`<h3 class="vh">Читали «${esc(BKC.x.t)}»</h3><div class="wh-l">${fr.map(({f,b})=>`<button data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid)}<b>${esc(f.n||"Друг")}</b><small>${b.r!=null?"★ "+r5(b.r):"без оценки"}</small>${b.rv?`<em class="frv">«${esc(b.rv)}»</em>`:""}<i>›</i></button>`).join("")}</div>`);$("#vsheet").classList.add("ontop");return}
@@ -6747,7 +6754,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="read"){const pre=BKC.sec?true:null;bkcClose();RMPRE=pre;rmAsk(x,null,n=>{BK.markRead(x,n*2);refresh()},"Без оценки",()=>{BK.markRead(x,null);refresh()})}});
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody"))return;
   const w=t.closest("[data-wh]");if(w){e.stopPropagation&&e.stopPropagation();whereOpen($("#vshBody")._wx,w.dataset.wh);tgHaptic();return}
-  const u=t.closest("[data-whu]");if(u){try{window.ym&&ym(114237349,"reachGoal","where_go",{store:u.dataset.whk})}catch(e){}openLink(u.dataset.whu);return}});
+  const u=t.closest("[data-whu]");if(u){try{window.ym&&ym(114237349,"reachGoal","where_go",{store:u.dataset.whk})}catch(e){}if(u.dataset.whk==="yandex"){try{navigator.clipboard.writeText(YA_PROMO)}catch(e){}toast("Промокод "+YA_PROMO+" скопирован")}openLink(u.dataset.whu);return}});
 (function(){let y0=null,dy=0;bkcEl.addEventListener("touchstart",e=>{y0=null;if(e.target.closest("button"))return;{const d=e.target.closest("#bkcDw");if(d&&(d.scrollTop>0||d.scrollHeight>d.clientHeight+2))return}y0=e.touches[0].clientY;dy=0},{passive:true});
   bkcEl.addEventListener("touchmove",e=>{if(y0==null)return;dy=Math.max(0,e.touches[0].clientY-y0);bkcEl.firstElementChild.style.transform=`translateY(${dy*.6}px)`},{passive:true});
   bkcEl.addEventListener("touchend",()=>{if(y0==null)return;y0=null;bkcEl.firstElementChild.style.transform="";if(dy>110)bkcClose()})})();
@@ -6994,6 +7001,7 @@ function cbReadHTML(){const d=CB.d,b=d.book,own=cbOwner();let h="";
   if(b){const n=cbParts(),p=cbMyP(),my=cbMyD().r[b.k]||0;
     h+=`<div class="cb-book"><button class="cb-cvw" data-cb="book" aria-label="Открыть книгу">${cv(cbBook(b),128)}${cbSeal("",46)}</button><div class="cb-bx"><b>${esc(b.t)}</b><span>${esc(b.a)}</span>
       ${p<n?`<div class="cb-part">${n===1?"Читаем целиком":`Часть ${p+1} из ${n}`}</div><div class="cb-due">до ${cbDay(cbDue(p+1))}</div>`:`<div class="cb-part">Книга прочитана</div>`}</div></div>
+     ${p<n?`<button class="cb-where" data-cb="where">${IC2.pin}<span>Где взять книгу</span></button>`:""}
      ${n>1?`<button class="cb-bars" data-cb="parts" aria-label="Прочитано частей: ${p} из ${n}. Изменить">${Array.from({length:n},(_,i)=>`<i${i<p?` class="on"`:""}></i>`).join("")}</button>`:""}`;
     h+=p<n?`<button class="cb-b w" data-cb="part">${n===1?"Книга прочитана":`Часть ${p+1} прочитана`}</button>`:`<div class="cb-card"><div class="cb-ch"><h2>Твоя оценка</h2></div><div class="cb-stars">${[1,2,3,4,5].map(i=>`<button data-cb="rate" data-r="${i}" aria-label="Оценка ${i}"${i<=my?` class="on"`:""}>★</button>`).join("")}</div></div>${n===1?`<button class="cb-link" data-cb="setp" data-p="0">Ещё читаю</button>`:""}`;
     if(own)h+=`<button class="cb-b" data-cb="finish">Клуб дочитал книгу</button>`}
@@ -7009,7 +7017,7 @@ function cbReadHTML(){const d=CB.d,b=d.book,own=cbOwner();let h="";
   h+=`<div class="cb-card"><div class="cb-ch"><h2>Что читаем дальше</h2><button class="cb-link" data-cb="vote">Голосовать</button></div>
     <div class="cb-row">${C.slice(0,4).map(x=>cv(cbBook(x),62)).join("")}<button class="cb-plus" data-cb="suggest" aria-label="Предложить книгу">${CB_IC.plus}</button></div></div>
     <button class="cb-b" data-cb="invite">${CB_IC.plus}Пригласить в клуб</button>
-    ${TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user&&!LS.get("zal.ntf",0)?`<button class="cb-b" data-cb="ntf">Напоминания в Telegram</button>`:""}`;
+`;
   return h}
 function cbAskHTML(){const b=CB.d.book;if(!b)return `<div class="cb-card"><p class="cb-note">Вопросы появятся, когда клуб выберет книгу.</p></div>`;
   const n=cbParts(),p=cbMyP();
@@ -7111,6 +7119,7 @@ document.addEventListener("click",async e=>{const tb=e.target.closest("[data-cbt
   if(a==="members"){CB.view="members";cbDraw();$("#clScroll").scrollTop=0;return}
   if(a==="rank"){CB.view="rank";cbDraw();$("#clScroll").scrollTop=0;cbRankLoad();return}
   if(a==="rk"){CB.rk=el.dataset.v;cbDraw();return}
+  if(a==="where"&&d.book){tgHaptic();try{goal("club_where")}catch(e){}whereOpen(bItem(catOf(d.book)||cbBook(d.book),"rec"));return}
   if(a==="book"&&d.book){bkcOpen(bItem(catOf(d.book)||cbBook(d.book),"rec"),"rec");return}
   if(a==="sbook"){const x=(d.shelf||[]).find(b=>b.k===el.dataset.k);if(x)bkcOpen(bItem(catOf(x)||cbBook(x),"rec"),"rec");return}
   if(a==="part"&&d.book){const p=cbMyP()+1;me.p[d.book.k]=p;cbDraw();const ok=await cbPutMe(me);if(!ok)toast("Не сохранилось - проверь интернет");else if(p>=cbParts())toast("Книга прочитана - поставь оценку");return}
