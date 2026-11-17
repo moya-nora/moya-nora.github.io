@@ -5,5 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          curl -sS -H 'Accept: application/json' "https://api.litres.ru/foundation/api/arts/24552436" | python3 -c "import json,sys;d=json.load(sys.stdin)['payload']['data'];print('A',{k:d[k] for k in d if 'rat' in k or 'review' in k or 'vote' in k})"
-          curl -sS -H 'Accept: application/json' "https://api.litres.ru/foundation/api/arts/24552436/reviews?limit=2&order=popular" | python3 -c "import json,sys;d=json.load(sys.stdin);print('S',d.get('status'),str(d.get('error'))[:200]);x=(d.get('payload') or {}).get('data') or [{}];print('K',{k:v for k,v in x[0].items() if k!='text'})"
+          K=AIzaSyD9yfazxfKpaEk1BNFDN61dEB3pfxT9cS4
+          B="https://firestore.googleapis.com/v1/projects/nora-ed429/databases/(default)/documents"
+          echo "errs:"; curl -sS -o /dev/null -w "%{http_code}\n" -X POST -H 'Content-Type: application/json' "$B/errs?key=$K" -d '{"fields":{"m":{"stringValue":"проверка: сводка ошибок работает"},"s":{"stringValue":"probe"},"l":{"integerValue":"0"},"p":{"stringValue":"/probe"},"v":{"stringValue":""},"u":{"stringValue":"ПК"},"t":{"timestampValue":"2026-11-18T00:00:00Z"}}}'
+          echo "collab:"; curl -sS -o /dev/null -w "%{http_code}\n" -X POST -H 'Content-Type: application/json' "$B/collab?key=$K" -d '{"fields":{"l":{"stringValue":"проверка - заявки работают"},"b":{"stringValue":"-"},"p":{"stringValue":"-"},"w":{"stringValue":"проверка Claude"},"t":{"timestampValue":"2026-11-18T00:00:00Z"}}}'
