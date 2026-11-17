@@ -64,7 +64,10 @@ def gname(b):
 # ---------- данные: ручной каталог (с описаниями) + большой каталог + новинки ----------
 app = open(os.path.join(ROOT, "app.html"), encoding="utf-8").read()
 i = app.index("const CAT=") + len("const CAT=")
-CAT, _ = json.JSONDecoder().raw_decode(app[i:])
+try:
+    CAT, _ = json.JSONDecoder().raw_decode(app[i:])
+except ValueError:  # каталог вынесен из app.html в books/cat.json
+    CAT = json.load(open(os.path.join(ROOT, "books", "cat.json"), encoding="utf-8"))
 books = []
 for b in CAT:
     books.append({"t": b["t"], "a": b.get("a", ""), "y": b.get("y"), "g": b.get("g", "modern"), "c": b.get("c", ""), "tags": b.get("tags", []),
@@ -329,7 +332,7 @@ def footer(colls):
     return (f'<footer class="ft"><div class="wrap"><div class="in gl"><div><div class="logo"><img src="/icons/icon-192.png?v=5" alt="">Нора</div><p>Подборки, новинки и книги, похожие на любимые. '
             f'А Шуршуня подберёт книги лично тебе.</p></div><div><h4>Подборки</h4>'
             + "".join(f'<a href="/c/{p}.html">{esc(t.split(":")[0])}</a>' for p, t in colls[:7])
-            + f'</div><div><h4>Нора</h4><a href="{APP}">Открыть в браузере</a><a href="{BOT}">Открыть в Telegram</a><a href="/c/">Все подборки</a><a href="/knizhnyy-klub.html">Книжный клуб</a>'
+            + f'</div><div><h4>Нора</h4><a href="{APP}">Открыть в браузере</a><a href="{BOT}">Открыть в Telegram</a><a href="/c/">Все подборки</a><a href="/knizhnyy-klub.html">Книжный клуб</a><a href="/voprosy/">Вопросы для обсуждения</a>'
             f'<a href="/privacy.html">Конфиденциальность</a></div><div class="copy"><span>© {YNOW} Нора</span><span>Сделано с любовью к книгам</span></div></div></div></footer>')
 
 
@@ -587,6 +590,16 @@ urls.append(page("c/index.html", "Подборки книг", "Подборки 
                  + "</div>" + "".join(shelf(t.split(":")[0], f"/c/{p}.html", "", sorted(L[:24], key=lambda b: not img_of(b))[:14], f"Все {len(L)}") for p, t, lead, L in coll_data)
                  + f"{FINAL}</div>", active="/c/"))
 
+VQ = json.load(open(os.path.join(ROOT, "tools", "voprosy.json"), encoding="utf-8"))
+_vq_by = {nk(b["t"]): b for b in reversed(cat_books)}
+VQ_BOOKS = [(_vq_by[nk(t)], qs) for t, qs in VQ.items() if nk(t) in _vq_by]
+VQ_URL = {id(b): "voprosy/" + BOOK_URL[id(b)].split("/", 1)[1] for b, _ in VQ_BOOKS}
+
+
+def VQLINK(b):
+    return f'<p class="vql"><a href="/{VQ_URL[id(b)]}">Вопросы для обсуждения этой книги</a></p>' if id(b) in VQ_URL else ""
+
+
 def HOOK(b):
     """приманка на странице книги: поставить эту книгу на свою полку в Норе (открывает приложение сразу на её карточке)"""
     href = "/app.html?app=1&bk=" + urllib.parse.quote(b["t"] + "|" + b["a"])
@@ -612,7 +625,7 @@ for b in cat_books:
             f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>{f'<p class="gn">{esc(gname(b))}</p>' if gname(b) else ""}{RATE(b)}'
             + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "")
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
-            + WHERE(b) + HOOK(b) + RVS(b)
+            + WHERE(b) + HOOK(b) + VQLINK(b) + RVS(b)
             + (f'<section class="like"><div class="shd"><h2>Похожие книги</h2><a class="all" data-sim href="/p/">Ещё похожие</a></div>{rail(sim, bare=True)}</section>' if sim else "")
             + "</div></article>" + REVIEWS_JS
             + "</div>")
@@ -836,7 +849,7 @@ club_body = ('<div class="wrap"><div class="crumbs"><a href="/">Нора</a></di
              + "<section class='gl'><h2>Как устроен книжный клуб в Норе</h2><ol>" + "".join(f"<li><b>{esc(h)}.</b> {esc(t)}</li>" for h, t in CLUB_STEPS) + "</ol></section>"
              + "<section class='gl'><h2>Как организовать книжный клуб</h2><ul>" + "".join(f"<li>{esc(t)}</li>" for t in CLUB_TIPS) + "</ul></section>"
              + "<section class='gl'><h2>Вопросы для обсуждения книги</h2><p>Подходят почти к любому роману - Шуршуня подбирает такие вопросы к каждой книге клуба.</p><ul>"
-             + "".join(f"<li>{esc(q)}</li>" for q in CLUB_Q) + "</ul></section></div>"
+             + "".join(f"<li>{esc(q)}</li>" for q in CLUB_Q) + '</ul><p><a href="/voprosy/">Готовые вопросы к популярным книгам</a></p></section></div>'
              + (shelf("Что почитать книжным клубом", "/c/", "Книги, о которых хочется спорить и говорить после последней страницы.", CLUB_BOOKS[:14]) if len(CLUB_BOOKS) >= 4 else "")
              + '<div class="legal">' + "".join(f"<section class='gl'><h2>{esc(q)}</h2><p>{esc(a)}</p></section>" for q, a in CLUB_FAQ) + '</div>'
              + f'<section class="final gl"><h2>Соберите свой книжный клуб</h2><p>Создай клуб за минуту и позови друзей ссылкой.</p>{CLUB_CTA}</section></div>')
@@ -845,6 +858,38 @@ CLUB_LD = [{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": 
 urls.append(page("knizhnyy-klub.html", "Книжный клуб онлайн с друзьями",
                  "Создай книжный клуб с друзьями в Норе: голосование за книгу, общий срок, вопросы для обсуждения и общая полка клуба. Бесплатно, в Telegram и в браузере.",
                  club_body, full_title="Книжный клуб онлайн: создать с друзьями, вопросы для обсуждения книги — Нора", ld=CLUB_LD))
+
+# ---------- вопросы для обсуждения книг: страницы под запрос «вопросы для обсуждения книги ...» ----------
+VQ_HOW = ["Начните с простого: кому понравилось, кому нет и почему - это разогревает разговор.",
+          "Не идите по списку подряд. Выберите три-четыре вопроса, которые зацепили, остальные оставьте про запас.",
+          "Спорьте с книгой, а не друг с другом: «мне показалось» вместо «ты не понял».",
+          "Закончите вопросом: кому вы посоветуете эту книгу, а кому - нет."]
+def vq_card(b):
+    return f'<a class="bk" href="/{VQ_URL[id(b)]}">{cv(b)}<div class="t">{esc(b["t"])}</div><div class="a">вопросы для обсуждения</div></a>'
+for n_, (b, qs) in enumerate(VQ_BOOKS):
+    others = [x for x, _ in VQ_BOOKS if x is not b]
+    near = sorted(others, key=lambda x: (x["g"] != b["g"], -len(set(x["tags"]) & set(b["tags"]))))[:10]
+    go = 'onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}"'
+    body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="/voprosy/">Вопросы для обсуждения</a></div>'
+            f'<div class="ph"><div><h1>«{esc(b["t"])}»: вопросы для обсуждения</h1>'
+            f'<p class="lead">{esc(b["a"])}. {len(qs)} вопросов для книжного клуба, разговора с друзьями или урока. Осторожно: вопросы раскрывают сюжет.</p></div></div>'
+            f'<div class="legal"><section class="gl"><h2>Вопросы к книге</h2><ol>' + "".join(f"<li>{esc(q)}</li>" for q in qs) + '</ol></section>'
+            + (f'<section class="gl"><h2>О чём книга</h2><p>{esc(b["ann"])}</p><p><a href="/{BOOK_URL[id(b)]}">Оценки, отзывы и где прочитать</a></p></section>' if b["ann"] else "")
+            + f'<section class="gl"><h2>Как провести обсуждение</h2><ul>' + "".join(f"<li>{esc(x)}</li>" for x in VQ_HOW) + '</ul></section></div>'
+            + f'<div class="hook gl"><div><b>Обсудите эту книгу своим клубом</b><p>В Норе клуб выбирает книгу голосованием, читает к общему сроку и получает вопросы для разговора. Бесплатно, прямо в браузере.</p></div>'
+              f'<div class="ctas"><a class="btn" href="{CLUB_WEB}" {go}>Создать клуб</a><a class="btn ghost" href="/knizhnyy-klub.html">Как это устроено</a></div></div>'
+            + f'<section class="shelf"><div class="shd"><h2>Вопросы к другим книгам</h2><a class="all" href="/voprosy/">Все</a></div><div class="rail bare">' + "".join(vq_card(x) for x in near) + '</div></section></div>')
+    ld = [{"@context": "https://schema.org", "@type": "Article", "headline": f"«{b['t']}»: вопросы для обсуждения", "about": {"@type": "Book", "name": b["t"], "author": {"@type": "Person", "name": b["a"]}},
+           "inLanguage": "ru", "publisher": {"@type": "Organization", "name": "Нора"}}]
+    urls.append(page(VQ_URL[id(b)], f"«{b['t']}» - вопросы для обсуждения книги",
+                     f"Вопросы для обсуждения книги «{b['t']}» ({b['a']}): {qs[0]} {qs[1]}", body,
+                     full_title=f"«{b['t']}», {b['a'].split(' ')[-1]}: вопросы для обсуждения книги в книжном клубе — Нора", img=img_of(b) or None, ld=ld))
+vq_idx = ('<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><h1>Вопросы для обсуждения книг</h1>'
+          '<p class="lead">Готовые вопросы к популярным книгам - для книжного клуба, встречи с друзьями или урока литературы.</p></div></div>'
+          '<div class="grid">' + "".join(vq_card(b) for b, _ in VQ_BOOKS) + '</div>' + f'<section class="final gl"><h2>Соберите свой книжный клуб</h2><p>Голосование за книгу, общий срок и вопросы для разговора - в Норе.</p>{CLUB_CTA}</section></div>')
+urls.append(page("voprosy/index.html", "Вопросы для обсуждения книг", "Готовые вопросы для обсуждения популярных книг: «Мастер и Маргарита», «1984», «Тайная история» и другие - для книжного клуба и друзей.", vq_idx,
+                 full_title="Вопросы для обсуждения книг в книжном клубе — Нора"))
+print("страниц с вопросами:", len(VQ_BOOKS))
 
 # ---------- политика конфиденциальности ----------
 POLICY = [

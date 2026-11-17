@@ -292,3 +292,8 @@ h1{letter-spacing:-.015em}h1,h2,h3{font-weight:600}
 .hook b{display:block;font-family:var(--serif,Georgia,serif);font-size:22px;line-height:1.15}
 .hook p{margin:6px 0 0;font-size:15px;line-height:1.45;opacity:.82}
 .hook .ctas{margin:0;justify-content:flex-start}
+
+.vql{margin:16px 0 0;font-size:16px;font-weight:600}
+.vql a{color:#F3D19A}
+.legal ol{margin:0;padding-left:22px}
+.legal ol li{margin:0 0 12px;line-height:1.5;font-size:17px}
