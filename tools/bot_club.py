@@ -63,8 +63,9 @@ def club_msgs(name, d, members, uid, now):
                             + ("Если книга дочитана - отметь это в клубе и поставь оценку." if parts == 1 else "Если часть дочитана - отметь её в клубе, и откроются вопросы для обсуждения.")))
     # варианты времени предлагают участники; встреча - назначенная ведущим или время, которое подошло всем
     opts = {t for t in (d.get("mopts") or []) if t > now}
-    for x in members.values():
-        opts |= {t for t in (x.get("mo") or []) if t > now}
+    for mu, x in members.items():
+        if d.get("demo") or mu == d.get("_o"):   # с ведущим время предлагает только он
+            opts |= {t for t in (x.get("mo") or []) if t > now}
     votes = lambda t: sum(1 for x in members.values() if t in (x.get("mv") or []))
     m = d.get("meet")
     if not (m and m.get("ts", 0) > now):
@@ -141,7 +142,8 @@ def main():
                 clubs[cid] = None; continue
             try:
                 mem = {m["name"].rsplit("/", 1)[1]: json.loads(m["fields"]["d"]["stringValue"]) for m in mj.get("documents") or []}
-                clubs[cid] = (cj["fields"]["n"]["stringValue"], json.loads(cj["fields"]["d"]["stringValue"]), mem)
+                cd = json.loads(cj["fields"]["d"]["stringValue"]); cd["_o"] = cj["fields"]["o"]["stringValue"]
+                clubs[cid] = (cj["fields"]["n"]["stringValue"], cd, mem)
             except Exception:  # noqa: BLE001
                 clubs[cid] = None
         if not clubs[cid] or uid not in clubs[cid][2]:
