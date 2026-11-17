@@ -2321,6 +2321,63 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .pv-sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:11px;background:#fff;transition:transform .2s}
 #app .pv-sw.on{background:#8FD3A8}#app .pv-sw.on::after{transform:translateX(18px)}
 
+/* ---------- итоги года ---------- */
+#app .wr{position:fixed;inset:0;z-index:96;display:none;background:#07060D;color:#F7F1E6;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+#app .wr.on{display:block}
+#app .wr-bg{position:absolute;inset:0;background:radial-gradient(90% 60% at 50% 0%,var(--wc,#3B1E33) 0%,transparent 70%),radial-gradient(80% 50% at 50% 100%,rgba(243,209,154,.10),transparent 70%);transition:background .4s}
+#app .wr-arch{position:absolute;left:50%;bottom:-6%;width:150%;transform:translateX(-50%);opacity:.09;pointer-events:none}
+#app .wr-arch path{fill:none;stroke:#F3D19A;stroke-width:.5}
+#app .wr-bars{position:absolute;left:14px;right:14px;top:calc(var(--sat,0px) + 12px);display:flex;gap:4px;z-index:3}
+#app .wr-bars i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.22)}
+#app .wr-bars i.on{background:#F3D19A}
+#app .wr button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
+#app .wr-x{position:absolute;right:10px;top:calc(var(--sat,0px) + 24px);width:44px;height:44px;border-radius:22px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;z-index:4}
+#app .wr-x svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round}
+#app .wr-s{position:absolute;inset:0;padding:calc(var(--sat,0px) + 84px) 26px 56px;display:flex;flex-direction:column;justify-content:center;gap:16px;animation:wrIn .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes wrIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+#app .wr-k{font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#F3D19A}
+#app .wr-h{margin:0;font-family:var(--serif);font-size:32px;font-weight:600;line-height:1.12;overflow-wrap:break-word}
+#app .wr-big{font-family:var(--serif);font-size:120px;font-weight:600;line-height:.9;color:#F3D19A;letter-spacing:-.02em}
+#app .wr-p{margin:0;font-size:17px;line-height:1.4;color:rgba(247,241,230,.78)}
+#app .wr-p b{color:#F7F1E6;font-weight:700}
+#app .wr-mon{display:flex;align-items:flex-end;gap:5px;height:150px;margin-top:6px}
+#app .wr-mon span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%;font-size:14px;color:rgba(247,241,230,.6)}
+#app .wr-mon i{display:block;width:100%;min-height:3px;border-radius:5px 5px 2px 2px;background:rgba(255,255,255,.2)}
+#app .wr-mon span.mx i{background:#F3D19A}
+#app .wr-mon span.mx{color:#F3D19A;font-weight:700}
+#app .wr-g{display:flex;flex-direction:column;gap:14px}
+#app .wr-g div{display:flex;flex-direction:column;gap:6px}
+#app .wr-g b{display:flex;justify-content:space-between;gap:10px;font-size:17px;font-weight:600}
+#app .wr-g b em{font-style:normal;color:#F3D19A}
+#app .wr-g i{display:block;height:8px;border-radius:4px;background:#F3D19A}
+#app .wr-g div+div i{opacity:.6}
+#app .wr-g div+div+div i{opacity:.35}
+#app .wr-two{display:flex;gap:16px}
+#app .wr-two>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+#app .wr-two .cv,#app .wr-cvs .cv{width:100%;border-radius:6px;box-shadow:0 18px 34px -14px rgba(0,0,0,.8)}
+#app .wr-two small{font-size:14px;font-weight:700;color:#F3D19A}
+#app .wr-two b{font-family:var(--serif);font-size:17px;font-weight:600;line-height:1.2;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#app .wr-two span{font-size:14px;color:rgba(247,241,230,.65)}
+#app .wr-cvs{display:flex;gap:12px}
+#app .wr-cvs>div{flex:1;min-width:0;max-width:34%}
+#app .wr-card{align-self:center;width:min(100%,300px);border-radius:22px;padding:24px 22px;background:linear-gradient(160deg,#241228,#0E0B16 70%);border:1px solid rgba(243,209,154,.35);display:flex;flex-direction:column;gap:12px;box-shadow:0 30px 60px -24px #000}
+#app .wr-card h4{margin:0;font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.15}
+#app .wr-card .n{font-family:var(--serif);font-size:72px;font-weight:600;line-height:.9;color:#F3D19A}
+#app .wr-card dl{margin:0;display:flex;flex-direction:column;gap:8px}
+#app .wr-card dl div{display:flex;flex-direction:column;gap:1px}
+#app .wr-card dt{font-size:13px;color:rgba(247,241,230,.6)}
+#app .wr-card dd{margin:0;font-size:16px;font-weight:600;line-height:1.25;overflow-wrap:break-word}
+#app .wr-card footer{font-size:13px;font-weight:700;letter-spacing:.06em;color:#F3D19A}
+#app .wr .wr-btn{align-self:center;min-height:52px;padding:0 28px;border-radius:26px;background:#F4F2F7;color:#0B0A14;font-size:16px;font-weight:700;position:relative;z-index:4}
+#app .wr-img{position:absolute;inset:0;z-index:6;background:rgba(4,4,8,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(var(--sat,0px) + 70px) 24px 30px}
+#app .wr-img img{max-width:100%;max-height:74%;border-radius:16px;-webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default}
+#app .wr-img p{margin:0;font-size:15px;color:rgba(247,241,230,.8);text-align:center}
+#app .wr-open{display:flex;align-items:center;gap:14px;width:100%;margin:0 0 14px;padding:16px 18px;border-radius:20px;border:1px solid rgba(243,209,154,.4);background:linear-gradient(120deg,rgba(243,209,154,.16),rgba(107,33,64,.25));color:#F7F1E6;text-align:left;font:inherit}
+#app .wr-open b{display:block;font-family:var(--serif);font-size:20px;font-weight:600}
+#app .wr-open span{display:block;font-size:14px;color:rgba(247,241,230,.7);margin-top:2px}
+#app .wr-open em{margin-left:auto;font-style:normal;font-family:var(--serif);font-size:34px;font-weight:600;color:#F3D19A;line-height:1}
+@media (max-height:640px){#app .wr-big{font-size:92px}#app .wr-h{font-size:27px}#app .wr-mon{height:110px}#app .wr-s{gap:12px}}
+/* ---------- /итоги года ---------- */
 /* ---------- книжный клуб ---------- */
 #app #s-club{background:radial-gradient(95% 30% at 100% 0%,rgba(130,34,56,.45),rgba(5,6,10,0) 72%),#05060A}
 #app #clScroll{padding:calc(70px + var(--sat,env(safe-area-inset-top,0px))) 22px calc(140px + env(safe-area-inset-bottom,0px));overscroll-behavior-y:contain}
@@ -6772,6 +6829,62 @@ const emptyAll=()=>!BOOKS.length&&!want.length&&!FSEEN.length&&!FWANT.length&&!n
 /* без обязательного выбора книг на входе: человек сразу попадает в Нору, а предложение настроить вкус появится позже (onbAsk) */
 if(!VIEW&&!LS.get("zal.onb",0))LS.set("zal.onb",1);
 
+// ---------- итоги года ----------
+// «Итоги года»: история из карточек (сколько прочитано, месяцы, жанры, первая и последняя книга, любимые, авторы, тип читателя) и картинка, которой можно поделиться
+const WR_MN=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"],WR_MF=["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
+const WR_TYPE={classic:["Хранитель классики","Тебя не пугают толстые тома и длинные предложения"],detective:["Ночной сыщик","Ты вычисляешь убийцу раньше следователя"],kids:["Сердце сказочника","Ты помнишь, как это - верить в чудо"],modern:["Наблюдатель за людьми","Тебе интереснее всего, что творится у людей внутри"],fantasy:["Житель других миров","Драконы, магия и карты на форзаце - твоя стихия"],scifi:["Гость из будущего","Ты знаешь, что будет через сто лет"],nonfic:["Искатель ответов","Ты читаешь, чтобы понять, как всё устроено"],love:["Романтик без страха","Ты веришь в финал, где двое всё-таки вместе"]};
+const WR_COL=["#3B1E33","#1E2C44","#3A2A14","#17352E","#3A1A1A","#2A2046","#33301A","#1B3340","#3B1E33","#241228"];
+const wrYear=()=>{const d=new Date();return d.getMonth()===0?d.getFullYear()-1:d.getFullYear()};
+function wrData(){const Y=String(wrYear()),L=BOOKS.filter(b=>String(b.rd||"").slice(0,4)===Y).sort((a,b)=>String(a.rd).localeCompare(String(b.rd)));if(!L.length)return null;
+  const pg=L.reduce((s,b)=>s+(b.pg||0),0),mon=Array(12).fill(0);L.forEach(b=>{const m=+String(b.rd).slice(5,7);if(m>=1&&m<=12)mon[m-1]++});
+  const love=b=>{const c=catOf(b)||b;return (c.tags||[]).some(t=>/ромэнтези|любовный роман|любовь/.test(t))};
+  const gk=cntBy(L,b=>GEN[b.g]&&b.g!=="unknown"?b.g:""),lv=L.filter(love).length,tk=lv>=Math.max(2,(gk[0]||[0,0])[1])?"love":(gk[0]||["modern"])[0];
+  const rated=L.filter(b=>b.r!=null),top=rated.slice().sort((a,b)=>b.r-a.r).slice(0,3),withPg=L.filter(b=>b.pg>0).sort((a,b)=>a.pg-b.pg);
+  const au=cntBy(L.filter(b=>b.a&&b.a!=="Автор не указан"),b=>b.a),best=mon.indexOf(Math.max(...mon));
+  return {Y,L,pg,mon,best,gk,type:WR_TYPE[tk]||WR_TYPE.modern,top,avg:rated.length?rated.reduce((s,b)=>s+b.r/2,0)/rated.length:0,au,short:withPg[0],long:withPg[withPg.length-1],first:L[0],last:L[L.length-1]}}
+const wrBk=(b,lab)=>`<div>${cv(bItem(b,"read"),120)}${lab?`<small>${lab}</small>`:""}<b>${esc(b.t)}</b><span>${esc(b.a||"")}</span></div>`;
+function wrSlides(D){const n=D.L.length,S=[],bk=plural(n,"книга","книги","книг"),hrs=Math.round(D.pg/45);
+  S.push(`<div class="wr-k">Нора · итоги года</div><div class="wr-big">${D.Y}</div><h2 class="wr-h">Твой год в книгах</h2><p class="wr-p">Листай - нажимай на правую часть экрана.</p>`);
+  S.push(`<div class="wr-k">Прочитано</div><div class="wr-big">${n}</div><h2 class="wr-h">${bk} за ${D.Y} год</h2>${D.pg?`<p class="wr-p">Это <b>${D.pg.toLocaleString("ru-RU")} ${plural(D.pg,"страница","страницы","страниц")}</b>${hrs>=2?` - примерно ${hrs} ${plural(hrs,"час","часа","часов")} наедине с книгой`:""}.</p>`:""}`);
+  if(n>=2)S.push(`<div class="wr-k">По месяцам</div><h2 class="wr-h">Самый читающий месяц - ${WR_MF[D.best]}</h2><p class="wr-p"><b>${D.mon[D.best]} ${plural(D.mon[D.best],"книга","книги","книг")}</b> за месяц.</p><div class="wr-mon">${D.mon.map((v,i)=>`<span${i===D.best?` class="mx"`:""}><i style="height:${Math.round(v/Math.max(1,D.mon[D.best])*100)}%"></i>${WR_MN[i][0]}</span>`).join("")}</div>`);
+  if(D.gk.length)S.push(`<div class="wr-k">Жанры</div><h2 class="wr-h">Больше всего - ${esc(GEN[D.gk[0][0]].toLowerCase())}</h2><div class="wr-g">${D.gk.slice(0,3).map(([g,v])=>`<div><b>${esc(GEN[g])}<em>${v}</em></b><i style="width:${Math.max(8,Math.round(v/D.gk[0][1]*100))}%"></i></div>`).join("")}</div>`);
+  if(n>=2)S.push(`<div class="wr-k">Начало и конец</div><h2 class="wr-h">С чего начался год и чем продолжается</h2><div class="wr-two">${wrBk(D.first,"Первая книга")}${wrBk(D.last,"Последняя")}</div>`);
+  if(D.long&&D.short&&D.long!==D.short&&D.long.pg>D.short.pg)S.push(`<div class="wr-k">Размер имеет значение</div><h2 class="wr-h">Самая толстая и самая тонкая</h2><div class="wr-two">${wrBk(D.long,D.long.pg+" стр.")}${wrBk(D.short,D.short.pg+" стр.")}</div>`);
+  if(D.top.length)S.push(`<div class="wr-k">Любимые</div><h2 class="wr-h">${D.top.length>1?"Книги года по твоим оценкам":"Книга года по твоей оценке"}</h2><div class="wr-cvs">${D.top.map(b=>`<div>${cv(bItem(b,"read"),120)}</div>`).join("")}</div><p class="wr-p">Средняя оценка за год - <b>★ ${D.avg.toFixed(1).replace(".",",")}</b></p>`);
+  if(D.au.length&&D.au[0][1]>=2)S.push(`<div class="wr-k">Автор года</div><h2 class="wr-h">${esc(D.au[0][0])}</h2><p class="wr-p"><b>${D.au[0][1]} ${plural(D.au[0][1],"книга","книги","книг")}</b> этого автора за год.${D.au[1]&&D.au[1][1]>=2?` Следом - ${esc(D.au[1][0])}.`:""}</p>`);
+  S.push(`<div class="wr-k">Твой читательский тип</div><h2 class="wr-h" style="font-size:38px">${D.type[0]}</h2><p class="wr-p">${D.type[1]}.</p>`);
+  try{const sh=(typeof CB!=="undefined"&&CB.id&&CB.club&&CB.d.shelf||[]).length;if(sh)S.push(`<div class="wr-k">Вместе</div><div class="wr-big">${sh}</div><h2 class="wr-h">${plural(sh,"книга","книги","книг")} с клубом «${esc(CB.club.n)}»</h2>`)}catch(e){}
+  S.push(`<div class="wr-card"><h4>Мой ${D.Y} в книгах</h4><div class="n">${n}</div><dl>${D.pg?`<div><dt>${bk} · страниц</dt><dd>${D.pg.toLocaleString("ru-RU")}</dd></div>`:""}${D.gk.length?`<div><dt>Любимый жанр</dt><dd>${esc(GEN[D.gk[0][0]])}</dd></div>`:""}${D.top[0]?`<div><dt>Книга года</dt><dd>${esc(D.top[0].t)}</dd></div>`:""}<div><dt>Читательский тип</dt><dd>${D.type[0]}</dd></div></dl><footer>НОРА · nora-books.ru</footer></div><button class="wr-btn" data-wrshare>Поделиться</button>`);
+  return S}
+let WR=null;const wrEl=document.createElement("div");wrEl.className="wr";$("#app").appendChild(wrEl);
+function wrDraw(){const i=WR.i,S=WR.S;wrEl.style.setProperty("--wc",WR_COL[i%WR_COL.length]);
+  wrEl.innerHTML=`<div class="wr-bg"></div><svg class="wr-arch" viewBox="0 0 100 60"><path d="M10,60V34a40,40 0 0 1 80,0V60M24,60V36a26,26 0 0 1 52,0V60M38,60V40a12,12 0 0 1 24,0V60"/></svg><div class="wr-bars">${S.map((_,j)=>`<i${j<=i?` class="on"`:""}></i>`).join("")}</div><button class="wr-x" data-wrx aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="wr-s">${S[i]}</div>`}
+function wrOpen(){const D=wrData();if(!D){toast("Итоги появятся, когда отметишь прочитанное в этом году");return}WR={D,S:wrSlides(D),i:0};wrEl.classList.add("on");wrDraw();tgHaptic("medium");try{goal("wrap")}catch(e){}try{syncBack()}catch(e){}}
+function wrClose(){WR=null;wrEl.classList.remove("on");wrEl.innerHTML="";try{syncBack()}catch(e){}}
+// картинка 1080×1920 для сторис: рисуем сами, без обложек (чужие картинки на холст класть нельзя)
+function wrImage(D){const c=document.createElement("canvas");c.width=1080;c.height=1920;const x=c.getContext("2d"),cs=getComputedStyle(wrEl),SF=cs.getPropertyValue("--serif")||"Georgia,serif",FF=cs.getPropertyValue("--f")||"sans-serif";
+  let g=x.createLinearGradient(0,0,1080,1920);g.addColorStop(0,"#2A1330");g.addColorStop(.55,"#0E0B16");g.addColorStop(1,"#07060D");x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  g=x.createRadialGradient(540,1920,50,540,1920,1000);g.addColorStop(0,"rgba(243,209,154,.20)");g.addColorStop(1,"rgba(243,209,154,0)");x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  x.strokeStyle="rgba(243,209,154,.16)";x.lineWidth=5;[[460,1010],[320,1170],[180,1330]].forEach(([r,y])=>{x.beginPath();x.moveTo(540-r,1920);x.lineTo(540-r,y+r);x.arc(540,y+r,r,Math.PI,0);x.lineTo(540+r,1920);x.stroke()});
+  const T=(t,y,f,col,max)=>{x.font=f;x.fillStyle=col;x.textBaseline="alphabetic";let s=String(t);if(max)while(x.measureText(s).width>max&&s.length>4)s=s.slice(0,-2).trimEnd()+"…";x.fillText(s,96,y)};
+  T("НОРА · ИТОГИ ГОДА",230,`700 38px ${FF}`,"#F3D19A");T(`Мой ${D.Y}`,370,`600 104px ${SF}`,"#F7F1E6");T("в книгах",480,`600 104px ${SF}`,"#F7F1E6");
+  T(D.L.length,860,`600 380px ${SF}`,"#F3D19A");T(plural(D.L.length,"книга","книги","книг")+(D.pg?` · ${D.pg.toLocaleString("ru-RU")} ${plural(D.pg,"страница","страницы","страниц")}`:""),950,`600 48px ${FF}`,"#F7F1E6",880);
+  let y=1110;const row=(k,v)=>{if(!v)return;T(k,y,`500 36px ${FF}`,"rgba(247,241,230,.62)");T(v,y+64,`600 56px ${SF}`,"#F7F1E6",880);y+=170};
+  row("Любимый жанр",D.gk.length?GEN[D.gk[0][0]]:"");row("Книга года",D.top[0]?D.top[0].t:"");row("Читательский тип",D.type[0]);
+  T("nora-books.ru",1810,`700 40px ${FF}`,"#F3D19A");return c}
+async function wrShare(){const D=WR&&WR.D;if(!D)return;tgHaptic();const c=wrImage(D),blob=await new Promise(r=>c.toBlob(r,"image/png"));
+  try{const f=new File([blob],`nora-${D.Y}.png`,{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});try{goal("wrap_share")}catch(e){}return}}catch(e){if(e&&e.name==="AbortError")return}
+  const d=document.createElement("div");d.className="wr-img";d.innerHTML=`<img alt="Итоги года" src="${c.toDataURL("image/png")}"><p>Зажми картинку и выбери «Сохранить» - её можно выложить в сторис.</p><button class="wr-btn" data-wrimgx>Готово</button>`;wrEl.appendChild(d);try{goal("wrap_share")}catch(e){}}
+wrEl.addEventListener("click",e=>{if(!WR)return;if(e.target.closest("[data-wrimgx]")){const d=wrEl.querySelector(".wr-img");if(d)d.remove();return}if(e.target.closest(".wr-img"))return;
+  if(e.target.closest("[data-wrx]")){wrClose();return}if(e.target.closest("[data-wrshare]")){wrShare();return}
+  const back=e.clientX<innerWidth*.3;if(back){if(WR.i>0){WR.i--;wrDraw();tgHaptic()}}else if(WR.i<WR.S.length-1){WR.i++;wrDraw();tgHaptic()}});
+document.addEventListener("click",e=>{if(e.target.closest("[data-wropen]"))wrOpen()});
+// вход - карточка наверху «Статистики»
+{const ds0=drawSum;drawSum=function(){ds0.apply(this,arguments);try{const m=$("#sumMore"),D=!VIEW&&!isF()&&wrData();if(m&&D&&!m.querySelector(".wr-open"))m.insertAdjacentHTML("afterbegin",`<button class="wr-open" data-wropen><div><b>Итоги ${D.Y} года</b><span>Твой год в книгах - листай и делись</span></div><em>${D.L.length}</em></button>`)}catch(e){}}}
+{const sb1=syncBack;syncBack=function(){sb1();try{if(WR&&TG&&TG.BackButton)TG.BackButton.show()}catch(e){}}}
+if(TG&&TG.BackButton)try{TG.BackButton.onClick(()=>{if(WR)wrClose()})}catch(e){}
+window.NWRAP={open:wrOpen,data:wrData};
+// ---------- /итоги года ----------
 // ---------- книжный клуб ----------
 // Клуб живёт в Firestore: clubs/<id> (название, ведущий, книга, сроки, полка), clubs/<id>/m/<uid> (участник: его отметки,
 // голоса, ответ про встречу), clubs/<id>/s/<книга> (предложенные книги), clubs/<id>/q/<id> (вопросы участников).
