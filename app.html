@@ -2483,6 +2483,10 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .cb-pod>div:nth-child(2) .cb-seal{width:88px;height:88px}
 }
 /* ---------- /книжный клуб ---------- */
+
+/* лист с одной кнопкой: кнопка во всю ширину; лента друзей: карточки выровнены по верху */
+#app #vshBody .one{display:flex;margin-top:14px}#app #vshBody .one .btn{flex:1;padding:0 18px}
+#app .frs{align-items:flex-start}#app .fre{display:block}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -4384,7 +4388,7 @@ if(TG){
     // на телефоне — во весь экран, контент ниже кнопок Telegram
     {const sat=()=>{const a=TG.safeAreaInset||{},c=TG.contentSafeAreaInset||{};document.documentElement.style.setProperty("--sat",(TG.isFullscreen?(a.top||0)+(c.top||0):0)+"px")};
      ["fullscreenChanged","safeAreaChanged","contentSafeAreaChanged"].forEach(ev=>{try{TG.onEvent(ev,sat)}catch(e){}});sat();
-     if(TG.requestFullscreen&&TG.isVersionAtLeast&&TG.isVersionAtLeast("8.0")&&/ios|android/i.test(TG.platform||"")&&!TG.isFullscreen&&!document.hidden){try{TG.requestFullscreen()}catch(e){}}}
+     if(TG.requestFullscreen&&TG.isVersionAtLeast&&TG.isVersionAtLeast("8.0")&&/ios|android/i.test(TG.platform||"")&&!TG.isFullscreen){const fs=()=>{try{if(!TG.isFullscreen)TG.requestFullscreen()}catch(e){}};if(!document.hidden)fs();else document.addEventListener("visibilitychange",function h(){if(!document.hidden){document.removeEventListener("visibilitychange",h);fs()}})}}
     const tgPost=(ev,d)=>{try{const W=window.Telegram&&Telegram.WebView;if(W&&W.postEvent){W.postEvent(ev,false,d||{});return}if(window.TelegramWebviewProxy)TelegramWebviewProxy.postEvent(ev,JSON.stringify(d||{}));else window.parent.postMessage(JSON.stringify({eventType:ev,eventData:d||{}}),"*")}catch(e){}};
     const noSw=()=>{try{TG.disableVerticalSwipes&&TG.disableVerticalSwipes()}catch(e){}tgPost("web_app_setup_swipe_behavior",{allow_vertical_swipe:false})};if(/ios|android/i.test(TG.platform||"")&&!TG.isFullscreen&&!TG.requestFullscreen&&!document.hidden)tgPost("web_app_request_fullscreen");noSw();["activated","viewportChanged","fullscreenChanged"].forEach(ev=>{try{TG.onEvent(ev,noSw)}catch(e){}});setTimeout(noSw,600);setTimeout(()=>{try{window.ym&&ym(114237349,"params",{tg:{ver:TG.version,platform:TG.platform,fullscreen:!!TG.isFullscreen,swipes:TG.isVerticalSwipesEnabled}})}catch(e){}},2500);TG.onEvent&&TG.onEvent("themeChanged",()=>{if(!themePref())applyTheme()});TG.BackButton.onClick(()=>{tevScope?closeTev():disc?closeDisc():story?closeStories():closeSheet()})}catch(e){}
   try{TG.CloudStorage.getItem("want",(err,val)=>{if(!err&&val){try{const ids=JSON.parse(val);if(Array.isArray(ids)&&ids.length){const extra=want.filter(w=>!LIB[w.id]);want=[...extra,...hydrate(ids)];renderWant()}}catch(e){}}})}catch(e){}
@@ -6081,7 +6085,7 @@ function inviteLink(){const u=NS.uid&&NS.uid();if(!u)return "";return TG?`https:
 function drawFr(){const box=$("#frBox");if(!box)return;const me=myName();
   const list=FRIENDS.map(f=>({f,p:FRP[f.uid]})),news=list.filter(x=>x.p&&(x.p.ev||[]).length).sort((a,b)=>(b.p.ev[0].ts||0)-(a.p.ev[0].ts||0));
   box.innerHTML=`<h1 class="fr-h">Друзья</h1>
-   ${VIEW?"":(()=>{const nk=LS.get("zal.nick","");return `<button class="fr-nick fr-priv" data-priv><span>Что видят друзья</span><i>${privLabel()} ›</i></button>`+(nk?`<button class="fr-nick" data-nick><span>Друзья найдут тебя по нику</span><b>@${esc(nk)}</b><i>изменить</i></button>`:(needAuth()?`<button class="fr-nick new" data-acct><span>Войди в аккаунт, чтобы друзья нашли тебя и твои полки сохранились</span><b>Войти</b></button>`:`<button class="fr-nick new" data-nick><span>Придумай ник, по которому тебя найдут друзья</span><i>›</i></button>`))})()}
+   ${VIEW?"":(()=>{const nk=LS.get("zal.nick","");return `<button class="fr-nick fr-priv" data-priv><span>Что видят друзья</span><i>${privLabel()} ›</i></button>`+(nk?`<button class="fr-nick" data-nick><span>Твой ник в Норе - по нему тебя найдут друзья</span><b>@${esc(nk)}</b><i>изменить</i></button>`:(needAuth()?`<button class="fr-nick new" data-acct><span>Войди в аккаунт, чтобы друзья нашли тебя и твои полки сохранились</span><b>Войти</b></button>`:`<button class="fr-nick new" data-nick><span>Придумай ник, по которому тебя найдут друзья</span><i>›</i></button>`))})()}
    ${REQS.length?`<h3 class="fr-sec">Заявки в друзья</h3>`+REQS.map(q=>`<div class="sc gl frq">${avatar(q.n,q.f)}<span><b>${esc(q.n||"Кто-то")}</b><small>хочет добавить в друзья</small></span><button class="btn w" data-frq-yes="${esc(q.id)}">Принять</button><button class="btn" data-frq-no="${esc(q.id)}">Отклонить</button></div>`).join(""):""}
    <div class="fr-row"><button class="fr-add" data-fr-find><i class="ava plus">+</i><span>Добавить</span></button>${list.map(({f})=>`<button class="fr-av" data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid,frNew(f)?"new":"")}<span>${esc(f.n||"Друг")}</span></button>`).join("")}</div>
    ${FRIENDS.length?"":`<div class="sc gl fr-empty"><h3>Полки друзей</h3><p>Найди друга по нику в Норе или по почте - придёт заявка прямо в Нору. Когда заявку примут, вы будете видеть полки друг друга: что прочитано, оценки, что хочется прочитать.</p><button class="btn w" data-fr-find>Добавить друга</button></div>`}
