@@ -13,4 +13,5 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           BOT_FB_PASS: ${{ secrets.BOT_FB_PASS }}
+          DRY: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
         run: python3 -u tools/bot_errs.py
