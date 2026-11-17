@@ -156,6 +156,8 @@ def handle(m):
     hc = re.match(r"/start hc_([a-z0-9-]{2,40})", text)
     if hc:  # вступление в клуб с ведущим: счёт в звёздах Telegram, после оплаты - приглашение (paid)
         c = hc_find(hc.group(1))
+        if c and c.get("demo") and chat != owner_id:  # пример из тестовой версии - платить может только владелица (проверка)
+            c = None
         if not c:
             api("sendMessage", chat_id=chat, text="Этот клуб уже не набирает участников. Загляни в Нору - там есть другие.")
             return True
