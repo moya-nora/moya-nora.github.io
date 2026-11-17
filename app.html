@@ -2367,6 +2367,8 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .cb-bx b{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.15;letter-spacing:-.01em;overflow-wrap:break-word}
 #app .cb-bx span{font-size:15px;color:var(--ink2)}
 #app .cb-bx .cb-part{margin-top:auto;padding-top:10px;font-size:16px;font-weight:600;color:#fff}
+#app #clBox .cb-where{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:44px;margin:2px 0 4px;border-radius:22px;background:rgba(255,255,255,.08);font-size:14px;font-weight:600;color:var(--ink)}
+#app #clBox .cb-where svg{width:18px;height:18px;opacity:.8}
 #app .cb-bx .cb-due,#app .cb-gold{font-size:15px;font-weight:600;color:#F3D19A}
 #app #clBox .cb-bars{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;width:100%;padding:12px 0;margin:-6px 0}
 #app .cb-bars i{display:block;height:6px;border-radius:3px;background:rgba(255,255,255,.2)}
@@ -6878,6 +6880,7 @@ function cbReadHTML(){const d=CB.d,b=d.book,own=cbOwner();let h="";
   if(b){const n=cbParts(),p=cbMyP(),my=cbMyD().r[b.k]||0;
     h+=`<div class="cb-book"><button class="cb-cvw" data-cb="book" aria-label="Открыть книгу">${cv(cbBook(b),128)}${cbSeal("",46)}</button><div class="cb-bx"><b>${esc(b.t)}</b><span>${esc(b.a)}</span>
       ${p<n?`<div class="cb-part">${n===1?"Читаем целиком":`Часть ${p+1} из ${n}`}</div><div class="cb-due">до ${cbDay(cbDue(p+1))}</div>`:`<div class="cb-part">Книга прочитана</div>`}</div></div>
+     ${p<n?`<button class="cb-where" data-cb="where">${IC2.pin}<span>Где взять книгу</span></button>`:""}
      ${n>1?`<button class="cb-bars" data-cb="parts" aria-label="Прочитано частей: ${p} из ${n}. Изменить">${Array.from({length:n},(_,i)=>`<i${i<p?` class="on"`:""}></i>`).join("")}</button>`:""}`;
     h+=p<n?`<button class="cb-b w" data-cb="part">${n===1?"Книга прочитана":`Часть ${p+1} прочитана`}</button>`:`<div class="cb-card"><div class="cb-ch"><h2>Твоя оценка</h2></div><div class="cb-stars">${[1,2,3,4,5].map(i=>`<button data-cb="rate" data-r="${i}" aria-label="Оценка ${i}"${i<=my?` class="on"`:""}>★</button>`).join("")}</div></div>${n===1?`<button class="cb-link" data-cb="setp" data-p="0">Ещё читаю</button>`:""}`;
     if(own)h+=`<button class="cb-b" data-cb="finish">Клуб дочитал книгу</button>`}
@@ -6986,6 +6989,7 @@ document.addEventListener("click",async e=>{const tb=e.target.closest("[data-cbt
   if(a==="members"){CB.view="members";cbDraw();$("#clScroll").scrollTop=0;return}
   if(a==="rank"){CB.view="rank";cbDraw();$("#clScroll").scrollTop=0;cbRankLoad();return}
   if(a==="rk"){CB.rk=el.dataset.v;cbDraw();return}
+  if(a==="where"&&d.book){tgHaptic();try{goal("club_where")}catch(e){}whereOpen(bItem(catOf(d.book)||cbBook(d.book),"rec"));return}
   if(a==="book"&&d.book){bkcOpen(bItem(catOf(d.book)||cbBook(d.book),"rec"),"rec");return}
   if(a==="sbook"){const x=(d.shelf||[]).find(b=>b.k===el.dataset.k);if(x)bkcOpen(bItem(catOf(x)||cbBook(x),"rec"),"rec");return}
   if(a==="part"&&d.book){const p=cbMyP()+1;me.p[d.book.k]=p;cbDraw();const ok=await cbPutMe(me);if(!ok)toast("Не сохранилось - проверь интернет");else if(p>=cbParts())toast("Книга прочитана - поставь оценку");return}
