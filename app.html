@@ -1935,6 +1935,29 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .shput.go .shp-plank{animation:shpIn .35s ease .55s forwards}
 #app .shp-t{position:absolute;left:0;right:0;top:calc(62% + 28px);text-align:center;font-family:var(--serif);font-size:26px;font-weight:600;opacity:0}
 #app .shput.go .shp-t{animation:shpIn .4s ease 1.3s forwards}
+/* книга встаёт на полку: видео + книга */
+#app .shv{position:fixed;inset:0;z-index:95;display:none;background:#030305;opacity:0;transition:opacity .28s ease;overflow:hidden;-webkit-tap-highlight-color:transparent}
+#app .shv.on{display:block;opacity:1}
+#app .shv.out{opacity:0;transition:opacity .4s ease}
+#app .shv video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+#app .shv-vig{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 42%,transparent 55%,rgba(0,0,0,.55));pointer-events:none}
+#app .shv-b{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0;perspective:900px;will-change:transform,opacity}
+#app .shv-3d{position:absolute;left:0;top:-120px;width:160px;height:240px;transform-style:preserve-3d;transform-origin:0 50% 0}
+#app .shv-f,#app .shv-s{position:absolute;top:0;height:240px;font-style:normal;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+#app .shv-f{left:0;width:160px;transform:translateZ(17px);border-radius:1px 4px 4px 1px;overflow:hidden;box-shadow:0 30px 50px -18px rgba(0,0,0,.85)}
+#app .shv-f .cv{width:160px!important;height:240px}
+#app .shv-f::after{content:"";position:absolute;inset:0;z-index:3;background:#050304;opacity:var(--fd,0);pointer-events:none}
+#app .shv-f::before{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,rgba(0,0,0,.4),transparent 8%,rgba(255,255,255,.06) 10%,transparent 16%);pointer-events:none}
+#app .shv-s{left:-17px;width:34px;transform:rotateY(-90deg);background-color:var(--sb,#3a2a22);background-size:auto 100%;background-position:left center;border-radius:5px 5px 3px 3px;overflow:hidden}
+#app .shv-s::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.62),rgba(0,0,0,.18) 30%,rgba(255,240,215,.14) 52%,rgba(0,0,0,.28) 78%,rgba(0,0,0,.6)),linear-gradient(rgba(255,214,160,.16),transparent 45%)}
+#app .shv-s::after{content:"";position:absolute;left:4px;right:4px;top:14px;bottom:14px;border-top:1.5px solid #D9AE6A;border-bottom:1.5px solid #D9AE6A;box-shadow:inset 0 3px 0 -1.5px rgba(0,0,0,0),0 -4px 0 -2.5px #D9AE6A,0 4px 0 -2.5px #D9AE6A;opacity:.95}
+#app .shv-s b{position:absolute;left:50%;top:50%;width:190px;transform:translate(-50%,-50%) rotate(-90deg);text-align:center;font:600 15px/1.1 var(--serif);color:#F3DDB0;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.5)}
+#app .shv-s{box-shadow:inset 0 0 0 1px rgba(0,0,0,.35)}
+#app .shv-s{filter:brightness(calc(1 - var(--sd,0) * .6))}
+#app .shv-t{position:absolute;left:24px;right:24px;text-align:center;opacity:0;transform:translateY(8px);transition:opacity .5s ease .25s,transform .6s cubic-bezier(.2,.8,.2,1) .25s;pointer-events:none}
+#app .shv.land .shv-t{opacity:1;transform:none}
+#app .shv-t b{display:block;font:600 26px/1.15 var(--serif);color:#F7F1E6;text-wrap:balance;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#app .shv-t span{display:block;margin-top:8px;font-size:15px;font-weight:600;color:#F3D19A;letter-spacing:.01em}
 /* заявки в друзья */
 #app .frq{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;margin-bottom:10px}
 #app .frq>span{flex:1 1 140px;min-width:0}#app .frq b{display:block;font-size:15px}#app .frq small{display:block;color:var(--ink3);font-size:12.5px;margin-top:2px}
@@ -5527,7 +5550,7 @@ function sxRun(){const q=$("#fq").value,my=++SX.seq;SX.q=q;SX.mode="q";clearTime
   {const h=SX.k!=="films"&&genreHit(q);if(h){const L=h[0]==="gen"?NF.gen:NF.trope;if(!L.includes(h[1]))L.push(h[1]);saveNF();SX.picks=true;SX.q="";$("#fq").value="";$(".sx-clear").hidden=true;
     const b=$("#sxf");if(b)b.innerHTML=sxFbar();SX.authors=[];sxDraw();tgHaptic();return}}
   annAll();if(norm(q).length<2){SX.authors=[];sxDraw();return}
-  SX.list=localFind(q);SX.authors=[];SX.mean=null;SX.mn=12;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=2&&/[а-яё]/i.test(q)&&(/^\s*(про|о|об|что-то|что-нибудь|когда|хочу|хочется|посоветуй|книг[аи]|как)\s/i.test(q)||!SX.list.slice(0,4).some(x=>strongHit(x,q)))){const M=meanFind(q,40);if(M&&M.list.length&&(M.lab.length||!SX.list.length))SX.mean=M}sxDraw("load");SX.brain=null;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=3){SX.brain="load";brainAsk(q).then(L=>{if(my!==SX.seq)return;SX.brain=brainUnpack(L||[]);sxDraw(SX.st||"done")})}
+  SX.list=localFind(q);SX.authors=[];SX.mean=null;SX.mn=12;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=2&&/[а-яё]/i.test(q)&&(/^\s*(про|о|об|что-то|что-нибудь|когда|хочу|хочется|посоветуй|книг[аи]|как)\s/i.test(q)||!SX.list.slice(0,4).some(x=>strongHit(x,q)))){const M=meanFind(q,40);if(M&&M.list.length&&(M.lab.length||!SX.list.length))SX.mean=M}sxDraw("load");SX.brain=null;const titleLike=SX.list.slice(0,3).some(x=>strongHit(x,q)||lev(norm(x.t||""),norm(q))<=2);if(SX.k!=="films"&&!titleLike&&String(q).trim().split(/\s+/).length>=3){SX.brain="load";brainAsk(q).then(L=>{if(my!==SX.seq)return;SX.brain=brainUnpack(L||[]);sxDraw(SX.st||"done")})}
   SX.t=setTimeout(async()=>{try{if(SX.k==="films")await loadFilms().catch(()=>{});if(my!==SX.seq)return;if(SX.k==="films")SX.list=localFind(q);
       const o=await (SX.k==="films"?onlineSeries(q):onlineBooks(q));if(my!==SX.seq)return;const seen=new Set(SX.list.map(x=>norm(x.t)+(x._f?x.y:"")));
       SX.list=[...SX.list,...o.works.filter(x=>{const n=norm(x.t)+(x._f?x.y:"");if(seen.has(n))return false;seen.add(n);return true})];SX.authors=o.au;sxDraw("done")}
@@ -6669,14 +6692,43 @@ if(TG&&TG.BackButton)try{TG.BackButton.onClick(()=>{if(bkcEl.classList.contains(
 // ---------- фишка: книга встаёт на полку ----------
 // обложка поворачивается корешком и задвигается на полку между уже прочитанными книгами
 const shEl=document.createElement("div");shEl.className="shput";$("#app").appendChild(shEl);
-function shelfAnim(x){if(RM)return;const c=catOf(x)||{},bg=x.bg||c.bg||palOf(x.t)[0],fg=x.fg||c.fg||palOf(x.t)[1];
+function shelfAnim0(x,lab){if(RM)return;const c=catOf(x)||{},bg=x.bg||c.bg||palOf(x.t)[0],fg=x.fg||c.fg||palOf(x.t)[1];
   const nb=BOOKS.slice(-7).map(b=>{const cc=catOf(b)||{};return [b.bg||cc.bg||palOf(b.t)[0],b.fg||cc.fg||palOf(b.t)[1],b.t]});
   const sp=(b,f,tt,cls="")=>`<i class="sp ${cls}" style="--b:${b};--f:${f};height:${126+hsh(tt)%30}px"><span>${esc(tt)}</span></i>`;
   const half=Math.ceil(nb.length/2);
-  shEl.innerHTML=`<div class="shp-cv">${cv(x,150)}</div><div class="shp-row">${nb.slice(0,half).map(z=>sp(...z)).join("")}${sp(bg,fg,x.t,"new")}${nb.slice(half).map(z=>sp(...z)).join("")}</div><div class="shp-plank"></div><div class="shp-t"><b>${esc(x.t)}</b><span>теперь на полке «Прочитано»</span></div>`;
+  shEl.innerHTML=`<div class="shp-cv">${cv(x,150)}</div><div class="shp-row">${nb.slice(0,half).map(z=>sp(...z)).join("")}${sp(bg,fg,x.t,"new")}${nb.slice(half).map(z=>sp(...z)).join("")}</div><div class="shp-plank"></div><div class="shp-t"><b>${esc(x.t)}</b><span>${lab||"теперь на полке «Прочитано»"}</span></div>`;
   shEl.classList.remove("go");void shEl.offsetWidth;shEl.classList.add("go");tgHaptic("rigid");setTimeout(()=>tgHaptic("medium"),1050);
   clearTimeout(shEl._t);shEl._t=setTimeout(()=>shEl.classList.remove("go"),2300)}
 shEl.addEventListener("click",()=>shEl.classList.remove("go"));
+// новая версия: видео полки из Blender (tools/shelf) и настоящая книга поверх - обложка разворачивается корешком и садится в щель между соседями
+const SHVD="img/shelf/";let SHG=null,SHX=null;
+function shvInit(){if(SHX)return SHX;fetch(SHVD+"gap.json").then(r=>r.json()).then(j=>{SHG=j}).catch(()=>{});
+  const el=document.createElement("div");el.className="shv";el.innerHTML=`<video src="${SHVD}put.mp4" muted playsinline preload="auto" disablepictureinpicture></video><div class="shv-vig"></div><div class="shv-b"><div class="shv-3d"><i class="shv-f"></i><i class="shv-s"><b></b></i></div></div><div class="shv-t"><b></b><span></span></div>`;
+  $("#app").appendChild(el);el.addEventListener("click",()=>shvEnd(true));SHX={el,v:el.querySelector("video"),run:0};return SHX}
+setTimeout(()=>{if(!RM)try{shvInit()}catch(e){}},4000);
+function shvEnd(fast){const X=SHX;if(!X||!X.run)return;X.run=0;cancelAnimationFrame(X.raf);clearTimeout(X.t);X.el.classList.add("out");setTimeout(()=>{X.el.classList.remove("on","out");try{X.v.pause()}catch(e){}},fast?220:420)}
+function shelfAnim(x,lab){if(RM)return;const X=shvInit(),v=X.v;
+  if(!SHG||v.readyState<2){shelfAnim0(x,lab);return}
+  const el=X.el,u=imgOf(x),c=catOf(x)||{},bg=x.bg||c.bg||palOf(x.t)[0],fg=x.fg||c.fg||palOf(x.t)[1];
+  const f0=el.querySelector(".shv-f"),sp=el.querySelector(".shv-s");
+  f0.innerHTML=cv(x,160);sp.style.setProperty("--sb",bg);sp.style.backgroundImage=u?`url("${u.replace(/"/g,"%22")}")`:"none";sp.querySelector("b").textContent=x.t;
+  el.querySelector(".shv-t b").textContent=x.t;el.querySelector(".shv-t span").textContent=lab||"теперь на полке «Прочитано»";
+  el.classList.remove("out","land");el.classList.add("on");X.run=1;try{v.currentTime=0}catch(e){}
+  const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{el.classList.remove("on");X.run=0;shelfAnim0(x,lab)});
+  const G=SHG.gap,N=G.length,LAND=SHG.land,b3=el.querySelector(".shv-3d"),bx=el.querySelector(".shv-b"),tx=el.querySelector(".shv-t");let landed=0;
+  const E=t=>t<0?0:t>1?1:t*t*(3-2*t),EI=t=>t<0?0:t>1?1:t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  const tick=()=>{if(!X.run)return;const W=el.clientWidth,H=el.clientHeight,k=Math.max(W/540,H/960),dw=540*k,dh=960*k,ox=(W-dw)/2,oy=(H-dh)/2;
+    const fr=Math.max(1,Math.min(N,v.currentTime*SHG.fps+1)),g=G[Math.round(fr)-1],gx=ox+(g[0]+g[2])/2*dw,gy=oy+(g[1]+g[3])/2*dh,s1=(g[3]-g[1])*dh/240;
+    const s0=Math.min(.3*dh,.42*H)/240,sx=W/2-80*s0,sy=oy+.19*dh;
+    const ap=E((fr-3)/6),mv=EI((fr-12)/(LAND-12)),rot=90*EI((fr-11)/(LAND-15)),bob=Math.sin(fr/7)*4*(1-mv);
+    const s=s0+(s1-s0)*mv,ax=sx+(gx-sx)*mv,ay=sy+(gy-sy)*mv+bob-(1-mv)*(1-ap)*30;
+    bx.style.transform=`translate(${ax}px,${ay}px) scale(${s})`;bx.style.opacity=ap;b3.style.transform=`rotateY(${rot}deg)`;
+    b3.style.setProperty("--fd",(Math.sin(rot*Math.PI/180)*.7).toFixed(3));b3.style.setProperty("--sd",(Math.cos(rot*Math.PI/180)*.8).toFixed(3));
+    tx.style.top=(oy+.655*dh)+"px";
+    if(!landed&&fr>=LAND){landed=1;el.classList.add("land");tgHaptic("rigid");setTimeout(()=>tgHaptic("light"),90)}
+    if(v.ended||fr>=N){X.t=setTimeout(()=>shvEnd(),700);return}
+    X.raf=requestAnimationFrame(tick)};
+  tick();tgHaptic("light")}
 // цели в Метрике: какие действия люди делают (без личных данных)
 const goal=n=>{try{window.ym&&ym(114237349,"reachGoal",n)}catch(e){}};
 // аккаунт предлагаем сразу после первой книги на полке (и снова при следующем запуске, если вход слетел)
@@ -6688,6 +6740,7 @@ setInterval(()=>{try{if(NS.hasTok&&NS.hasTok())LS.set("zal.sync.was",1)}catch(e)
 {const _aw=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw.call(BK,x);if(!had){goal("want");setTimeout(()=>onbAsk(),2500);setTimeout(authNudge,5000)}}}
 {const _fw=FM.addWant;FM.addWant=function(x){const had=FM.has(x);_fw.call(FM,x);if(!had)goal("want")}}
 {const _mr=BK.markRead;BK.markRead=function(x,r10,silent){const out=_mr.call(BK,x,r10,silent);if(!silent){goal("read");setTimeout(authNudge,5000)}if(!silent)setTimeout(()=>shelfAnim(x),120);return out}}
+{const _aw2=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw2.call(BK,x);if(!had&&BKC)setTimeout(()=>shelfAnim(x,"теперь в «Хочу прочитать»"),120)}}
 
 
 // ---------- перенос книг из Литрес, Яндекс Книг, LiveLib и других ----------
@@ -6986,7 +7039,8 @@ document.addEventListener("keydown",e=>{if(e.key!=="Enter")return;const t=e.targ
 new MutationObserver(()=>{if(!$("#vsheet").classList.contains("on"))CB.sheet=""}).observe($("#vsheet"),{attributes:true,attributeFilter:["class"]});
 // приглашение в клуб: #cl=<id> или startapp=cl_<id>; ?club=1 включает раздел на этом устройстве
 (function(){const h=location.hash.match(/[#&]cl=([a-z0-9]{12,24})/),sp=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param||"",m=sp.match(/^cl_([a-z0-9]{12,24})$/),id=h?h[1]:m?m[1]:"";
-  if(/[?&]club=1/.test(location.search))LS.set("zal.clubon",1);
+  // ?club=1 или startapp=club (ссылки со страницы сайта «Книжный клуб») - включить раздел и сразу открыть его
+  if(/[?&]club=1/.test(location.search)||sp==="club"){LS.set("zal.clubon",1);cbDock();if(!id){const go=()=>{if($("#onb").classList.contains("on")||$("#intro").classList.contains("on")||$("#splash").classList.contains("on")){setTimeout(go,1200);return}show("club")};setTimeout(go,1500)}}
   if(h)try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
   if(id){LS.set("zal.clubon",1);const go=()=>{if($("#onb").classList.contains("on")||$("#intro").classList.contains("on")||$("#splash").classList.contains("on")){setTimeout(go,1200);return}cbJoinFlow(id)};setTimeout(go,1500)}
   cbDock();setInterval(()=>{if(SCREEN==="club"&&CB.id&&!document.hidden&&Date.now()-CB.t>40000&&!$("#clBox").contains(document.activeElement))cbLoad()},15000);
