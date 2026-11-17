@@ -2398,6 +2398,7 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app #clBox .cb-b,#app .cb-sh .cb-b{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;padding:8px 18px;border-radius:26px;background:rgba(255,255,255,.08);color:#fff;font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1.2;text-align:center}
 #app #clBox .cb-b.w,#app .cb-sh .cb-b.w{background:#F4F2F7;color:#0B0A14;font-weight:700}
 #app #clBox .cb-b:disabled,#app .cb-sh .cb-b:disabled{opacity:.6}
+#app #clBox .cb-b svg,#app .cb-sh .cb-b svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;flex:none}
 #app #clBox .cb-link,#app .cb-sh .cb-link{min-height:44px;padding:0 8px;font-size:14px;font-weight:600;color:#F3D19A}
 #app .cb-head{display:flex;align-items:center;gap:14px}
 #app .cb-hx{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
@@ -6908,6 +6909,9 @@ const cbDec=d=>{const o={},f=(d&&d.fields)||{};for(const k in f){const v=f[k];o[
 async function cbReq(path,opt={}){let t="";try{t=NS.token?await NS.token():""}catch(e){}const h={"Content-Type":"application/json"};if(t)h.Authorization="Bearer "+t;
   const url=(path[0]===":"?CB_API.slice(0,-1):CB_API)+path+(t?"":(path.includes("?")?"&":"?")+"key="+CB_KEY);return fetch(url,{cache:"no-store",...opt,headers:h})}
 const CB={id:LS.get("zal.club",""),club:null,d:{},mem:[],sug:[],qs:[],tab:"read",view:"main",busy:false,err:"",t:0,rank:null,rk:"m",qp:0,sheet:"",cand:[],setup:null,res:[]};
+// последний загруженный клуб храним на устройстве: раздел открывается сразу, свежие данные подтягиваются следом
+function cbCacheSave(){try{localStorage.setItem("zal.clubc",JSON.stringify({id:CB.id,club:CB.club,d:CB.d,mem:CB.mem.map(m=>({...m,d:"",x:{...m.x,h:[]}})),sug:CB.sug,qs:CB.qs}))}catch(e){}}
+(function(){try{const c=JSON.parse(localStorage.getItem("zal.clubc")||"null");if(c&&c.id&&c.id===CB.id&&c.club){CB.club=c.club;CB.d=c.d||{};CB.mem=c.mem||[];CB.sug=c.sug||[];CB.qs=c.qs||[]}}catch(e){}})();
 const cbUid=()=>(NS.uid&&NS.uid())||"";
 const cbK=(t,a)=>"b"+hsh(norm(t)+"|"+norm(String(a||"").trim().split(/\s+/).pop()||"")).toString(36);
 const cbJ=(s,d)=>{try{return JSON.parse(s)||d}catch(e){return d}};
@@ -6937,14 +6941,16 @@ async function cbPutMe(x){const u=cbUid();if(!u||!CB.id)return false;let m=cbMe(
   try{const r=await cbReq("clubs/"+CB.id+"/m/"+u,{method:"PATCH",body:cbEnc({n:m.n,d:JSON.stringify(m.x),u:Date.now()})});return r.ok}catch(e){return false}}
 async function cbPutClub(){if(!cbOwner())return false;const c=CB.club;
   try{const r=await cbReq("clubs/"+CB.id,{method:"PATCH",body:cbEnc({n:c.n,o:c.o,pub:!!c.pub,fin:c.fin||0,mk:c.mk||"",mf:c.mf||0,d:JSON.stringify(CB.d),u:Date.now()})});if(!r.ok)toast("Не сохранилось - проверь интернет");return r.ok}catch(e){toast("Не сохранилось - проверь интернет");return false}}
-function cbForget(){CB.id="";CB.club=null;CB.mem=[];CB.sug=[];CB.qs=[];CB.view="main";try{localStorage.removeItem("zal.club")}catch(e){}}
+function cbForget(){try{localStorage.removeItem("zal.clubc")}catch(e){}CB.id="";CB.club=null;CB.mem=[];CB.sug=[];CB.qs=[];CB.view="main";try{localStorage.removeItem("zal.club")}catch(e){}}
 async function cbLoad(){if(!CB.id||CB.busy||needAuth())return;CB.busy=true;
-  try{const r=await cbReq("clubs/"+CB.id);if(r.status===404){cbForget();toast("Клуб не нашёлся");return}if(!r.ok)throw new Error("HTTP "+r.status);
-    const club=cbDec(await r.json());const L=await Promise.all(["m","s","q"].map(c=>cbReq("clubs/"+CB.id+"/"+c+"?pageSize=300").then(x=>x.ok?x.json():{}).catch(()=>({}))));
+  try{const id=CB.id,pr=cbReq("clubs/"+id),pl=Promise.all(["m","s","q"].map(c=>cbReq("clubs/"+id+"/"+c+"?pageSize=300").then(x=>x.ok?x.json():{}).catch(()=>({}))));
+    const r=await pr;if(r.status===404){cbForget();toast("Клуб не нашёлся");return}if(!r.ok)throw new Error("HTTP "+r.status);
+    const club=cbDec(await r.json());const L=await pl;if(CB.id!==id)return;
     CB.club=club;CB.d=Object.assign({book:null,parts:4,per:7,start:0,meet:null,chat:"",shelf:[],cr:0},cbJ(club.d,{}));
     CB.mem=(L[0].documents||[]).map(cbDec).map(m=>(m.x=Object.assign({p:{},v:[],rs:{},r:{},h:[]},cbJ(m.d,{})),m));
     CB.sug=(L[1].documents||[]).map(cbDec);CB.qs=(L[2].documents||[]).map(cbDec).sort((a,b)=>(a.ts||0)-(b.ts||0));CB.err="";
-    const me=cbMe(),h=cbReadH();if(!me||me.n!==(myName()||"Читатель")||me.x.h.join()!==h.join()){const x=me?me.x:{p:{},v:[],rs:{},r:{},h:[]};x.h=h;await cbPutMe(x)}}
+    cbCacheSave();
+    const me=cbMe(),h=cbReadH();if(!me||me.n!==(myName()||"Читатель")||me.x.h.join()!==h.join()){const x=me?me.x:{p:{},v:[],rs:{},r:{},h:[]};x.h=h;cbPutMe(x).then(()=>{if(SCREEN==="club")cbDraw()})}}
   catch(e){CB.err="Клуб пока не открывается - проверь интернет"}
   finally{CB.busy=false;CB.t=Date.now();try{notifySync()}catch(e){}if(SCREEN==="club")cbDraw();if(CB.sheet==="vote"&&$("#vsheet").classList.contains("on")&&!$("#vshBody").contains(document.activeElement))cbVoteDraw()}}
 function clubOpen(){cbDraw();if(CB.id&&Date.now()-CB.t>4000)cbLoad()}
@@ -7002,7 +7008,7 @@ function cbReadHTML(){const d=CB.d,b=d.book,own=cbOwner();let h="";
   const C=cbCand();
   h+=`<div class="cb-card"><div class="cb-ch"><h2>Что читаем дальше</h2><button class="cb-link" data-cb="vote">Голосовать</button></div>
     <div class="cb-row">${C.slice(0,4).map(x=>cv(cbBook(x),62)).join("")}<button class="cb-plus" data-cb="suggest" aria-label="Предложить книгу">${CB_IC.plus}</button></div></div>
-    <button class="cb-b" data-cb="invite">Позвать в клуб</button>
+    <button class="cb-b" data-cb="invite">${CB_IC.plus}Пригласить в клуб</button>
     ${TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user&&!LS.get("zal.ntf",0)?`<button class="cb-b" data-cb="ntf">Напоминания в Telegram</button>`:""}`;
   return h}
 function cbAskHTML(){const b=CB.d.book;if(!b)return `<div class="cb-card"><p class="cb-note">Вопросы появятся, когда клуб выберет книгу.</p></div>`;
@@ -7025,7 +7031,7 @@ function cbMembersHTML(){const u=cbUid(),o=CB.club.o,L=CB.mem.slice().sort((a,b)
   return `<div class="cb-top"><button class="cb-back" data-cb="main" aria-label="Назад в клуб">${CB_IC.back}</button><h1>Участники</h1></div>
    <div class="cb-list">${L.map(m=>{const me=m._id===u,fr=FRIENDS.some(f=>f.uid===m._id),out=FROUT.some(x=>x.uid===m._id);
      return `<div class="cb-m">${avatar(m.n,m._id)}<b>${me?"Ты":esc(m.n||"Читатель")}</b>${m._id===o?`<span class="cb-tag">${me?"ведёшь клуб":"ведущий"}</span>`:""}${me?"":fr?`<i>У вас в друзьях</i>`:out?`<i class="dim">Заявка отправлена</i>`:`<button data-cb="friend" data-u="${esc(m._id)}" data-n="${esc(m.n||"")}">Добавить в друзья</button>`}</div>`}).join("")}</div>
-   <button class="cb-b w" data-cb="invite">Позвать в клуб</button>
+   <button class="cb-b w" data-cb="invite">${CB_IC.plus}Пригласить в клуб</button>
    ${CB.d.chat?`<button class="cb-b" data-cb="chat">Чат клуба</button>`:""}
    ${cbOwner()?`<button class="cb-b" data-cb="chatset">${CB.d.chat?"Изменить ссылку на чат":"Добавить ссылку на чат клуба"}</button><button class="cb-b" data-cb="pub">${CB.club.pub?"Убрать клуб из рейтинга":"Участвовать в рейтинге клубов"}</button>`:""}
    <button class="cb-link" data-cb="leave">Выйти из клуба</button>`}
@@ -7076,7 +7082,7 @@ function cbMeetSheet(){const m=CB.d.meet,f=m&&m.ts>Date.now(),d=new Date(f?m.ts:
    ${O.length?`<p class="cb-sub">Клуб выбирает из этих вариантов</p><div class="cb-list">${O.map(ts=>`<div class="cb-m"><b>${cbDay(ts)}, ${cbHM(ts)}</b><button data-cb="moptdel" data-ts="${ts}" aria-label="Убрать вариант">Убрать</button></div>`).join("")}</div>`:""}
    ${m?`<button class="cb-link" data-cb="meetdel">Отменить встречу</button>`:""}`,"meet")}
 function cbInviteSheet(){const L=FRIENDS.filter(f=>!CB.mem.some(m=>m._id===f.uid));
-  cbSheet(`<h3>Позвать в клуб</h3><button class="cb-b w" data-cb="invlink">Отправить ссылку</button>${L.length?`<p class="cb-sub">Друзья в Норе</p><div class="cb-list">${L.map(f=>`<div class="cb-m">${avatar(f.n,f.uid)}<b>${esc(f.n||"Читатель")}</b><button data-cb="invfr" data-u="${esc(f.uid)}">Позвать</button></div>`).join("")}</div>`:""}`,"invite",L.length>3)}
+  cbSheet(`<h3>Пригласить в клуб</h3><button class="cb-b w" data-cb="invlink">${CB_IC.plus}Пригласить по ссылке</button>${L.length?`<p class="cb-sub">Друзья в Норе</p><div class="cb-list">${L.map(f=>`<div class="cb-m">${avatar(f.n,f.uid)}<b>${esc(f.n||"Читатель")}</b><button data-cb="invfr" data-u="${esc(f.uid)}">+ Пригласить</button></div>`).join("")}</div>`:""}`,"invite",L.length>3)}
 const cbInvText=()=>`Приходи в мой книжный клуб «${CB.club.n}» в Норе - будем читать одну книгу вместе`;
 const cbLink=()=>`https://t.me/${SHARE_BOT}?startapp=cl_${CB.id}`,cbWeb=()=>`https://nora-books.ru/app.html#cl=${CB.id}`;
 // ---- действия ----
@@ -7145,10 +7151,10 @@ document.addEventListener("click",async e=>{const tb=e.target.closest("[data-cbt
   if(a==="invite"){cbInviteSheet();if(FRIENDS.some(f=>!FRP[f.uid]))try{frLoad()}catch(x2){}return}
   if(a==="ntf"){cbSheet(`<h3>Напоминания клуба</h3><p class="cb-sub">Бот Норы напомнит о сроке книги и о встрече клуба, а раз в неделю пришлёт новости о твоих книгах.</p><p class="cb-note">Для этого мы сохраним для бота твой клуб, названия из избранного, любимых авторов и список друзей в Норе. Выключить можно в любой момент внизу «Статистики».</p><button class="cb-b w" data-cb="ntfon">Включить</button>`,"ntf");return}
   if(a==="ntfon"){vClose();try{notifySet(true)}catch(x2){}cbDraw();return}
-  if(a==="invlink"){shareSheet("Позвать в клуб",cbInvText(),cbLink(),cbWeb());return}
+  if(a==="invlink"){shareSheet("Пригласить в клуб",cbInvText(),cbLink(),cbWeb());return}
   if(a==="invfr"){const u=el.dataset.u;let p=FRP[u];if(!p){el.disabled=true;try{p=await NS.getProfile(u);if(p)FRP[u]=p}catch(x2){}el.disabled=false}
     if(p&&p.tg){const url="https://t.me/"+encodeURIComponent(p.tg)+"?text="+encodeURIComponent(cbInvText()+" "+cbLink());try{if(TG&&TG.openTelegramLink)TG.openTelegramLink(url);else window.open(url,"_blank")}catch(x2){location.href=url}}
-    else shareSheet("Позвать в клуб",cbInvText(),cbLink(),cbWeb());return}
+    else shareSheet("Пригласить в клуб",cbInvText(),cbLink(),cbWeb());return}
   if(a==="chat"&&d.chat){try{if(TG&&/^https:\/\/t\.me\//.test(d.chat))TG.openTelegramLink(d.chat);else window.open(d.chat,"_blank")}catch(x2){location.href=d.chat}return}
   if(a==="chatset"&&cbOwner()){cbSheet(`<h3>Чат клуба</h3><input class="cb-inp" id="cbChat" inputmode="url" placeholder="Ссылка на чат" aria-label="Ссылка на чат клуба" value="${esc(d.chat||"")}" autocomplete="off"><button class="cb-b w" data-cb="chatsave">Сохранить</button>`,"chat");return}
   if(a==="chatsave"&&cbOwner()){let v=$("#cbChat").value.trim();if(v&&!/^https?:\/\//i.test(v))v="https://"+v.replace(/^@/,"t.me/");if(v&&!/^https:\/\/[\w.-]+\.[a-z]{2,}\//i.test(v+"/")){toast("Похоже, в ссылке опечатка");return}d.chat=v;if(await cbPutClub()){vClose();cbDraw()}return}
