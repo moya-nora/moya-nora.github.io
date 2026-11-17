@@ -1,0 +1,17 @@
+name: Бот — заявки «Сотрудничество»
+on:
+  schedule:
+    - cron: "41 * * * *"   # каждый час
+  workflow_dispatch:
+concurrency: {group: bot-collab, cancel-in-progress: false}
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Переслать заявки владелице
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          BOT_FB_PASS: ${{ secrets.BOT_FB_PASS }}
+          MODE: collab
+        run: python3 -u tools/bot_errs.py

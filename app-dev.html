@@ -2625,6 +2625,36 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app #frScroll{padding-top:calc(14px + var(--sat,env(safe-area-inset-top,0px)))!important}
 #app #sumScroll>.shtabs{margin:4px 16px 16px}
 #app #frScroll .shtabs{margin:4px 0 16px}
+
+#app .hc-h{margin:26px 0 12px;font-family:var(--serif);font-size:24px;font-weight:600;text-align:left}
+#app .hc-row{display:flex;gap:12px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px;scrollbar-width:none}
+#app .hc-row::-webkit-scrollbar{display:none}
+#app .hc-card{flex:none;width:286px;display:flex;gap:14px;padding:14px;border-radius:22px;background:rgba(255,255,255,.07);text-align:left;color:inherit}
+#app .hc-cv{object-fit:cover;border-radius:3px 7px 7px 3px;box-shadow:0 16px 28px -14px rgba(0,0,0,.9);flex:none}
+#app .hc-x{display:flex;flex-direction:column;gap:3px;min-width:0}
+#app .hc-x b{font-family:var(--serif);font-size:20px;font-weight:600;line-height:1.08}
+#app .hc-x>span{font-size:13px;color:var(--ink2)}#app .hc-x em{font-style:normal;font-size:13px;color:var(--ink2)}
+#app .hc-x .hc-m{margin-top:auto;color:var(--ink3);font-size:12.5px}
+#app .hc-p,#app .hc-pr{display:flex;align-items:baseline;gap:7px}#app .hc-p s,#app .hc-pr s{font-size:13px;color:var(--ink3)}#app .hc-p b{font-size:16px;font-family:inherit;font-weight:600}
+#app .hc-note{margin:10px 2px 0;font-size:13px;color:var(--ink3);text-align:left}
+#app .hc-pg{padding-bottom:96px}
+#app .hc-hero{display:flex;justify-content:center;padding:6px 0 4px;background:radial-gradient(60% 70% at 50% 45%,rgba(201,96,94,.32),transparent 70%)}
+#app .hc-sub{margin:14px 0 0;text-align:center;font-size:13px;color:var(--ink3)}
+#app .hc-t{margin:4px 0 0;text-align:center;font-family:var(--serif);font-size:32px;font-weight:600;line-height:1.05}
+#app .hc-a{margin:4px 0 0;text-align:center;color:var(--ink2)}
+#app .hc-host{display:flex;align-items:center;gap:10px;margin-top:18px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.07)}
+#app .hc-host>span{display:flex;flex-direction:column;flex:1;min-width:0}#app .hc-host small{font-size:12.5px;color:var(--ink3)}#app .hc-host b{font-weight:600}
+#app .hc-lk{display:inline-flex;align-items:center;gap:6px;padding:8px 11px;border-radius:16px;background:rgba(255,255,255,.08);font-size:13px;color:var(--ink2);text-decoration:none;max-width:52%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#app .hc-lk svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+#app .hc-about{margin:12px 2px 0;font-size:14.5px;line-height:1.45;color:var(--ink2)}
+#app .hc-in{margin:20px 0 4px;font-family:var(--serif);font-size:22px;font-weight:600}
+#app .hc-ul{list-style:none;margin:0;padding:0}#app .hc-ul li{display:flex;flex-direction:column;padding:10px 0 10px 16px;position:relative;border-top:1px solid rgba(255,255,255,.08)}#app .hc-ul li:first-child{border-top:0}
+#app .hc-ul li::before{content:"";position:absolute;left:0;top:18px;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.55)}
+#app .hc-ul b{font-weight:600}#app .hc-ul span{font-size:13.5px;color:var(--ink3)}
+#app .hc-bar{position:sticky;bottom:0;display:flex;align-items:center;gap:14px;margin:16px -4px 0;padding:12px 4px 4px;background:linear-gradient(180deg,rgba(24,25,32,0),#18191F 35%)}
+#app .hc-pr{flex-direction:column;align-items:flex-start;gap:0;line-height:1.15}#app .hc-pr b{font-size:24px;font-weight:600}#app .hc-pr small{font-size:11.5px;color:var(--ink3)}
+#app .hc-go{flex:1;height:54px;border-radius:27px;background:#E2B66B;color:#1B140A;font-size:16px;font-weight:600}#app .hc-go:disabled{background:rgba(255,255,255,.1);color:var(--ink3)}
+#app .cl-f{display:block;margin-top:12px}#app .cl-f span{display:block;margin-bottom:6px;font-size:13px;color:var(--ink3)}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
 (function(){const mine=Date.parse(document.lastModified)||0;let busy=0;
@@ -6152,6 +6182,7 @@ function drawAcc(){const box=$("#accBox");if(!box)return;const tgu=TG&&TG.initDa
    <div class="ac-g">${tgu?`<button class="ac-row" data-ntf role="switch" aria-checked="${ntf}"><span>Напоминания в Telegram</span><i class="ac-sw${ntf?" on":""}"></i></button>`:""}
      ${NS.email?`<div class="ac-row ac-st"><span>Вход</span><b>${esc(showId(NS.email))}</b></div>`:""}</div>
    <div class="ac-g"><a class="ac-row" href="https://t.me/Wonderbookworld_bot" data-ext target="_blank" rel="noopener"><span>Поддержка</span><i>›</i></a>
+     <button class="ac-row" data-collab><span>Сотрудничество</span><i>›</i></button>
      <a class="ac-row" href="https://nora-books.ru/privacy.html" data-ext target="_blank" rel="noopener"><span>Конфиденциальность</span><i>›</i></a>
      ${NS.email||(NS.key&&NS.key())?`<button class="ac-row ac-out" data-sy-out><span>Выйти</span></button>`:""}</div>`}
 document.addEventListener("click",e=>{const t=e.target;
@@ -7052,10 +7083,50 @@ function cbQs(p){const b=CB.d.book;if(!b)return [];const n=cbParts();
   const bank=CB_Q[p>=n?"end":p===1?"first":p===n-1&&n>2?"pre":"mid"],s=hsh(b.k+":"+p),i=s%bank.length,j=(i+1+(s>>3)%(bank.length-1))%bank.length;
   return [{x:bank[i],sh:1},{x:bank[j],sh:1},...CB.qs.filter(q=>q.b===b.k&&q.p===p).map(q=>({x:q.x,n:q.n||"Участник"}))]}
 // ---- экран ----
+
+// ---------- клубы с ведущими (books/hosted.json, заполняет Нора). Вступление пока через бота: заявка -> владелица присылает оплату и приглашение ----------
+let HC=null,HCP=null;
+const HCDEV=/app-dev/.test(location.pathname);
+function hcLoad(){if(HCP)return HCP;HCP=fetch("books/hosted.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{clubs:[]}).then(j=>{HC=(j.clubs||[]).filter(c=>HCDEV||!c.demo);if(SCREEN==="club"&&!CB.id)cbDraw()}).catch(()=>{HC=[]});return HCP}
+const hcDate=d=>{const t=new Date(d+"T12:00:00");return isNaN(t)?"":t.getDate()+" "+["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"][t.getMonth()]};
+const hcLeft=c=>Math.max(0,(c.seats||0)-(c.taken||0));
+const hcHost=u=>{try{const x=new URL(u);return (x.host.replace(/^www\./,"")+x.pathname).replace(/\/$/,"")}catch(e){return ""}};
+const hcCov=(c,w)=>c.cov?`<img class="hc-cv" src="${esc(c.cov)}" alt="" style="width:${w}px;height:${Math.round(w*1.5)}px">`:cv({t:c.t,a:c.a},w);
+const HC_LINK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>';
+function hcPrice(c){return `${c.old&&c.old>c.price?`<s>${c.old} ₽</s>`:""}<b>${c.price} ₽</b>`}
+function hcBlock(){if(!HC||!HC.length)return "";
+  return `<h2 class="hc-h">Клубы с ведущими</h2><div class="hc-row">${HC.map(c=>`<button class="hc-card" data-hc="${esc(c.id)}">${hcCov(c,84)}<span class="hc-x"><b>${esc(c.t)}</b><span>${esc(c.a)}</span><em>ведёт ${esc(c.host&&c.host.n||"")}</em><span class="hc-m">старт ${hcDate(c.start)}${hcLeft(c)?` · мест: ${hcLeft(c)}`:" · мест нет"}</span><span class="hc-p">${hcPrice(c)}</span></span></button>`).join("")}</div>
+   <p class="hc-note">Ведущий готовит заметки к каждой части и проводит эфир.</p>`}
+function hcOpen(id){const c=(HC||[]).find(x=>x.id===id);if(!c)return;const h=c.host||{},left=hcLeft(c);
+  vOpen(`<div class="hc-pg"><div class="hc-hero">${hcCov(c,150)}</div>
+    <p class="hc-sub">клуб с ведущим · ${c.weeks||4} ${cbPl(c.weeks||4,["неделя","недели","недель"])} · старт ${hcDate(c.start)}</p>
+    <h3 class="hc-t">${esc(c.t)}</h3><p class="hc-a">${esc(c.a)}</p>
+    <div class="hc-host">${avatar(h.n||"",h.n||"host")}<span><small>ведёт</small><b>${esc(h.n||"")}</b></span>${h.link?`<a class="hc-lk" href="${esc(h.link)}" data-ext target="_blank" rel="noopener">${HC_LINK}${esc(hcHost(h.link))}</a>`:""}</div>
+    ${h.about?`<p class="hc-about">«${esc(h.about)}»</p>`:""}
+    <h4 class="hc-in">Что внутри</h4>
+    <ul class="hc-ul"><li><b>Заметки ведущего к каждой части</b><span>что заметить, на что обратить внимание</span></li><li><b>Эфиры с ведущим</b><span>ссылка придёт в чат клуба, запись остаётся</span></li><li><b>Чат клуба</b><span>только для участников</span></li></ul>
+    <div class="hc-bar"><span class="hc-pr">${hcPrice(c)}<small>за всю книгу</small></span>${left?`<button class="hc-go" data-hc-join="${esc(c.id)}">Вступить в клуб</button>`:`<button class="hc-go" disabled>Мест нет</button>`}</div></div>`);$("#vsheet").classList.add("ontop")}
+function hcJoin(id){const u="https://t.me/Wonderbookworld_bot?start=hc_"+id;goal("hc_join");
+  try{if(TG&&TG.openTelegramLink){TG.openTelegramLink(u);vClose();toast("Заявка уйдёт в бот Норы - пришлём оплату и приглашение");return}}catch(e){}window.open(u,"_blank")}
+// сотрудничество: заявка ведущего -> база (collab), бот пересылает владелице
+function collabOpen(){vOpen(`<h3 class="vh">Сотрудничество</h3><p class="sy-note">Ведёшь блог о книгах? Можно вести в Норе клуб с платным входом: ты выбираешь книгу и ведёшь разговор, оплату и напоминания берёт на себя Нора.</p>
+  <label class="cl-f"><span>Ссылка на твой блог или соцсеть</span><input class="sy-in" id="clL" inputmode="url" autocomplete="off" placeholder="t.me/… · vk.com/… · youtube.com/…"></label>
+  <label class="cl-f"><span>Какую книгу хочешь читать первой</span><input class="sy-in" id="clB" autocomplete="off"></label>
+  <label class="cl-f"><span>Цена за книгу, ₽</span><input class="sy-in" id="clP" inputmode="numeric" autocomplete="off" placeholder="299"></label>
+  <p class="sy-msg" id="clM"></p><div class="one"><button class="btn w" id="clS">Отправить</button></div>`);
+  $("#clS").onclick=async()=>{const L=$("#clL").value.trim(),B=$("#clB").value.trim(),P=$("#clP").value.trim(),m=$("#clM");if(L.length<5){m.textContent="Добавь ссылку на блог";return}
+    const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user,who=u?(u.username?"@"+u.username:"tg "+u.id):(NS.email?showId(NS.email):"");
+    const f={l:{stringValue:L.slice(0,200)},b:{stringValue:B.slice(0,120)},p:{stringValue:P.slice(0,20)},w:{stringValue:(who+" · ник "+(LS.get("zal.nick","")||"-")).slice(0,120)},t:{timestampValue:new Date().toISOString()}};
+    $("#clS").disabled=true;m.textContent="Отправляю…";
+    try{const r=await fetch("https://firestore.googleapis.com/v1/projects/nora-ed429/databases/(default)/documents/collab?key="+FB.apiKey,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:f})});if(!r.ok)throw 0;vClose();toast("Отправлено - Нора напишет тебе в течение дня")}
+    catch(e){$("#clS").disabled=false;m.textContent="Не получилось - проверь интернет"}}}
+document.addEventListener("click",e=>{const t=e.target;const a=t.closest("[data-hc]");if(a){tgHaptic();hcOpen(a.dataset.hc);return}
+  const j=t.closest("[data-hc-join]");if(j){tgHaptic();hcJoin(j.dataset.hcJoin);return}
+  if(t.closest("[data-collab]")){tgHaptic();collabOpen();return}});
 function cbDraw(){const box=$("#clBox");if(!box)return;cbSealN=0;
   if(!CB.id||needAuth()){if(CB.view==="rank"){box.innerHTML=cbRankHTML();return}
-    box.innerHTML=`<div class="cb-land">${cbSeal("Книжный клуб",148)}<h1>Книжный клуб</h1><p>Читайте одну книгу вместе: общий срок, вопросы для разговора и полка прочитанного.</p>
-     <div class="cb-col"><button class="cb-b w" data-cb="new">Создать клуб</button><button class="cb-b" data-cb="rank">Рейтинг клубов</button></div></div>`;return}
+    box.innerHTML=`<div class="cb-land">${cbSeal("Книжный клуб",148)}<h1>Книжный клуб</h1><p>Читайте одну книгу вместе: общий срок, вопросы для разговора и полка прочитанного.</p></div>${hcBlock()}
+     <div class="cb-land"><div class="cb-col"><button class="cb-b w" data-cb="new">Создать клуб</button><button class="cb-b" data-cb="rank">Рейтинг клубов</button></div></div>`;hcLoad();return}
   if(!CB.club){box.innerHTML=`<div class="cb-land">${cbSeal("",96)}<p>${esc(CB.err||"Открываю клуб...")}</p>${CB.err?`<div class="cb-col"><button class="cb-b" data-cb="retry">Попробовать ещё раз</button></div>`:""}</div>`;return}
   box.innerHTML=CB.view==="members"?cbMembersHTML():CB.view==="rank"?cbRankHTML():cbMainHTML();try{syncBack()}catch(e){}}
 function cbMainHTML(){const c=CB.club,n=CB.mem.length||1,av=CB.mem.slice(0,4).map(m=>avatar(m.n,m._id)).join("");

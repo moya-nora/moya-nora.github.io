@@ -82,6 +82,20 @@ def handle(m):
             api("sendMessage", chat_id=chat, text="Готово! Сюда будут приходить вопросы читателей. Чтобы ответить, смахни сообщение влево и нажми «Ответить».")
         return True
     sub(chat, fr)
+    hc = re.match(r"/start hc_([a-z0-9-]{2,40})", text)
+    if hc:  # заявка в клуб с ведущим из Норы: владелица присылает оплату и приглашение вручную
+        title = hc.group(1)
+        try:
+            for c in json.load(open(os.path.join(os.path.dirname(__file__), "..", "books", "hosted.json"), encoding="utf-8")).get("clubs", []):
+                if c.get("id") == hc.group(1):
+                    title = f"«{c.get('t')}» с {c.get('host', {}).get('n', '')}"
+        except Exception:  # noqa: BLE001
+            pass
+        who = " ".join(x for x in [fr.get("first_name"), fr.get("last_name")] if x) or "Читатель"
+        if owner_id:
+            api("sendMessage", chat_id=owner_id, text=f"🎟 Заявка в клуб {title}\n{who}{' @' + fr['username'] if fr.get('username') else ''} · #u{chat}\n\nОтветь на это сообщение - ссылкой на оплату и приглашением в клуб.")
+        api("sendMessage", chat_id=chat, text=f"Записали тебя в клуб {title}. Скоро пришлём сюда ссылку на оплату и приглашение.")
+        return True
     if text.startswith("/start"):
         api("sendMessage", chat_id=chat, text="Привет! Это Нора: подберу книги под твой вкус и подскажу, что читать дальше.\n\nРаз в неделю Шуршуня будет присылать сюда одну книгу для тебя (отписаться - /stop).\n\nЕсли есть вопрос или идея - просто напиши сюда, мы ответим.",
             reply_markup={"inline_keyboard": [[{"text": "Открыть Нору", "web_app": {"url": APP}}]]})

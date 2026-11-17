@@ -3,7 +3,8 @@
 
 Приложение при ошибке у человека пишет запись в errs/ (без личных данных: текст ошибки, место в коде, iOS/Android/ПК, Telegram или браузер).
 Бот входит в Firebase как nora-bot (секрет BOT_FB_PASS), читает errs, группирует одинаковые ошибки, присылает сводку и удаляет прочитанное.
-Если ошибок не было - ничего не пишет. DRY=1 - только показать текст."""
+Если ошибок не было - ничего не пишет. DRY=1 - только показать текст.
+MODE=collab - вместо ошибок переслать новые заявки «Сотрудничество» (collab/), запускается каждый час вместе с ботом поддержки."""
 import json, os, re, urllib.request, urllib.error
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -38,6 +39,8 @@ def main():
     if c != 200:
         print("вход бота не удался:", c, str(j)[:200]); return
     H = {"Authorization": "Bearer " + j["idToken"]}
+    if os.environ.get("MODE") == "collab":
+        return collab(H, owner)
     docs, page = [], ""
     while True:
         j, c = http(FS + "errs?pageSize=300" + ("&pageToken=" + page if page else ""), headers=H)
@@ -75,6 +78,24 @@ def main():
         _, c = http("https://firestore.googleapis.com/v1/" + d["name"], headers=H, method="DELETE")
         gone += c == 200
     print("удалено:", gone)
+
+
+def collab(H, owner):
+    j, c = http(FS + "collab?pageSize=100", headers=H)
+    if c != 200:
+        print("collab недоступны:", c, str(j)[:300]); return
+    docs = j.get("documents") or []
+    print("заявок на сотрудничество:", len(docs))
+    for d in docs:
+        f = {k: list(v.values())[0] for k, v in d.get("fields", {}).items()}
+        text = (f"🤝 Заявка «Сотрудничество» (клуб с платным входом)\nКто: {f.get('w', '')}\nБлог: {f.get('l', '')}\n"
+                f"Первая книга: {f.get('b', '') or '-'}\nЦена: {f.get('p', '') or '-'} ₽")
+        print(text)
+        if DRY or not TOKEN or not owner:
+            continue
+        _, c = http(f"https://api.telegram.org/bot{TOKEN}/sendMessage", {"chat_id": owner, "text": text, "disable_web_page_preview": True})
+        if c == 200:
+            http("https://firestore.googleapis.com/v1/" + d["name"], headers=H, method="DELETE")
 
 
 if __name__ == "__main__":
