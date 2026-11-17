@@ -6717,7 +6717,7 @@ function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).s
     PIN='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg></span>',
     LIB='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M4 20h16M5 9h14M12 4l8 5H4l8-5zM7 9v8M12 9v8M17 9v8"/></svg></span>';
   const ON=[[ic("litres.ru"),"ЛитРес",pLink("litres",(lid=>lid?`https://www.litres.ru/pages/biblio_book/?art=${lid}`:`https://www.litres.ru/search/?q=${q}`)(litresId(x))),"litres"],[ic("books.yandex.ru"),"Яндекс Книги",pLink("yandex",`https://books.yandex.ru/search?text=${q}`),"yandex"],
-    [ic("ozon.ru"),"Ozon",pLink("ozon",`https://www.ozon.ru/search/?text=${q}&category=16500`),"ozon"],[ic("wildberries.ru"),"Wildberries",pLink("wb",`https://www.wildberries.ru/catalog/0/search.aspx?search=${q}`),"wb"],
+    [ic("ozon.ru"),"Ozon",pLink("ozon",`https://www.ozon.ru/search/?text=${q}&category=16500`),"ozon"],
     [ic("books.google.com"),"Google Книги",`https://www.google.com/search?tbm=bks&q=${q}`]];
   const OFF=[[PIN,"Книжные рядом",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],[ic("chitai-gorod.ru"),"Читай-город",pLink("chitai",`https://www.chitai-gorod.ru/search?phrase=${q}`),"chitai"],
     [ic("bookvoed.ru"),"Буквоед",pLink("bookvoed",`https://www.bookvoed.ru/search?q=${q}`),"bookvoed"],[LIB,"Библиотеки рядом",`https://www.google.com/maps/search/${encodeURIComponent("библиотека")}`]];
