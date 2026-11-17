@@ -1,0 +1,22 @@
+name: Бот — напоминания книжного клуба
+on:
+  schedule:
+    - cron: "12 6 * * *"   # каждый день, 09:12 по Москве
+  workflow_dispatch:
+permissions: {contents: write}
+concurrency: {group: bot-club, cancel-in-progress: false}
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Напомнить
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          BOT_FB_PASS: ${{ secrets.BOT_FB_PASS }}
+        run: python3 -u tools/bot_club.py
+      - name: Запомнить отправленное
+        run: |
+          git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
+          git add tools/bot_club.json 2>/dev/null || exit 0
+          git diff --cached --quiet || (git commit -m "Бот: напоминания клуба" && git pull --rebase --autostash -X theirs -q && git push)

@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""Напоминания книжного клуба в боте - раз в день, утром.
+
+Кому: тем, кто состоит в клубе и включил в Норе напоминания в Telegram (запись notify/<uid> с полем club, читает только бот).
+Что пишет (не больше одного сообщения в день):
+  • клуб начал новую книгу; • до срока 2 дня; • срок сегодня (только тем, кто ещё не отметил);
+  • встреча завтра; • встреча сегодня.
+Бот входит в Firebase так же, как bot_weekly.py (секрет BOT_FB_PASS). Что уже отправлено - tools/bot_club.json.
+DRY=1 - только показать тексты. Нужен секрет BOT_TOKEN."""
+import html, json, os, re, sys, time, urllib.request
+
+ROOT = os.path.join(os.path.dirname(__file__), "..")
+TOKEN = os.environ.get("BOT_TOKEN", "").strip()
+DRY = os.environ.get("DRY") == "1"
+APP = "https://nora-books.ru/app.html?club=1"
+SENT = os.path.join(ROOT, "tools", "bot_club.json")
+FS = "https://firestore.googleapis.com/v1/projects/nora-ed429/databases/(default)/documents/"
+BOTMAIL = "nora-bot@login.moya-nora.github.io"
+MON = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]
+DAY = 86400000
+
+
+def local(ts, tz):
+    return time.gmtime(ts / 1000 + tz * 60)
+
+
+def day_no(ts, tz):
+    return int((ts / 1000 + tz * 60) // 86400)
+
+
+def dm(ts, tz):
+    t = local(ts, tz)
+    return f"{t.tm_mday} {MON[t.tm_mon - 1]}"
+
+
+def hm(ts, tz):
+    t = local(ts, tz)
+    return f"{t.tm_hour:02d}:{t.tm_min:02d}"
+
+
+def club_msgs(name, d, members, uid, now):
+    """Список (ключ, текст) для одного участника. d - данные клуба, members - {uid: данные участника}."""
+    out = []
+    tz = d.get("tz", 180)
+    today = day_no(now, tz)
+    me = members.get(uid) or {}
+    b = d.get("book")
+    if b and d.get("start"):
+        parts = max(1, d.get("parts") or 4); per = d.get("per") or 7
+        done = min(parts, (me.get("p") or {}).get(b["k"], 0))
+        due = lambda i: d["start"] + per * DAY * i
+        ttl = f"«{b['t']}»" + (f" - {b['a']}" if b.get("a") else "")
+        if now - d["start"] < 36 * 3600 * 1000:
+            out.append((f"st:{b['k']}", f"📖 Клуб «{name}» начал новую книгу: {ttl}.\n"
+                        + (f"Читаем целиком, срок - до {dm(due(1), tz)}." if parts == 1 else f"Читаем по частям, их {parts}. Первая - до {dm(due(1), tz)}.")))
+        if done < parts:
+            nxt = due(done + 1); left = day_no(nxt, tz) - today
+            what = f"по книге «{b['t']}»" if parts == 1 else f"по части {done + 1} из {parts} книги «{b['t']}»"
+            if left == 2:
+                out.append((f"d2:{b['k']}:{done + 1}", f"⏳ Клуб «{name}»: до срока {what} осталось 2 дня - до {dm(nxt, tz)}."))
+            elif left == 0:
+                out.append((f"d0:{b['k']}:{done + 1}", f"🔔 Клуб «{name}»: сегодня срок {what}.\n"
+                            + ("Если книга дочитана - отметь это в клубе и поставь оценку." if parts == 1 else "Если часть дочитана - отметь её в клубе, и откроются вопросы для обсуждения.")))
+    m = d.get("meet")
+    if m and m.get("ts", 0) > now:
+        left = day_no(m["ts"], tz) - today
+        go = sum(1 for x in members.values() if (x.get("rs") or {}).get(str(m["ts"])) == 1)
+        mine = (me.get("rs") or {}).get(str(m["ts"]))
+        about = f" Обсуждаем «{b['t']}»." if b else ""
+        if left == 1:
+            out.append((f"m1:{m['ts']}", f"📅 Завтра в {hm(m['ts'], tz)} встреча клуба «{name}».{about}" + ("" if mine in (0, 1) else "\nОтметь в клубе, придёшь ли.")))
+        elif left == 0:
+            out.append((f"m0:{m['ts']}", f"📅 Сегодня в {hm(m['ts'], tz)} встреча клуба «{name}».{about}" + (f"\nСобираются прийти: {go}." if go else "")))
+    return out
+
+
+def http(url, data=None, headers=None):
+    req = urllib.request.Request(url, data=json.dumps(data).encode() if data is not None else None, headers={"Content-Type": "application/json", **(headers or {})})
+    try:
+        with urllib.request.urlopen(req, timeout=40) as r:
+            return json.load(r), 200
+    except urllib.error.HTTPError as e:
+        return {"error": e.read()[:300].decode("utf-8", "replace")}, e.code
+    except Exception as e:  # noqa: BLE001
+        return {"error": str(e)}, 0
+
+
+def main():
+    if not TOKEN and not DRY:
+        print("нет секрета BOT_TOKEN - пропускаю"); return
+    pw = os.environ.get("BOT_FB_PASS", "").strip()
+    if not pw:
+        print("нет секрета BOT_FB_PASS - пропускаю"); return
+    app = open(os.path.join(ROOT, "app.html"), encoding="utf-8").read()
+    key = re.search(r'apiKey:"([^"]+)"', app).group(1)
+    j, c = http("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + key, {"email": BOTMAIL, "password": pw, "returnSecureToken": True})
+    if c != 200:
+        print("вход бота не удался:", c, str(j)[:200]); return
+    H = {"Authorization": "Bearer " + j["idToken"]}
+    people, page = [], ""
+    while True:
+        j, c = http(FS + "notify?pageSize=300" + ("&pageToken=" + page if page else ""), headers=H)
+        if c != 200:
+            print("список недоступен:", c, str(j)[:200]); return
+        for doc in j.get("documents") or []:
+            try:
+                v = json.loads(doc["fields"]["d"]["stringValue"])
+                if v.get("club") and v.get("tg"):
+                    people.append((str(v["tg"]), doc["name"].rsplit("/", 1)[1], v["club"]))
+            except Exception:  # noqa: BLE001
+                pass
+        page = j.get("nextPageToken") or ""
+        if not page:
+            break
+    print("в клубах с напоминаниями:", len(people))
+    try:
+        sent = json.load(open(SENT, encoding="utf-8"))
+    except FileNotFoundError:
+        sent = {}
+    clubs, now, n = {}, int(time.time() * 1000), 0
+    for chat, uid, cid in people:
+        if not re.fullmatch(r"[a-z0-9]{12,24}", cid):
+            continue
+        if cid not in clubs:
+            cj, c1 = http(FS + "clubs/" + cid, headers=H)
+            mj, c2 = http(FS + "clubs/" + cid + "/m?pageSize=300", headers=H)
+            if c1 != 200 or c2 != 200:
+                clubs[cid] = None; continue
+            try:
+                mem = {m["name"].rsplit("/", 1)[1]: json.loads(m["fields"]["d"]["stringValue"]) for m in mj.get("documents") or []}
+                clubs[cid] = (cj["fields"]["n"]["stringValue"], json.loads(cj["fields"]["d"]["stringValue"]), mem)
+            except Exception:  # noqa: BLE001
+                clubs[cid] = None
+        if not clubs[cid] or uid not in clubs[cid][2]:
+            continue
+        me = sent.setdefault(chat, [])
+        items = [(k, t) for k, t in club_msgs(*clubs[cid], uid, now) if cid + ":" + k not in me]
+        if not items:
+            continue
+        txt = "\n\n".join(html.escape(t) for _, t in items)
+        print(chat, "→", txt.replace("\n", " | "))
+        if DRY:
+            continue
+        req = urllib.request.Request(f"https://api.telegram.org/bot{TOKEN}/sendMessage", data=json.dumps({"chat_id": int(chat), "text": txt, "reply_markup": {"inline_keyboard": [[{"text": "Открыть клуб", "web_app": {"url": APP}}]]}}).encode(), headers={"Content-Type": "application/json"})
+        try:
+            urllib.request.urlopen(req, timeout=60).read()
+            sent[chat] = (me + [cid + ":" + k for k, _ in items])[-80:]; n += 1
+        except urllib.error.HTTPError as e:
+            print("не ушло:", e.code)
+            if e.code != 403:
+                continue
+            sent[chat] = (me + [cid + ":" + k for k, _ in items])[-80:]
+        time.sleep(0.2)
+    json.dump(sent, open(SENT, "w", encoding="utf-8"), ensure_ascii=False)
+    print("отправлено:", n)
+
+
+if __name__ == "__main__":
+    main()
