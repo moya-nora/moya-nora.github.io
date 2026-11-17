@@ -39,7 +39,7 @@ def main():
     with sync_playwright() as p:
         b = p.chromium.launch()
         ctx = b.new_context(viewport={"width": 375, "height": 690}, is_mobile=True, has_touch=True)
-        ctx.add_init_script("localStorage.setItem('zal.onb','1');localStorage.setItem('zal.coach','1');localStorage.setItem('zal.coachsx','1');localStorage.setItem('zal.tour.col','1')")
+        ctx.add_init_script("localStorage.setItem('zal.onb','1');localStorage.setItem('zal.coach','1');localStorage.setItem('zal.coachsx','1');localStorage.setItem('zal.tour.col','1');localStorage.setItem('zal.clubon','1')")
         pg = ctx.new_page()
         errs = []
         pg.on("pageerror", lambda e: errs.append(str(e)[:200]))
@@ -64,6 +64,9 @@ def main():
         check("приложение: кнопки карточки", js("[...document.querySelectorAll('#bkc button')].filter(b=>b.offsetParent).length>=4"))
         js("(document.querySelector('[data-bkc=\"close\"]')||{click(){}}).click()")
         pg.wait_for_timeout(500)
+        js("document.querySelector('#clubDock').click()")
+        pg.wait_for_timeout(700)
+        check("приложение: раздел «Клуб» открывается", js("!!document.querySelector('#clBox .cb-seal')&&!!document.querySelector('#clBox [data-cb=new]')"))
         for tab in ("Полки", "Друзья", "Нора"):
             js("t=>[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===t).click()", tab)
             pg.wait_for_timeout(700)
