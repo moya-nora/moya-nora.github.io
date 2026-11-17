@@ -2655,6 +2655,7 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .hc-bar{position:sticky;bottom:0;display:flex;align-items:center;gap:14px;margin:16px -4px 0;padding:12px 4px 4px;background:linear-gradient(180deg,rgba(24,25,32,0),#18191F 35%)}
 #app .hc-pr{flex-direction:column;align-items:flex-start;gap:0;line-height:1.15}#app .hc-pr b{font-size:24px;font-weight:600}#app .hc-pr small{font-size:11.5px;color:var(--ink3)}
 #app .hc-go{flex:1;height:54px;border-radius:27px;background:#E2B66B;color:#1B140A;font-size:16px;font-weight:600}#app .hc-go:disabled{background:rgba(255,255,255,.1);color:var(--ink3)}
+#app .hc-fine{margin:10px 2px 0;font-size:12.5px;color:var(--ink3);line-height:1.4}#app .hc-fine a{color:var(--ink2)}
 #app .cl-f{display:block;margin-top:12px}#app .cl-f span{display:block;margin-bottom:6px;font-size:13px;color:var(--ink3)}
 </style>
 <script>/* свежая версия: если на сайте лежит app.html новее открытого — тихо перезагружаемся (Telegram любит держать старую копию) */
@@ -7116,9 +7117,11 @@ function hcOpen(id){const c=(HC||[]).find(x=>x.id===id);if(!c)return;const h=c.h
     ${h.about?`<p class="hc-about">«${esc(h.about)}»</p>`:""}
     <h4 class="hc-in">Что внутри</h4>
     <ul class="hc-ul"><li><b>Заметки ведущего к каждой части</b><span>что заметить, на что обратить внимание</span></li><li><b>Эфиры с ведущим</b><span>ссылка придёт в чат клуба, запись остаётся</span></li><li><b>Чат клуба</b><span>только для участников</span></li></ul>
-    <div class="hc-bar"><span class="hc-pr">${hcPrice(c)}<small>за всю книгу</small></span>${left?`<button class="hc-go" data-hc-join="${esc(c.id)}">Вступить в клуб</button>`:`<button class="hc-go" disabled>Мест нет</button>`}</div></div>`);$("#vsheet").classList.add("ontop")}
-function hcJoin(id){const u="https://t.me/Wonderbookworld_bot?start=hc_"+id;goal("hc_join");
-  try{if(TG&&TG.openTelegramLink){TG.openTelegramLink(u);vClose();toast("Заявка уйдёт в бот Норы - пришлём оплату и приглашение");return}}catch(e){}window.open(u,"_blank")}
+    <div class="hc-bar"><span class="hc-pr">${hcPrice(c)}<small>${TG&&c.stars?`в Telegram - ⭐ ${c.stars}`:"за всю книгу"}</small></span>${left?`<button class="hc-go" data-hc-join="${esc(c.id)}">${!TG&&c.pay?"Оплатить картой":"Вступить в клуб"}</button>`:`<button class="hc-go" disabled>Мест нет</button>`}</div>
+    ${left&&!TG&&c.pay?`<p class="hc-fine">Картой или по СБП через ЮKassa. После оплаты пришлём приглашение на почту из чека. Удобнее в Telegram - <a href="https://t.me/Wonderbookworld_bot?start=hc_${esc(c.id)}" data-ext target="_blank" rel="noopener">оплатить звёздами</a>.</p>`:""}</div>`);$("#vsheet").classList.add("ontop")}
+function hcJoin(id){const c=(HC||[]).find(x=>x.id===id)||{},u="https://t.me/Wonderbookworld_bot?start=hc_"+id;goal("hc_join");
+  if(!TG&&c.pay){openLink(c.pay);return}
+  try{if(TG&&TG.openTelegramLink){TG.openTelegramLink(u);vClose();toast(c.stars?"Счёт придёт в бот Норы - оплата звёздами":"Заявка уйдёт в бот Норы - пришлём оплату и приглашение");return}}catch(e){}window.open(u,"_blank")}
 // сотрудничество: заявка ведущего -> база (collab), бот пересылает владелице
 function collabOpen(){vOpen(`<h3 class="vh">Сотрудничество</h3><p class="sy-note">Ведёшь блог о книгах? Можно вести в Норе клуб с платным входом: ты выбираешь книгу и ведёшь разговор, оплату и напоминания берёт на себя Нора.</p>
   <label class="cl-f"><span>Ссылка на твой блог или соцсеть</span><input class="sy-in" id="clL" inputmode="url" autocomplete="off" placeholder="t.me/… · vk.com/… · youtube.com/…"></label>
