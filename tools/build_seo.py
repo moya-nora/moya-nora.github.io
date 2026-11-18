@@ -382,17 +382,20 @@ def card(b, n=None, ann=False):
     return f'<a class="bk" href="/{u}">{inner}</a>' if u else f'<div class="bk">{inner}</div>'
 
 
+LR_T = "https://litres.onelink.me/1566260005?pid=advcake_int&c=affiliate&af_siteid=eda80252&af_ad=&clickid=&af_sub1=nora&af_sub2=&af_sub3=&af_sub4=&af_sub5=&af_adset=&is_retargeting=true&af_dp=litresread%3A%2F%2F&af_reengagement_window=30d&af_click_lookback=7d&deep_link_value={url}&af_web_dp={url}&af_ios_url={url}&af_android_url={url}&utm_source=advcake&utm_medium=cpa&utm_campaign=affiliate&utm_content=eda80252&advcake_params=&utm_term=&sub1=nora&ab_test_value=&erid=2VfnxyNkZrY&advcake_method=1&m=1"
+
+
 def WHERE(b):
     q = urllib.parse.quote(b["t"] + " " + b["a"].split(" ")[-1]); qt = urllib.parse.quote(b["t"])
     icon = lambda d: f'<img src="/img/where/{d}.png" alt="" width="22" height="22" loading="lazy">'
     PIN = '<svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg>'
-    ON = [("litres.ru", "ЛитРес", f"https://www.litres.ru/search/?q={q}"), ("books.yandex.ru", "Яндекс Книги", f"https://books.yandex.ru/search?text={q}"),
+    ON = [("litres.ru", "ЛитРес", LR_T.replace("{url}", urllib.parse.quote((f"https://www.litres.ru/pages/biblio_book/?art={lit_id(b)}" if lit_id(b) else f"https://www.litres.ru/search/?q={q}"), safe=""))), ("books.yandex.ru", "Яндекс Книги", f"https://books.yandex.ru/search?text={q}"),
           ("ozon.ru", "Ozon", f"https://www.ozon.ru/search/?text={q}&category=16500")]
     OFF = [("", "Книжные рядом", "https://yandex.ru/maps/?text=" + urllib.parse.quote("книжный магазин")), ("chitai-gorod.ru", "Читай-город", f"https://www.chitai-gorod.ru/search?phrase={qt}&partnerId=1006702&utm_source=affiliate&utm_medium=cpa&utm_campaign=1006702&sub_3=2W5zFJkZEDg&erid=2W5zFJkZEDg"),
            ("bookvoed.ru", "Буквоед", f"https://www.bookvoed.ru/search?q={qt}")]
     a = lambda d, n, u: f'<a href="{u}" rel="nofollow noopener" target="_blank">{icon(d) if d else PIN}{n}</a>'
     return ('<div class="whr"><b>Где прочитать</b><div>' + "".join(a(*x) for x in ON) + '</div><b class="w2">Купить в магазине</b><div>'
-            + "".join(a(*x) for x in OFF) + '</div><small class="erid">Реклама · Читай-город · erid: 2W5zFJkZEDg</small></div>')
+            + "".join(a(*x) for x in OFF) + '</div><small class="erid">Реклама · ООО ЛИТРЕС, ИНН 7719571260, erid: 2VfnxyNkZrY · Читай-город, erid: 2W5zFJkZEDg</small></div>')
 
 
 def rail(L, bare=False):
