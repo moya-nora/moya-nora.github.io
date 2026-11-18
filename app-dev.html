@@ -6484,15 +6484,14 @@ const HS={get:k=>{try{return JSON.parse(localStorage.getItem("zal.sync.hs")||"{}
 if(!HS.get("first"))HS.set("first",Date.now());HS.set("opens",(HS.get("opens")||0)+1);
 const standalone=()=>!!(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
 let bip=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();bip=e});
-addEventListener("appinstalled",()=>HS.set("done",1));
+addEventListener("appinstalled",()=>HS.set("web",1));
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent),isAndroid=/Android/.test(navigator.userAgent);
-function hsDue(){if(VIEW||HS.get("done")||HS.get("never"))return false;if((HS.get("shows")||0)>=3)return false;
+function hsDue(){if(VIEW||HS.get("web")||HS.get("never"))return false;if((HS.get("shows")||0)>=3)return false;
   const days=(Date.now()-HS.get("first"))/864e5;
   if(TG&&(days<1||(HS.get("opens")||0)<2))return false;   // без Telegram предлагаем уже в первый заход, в Telegram - со второго дня
   if(Date.now()-(HS.get("last")||0)<7*864e5)return false;return true}
-function hsCheck(){if(!hsDue())return;if(standalone()){HS.set("done",1);return}
-  if(TG&&TG.checkHomeScreenStatus){try{TG.checkHomeScreenStatus(st=>{if(st==="added"){HS.set("done",1);return}if(st==="missed")hsShow("tg");else if(st==="unsupported")return;else hsShow("tg")})}catch(e){}return}
-  if(TG)return;hsShow("web")}
+function hsCheck(){if(!hsDue())return;if(standalone()){HS.set("web",1);return}
+  hsShow(TG?"tg":"web")}
 const hsEl=document.createElement("div");hsEl.className="hsb";$("#app").appendChild(hsEl);
 // «Нора на экране Домой»: плашка как у больших приложений + наглядная инструкция с картинками интерфейса телефона
 const HS_SHARE='<svg viewBox="0 0 24 24"><path d="M12 3.5v11"/><path d="M8 7.5l4-4 4 4"/><path d="M7 10.5H6a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 6 20.5h12a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-1.5-1.5h-1"/></svg>',
@@ -6504,8 +6503,9 @@ function hsShow(mode){HS.set("last",Date.now());HS.set("shows",(HS.get("shows")|
   hsEl.dataset.mode=mode;setTimeout(()=>hsEl.classList.add("on"),50)}
 const hsHide=()=>hsEl.classList.remove("on");window.noraRec=()=>recList().slice(0,24).map(x=>x.t+" ["+x.g+"]");window.noraLB=P=>listBooks(P.map(s=>s.split("|"))).map(b=>[b.t,b.a,!!imgOf(b)]);window.noraHS=hsShow;window.noraAuth=()=>{authMode="up";authShow()};
 async function hsInstall(mode){
-  if((mode==="tg"||(TG&&!mode))&&TG&&TG.addToHomeScreen){try{TG.onEvent&&TG.onEvent("homeScreenAdded",()=>HS.set("done",1));TG.addToHomeScreen()}catch(x){}return}
-  if(bip){bip.prompt();try{const r=await bip.userChoice;if(r.outcome==="accepted")HS.set("done",1)}catch(x){}bip=null;return}
+  // из Telegram иконку не ставим: ярлык Telegram открывает Нору снова внутри Telegram. Ведём в браузер - там Нора ставится как отдельное приложение
+  if(TG){vOpen(`<div class="hsi"><img class="hsi-logo" src="icons/icon-512.png?v=5" alt=""><h3 class="vh">Нора как приложение</h3><p class="sy-note">Иконка на экран «Домой» ставится из браузера - тогда Нора открывается сама, без Telegram. Твои полки и аккаунт останутся с тобой.</p><button class="btn w" data-hs-web style="width:100%;margin-top:16px">Открыть в браузере</button></div>`);return}
+  if(bip){bip.prompt();try{const r=await bip.userChoice;if(r.outcome==="accepted")HS.set("web",1)}catch(x){}bip=null;return}
   const icon=`<span class="hsi-app"><img src="icons/icon-512.png?v=5" alt=""><small>Нора</small></span>`;
   const steps=isIOS?[["Нажми «Поделиться» внизу Safari",`<div class="hsi-bar"><i></i><i></i><b class="hl">${HS_SHARE}</b><i></i><i></i></div>`],
       ["Выбери «На экран «Домой»»",`<div class="hsi-menu"><div><span>Скопировать</span></div><div class="hl"><span>На экран «Домой»</span>${HS_PLUS}</div><div><span>Добавить в закладки</span></div></div>`],
@@ -6521,8 +6521,13 @@ async function hsInstall(mode){
 hsEl.addEventListener("click",e=>{const t=e.target;
   if(t.closest("[data-hs-later]")){hsHide();return}
   if(!t.closest("[data-hs-go]"))return;hsHide();hsInstall(hsEl.dataset.mode)});
-document.addEventListener("click",e=>{if(e.target.closest("[data-hs-any]")){tgHaptic();hsInstall(TG?"tg":"web")}});
-const hsCan=()=>!VIEW&&!standalone()&&!HS.get("done")&&!(TG&&!TG.addToHomeScreen);
+document.addEventListener("click",e=>{if(e.target.closest("[data-hs-any]")){tgHaptic();hsInstall(TG?"tg":"web");return}
+  if(e.target.closest("[data-hs-web]")){let u="https://nora-books.ru/app.html?app=1";try{if(NS.key&&NS.key()&&NS.link)u=NS.link()}catch(x){}
+    const i=u.indexOf("#"),a=i<0?u:u.slice(0,i),h=i<0?"":u.slice(i);u=a+(a.includes("?")?"&":"?")+"hs=1"+h;vClose();try{goal("hs_web")}catch(x){}
+    try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(x){window.open(u,"_blank")}}});
+// пришли из Telegram по кнопке «Открыть в браузере» - сразу показываем, как поставить иконку
+if(!TG&&/[?&]hs=1/.test(location.search)){const go=()=>{if(standalone())return;if(document.querySelector("#onb.on,#intro.on,#splash.on,#auth.on")){setTimeout(go,1500);return}hsInstall("web")};setTimeout(go,2500)}
+const hsCan=()=>!VIEW&&!standalone()&&!HS.get("web");
 
 // внешние ссылки: внутри Telegram обычная ссылка не открывается — открываем через Telegram
 document.addEventListener("click",e=>{const a=e.target.closest("a[data-ext]");if(!a)return;const u=a.href;if(!TG)return;e.preventDefault();
