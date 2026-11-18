@@ -6600,9 +6600,10 @@ function covRow(x){COVX=x;const c=COV[ikey(x)];const mode=c==="draw"?"draw":c?"p
   return `<div class="covsw"><button data-cov="auto" class="${mode==="auto"?"on":""}">авто</button><button data-cov="draw" class="${mode==="draw"?"on":""}">рисунок</button><button data-cov="next" class="${mode==="pick"?"on":""}">другое издание ↻</button></div>`}
 // «другое издание»: только то же произведение того же автора (без запасного «первого попавшегося» — из-за него находились чужие книги),
 // и только отдельные издания этой книги, а не сборники, где она лишь одна из многих
-async function covNext(x){const k=ikey(x),sur=norm(String(x.a||"").split(" ").slice(-1)[0]),tn=norm(x.t);
-  const au=w=>!sur||norm(w.autor_rusname||"").includes(sur)||norm(w.autor_name||"").includes(sur),tt=w=>{const n=norm(w.rusname||w.name||"");return n===tn||n.startsWith(tn)||tn.startsWith(n)&&n.length>3};
-  const pick=s=>{const L=Array.isArray(s)?s:[];return L.find(w=>au(w)&&tt(w))||L.find(au)};
+// только полное совпадение: то же название целиком и тот же автор (имя и фамилия) - иначе «Детство» Льва Толстого превращалось в «Детство Никиты» Алексея Толстого
+async function covNext(x){const k=ikey(x),AW=String(x.a||"").trim().split(/\s+/).filter(Boolean),sur=norm(AW[AW.length-1]||""),fn=AW.length>1?norm(AW[0]):"",fa=norm(x.a||""),tn=norm(x.t);
+  const au=w=>{if(!sur)return true;return [w.autor_rusname,w.autor_name].some(r=>{const n=norm(r||"");return n===fa||n.includes(sur)&&(!fn||n.includes(fn))})},tt=w=>[w.rusname,w.name].some(n=>n&&norm(n)===tn);
+  const pick=s=>{const L=Array.isArray(s)?s:[];return L.find(w=>au(w)&&tt(w))};
   let w=pick(await flj("/search-works?q="+encodeURIComponent(x.t)+"&page=1&onlymatches=1"));
   if(!w&&x.a)w=pick(await flj("/search-works?q="+encodeURIComponent(x.t+" "+String(x.a).split(" ").slice(-1)[0])+"&page=1"));
   if(!w)throw new Error("none");
