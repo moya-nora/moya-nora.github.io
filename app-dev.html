@@ -6808,7 +6808,7 @@ $("#vshBody").addEventListener("click",e=>{const t=e.target;
   if(!DF)return;
   if(t.closest("[data-dfclose]")){e.stopPropagation();dCollect();DF=null;vClose();return}
   const r=t.closest("[data-dfr]");if(r){DF.r=+r.dataset.dfr;tgHaptic();setTimeout(()=>{if(DF){DF.step=1;dStep()}},180);document.querySelectorAll("[data-dfr]").forEach(x=>x.classList.toggle("on",x===r));return}
-  const m=t.closest("[data-dfm]");if(m){const v=m.dataset.dfm,i=DF.dm.indexOf(v);if(i>=0)DF.dm.splice(i,1);else{if(DF.dm.length>=3)DF.dm.shift();DF.dm.push(v)}tgHaptic();document.querySelectorAll("[data-dfm]").forEach(x=>x.classList.toggle("on",DF.dm.includes(x.dataset.dfm)));return}
+  const m=t.closest("[data-dfm]");if(m){const v=m.dataset.dfm,i=DF.dm.indexOf(v);if(i>=0)DF.dm.splice(i,1);else{if(DF.dm.length>=3){toast("Можно выбрать до трёх - сними одно слово");tgHaptic("light");return}DF.dm.push(v)}tgHaptic();document.querySelectorAll("[data-dfm]").forEach(x=>x.classList.toggle("on",DF.dm.includes(x.dataset.dfm)));return}
   const hw=t.closest("[data-dfh]");if(hw){const k=hw.dataset.dfh,v=hw.dataset.v;DF.dp[k]=DF.dp[k]===v?"":v;tgHaptic();document.querySelectorAll(`[data-dfh="${k}"]`).forEach(x=>x.classList.toggle("on",DF.dp[k]===x.dataset.v));return}
   const pv=t.closest("[data-dfv]");if(pv){DF.pub=pv.dataset.dfv==="1";document.querySelectorAll("[data-dfv]").forEach(x=>x.classList.toggle("on",x===pv));tgHaptic();return}
   if(t.closest("[data-dfqadd]")){dQAdd();dStep();return}
