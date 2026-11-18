@@ -7197,6 +7197,14 @@ const _openAddBook=openAddBook;openAddBook=function(target,pre){_openAddBook(tar
     $("#notesLink").onclick=()=>{closeSheet();setTimeout(()=>notesOpen(w),330)}}};
 function notesOpen(w){IMP.to=w;IMP.list=[];vOpen(`<div class="imp-hd"><button class="sx-back" data-imp-back aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h3 class="vh">Из Заметок</h3></div><textarea class="sy-in" id="impT" rows="9" placeholder="Мастер и Маргарита - Булгаков&#10;Норвежский лес&#10;Сто лет одиночества - Маркес"></textarea><button class="btn w" data-imp-parse style="width:100%;margin-top:12px">Перенести</button><div id="impRes"></div>`,true);$("#vsheet").classList.add("ontop");setTimeout(()=>{try{$("#impT").focus()}catch(e){}},300)}
 
+// ---------- наверх одним касанием: тап по самому верху экрана возвращает длинную страницу в начало ----------
+(function(){let sc=null;const z=document.createElement("div");z.id="toTop";z.setAttribute("aria-label","Наверх");document.body.appendChild(z);
+  const st=document.createElement("style");st.textContent="#toTop{position:fixed;left:0;right:0;top:0;height:calc(22px + env(safe-area-inset-top,0px));z-index:9999;pointer-events:none}#toTop.on{pointer-events:auto}";document.head.appendChild(st);
+  const top=el=>el===document.scrollingElement||el===document.documentElement||el===document.body?window.scrollY:el.scrollTop;
+  document.addEventListener("scroll",e=>{const el=e.target===document?document.scrollingElement:e.target;if(!el||!el.nodeType||el.id==="toTop")return;
+    if(top(el)>400){sc=el;z.classList.add("on")}else if(el===sc){z.classList.remove("on")}},{capture:true,passive:true});
+  z.addEventListener("click",ev=>{const el=sc;z.classList.remove("on");if(!el||!el.isConnected||!el.getClientRects().length||top(el)<10){sc=null;const u=document.elementFromPoint(ev.clientX,ev.clientY);if(u&&u!==z)u.click();return}try{tgHaptic()}catch(e){}
+    if(el===document.scrollingElement)window.scrollTo({top:0,behavior:"smooth"});else el.scrollTo({top:0,behavior:"smooth"})})})();
 // ---------- запуск ----------
 if(VIEW){document.body.classList.add("viewing");REALM="books"}
 setRealmUI(REALM);pickCol();buildFeed();
