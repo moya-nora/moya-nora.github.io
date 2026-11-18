@@ -7113,9 +7113,9 @@ const openLink=u=>{try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):w
 // партнёрские ссылки: после подключения к партнёрке Литрес впиши шаблон, например "https://.../?url={url}"
 // Литрес: партнёрский номер (RefID) из кабинета партнёра - впиши его в litres, и ко всем ссылкам на Литрес добавится ?lfrom=номер
 // (20% с покупок новых читателей и 10% - старых, за 30 дней после перехода). Остальные магазины - шаблон "https://...{url}" из их партнёрки
-const PARTNER={litres:"",yandex:"",ozon:"",wb:"",chitai:"&partnerId=1006702&utm_source=affiliate&utm_medium=cpa&utm_campaign=1006702&sub_3=2W5zFJkZEDg&erid=2W5zFJkZEDg",bookvoed:""};
-const CG_ERID="2W5zFJkZEDg";
-const pLink=(k,u)=>{const p=PARTNER[k];if(!p)return u;if(p[0]==="&")return u+(u.includes("?")?"":"?")+p.slice(u.includes("?")?0:1);if(p.includes("{url}"))return p.replace("{url}",encodeURIComponent(u));return u+(u.includes("?")?"&":"?")+"lfrom="+encodeURIComponent(p)};
+const PARTNER={litres:"https://litres.onelink.me/1566260005?pid=advcake_int&c=affiliate&af_siteid=eda80252&af_ad=&clickid=&af_sub1=nora&af_sub2=&af_sub3=&af_sub4=&af_sub5=&af_adset=&is_retargeting=true&af_dp=litresread%3A%2F%2F&af_reengagement_window=30d&af_click_lookback=7d&deep_link_value={url}&af_web_dp={url}&af_ios_url={url}&af_android_url={url}&utm_source=advcake&utm_medium=cpa&utm_campaign=affiliate&utm_content=eda80252&advcake_params=&utm_term=&sub1=nora&ab_test_value=&erid=2VfnxyNkZrY&advcake_method=1&m=1",yandex:"",ozon:"",wb:"",chitai:"&partnerId=1006702&utm_source=affiliate&utm_medium=cpa&utm_campaign=1006702&sub_3=2W5zFJkZEDg&erid=2W5zFJkZEDg",bookvoed:""};
+const CG_ERID="2W5zFJkZEDg",LR_AD="ООО ЛИТРЕС, ИНН 7719571260, erid: 2VfnxyNkZrY";
+const pLink=(k,u)=>{const p=PARTNER[k];if(!p)return u;if(p[0]==="&")return u+(u.includes("?")?"":"?")+p.slice(u.includes("?")?0:1);if(p.includes("{url}"))return p.split("{url}").join(encodeURIComponent(u));return u+(u.includes("?")?"&":"?")+"lfrom="+encodeURIComponent(p)};
 // прямая страница книги на Литрес, если знаем её номер (каталог Литрес или найденная обложка) - так покупают чаще, чем из поиска
 function litresId(x){const c=catOf(x)||x.src||x,id=String((c&&c.id)||x.id||"");if(/^l\d+$/.test(id))return id.slice(1);
   try{const u=lcovFor(norm(x.t)+"|"+norm(x.a||""));const m=u&&u.match(/cover_\d+\/(\d+)\.jpg/);if(m)return m[1]}catch(e){}
@@ -7126,7 +7126,7 @@ function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).s
   const ic=d=>`<img class="wh-ic${d==="books.yandex.ru"?" rd":""}" src="img/where/${d}.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'wh-ic'}))">`,
     PIN='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg></span>',
     LIB='<span class="wh-ic sv"><svg viewBox="0 0 24 24"><path d="M4 20h16M5 9h14M12 4l8 5H4l8-5zM7 9v8M12 9v8M17 9v8"/></svg></span>';
-  const ON=[[ic("litres.ru"),"ЛитРес",pLink("litres",(lid=>lid?`https://www.litres.ru/pages/biblio_book/?art=${lid}`:`https://www.litres.ru/search/?q=${q}`)(litresId(x))),"litres"],[ic("books.yandex.ru"),"Яндекс Книги",pLink("yandex",`https://books.yandex.ru/search?text=${q}`),"yandex",`до 45 дней бесплатно по промокоду ${YA_PROMO}<span>Реклама · erid: ${YA_ERID}</span>`],
+  const ON=[[ic("litres.ru"),"ЛитРес",pLink("litres",(lid=>lid?`https://www.litres.ru/pages/biblio_book/?art=${lid}`:`https://www.litres.ru/search/?q=${q}`)(litresId(x))),"litres",`<span>Реклама · ${LR_AD}</span>`],[ic("books.yandex.ru"),"Яндекс Книги",pLink("yandex",`https://books.yandex.ru/search?text=${q}`),"yandex",`до 45 дней бесплатно по промокоду ${YA_PROMO}<span>Реклама · erid: ${YA_ERID}</span>`],
     [ic("ozon.ru"),"Ozon",pLink("ozon",`https://www.ozon.ru/search/?text=${q}&category=16500`),"ozon"],
     [ic("books.google.com"),"Google Книги",`https://www.google.com/search?tbm=bks&q=${q}`]];
   const OFF=[[PIN,"Книжные рядом",`https://www.google.com/maps/search/${encodeURIComponent("книжный магазин")}`],[ic("chitai-gorod.ru"),"Читай-город",pLink("chitai",`https://www.chitai-gorod.ru/search?phrase=${q}`),"chitai",`<span>Реклама · erid: ${CG_ERID}</span>`],
