@@ -1,0 +1,16 @@
+name: Бот — статистика Норы для владелицы
+on:
+  schedule:
+    - cron: "23 6 * * *"   # каждый день, 9:23 по Москве
+  workflow_dispatch:
+concurrency: {group: bot-stats, cancel-in-progress: false}
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Статистика
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          BOT_FB_PASS: ${{ secrets.BOT_FB_PASS }}
+        run: python3 -u tools/bot_stats.py

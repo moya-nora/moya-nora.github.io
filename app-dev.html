@@ -2398,6 +2398,10 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .wr-pvh{font-size:13px!important;opacity:.7;margin:0!important}
 #app .wr-imgs{display:flex;gap:12px;overflow-x:auto;max-width:100%;max-height:74%;scroll-snap-type:x mandatory}
 #app .wr-imgs img{flex:none;height:min(66vh,560px);aspect-ratio:9/16;border-radius:16px;scroll-snap-align:center;-webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default}
+#app .st{padding-bottom:20px}#app .st-n{margin:4px 2px 10px;font-size:13px;color:var(--ink3);line-height:1.4}#app .st-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 6px}
+#app .st-t{border-radius:16px;background:rgba(255,255,255,.06);padding:12px 14px;display:flex;flex-direction:column;gap:2px}#app .st-t b{font-family:var(--serif);font-size:30px;font-weight:600;line-height:1.05;color:#F3D19A}#app .st-t span{font-size:13px;color:var(--ink)}#app .st-t small{font-size:12px;color:var(--ink3)}
+#app .st-h{margin:20px 2px 6px;font-size:15px;font-weight:600}#app .st-ch{display:block;width:100%;height:110px;border-radius:12px;background:rgba(255,255,255,.04)}#app .st-ax{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin:4px 2px 0}
+#app .st-top{margin:6px 0 10px;padding:0;list-style:none;counter-reset:s}#app .st-top li{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid rgba(255,255,255,.07)}#app .st-top li span{flex:1;min-width:0;font-size:14px}#app .st-top li small{display:block;font-size:12px;color:var(--ink3)}#app .st-top li b{color:#F3D19A;font-size:15px}
 #app .wr-img{position:absolute;inset:0;z-index:6;background:rgba(4,4,8,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(var(--sat,0px) + 70px) 24px 30px}
 #app .wr-img img{max-width:100%;max-height:74%;border-radius:16px;-webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default}
 #app .wr-img p{margin:0;font-size:15px;color:rgba(247,241,230,.8);text-align:center}
@@ -7268,6 +7272,29 @@ document.addEventListener("click",e=>{if(e.target.closest("[data-wropen]"))wrOpe
 if(TG&&TG.BackButton)try{TG.BackButton.onClick(()=>{if(WR)wrClose()})}catch(e){}
 window.NWRAP={open:wrOpen,data:wrData};
 // ---------- /итоги года ----------
+
+// ---------- статистика Норы для владелицы ----------
+// Открывается только по личной ссылке из бота (#st=<ключ>): ключ запоминается на этом устройстве (не в облаке), и в «Аккаунте» появляется строка «Статистика Норы».
+// Цифры сводные, без имён: их раз в день собирает бот (tools/bot_stats.py) в stats/<ключ>.
+{const STK="nora.stk",stk=()=>{try{return localStorage.getItem(STK)||""}catch(e){return ""}};
+  const m=location.hash.match(/[#&]st=([0-9a-f]{64})/);if(m){try{localStorage.setItem(STK,m[1])}catch(e){}history.replaceState(null,"",location.pathname+location.search);setTimeout(()=>stOpen(),900)}
+  const bars=(L,col)=>{const mx=Math.max(1,...L.map(z=>z[1])),w=100/L.length;return `<svg class="st-ch" viewBox="0 0 100 42" preserveAspectRatio="none">${L.map((z,i)=>`<rect x="${(i*w+w*.15).toFixed(2)}" y="${(40-z[1]/mx*36).toFixed(2)}" width="${(w*.7).toFixed(2)}" height="${Math.max(.6,z[1]/mx*36).toFixed(2)}" rx=".6" fill="${col}"/>`).join("")}</svg><div class="st-ax"><span>${L[0][0].slice(8,10)}.${L[0][0].slice(5,7)}</span><span>сегодня</span></div>`};
+  const line=L=>{if(L.length<2)return `<p class="st-n">История появится через пару дней - бот считает раз в сутки.</p>`;const mx=Math.max(1,...L.map(z=>z.a1)),P=L.map((z,i)=>`${(i/(L.length-1)*100).toFixed(2)},${(40-z.a1/mx*36).toFixed(2)}`).join(" ");return `<svg class="st-ch" viewBox="0 0 100 42" preserveAspectRatio="none"><polyline points="${P}" fill="none" stroke="#F3D19A" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg>`};
+  window.stOpen=async function(){const k=stk();if(!k)return;vOpen(`<div class="st"><h3 class="vh">Статистика Норы</h3><p class="st-n">Загружаю…</p></div>`,true);
+    try{const r=await fetch(`https://firestore.googleapis.com/v1/projects/nora-ed429/databases/(default)/documents/stats/${k}`,{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json(),D=JSON.parse(j.fields.d.stringValue);
+      const t=new Date(D.t),T=(n,l,s)=>`<div class="st-t"><b>${Number(n||0).toLocaleString("ru-RU")}</b><span>${l}</span>${s?`<small>${s}</small>`:""}</div>`;
+      $("#vshBody").innerHTML=`<div class="st"><h3 class="vh">Статистика Норы</h3><p class="st-n">Обновлено ${t.toLocaleDateString("ru-RU",{day:"numeric",month:"long"})} в ${t.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})}. Бот пересчитывает раз в день.</p>
+        <div class="st-g">${T(D.accounts,"аккаунтов всего")}${T(D.regY,"новых вчера",`сегодня ${D.reg1}`)}${T(D.reg7,"новых за 7 дней",`за 30 дней ${D.reg30}`)}${T(D.a1,"заходили за сутки")}${T(D.a7,"за неделю",`за месяц ${D.a30}`)}${T(D.devices,"устройств с полками",`новых за неделю ${D.dev7}`)}</div>
+        <h4 class="st-h">Регистрации за 30 дней</h4>${bars(D.regs,"#F3D19A")}
+        <h4 class="st-h">Новые устройства за 30 дней</h4><p class="st-n">Сюда входят и те, кто пользуется Норой без входа, через Telegram.</p>${bars(D.devs,"rgba(243,209,154,.55)")}
+        <h4 class="st-h">Заходили за сутки, по дням</h4>${line(D.hist||[])}
+        <div class="st-g">${T(D.read,"книг отмечено прочитанными")}${T(D.want,"книг в «Хочу прочитать»")}${T(D.notify,"подписаны на напоминания бота")}</div>
+        <h4 class="st-h">Чаще всего на полках</h4><ol class="st-top">${(D.top||[]).map(([b,a,n])=>`<li><span>${esc(b)}<small>${esc(a)}</small></span><b>${n}</b></li>`).join("")}</ol>
+        <p class="st-n">Цифры сводные: имена и почты сюда не попадают. Ссылку на этот экран никому не пересылай.</p></div>`}
+    catch(e){$("#vshBody").innerHTML=`<div class="st"><h3 class="vh">Статистика Норы</h3><p class="st-n">Пока нет данных: бот ещё не посчитал или ссылка устарела. Открой свежую ссылку из бота.</p></div>`}};
+  document.addEventListener("click",e=>{if(e.target.closest("[data-stats]"))stOpen()});
+  {const da0=drawAcc;drawAcc=function(){da0.apply(this,arguments);try{const box=$("#accBox");if(box&&stk()&&!box.querySelector("[data-stats]"))box.insertAdjacentHTML("beforeend",`<div class="ac-g"><button class="ac-row" data-stats><span>Статистика Норы</span><b>только для тебя</b></button></div>`)}catch(e){}}}}
+// ---------- /статистика ----------
 
 // ---------- книжный клуб ----------
 // Клуб живёт в Firestore: clubs/<id> (название, ведущий, книга, сроки, полка), clubs/<id>/m/<uid> (участник: его отметки,
