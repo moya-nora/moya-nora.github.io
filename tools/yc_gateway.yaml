@@ -1,0 +1,70 @@
+# Шлюз Yandex API Gateway для Норы: пересылает запросы входа и облака в Google Firebase,
+# чтобы Нора работала в России без VPN. Адрес шлюза прописан в app-dev.html (window.NORA_PX).
+openapi: 3.0.0
+info:
+  title: nora-proxy
+  version: 1.0.0
+x-yc-apigateway:
+  cors:
+    origin: '*'
+    methods: '*'
+    allowedHeaders: '*'
+    maxAge: 3600
+paths:
+  /idt/{path+}:
+    x-yc-apigateway-any-method:
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      x-yc-apigateway-integration:
+        type: http
+        url: https://identitytoolkit.googleapis.com/{path}
+        query:
+          '*': '*'
+        headers:
+          '*': '*'
+          Host: identitytoolkit.googleapis.com
+        timeouts:
+          connect: 5
+          read: 25
+  /st/{path+}:
+    x-yc-apigateway-any-method:
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      x-yc-apigateway-integration:
+        type: http
+        url: https://securetoken.googleapis.com/{path}
+        query:
+          '*': '*'
+        headers:
+          '*': '*'
+          Host: securetoken.googleapis.com
+        timeouts:
+          connect: 5
+          read: 25
+  /fs/{path+}:
+    x-yc-apigateway-any-method:
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      x-yc-apigateway-integration:
+        type: http
+        url: https://firestore.googleapis.com/{path}
+        query:
+          '*': '*'
+        headers:
+          '*': '*'
+          Host: firestore.googleapis.com
+        timeouts:
+          connect: 5
+          read: 25
