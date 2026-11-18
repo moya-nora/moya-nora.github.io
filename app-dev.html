@@ -2388,6 +2388,9 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .wr-card dd{margin:0;font-size:16px;font-weight:600;line-height:1.25;overflow-wrap:break-word}
 #app .wr-card footer{font-size:13px;font-weight:700;letter-spacing:.06em;color:#F3D19A}
 #app .wr .wr-btn{align-self:center;min-height:52px;padding:0 28px;border-radius:26px;background:#F4F2F7;color:#0B0A14;font-size:16px;font-weight:700;position:relative;z-index:4}
+#app .wr-pv{align-self:center;width:min(100%,250px,calc((100vh - 300px) * 9 / 16));aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#140C1A;display:flex;align-items:center;justify-content:center;box-shadow:0 30px 60px -20px #000,0 0 0 1px rgba(243,209,154,.3)}
+#app .wr-pv img{width:100%;height:100%;display:block;object-fit:cover}
+#app .wr-pv i{font-style:normal;font-size:14px;color:rgba(247,241,230,.6)}
 #app .wr-img{position:absolute;inset:0;z-index:6;background:rgba(4,4,8,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(var(--sat,0px) + 70px) 24px 30px}
 #app .wr-img img{max-width:100%;max-height:74%;border-radius:16px;-webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default}
 #app .wr-img p{margin:0;font-size:15px;color:rgba(247,241,230,.8);text-align:center}
@@ -7054,27 +7057,85 @@ function wrSlides(D){const n=D.L.length,S=[],bk=plural(n,"книга","книг�
   if(D.au.length&&D.au[0][1]>=2)S.push(`<div class="wr-k">Автор года</div><h2 class="wr-h">${esc(D.au[0][0])}</h2><p class="wr-p"><b>${D.au[0][1]} ${plural(D.au[0][1],"книга","книги","книг")}</b> этого автора за год.${D.au[1]&&D.au[1][1]>=2?` Следом - ${esc(D.au[1][0])}.`:""}</p>`);
   S.push(`<div class="wr-k">Твой читательский тип</div><h2 class="wr-h" style="font-size:38px">${D.type[0]}</h2><p class="wr-p">${D.type[1]}.</p>`);
   try{const sh=(typeof CB!=="undefined"&&CB.id&&CB.club&&CB.d.shelf||[]).length;if(sh)S.push(`<div class="wr-k">Вместе</div><div class="wr-big">${sh}</div><h2 class="wr-h">${plural(sh,"книга","книги","книг")} с клубом «${esc(CB.club.n)}»</h2>`)}catch(e){}
-  S.push(`<div class="wr-card"><h4>Мой ${D.Y} в книгах</h4><div class="n">${n}</div><dl>${D.pg?`<div><dt>${bk} · страниц</dt><dd>${D.pg.toLocaleString("ru-RU")}</dd></div>`:""}${D.gk.length?`<div><dt>Любимый жанр</dt><dd>${esc(GEN[D.gk[0][0]])}</dd></div>`:""}${D.top[0]?`<div><dt>Книга года</dt><dd>${esc(D.top[0].t)}</dd></div>`:""}<div><dt>Читательский тип</dt><dd>${D.type[0]}</dd></div></dl><footer>НОРА · nora-books.ru</footer></div><button class="wr-btn" data-wrshare>Поделиться</button>`);
+  S.push(`<div class="wr-k">Для сторис</div><div class="wr-pv"><img data-wrpv alt="Итоги года" hidden><i>Собираю картинку…</i></div><button class="wr-btn" data-wrshare>Поделиться в сторис</button>`);
   return S}
 let WR=null;const wrEl=document.createElement("div");wrEl.className="wr";$("#app").appendChild(wrEl);
 function wrDraw(){const i=WR.i,S=WR.S;wrEl.style.setProperty("--wc",WR_COL[i%WR_COL.length]);
-  wrEl.innerHTML=`<div class="wr-bg"></div><svg class="wr-arch" viewBox="0 0 100 60"><path d="M10,60V34a40,40 0 0 1 80,0V60M24,60V36a26,26 0 0 1 52,0V60M38,60V40a12,12 0 0 1 24,0V60"/></svg><div class="wr-bars">${S.map((_,j)=>`<i${j<=i?` class="on"`:""}></i>`).join("")}</div><button class="wr-x" data-wrx aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="wr-s">${S[i]}</div>`}
-function wrOpen(){const D=wrData();if(!D){toast("Итоги появятся, когда отметишь прочитанное в этом году");return}WR={D,S:wrSlides(D),i:0};wrEl.classList.add("on");wrDraw();tgHaptic("medium");try{goal("wrap")}catch(e){}try{syncBack()}catch(e){}}
+  wrEl.innerHTML=`<div class="wr-bg"></div><svg class="wr-arch" viewBox="0 0 100 60"><path d="M10,60V34a40,40 0 0 1 80,0V60M24,60V36a26,26 0 0 1 52,0V60M38,60V40a12,12 0 0 1 24,0V60"/></svg><div class="wr-bars">${S.map((_,j)=>`<i${j<=i?` class="on"`:""}></i>`).join("")}</div><button class="wr-x" data-wrx aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="wr-s">${S[i]}</div>`;if(i===S.length-1&&WR.o){const im=wrEl.querySelector("[data-wrpv]");if(im){im.src=URL.createObjectURL(WR.o.b);im.hidden=false;const t=im.parentNode.querySelector("i");t&&t.remove()}}else if(i===S.length-1)wrPrep()}
+function wrOpen(){const D=wrData();if(!D){toast("Итоги появятся, когда отметишь прочитанное в этом году");return}WR={D,S:wrSlides(D),i:0};wrEl.classList.add("on");wrDraw();setTimeout(()=>{try{wrPrep()}catch(e){}},400);tgHaptic("medium");try{goal("wrap")}catch(e){}try{syncBack()}catch(e){}}
 function wrClose(){WR=null;wrEl.classList.remove("on");wrEl.innerHTML="";try{syncBack()}catch(e){}}
-// картинка 1080×1920 для сторис: рисуем сами, без обложек (чужие картинки на холст класть нельзя)
-function wrImage(D){const c=document.createElement("canvas");c.width=1080;c.height=1920;const x=c.getContext("2d"),cs=getComputedStyle(wrEl),SF=cs.getPropertyValue("--serif")||"Georgia,serif",FF=cs.getPropertyValue("--f")||"sans-serif";
-  let g=x.createLinearGradient(0,0,1080,1920);g.addColorStop(0,"#2A1330");g.addColorStop(.55,"#0E0B16");g.addColorStop(1,"#07060D");x.fillStyle=g;x.fillRect(0,0,1080,1920);
-  g=x.createRadialGradient(540,1920,50,540,1920,1000);g.addColorStop(0,"rgba(243,209,154,.20)");g.addColorStop(1,"rgba(243,209,154,0)");x.fillStyle=g;x.fillRect(0,0,1080,1920);
-  x.strokeStyle="rgba(243,209,154,.16)";x.lineWidth=5;[[460,1010],[320,1170],[180,1330]].forEach(([r,y])=>{x.beginPath();x.moveTo(540-r,1920);x.lineTo(540-r,y+r);x.arc(540,y+r,r,Math.PI,0);x.lineTo(540+r,1920);x.stroke()});
-  const T=(t,y,f,col,max)=>{x.font=f;x.fillStyle=col;x.textBaseline="alphabetic";let s=String(t);if(max)while(x.measureText(s).width>max&&s.length>4)s=s.slice(0,-2).trimEnd()+"…";x.fillText(s,96,y)};
-  T("НОРА · ИТОГИ ГОДА",230,`700 38px ${FF}`,"#F3D19A");T(`Мой ${D.Y}`,370,`600 104px ${SF}`,"#F7F1E6");T("в книгах",480,`600 104px ${SF}`,"#F7F1E6");
-  T(D.L.length,860,`600 380px ${SF}`,"#F3D19A");T(plural(D.L.length,"книга","книги","книг")+(D.pg?` · ${D.pg.toLocaleString("ru-RU")} ${plural(D.pg,"страница","страницы","страниц")}`:""),950,`600 48px ${FF}`,"#F7F1E6",880);
-  let y=1110;const row=(k,v)=>{if(!v)return;T(k,y,`500 36px ${FF}`,"rgba(247,241,230,.62)");T(v,y+64,`600 56px ${SF}`,"#F7F1E6",880);y+=170};
-  row("Любимый жанр",D.gk.length?GEN[D.gk[0][0]]:"");row("Книга года",D.top[0]?D.top[0].t:"");row("Читательский тип",D.type[0]);
-  T("nora-books.ru",1810,`700 40px ${FF}`,"#F3D19A");return c}
-async function wrShare(){const D=WR&&WR.D;if(!D)return;tgHaptic();const c=wrImage(D),blob=await new Promise(r=>c.toBlob(r,"image/png"));
-  try{const f=new File([blob],`nora-${D.Y}.png`,{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});try{goal("wrap_share")}catch(e){}return}}catch(e){if(e&&e.name==="AbortError")return}
-  const d=document.createElement("div");d.className="wr-img";d.innerHTML=`<img alt="Итоги года" src="${c.toDataURL("image/png")}"><p>Зажми картинку и выбери «Сохранить» - её можно выложить в сторис.</p><button class="wr-btn" data-wrimgx>Готово</button>`;wrEl.appendChild(d);try{goal("wrap_share")}catch(e){}}
+// картинка 1080×1920 для сторис: стена из обложек года на фоне, веер из трёх любимых книг, цифры года и читательский тип.
+// Обложки грузим с разрешением на холст (напрямую или через wsrv.nl); если не вышло - рисуем свою обложку, чтобы картинка всё равно была красивой
+const wrLd=src=>new Promise(r=>{if(!src)return r(null);const i=new Image();i.crossOrigin="anonymous";const t=setTimeout(()=>r(null),4500);i.onload=()=>{clearTimeout(t);r(i.naturalWidth?i:null)};i.onerror=()=>{clearTimeout(t);r(null)};i.src=src});
+const WRC=new Map();
+async function wrCov(b){let src="";try{src=imgOf(bItem(b,"read"))||imgOf(b)||""}catch(e){}if(!src)return null;if(WRC.has(src))return WRC.get(src);
+  let im=await wrLd(src);if(!im&&/^https?:/.test(src))im=await wrLd("https://wsrv.nl/?url="+encodeURIComponent(src.replace(/^https?:\/\//,""))+"&w=440&output=jpg");WRC.set(src,im);return im}
+const wrRR=(x,X,Y,w,h,r)=>{x.beginPath();if(x.roundRect)x.roundRect(X,Y,w,h,r);else x.rect(X,Y,w,h)};
+const wrWrap=(x,t,max,n)=>{const W=String(t||"").split(/\s+/).filter(Boolean),L=[];let cur="";for(const w of W){const tt=cur?cur+" "+w:w;if(x.measureText(tt).width>max&&cur){L.push(cur);cur=w}else cur=tt}if(cur)L.push(cur);
+  if(L.length>n){L.length=n;let s=L[n-1];while(s.length>3&&x.measureText(s+"…").width>max)s=s.slice(0,-1);L[n-1]=s.trimEnd()+"…"}return L};
+function wrCvDraw(x,im,b,w,h,FF,SF,seed){x.save();wrRR(x,0,0,w,h,Math.max(6,w/24));x.clip();
+  if(im){const s=Math.max(w/im.naturalWidth,h/im.naturalHeight),iw=im.naturalWidth*s,ih=im.naturalHeight*s;x.drawImage(im,(w-iw)/2,(h-ih)/2,iw,ih)}
+  else{const g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,["#5A2A4A","#2B3F66","#5C4220","#1F5246","#5E2626","#3E3170","#4E4824","#264E60"][seed%8]);g.addColorStop(1,"#0B0910");x.fillStyle=g;x.fillRect(0,0,w,h);
+    x.strokeStyle="rgba(243,209,154,.6)";x.lineWidth=Math.max(1.5,w/120);x.strokeRect(w*.07,w*.07,w*.86,h-w*.14);
+    x.textAlign="center";x.fillStyle="#F7F1E6";let fs=Math.round(w/8);x.font=`600 ${fs}px ${SF}`;const lw=Math.max(...String(b&&b.t||"").split(/\s+/).map(z=>x.measureText(z).width));if(lw>w*.78){fs=Math.max(10,Math.floor(fs*w*.78/lw));x.font=`600 ${fs}px ${SF}`}const L=wrWrap(x,b&&b.t,w*.74,4);let y=h*.44-(L.length-1)*fs*.6;L.forEach(l=>{x.fillText(l,w/2,y);y+=fs*1.2});
+    x.fillStyle="#F3D19A";x.font=`500 ${Math.round(w/15)}px ${FF}`;x.fillText(wrWrap(x,b&&b.a,w*.76,1)[0]||"",w/2,h*.85);x.textAlign="left"}
+  const g=x.createLinearGradient(0,0,w*.09,0);g.addColorStop(0,"rgba(0,0,0,.38)");g.addColorStop(1,"rgba(0,0,0,0)");x.fillStyle=g;x.fillRect(0,0,w*.09,h);
+  x.restore()}
+async function wrImage(D){const c=document.createElement("canvas");c.width=1080;c.height=1920;const x=c.getContext("2d"),cs=getComputedStyle(wrEl),SF=(cs.getPropertyValue("--serif")||"").trim()||"Georgia,serif",FF=(cs.getPropertyValue("--f")||"").trim()||"sans-serif";
+  try{await Promise.all([`600 120px ${SF}`,`italic 600 120px ${SF}`,`700 40px ${FF}`,`500 40px ${FF}`].map(f=>document.fonts.load(f)))}catch(e){}
+  const hero=D.top[0]||D.last,pool=[hero,...D.top.slice(1),...D.L.slice().reverse()].filter((b,i,a)=>b&&a.indexOf(b)===i).slice(0,18);
+  const ims=await Promise.all(pool.map(b=>wrCov(b).catch(()=>null))),im=b=>ims[pool.indexOf(b)]||null;
+  const SP=v=>{if("letterSpacing" in x)x.letterSpacing=v};
+  let g=x.createLinearGradient(0,0,0,1920);g.addColorStop(0,"#1C0F25");g.addColorStop(.55,"#130A19");g.addColorStop(1,"#07060D");x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  // стена обложек под углом
+  x.save();x.translate(540,860);x.rotate(-.2);x.globalAlpha=.36;const tw=196,th=294,gp=26;let k=0;
+  for(let r=-5;r<=5;r++)for(let q=-4;q<=4;q++){const b=pool[k%pool.length];x.save();x.translate(q*(tw+gp)-tw/2+(r&1?(tw+gp)/2:0),r*(th+gp)-th/2);wrCvDraw(x,im(b),b,tw,th,FF,SF,k);x.restore();k++}
+  x.restore();x.globalAlpha=1;
+  g=x.createLinearGradient(0,0,0,1920);[[0,.97],[.24,.6],[.5,.5],[.64,.9],[1,1]].forEach(([p,a])=>g.addColorStop(p,`rgba(12,7,17,${a})`));x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  g=x.createRadialGradient(540,840,30,540,840,600);g.addColorStop(0,"rgba(246,176,98,.5)");g.addColorStop(.45,"rgba(176,68,98,.2)");g.addColorStop(1,"rgba(0,0,0,0)");x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647;for(let i=0;i<80;i++){x.fillStyle=`rgba(255,226,170,${.15+rnd()*.6})`;x.beginPath();x.arc(rnd()*1080,rnd()*1920,.8+rnd()*2.6,0,7);x.fill()}
+  // заголовок
+  x.textAlign="center";x.textBaseline="alphabetic";x.fillStyle="#F3D19A";x.font=`700 30px ${FF}`;SP("9px");x.fillText("НОРА · ИТОГИ ГОДА",540,226);SP("0px");
+  x.fillStyle="#F7F1E6";x.font=`600 132px ${SF}`;x.fillText(`Мой ${D.Y}`,540,372);
+  const gold=(a,b)=>{const q=x.createLinearGradient(a,0,b,0);q.addColorStop(0,"#D9A35E");q.addColorStop(.5,"#FFE7B5");q.addColorStop(1,"#C98B49");return q};
+  x.fillStyle=gold(250,830);x.font=`italic 600 132px ${SF}`;x.fillText("в книгах",540,498);
+  // веер: книга года впереди, две книги по бокам
+  const side=pool.filter(b=>b!==hero).slice(0,2);
+  const put=(b,cx,cy,w,h,rot,dim)=>{x.save();x.translate(cx,cy);x.rotate(rot);x.shadowColor="rgba(0,0,0,.75)";x.shadowBlur=70;x.shadowOffsetY=34;x.fillStyle="#000";wrRR(x,-w/2,-h/2,w,h,w/24);x.fill();x.shadowColor="transparent";
+    x.translate(-w/2,-h/2);wrCvDraw(x,im(b),b,w,h,FF,SF,pool.indexOf(b)+3);if(dim){x.fillStyle=`rgba(10,6,14,${dim})`;wrRR(x,0,0,w,h,w/24);x.fill()}x.restore()};
+  if(side[1])put(side[1],812,870,272,408,.21,.3);if(side[0])put(side[0],268,870,272,408,-.21,.3);
+  put(hero,540,836,364,546,-.025,0);
+  if(D.top[0]){x.save();x.translate(752,600);x.rotate(.24);x.shadowColor="rgba(0,0,0,.5)";x.shadowBlur=24;x.shadowOffsetY=8;
+    const sg=x.createLinearGradient(-80,-80,80,80);sg.addColorStop(0,"#FFE3A6");sg.addColorStop(.55,"#E2A962");sg.addColorStop(1,"#B87A3C");x.fillStyle=sg;x.beginPath();
+    for(let i=0;i<48;i++){const a=i/48*Math.PI*2,r=i%2?78:86;x.lineTo(Math.cos(a)*r,Math.sin(a)*r)}x.closePath();x.fill();x.shadowColor="transparent";
+    x.strokeStyle="rgba(70,36,14,.45)";x.lineWidth=2;x.beginPath();x.arc(0,0,64,0,7);x.stroke();
+    x.fillStyle="#3A1D0C";x.font=`700 25px ${FF}`;SP("3px");x.fillText("КНИГА",2,-4);x.fillText("ГОДА",2,28);SP("0px");x.font=`700 22px ${FF}`;x.fillText("★",0,-34);x.restore()}
+  // название книги года
+  let y=1178;x.fillStyle="#F7F1E6";x.font=`600 56px ${SF}`;wrWrap(x,hero.t,900,2).forEach(l=>{x.fillText(l,540,y);y+=64});
+  const st=hero.r!=null?Math.max(1,Math.min(5,Math.round(hero.r/2))):0;
+  x.fillStyle="#F3D19A";x.font=`500 32px ${FF}`;x.fillText(D.top[0]&&st?"★".repeat(st)+"  ·  "+(wrWrap(x,hero.a,560,1)[0]||""):(wrWrap(x,hero.a,860,1)[0]||""),540,y-6);y+=70;
+  // цифры года
+  const n=D.L.length,cols=[[String(n),plural(n,"книга","книги","книг")]];
+  if(D.pg){const big=D.pg>=10000;cols.push([big?(Math.round(D.pg/100)/10).toLocaleString("ru-RU"):D.pg.toLocaleString("ru-RU"),big?"тысяч страниц":plural(D.pg,"страница","страницы","страниц")]);const h=Math.round(D.pg/45);if(h>=2)cols.push([String(h),plural(h,"час","часа","часов")+" с книгой"])}
+  else if(D.avg)cols.push([D.avg.toFixed(1).replace(".",","),"средняя оценка"]);
+  const cw=960/cols.length;cols.forEach(([v,l],i)=>{const cx=60+cw*i+cw/2;let nf=cols.length>2?108:124;x.font=`600 ${nf}px ${SF}`;while(nf>60&&x.measureText(v).width>cw-50){nf-=4;x.font=`600 ${nf}px ${SF}`}x.fillStyle=gold(cx-150,cx+150);x.fillText(v,cx,y+92);
+    x.font=`500 30px ${FF}`;x.fillStyle="rgba(247,241,230,.72)";x.fillText(l,cx,y+142);if(i){x.fillStyle="rgba(243,209,154,.28)";x.fillRect(60+cw*i-1,y+18,2,130)}});
+  y+=196;
+  // читательский тип
+  const ch=176;x.fillStyle="rgba(255,255,255,.06)";wrRR(x,90,y,900,ch,40);x.fill();x.strokeStyle="rgba(243,209,154,.45)";x.lineWidth=2;x.stroke();
+  x.fillStyle="#F3D19A";x.font=`700 25px ${FF}`;SP("6px");x.fillText("МОЙ ЧИТАТЕЛЬСКИЙ ТИП",540,y+62);SP("0px");
+  let fs=60;x.font=`600 ${fs}px ${SF}`;while(fs>38&&x.measureText(D.type[0]).width>820){fs-=2;x.font=`600 ${fs}px ${SF}`}x.fillStyle="#F7F1E6";x.fillText(D.type[0],540,y+136);
+  y+=ch;
+  // подпись
+  const ic=await wrLd("icons/icon-192.png?v=5"),fy=Math.max(y+96,1786);x.font=`700 40px ${FF}`;const tw2=x.measureText("nora-books.ru").width,iw=ic?64:0,x0=540-(tw2+iw+(ic?18:0))/2;
+  if(ic){x.save();wrRR(x,x0,fy-46,64,64,16);x.clip();x.drawImage(ic,x0,fy-46,64,64);x.restore()}x.textAlign="left";x.fillStyle="#F3D19A";x.fillText("nora-books.ru",x0+iw+(ic?18:0),fy);x.textAlign="center";
+  x.fillStyle="rgba(247,241,230,.55)";x.font=`500 28px ${FF}`;x.fillText("Собери свой год в книгах",540,fy+52);x.textAlign="left";
+  return c}
+function wrPrep(){if(!WR)return Promise.resolve(null);const W=WR;if(!W.p)W.p=wrImage(W.D).then(c=>new Promise(r=>{try{c.toBlob(b=>r(b?{c,b}:null),"image/png")}catch(e){r(null)}})).catch(()=>null);
+  W.p.then(o=>{W.o=o;if(WR!==W||!o)return;const im=wrEl.querySelector("[data-wrpv]");if(im&&!im.src){im.src=URL.createObjectURL(o.b);im.hidden=false;const t=im.parentNode.querySelector("i");t&&t.remove()}});return W.p}
+async function wrShare(){if(!WR)return;const D=WR.D;tgHaptic();const o=WR.o||await wrPrep();if(!o){toast("Не получилось собрать картинку, попробуй ещё раз");return}
+  try{const f=new File([o.b],`nora-${D.Y}.png`,{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});try{goal("wrap_share")}catch(e){}return}}catch(e){if(e&&e.name==="AbortError")return}
+  const d=document.createElement("div");d.className="wr-img";d.innerHTML=`<img alt="Итоги года" src="${URL.createObjectURL(o.b)}"><p>Зажми картинку и выбери «Сохранить» - её можно выложить в сторис.</p><button class="wr-btn" data-wrimgx>Готово</button>`;wrEl.appendChild(d);try{goal("wrap_share")}catch(e){}}
 wrEl.addEventListener("click",e=>{if(!WR)return;if(e.target.closest("[data-wrimgx]")){const d=wrEl.querySelector(".wr-img");if(d)d.remove();return}if(e.target.closest(".wr-img"))return;
   if(e.target.closest("[data-wrx]")){wrClose();return}if(e.target.closest("[data-wrshare]")){wrShare();return}
   const back=e.clientX<innerWidth*.3;if(back){if(WR.i>0){WR.i--;wrDraw();tgHaptic()}}else if(WR.i<WR.S.length-1){WR.i++;wrDraw();tgHaptic()}});
