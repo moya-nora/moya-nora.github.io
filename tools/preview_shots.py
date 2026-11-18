@@ -26,7 +26,7 @@ D=[("Четвёртое крыло","Ребекка Яррос","fantasy","СШ�
    ("Джейн Эйр","Шарлотта Бронте","classic","Великобритания",10,"Джейн сильнее всех вокруг. Ночной Торнфилд - мурашки.",["мрачная","трогательная"],{"p":"залпом","h":"всё вместе","e":"идеальный"},"2026-10-05","Я не птица, и никакие сети не удержат меня.")]
 M=[{"id":"u%d"%i,"t":t,"a":a,"g":g,"c":c,"r":r,"f":[],"n":n,"dm":dm,"dp":dp,"dd":dd,"rd":dd[:7]} for i,(t,a,g,c,r,n,dm,dp,dd,q) in enumerate(D)]
 Q=[{"text":q,"book":"u%d"%i,"bt":D[i][0],"ts":1795000000000-i} for i,(*_,q) in enumerate(D) if q]
-CLUB={"book":{"k":"","t":"Мастер и Маргарита","a":"Михаил Булгаков"},"parts":4,"per":7,"start":int(_t.time()*1000)-3*864e5,"meet":None,"chat":"","shelf":[],"cr":0}
+CLUB={"book":{"k":"","t":"Шестёрка воронов","a":"Ли Бардуго"},"parts":4,"per":7,"start":int(_t.time()*1000)-3*864e5,"meet":None,"chat":"","shelf":[],"cr":0}
 async def fsc(route):
   r=route.request;u=r.url
   if r.method=='GET' and '/clubs/t1' in u:
