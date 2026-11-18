@@ -6228,7 +6228,8 @@ function drawAcc(){const box=$("#accBox");if(!box)return;if(!box._tap){box._tap=
      <button class="ac-row" data-priv><span>Что видят друзья</span><b>${privLabel()}</b><i>›</i></button></div>
    <div class="ac-g">${tgu?`<button class="ac-row" data-ntf role="switch" aria-checked="${ntf}"><span>Напоминания в Telegram</span><i class="ac-sw${ntf?" on":""}"></i></button>`:""}
      ${NS.email?`<div class="ac-row ac-st"><span>Вход</span><b>${esc(showId(NS.email))}</b></div>`:""}</div>
-   <div class="ac-g"><a class="ac-row" href="https://t.me/Wonderbookworld_bot" data-ext target="_blank" rel="noopener"><span>Поддержка</span><i>›</i></a>
+   <div class="ac-g"><a class="ac-row" href="https://t.me/Wonderbookworld_bot" data-ext target="_blank" rel="noopener"><span>Поддержка в Telegram</span><i>›</i></a>
+     <a class="ac-row" href="mailto:nora.books@mail.ru" data-mail><span>Написать на почту</span><b>nora.books@mail.ru</b></a>
      <button class="ac-row" data-collab><span>Сотрудничество</span><i>›</i></button>
      <a class="ac-row" href="https://nora-books.ru/privacy.html" data-ext target="_blank" rel="noopener"><span>Конфиденциальность</span><i>›</i></a>
      ${NS.email||(NS.key&&NS.key())?`<button class="ac-row ac-out" data-sy-out><span>Выйти</span></button>`:""}</div>`}
@@ -6246,6 +6247,7 @@ function accTap(e){const t=e.target,stop=()=>{e.stopPropagation();e.preventDefau
   const dl=t.closest("[data-acc-del]");if(dl){stop();const f=FRIENDS.find(x=>x.uid===dl.dataset.accDel);if(f)vOpen(`<h3 class="vh">Убрать ${esc(f.n||"друга")} из друзей?</h3><p class="sy-note">Вы перестанете видеть полки друг друга.</p><div class="one"><button class="btn w" data-acc-del2="${esc(f.uid)}">Убрать</button></div>`);return}
   const qy=t.closest("[data-frq-yes]");if(qy){stop();reqAnswer(qy.dataset.frqYes,true);return}
   const qn=t.closest("[data-frq-no]");if(qn){stop();reqAnswer(qn.dataset.frqNo,false);return}
+  const ml=t.closest("a[data-mail]");if(ml){stop();tgHaptic();const ad="nora.books@mail.ru";try{navigator.clipboard&&navigator.clipboard.writeText(ad)}catch(x){}toast("Адрес скопирован: "+ad);try{location.href="mailto:"+ad}catch(x){}return}
   const a=t.closest("a[data-ext]");if(a){stop();tgHaptic();const u=a.href;try{if(TG&&/^https:\/\/t\.me\//.test(u)&&TG.openTelegramLink)TG.openTelegramLink(u);else if(TG&&TG.openLink)TG.openLink(u);else window.open(u,"_blank")}catch(x){location.href=u}return}
   }catch(x){toast("Не получилось открыть - попробуй ещё раз")}}
 document.addEventListener("click",e=>{const t=e.target;

@@ -12,7 +12,8 @@ import urllib.parse, html, json, os, re, time
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 SITE = "https://nora-books.ru"
 BOT = "https://t.me/Wonderbookworld_bot"
-SUPPORT = f'<a href="{BOT}">пиши в Telegram-бот @Wonderbookworld_bot</a>'
+MAIL = "nora.books@mail.ru"
+SUPPORT = f'<a href="{BOT}">пиши в Telegram-бот @Wonderbookworld_bot</a> или на почту <a href="mailto:{MAIL}">{MAIL}</a>'
 YNOW = time.gmtime().tm_year
 esc = html.escape
 
@@ -333,7 +334,7 @@ def footer(colls):
             f'А Шуршуня подберёт книги лично тебе.</p></div><div><h4>Подборки</h4>'
             + "".join(f'<a href="/c/{p}.html">{esc(t.split(":")[0])}</a>' for p, t in colls[:7])
             + f'</div><div><h4>Нора</h4><a href="{APP}">Открыть в браузере</a><a href="{BOT}">Открыть в Telegram</a><a href="/c/">Все подборки</a><a href="/knizhnyy-klub.html">Книжный клуб</a><a href="/voprosy/">Вопросы для обсуждения</a><a href="/poryadok/">Порядок чтения серий</a><a href="/test.html">Тест: что почитать</a>'
-            f'<a href="/privacy.html">Конфиденциальность</a></div><div class="copy"><span>© {YNOW} Нора</span><span>Сделано с любовью к книгам</span></div></div></div></footer>')
+            f'<a href="mailto:{MAIL}">Написать нам: {MAIL}</a><a href="/privacy.html">Конфиденциальность</a></div><div class="copy"><span>© {YNOW} Нора</span><span>Сделано с любовью к книгам</span></div></div></div></footer>')
 
 
 FOOT = ""
@@ -1010,7 +1011,7 @@ POLICY = [
      "<li>Не отправляем никуда фото шкафа: книги распознаются прямо на телефоне.</li></ul>"),
     ("Где это хранится", "В облаке Google Firebase — его серверы за пределами России. Создавая аккаунт, ты соглашаешься на такое хранение. "
      "Для статистики посещений сайта и приложения используем Яндекс Метрику и Cloudflare Web Analytics: считаем, сколько людей заходит и какие кнопки нажимают. Метрика использует cookies, но не получает твоё имя, почту и полки, а запись экрана в ней выключена."),
-    ("Как удалить данные", "Напиши в бот Норы — удалим аккаунт и все полки в течение 30 дней."),
+    ("Как удалить данные", f"Напиши в бот Норы или на {MAIL} — удалим аккаунт и все полки в течение 30 дней."),
     ("Связаться с нами", f'Вопросы и просьбы — {SUPPORT}.'),
 ]
 pol = ('<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><h1>Политика конфиденциальности</h1>'
