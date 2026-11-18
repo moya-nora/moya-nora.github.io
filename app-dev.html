@@ -1403,7 +1403,8 @@ html[data-theme="light"] #app .sy-err,html[data-theme="light"] #app .sy-msg{colo
 #app #vsheet.search .grab{display:none}
 #app .sx-top{position:sticky;top:0;z-index:3;margin:0 -18px;padding:calc(10px + var(--sat,env(safe-area-inset-top,0px))) 18px 6px;background:#05060A;display:flex;align-items:center;gap:8px}
 #app .sx-top .sbar{flex:1 1 0;min-width:0;width:auto;margin:0}
-#app .sx-back{flex:none;width:40px;height:50px;margin-left:-8px;display:grid;place-items:center;color:var(--ink)}
+#app .imp-hd{display:flex;align-items:center;gap:2px;margin-bottom:6px}.imp-hd .vh{margin:0}
+.sx-back{flex:none;width:40px;height:50px;margin-left:-8px;display:grid;place-items:center;color:var(--ink)}
 #app .sx-back svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 #app #vsheet.search .sxf{position:sticky;top:calc(66px + var(--sat,env(safe-area-inset-top,0px)));z-index:2;margin:0 -18px;padding:6px 18px 8px;background:#05060A}
 html[data-theme="light"] #app #vsheet.search .sh.gl,html[data-theme="light"] #app .sx-top,html[data-theme="light"] #app #vsheet.search .sxf{background:#F3F1EC}
@@ -7169,13 +7170,9 @@ setInterval(()=>{try{if(NS.hasTok&&NS.hasTok())LS.set("zal.sync.was",1)}catch(e)
 
 // ---------- перенос книг из Литрес, Яндекс Книг, LiveLib и других ----------
 // Готового доступа к спискам этих сервисов нет: переносим скриншотами (распознавание текста) или списком.
-function importOpen(){vOpen(`<h3 class="vh">Перенести книги</h3>
-  <p class="sy-note" style="font-size:14px;color:var(--ink2)">Литрес, Яндекс Книги, LiveLib и Bookmate не дают забрать список напрямую, поэтому есть два способа.</p>
-  <div class="imp-step"><b>1. Скриншоты</b><span>Открой в сервисе раздел «Мои книги» или «Прочитанное», сделай несколько скриншотов списка и загрузи их — Нора прочитает названия.</span><button class="btn w" data-imp-shot>Загрузить скриншоты</button></div>
-  <div class="imp-step"><b>2. Списком</b><span>Скопируй названия из сервиса или заметок и вставь — по одной книге в строке, автор через тире по желанию.</span>
-   <textarea class="sy-in" id="impT" rows="6" placeholder="Мастер и Маргарита — Булгаков&#10;Норвежский лес&#10;Сто лет одиночества — Маркес"></textarea>
-   <div class="imp-to"><button class="on" data-imp-to="read">Прочитано</button><button data-imp-to="want">Хочу прочитать</button></div>
-   <button class="btn w" data-imp-parse>Разобрать список</button></div><div id="impRes"></div>`,true)}
+function importOpen(){vOpen(`<div class="imp-hd"><button class="sx-back" data-imp-back aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h3 class="vh">Перенести книги</h3></div>
+  <p class="sy-note" style="font-size:14px;color:var(--ink2)">Литрес, Яндекс Книги, LiveLib и Bookmate не дают забрать список напрямую, поэтому переносим скриншотами.</p>
+  <div class="imp-step"><span>Открой в сервисе раздел «Мои книги» или «Прочитанное», сделай несколько скриншотов списка и загрузи их. Нора прочитает названия.</span><button class="btn w" data-imp-shot>Загрузить скриншоты</button></div>`,true)}
 let IMP={to:"read",list:[]};
 function impParse(text){const out=[],seen=new Set();String(text).split(/\n+/).map(l=>l.replace(/^[\s\d.)•\-–—*]+/,"").trim()).filter(l=>l.length>1).forEach(line=>{
   const [t0,a0]=line.split(/\s+[—–-]\s+|\s*;\s*|\t/);const t=(t0||"").replace(/[«»"]/g,"").trim(),a=(a0||"").trim();if(!t)return;
@@ -7183,9 +7180,10 @@ function impParse(text){const out=[],seen=new Set();String(text).split(/\n+/).ma
   if(!c){const m=matchBooks(line);c=m[0]||null}const x=c?bItem(c,"cat"):{t:t.charAt(0).toUpperCase()+t.slice(1),a,kind:"man"};
   const k=norm(x.t);if(seen.has(k))return;seen.add(k);out.push({x,ok:!BK.has(x),found:!!c})});return out}
 function impDraw(){const box=$("#impRes");if(!box)return;const L=IMP.list,n=L.filter(i=>i.ok).length;
-  box.innerHTML=L.length?`<div class="imp-list">${L.map((i,j)=>`<label class="imp-row"><input type="checkbox" data-imp-i="${j}" ${i.ok?"checked":""} ${BK.has(i.x)?"disabled":""}><span><b>${esc(i.x.t)}</b><small>${esc([i.x.a,BK.has(i.x)?"уже на полке":i.found?"":"нет в каталоге — добавится как есть"].filter(Boolean).join(" · "))}</small></span></label>`).join("")}</div>
+  box.innerHTML=L.length?`<div class="imp-list">${L.map((i,j)=>`<label class="imp-row"><input type="checkbox" data-imp-i="${j}" ${i.ok?"checked":""} ${BK.has(i.x)?"disabled":""}><span><b>${esc(i.x.t)}</b><small>${esc([i.x.a,BK.has(i.x)?"уже на полке":i.found?"":"нет в каталоге, добавится как есть"].filter(Boolean).join(" · "))}</small></span></label>`).join("")}</div>
    <button class="btn w" data-imp-add ${n?"":"disabled"}>Добавить: ${n} ${plural(n,"книга","книги","книг")}</button>`:`<p class="sy-msg">Не получилось разобрать ни одной строки.</p>`}
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody"))return;
+  if(t.closest("[data-imp-back]")){const w=IMP.to==="want"?"want":"read";vClose();tgHaptic();setTimeout(()=>openAddBook(w),330);return}
   if(t.closest("[data-imp-shot]")){vClose();openAddBook("read");setTimeout(()=>{const f=$("#bPhoto");if(f)f.click()},30);return}
   const to=t.closest("[data-imp-to]");if(to){IMP.to=to.dataset.impTo;document.querySelectorAll("[data-imp-to]").forEach(b=>b.classList.toggle("on",b===to));tgHaptic();return}
   if(t.closest("[data-imp-parse]")){IMP.list=impParse($("#impT").value);impDraw();tgHaptic();return}
@@ -7194,10 +7192,10 @@ document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody")
     vDirty=true;vClose();toast(`Добавлено: ${L.length} ${plural(L.length,"книга","книги","книг")}`);return}});
 document.addEventListener("change",e=>{const c=e.target.closest("[data-imp-i]");if(!c)return;IMP.list[+c.dataset.impI].ok=c.checked;const n=IMP.list.filter(i=>i.ok).length,b=$("[data-imp-add]");if(b){b.disabled=!n;b.textContent=`Добавить: ${n} ${plural(n,"книга","книги","книг")}`}});
 // кнопка переноса — в окне «Добавить книгу» и в статистике
-const _openAddBook=openAddBook;openAddBook=function(target,pre){_openAddBook(target,pre);const pb=$("#bPhotoBtn");if(pb&&!pre)pb.insertAdjacentHTML("afterend",`<button type="button" class="imp-link" id="impLink"><i class="qi"><svg viewBox="0 0 24 24"><path d="M12 4v10M8 10l4 4 4-4"/><path d="M4.5 14v3a3 3 0 0 0 3 3h9a3 3 0 0 0 3-3v-3"/></svg></i><span>Перенести книги из Литрес, Яндекс Книг, LiveLib…</span></button>`);const il=$("#impLink");if(il){il.onclick=()=>{closeSheet();setTimeout(importOpen,330)};const w=target==="want"?"want":"read";
+const _openAddBook=openAddBook;openAddBook=function(target,pre){_openAddBook(target,pre);const pb=$("#bPhotoBtn");if(pb&&!pre)pb.insertAdjacentHTML("afterend",`<button type="button" class="imp-link" id="impLink"><i class="qi"><svg viewBox="0 0 24 24"><path d="M12 4v10M8 10l4 4 4-4"/><path d="M4.5 14v3a3 3 0 0 0 3 3h9a3 3 0 0 0 3-3v-3"/></svg></i><span>Перенести книги из Литрес, Яндекс Книг, LiveLib…</span></button>`);const il=$("#impLink");if(il){const w=target==="want"?"want":"read";il.onclick=()=>{IMP.to=w;closeSheet();setTimeout(importOpen,330)};
     il.insertAdjacentHTML("afterend",`<button type="button" class="imp-link" data-imp="${w}"><i class="qi"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg></i><span>Загрузить из таблицы Excel</span></button><button type="button" class="imp-link" id="notesLink"><i class="qi"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h7M9 7h3"/></svg></i><span>Перенести из Заметок</span></button>`);
     $("#notesLink").onclick=()=>{closeSheet();setTimeout(()=>notesOpen(w),330)}}};
-function notesOpen(w){IMP.to=w;IMP.list=[];vOpen(`<h3 class="vh">Из Заметок</h3><textarea class="sy-in" id="impT" rows="9" placeholder="Мастер и Маргарита — Булгаков&#10;Норвежский лес&#10;Сто лет одиночества — Маркес"></textarea><button class="btn w" data-imp-parse style="width:100%;margin-top:12px">Перенести</button><div id="impRes"></div>`,true);$("#vsheet").classList.add("ontop");setTimeout(()=>{try{$("#impT").focus()}catch(e){}},300)}
+function notesOpen(w){IMP.to=w;IMP.list=[];vOpen(`<div class="imp-hd"><button class="sx-back" data-imp-back aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h3 class="vh">Из Заметок</h3></div><textarea class="sy-in" id="impT" rows="9" placeholder="Мастер и Маргарита - Булгаков&#10;Норвежский лес&#10;Сто лет одиночества - Маркес"></textarea><button class="btn w" data-imp-parse style="width:100%;margin-top:12px">Перенести</button><div id="impRes"></div>`,true);$("#vsheet").classList.add("ontop");setTimeout(()=>{try{$("#impT").focus()}catch(e){}},300)}
 
 // ---------- запуск ----------
 if(VIEW){document.body.classList.add("viewing");REALM="books"}
