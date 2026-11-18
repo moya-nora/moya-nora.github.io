@@ -5,7 +5,7 @@ SCENES=main,book - какие сцены, N - вариантов на сцену
 import base64, json, os, sys, urllib.request, urllib.error
 
 KEY = os.environ.get("IMAGE_API_KEY", "").strip()
-BASE = os.environ.get("IMAGE_BASE_URL", "").strip().rstrip("/")
+BASE = (os.environ.get("IMAGE_BASE_URL", "").strip() or "https://dindindon.ru/v1").rstrip("/")
 MODEL = os.environ.get("IMAGE_MODEL", "gpt-image-2").strip() or "gpt-image-2"
 N = int(os.environ.get("N", "2") or 2)
 P = json.load(open(os.path.join(os.path.dirname(__file__), "prompts.json"), encoding="utf-8"))
