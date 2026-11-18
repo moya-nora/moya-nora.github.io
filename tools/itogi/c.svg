@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+<defs><radialGradient id="mg" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFE7B0" stop-opacity=".55"/><stop offset="1" stop-color="#FFE7B0" stop-opacity="0"/></radialGradient></defs>
+<rect width="1080" height="1920" fill="#2B2F55"/>
+<path d="M0 1500 Q300 1400 560 1460 T1080 1420 V1920 H0Z" fill="#353A68"/>
+<g fill="#FFF1C9"><circle cx="120" cy="860" r="4"/><circle cx="960" cy="900" r="5"/><circle cx="880" cy="1600" r="4"/><circle cx="160" cy="1500" r="5"/><circle cx="420" cy="1720" r="4"/><circle cx="980" cy="1300" r="3"/><circle cx="70" cy="1200" r="3"/><circle cx="760" cy="840" r="3"/><circle cx="300" cy="1000" r="3"/></g>
+<g fill="#F2C14E"><path d="M200 1080 l9 22 22 9 -22 9 -9 22 -9 -22 -22 -9 22 -9z"/><path d="M900 1120 l7 16 16 7 -16 7 -7 16 -7 -16 -16 -7 16 -7z"/><path d="M820 1760 l9 22 22 9 -22 9 -9 22 -9 -22 -22 -9 22 -9z"/></g>
+<circle cx="540" cy="1300" r="520" fill="url(#mg)"/>
+<!-- crescent moon (лодочка) -->
+<mask id="cm"><rect width="1080" height="1920" fill="#fff"/><circle cx="560" cy="1080" r="340" fill="#000"/></mask>
+<g mask="url(#cm)"><circle cx="540" cy="1250" r="330" fill="#F6D58E"/><g fill="#E7BC6A"><circle cx="400" cy="1480" r="28"/><circle cx="560" cy="1530" r="18"/><circle cx="700" cy="1460" r="14"/><circle cx="300" cy="1380" r="12"/></g></g>
+<!-- reader on moon -->
+<g transform="translate(470 1290)">
+ <path d="M-30 120 Q-40 30 20 10 H90 Q150 30 140 130 Z" fill="#C9705A"/>
+ <path d="M120 120 Q220 110 260 170 Q270 200 240 210 L120 180Z" fill="#3B2547"/>
+ <ellipse cx="255" cy="205" rx="30" ry="16" fill="#E7A94F"/>
+ <rect x="40" y="-14" width="34" height="30" fill="#E0A27C"/>
+ <ellipse cx="56" cy="-60" rx="58" ry="64" fill="#EDB892"/>
+ <path d="M-6 -70 Q-10 -140 56 -136 Q126 -134 116 -56 Q130 20 100 40 Q110 -40 90 -80 Q50 -100 10 -80 Q0 -20 8 40 Q-20 0 -6 -70Z" fill="#B5584A"/>
+ <path d="M26 -54 q10 9 20 0 M64 -54 q10 9 20 0" fill="none" stroke="#3A2420" stroke-width="5" stroke-linecap="round"/>
+ <path d="M44 -24 q10 7 20 0" fill="none" stroke="#B5584A" stroke-width="5" stroke-linecap="round"/>
+ <g transform="translate(56 60)"><path d="M0 0 Q-56 -22 -110 -6 V60 Q-56 46 0 66Z" fill="#FFF6E8"/><path d="M0 0 Q56 -22 110 -6 V60 Q56 46 0 66Z" fill="#F6EBDA"/><ellipse cx="-108" cy="28" rx="20" ry="22" fill="#EDB892"/><ellipse cx="108" cy="28" rx="20" ry="22" fill="#EDB892"/></g>
+</g>
+<!-- flying books like birds -->
+<g transform="translate(780 980) rotate(-14)"><path d="M0 0 Q-40 -26 -80 -6 V20 Q-40 2 0 26Z" fill="#8FA88A"/><path d="M0 0 Q40 -26 80 -6 V20 Q40 2 0 26Z" fill="#A9C0A3"/></g>
+<g transform="translate(190 1090) rotate(12) scale(.8)"><path d="M0 0 Q-40 -26 -80 -6 V20 Q-40 2 0 26Z" fill="#E7A94F"/><path d="M0 0 Q40 -26 80 -6 V20 Q40 2 0 26Z" fill="#F2C14E"/></g>
+<g transform="translate(860 1420) rotate(-6) scale(.65)"><path d="M0 0 Q-40 -26 -80 -6 V20 Q-40 2 0 26Z" fill="#D88B6F"/><path d="M0 0 Q40 -26 80 -6 V20 Q40 2 0 26Z" fill="#E9A88E"/></g>
+<!-- little dragon silhouette far -->
+<path d="M160 1760 q40 -30 80 -10 q20 -30 50 -20 q-14 16 -10 30 q40 6 60 30 q-40 0 -60 -10 q-40 20 -90 0 q-20 6 -30 -20z" fill="#232645"/>
+</svg>
