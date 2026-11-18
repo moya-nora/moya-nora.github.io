@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+<defs><clipPath id="win"><rect x="150" y="860" width="780" height="520" rx="70"/></clipPath>
+<pattern id="seat" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#7A3E5A"/><circle cx="18" cy="18" r="5" fill="#8D4A69"/></pattern></defs>
+<rect width="1080" height="1920" fill="#F7D9C4"/>
+<!-- wall panel -->
+<rect y="780" width="1080" height="1140" fill="#E9BFA2"/>
+<rect y="780" width="1080" height="16" fill="#D9A888"/>
+<!-- window landscape -->
+<g clip-path="url(#win)">
+ <rect x="150" y="860" width="780" height="520" fill="#BFD3E6"/>
+ <circle cx="760" cy="980" r="60" fill="#FFF1C9"/>
+ <path d="M150 1180 Q330 1090 520 1150 T930 1120 V1380 H150Z" fill="#9DB0C9"/>
+ <path d="M150 1260 Q400 1200 640 1250 T930 1230 V1380 H150Z" fill="#F4F6FA"/>
+ <g fill="#5C7A62"><path d="M260 1260 l40 -150 40 150z"/><path d="M330 1270 l34 -120 34 120z"/><path d="M820 1250 l38 -140 38 140z"/><path d="M760 1262 l28 -100 28 100z"/></g>
+ <g stroke="#FFFFFF" stroke-width="10"><line x1="520" y1="1270" x2="520" y2="1120"/><line x1="580" y1="1270" x2="586" y2="1140"/><line x1="660" y1="1266" x2="655" y2="1100"/></g>
+ <g stroke="#3B3B3B" stroke-width="6" stroke-dasharray="10 22"><line x1="520" y1="1260" x2="520" y2="1130"/><line x1="660" y1="1256" x2="655" y2="1110"/></g>
+ <g fill="#FFFFFF" opacity=".9"><circle cx="250" cy="950" r="5"/><circle cx="400" cy="1010" r="4"/><circle cx="560" cy="930" r="6"/><circle cx="880" cy="1080" r="4"/><circle cx="470" cy="1090" r="5"/><circle cx="700" cy="1060" r="4"/></g>
+</g>
+<rect x="150" y="860" width="780" height="520" rx="70" fill="none" stroke="#FFF6E8" stroke-width="26"/>
+<rect x="520" y="860" width="40" height="520" fill="#FFF6E8" opacity="0"/>
+<!-- curtains -->
+<path d="M110 830 H300 Q260 1000 300 1180 Q200 1220 110 1200Z" fill="#C9705A"/>
+<path d="M970 830 H780 Q820 1000 780 1180 Q880 1220 970 1200Z" fill="#C9705A"/>
+<rect x="90" y="810" width="900" height="30" rx="15" fill="#7A3E5A"/>
+<!-- table -->
+<rect x="250" y="1420" width="580" height="40" rx="14" fill="#6E3B3B"/>
+<rect x="520" y="1460" width="40" height="300" fill="#5A2F2F"/>
+<!-- glass of tea in holder -->
+<g transform="translate(390 1240)">
+ <path d="M0 0 h76 l-6 170 h-64z" fill="#FFFFFF" opacity=".45"/>
+ <path d="M4 40 h68 l-4 130 h-60z" fill="#B8622A"/>
+ <path d="M4 40 h68 l-1 16 h-66z" fill="#D9874A"/>
+ <path d="M-8 96 h92 l-10 84 h-72z" fill="#C2C5CC"/>
+ <path d="M-8 96 h92 l-2 12 h-88z" fill="#E3E5EA"/>
+ <g fill="none" stroke="#9EA2AB" stroke-width="4"><path d="M8 124 q30 -16 60 0"/><path d="M8 148 q30 16 60 0"/><circle cx="38" cy="136" r="7"/></g>
+ <path d="M84 110 q44 2 38 40 q-6 28 -44 24" fill="none" stroke="#C2C5CC" stroke-width="12"/>
+ <ellipse cx="38" cy="182" rx="50" ry="10" fill="#C2C5CC"/>
+ <line x1="58" y1="-34" x2="44" y2="100" stroke="#E3E5EA" stroke-width="7" stroke-linecap="round"/>
+ <path d="M22 -16 q-12 -22 4 -44 M48 -24 q-12 -22 4 -44" fill="none" stroke="#FFF6E8" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+</g>
+<!-- cookies -->
+<ellipse cx="300" cy="1410" rx="40" ry="12" fill="#FFF6E8"/><circle cx="290" cy="1396" r="16" fill="#E7A94F"/><circle cx="314" cy="1400" r="14" fill="#F2C14E"/>
+<!-- seat -->
+<rect x="560" y="1500" width="460" height="420" rx="40" fill="url(#seat)"/>
+<rect x="840" y="1150" width="180" height="500" rx="40" fill="url(#seat)"/>
+<!-- reader -->
+<g transform="translate(780 1340)">
+ <path d="M-110 120 Q-110 40 -40 30 H50 Q120 40 120 120 V260 H-110Z" fill="#4B5D8C"/>
+ <rect x="-18" y="0" width="36" height="40" fill="#8A5A3E"/>
+ <ellipse cx="0" cy="-50" rx="66" ry="74" fill="#9C6644"/>
+ <path d="M-70 -40 Q-90 -140 0 -136 Q90 -140 72 -40 Q74 -100 0 -104 Q-62 -104 -70 -40Z" fill="#1E1614"/>
+ <path d="M-74 -60 Q-110 40 -70 80 Q-60 20 -66 -40Z M74 -60 Q110 40 70 80 Q62 20 66 -40Z" fill="#1E1614"/>
+ <path d="M-34 -40 q11 10 22 0 M12 -40 q11 10 22 0" fill="none" stroke="#1E1614" stroke-width="5" stroke-linecap="round"/>
+ <path d="M-10 0 q10 8 20 0" fill="none" stroke="#5E2A22" stroke-width="5" stroke-linecap="round"/>
+ <circle cx="-62" cy="-30" r="8" fill="#F2C14E"/>
+ <g transform="translate(-60 90) rotate(-8)"><rect x="-90" y="-10" width="150" height="110" rx="6" fill="#E7A94F"/><rect x="-84" y="-4" width="138" height="98" rx="4" fill="#FFF6E8"/><line x1="-15" y1="-4" x2="-15" y2="94" stroke="#CDB9A0" stroke-width="4"/></g>
+ <ellipse cx="-150" cy="140" rx="24" ry="26" fill="#9C6644"/><ellipse cx="0" cy="146" rx="24" ry="26" fill="#9C6644"/>
+</g>
+<!-- floor -->
+<rect y="1780" width="1080" height="140" fill="#B98B6A"/>
+</svg>

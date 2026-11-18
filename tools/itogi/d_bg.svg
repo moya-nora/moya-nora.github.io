@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+<defs><radialGradient id="sun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFF6D8"/><stop offset="1" stop-color="#FFF6D8" stop-opacity="0"/></radialGradient></defs>
+<rect width="1080" height="1920" fill="#CFE0C8"/>
+<g transform="translate(540 1150)" fill="#BFD4B6">
+ <path d="M0 0 L-60 -900 L60 -900Z"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(30)"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(60)"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(90)"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(120)"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(150)"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(180)"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(210)"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(240)"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(270)"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(300)"/><path d="M0 0 L-60 -900 L60 -900Z" transform="rotate(330)"/>
+</g>
+<circle cx="540" cy="1150" r="420" fill="url(#sun)"/>
+<!-- confetti -->
+<g>
+ <rect x="170" y="880" width="26" height="12" rx="3" fill="#C9705A" transform="rotate(30 170 880)"/>
+ <rect x="880" y="900" width="26" height="12" rx="3" fill="#4B5D8C" transform="rotate(-20 880 900)"/>
+ <rect x="210" y="1260" width="22" height="10" rx="3" fill="#7A3E5A" transform="rotate(60 210 1260)"/>
+ <rect x="860" y="1300" width="22" height="10" rx="3" fill="#E7A94F" transform="rotate(-50 860 1300)"/>
+ <rect x="120" y="1080" width="20" height="10" rx="3" fill="#F2C14E" transform="rotate(10 120 1080)"/>
+ <rect x="950" y="1120" width="20" height="10" rx="3" fill="#C9705A" transform="rotate(40 950 1120)"/>
+ <circle cx="290" cy="790" r="9" fill="#E7A94F"/><circle cx="800" cy="780" r="8" fill="#C9705A"/><circle cx="130" cy="1400" r="8" fill="#4B5D8C"/><circle cx="960" cy="1460" r="9" fill="#7A3E5A"/><circle cx="250" cy="1560" r="7" fill="#F2C14E"/><circle cx="840" cy="1580" r="7" fill="#4B5D8C"/>
+ <path d="M150 960 q20 -20 40 0 t40 0" fill="none" stroke="#4B5D8C" stroke-width="7" stroke-linecap="round"/>
+ <path d="M860 1010 q20 -20 40 0 t40 0" fill="none" stroke="#7A3E5A" stroke-width="7" stroke-linecap="round"/>
+ <path d="M880 1690 q20 -20 40 0 t40 0" fill="none" stroke="#C9705A" stroke-width="7" stroke-linecap="round"/>
+</g>
+<g fill="#F2C14E"><path d="M230 1150 l12 28 28 12 -28 12 -12 28 -12 -28 -28 -12 28 -12z"/><path d="M850 1190 l10 24 24 10 -24 10 -10 24 -10 -24 -24 -10 24 -10z"/><path d="M800 820 l7 16 16 7 -16 7 -7 16 -7 -16 -16 -7 16 -7z"/></g>
+<!-- cover shadow -->
+<rect x="350" y="870" width="420" height="630" rx="18" fill="#6E8A68" opacity=".35" transform="rotate(-3 540 1155)"/>
+</svg>
