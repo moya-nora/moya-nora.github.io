@@ -5245,7 +5245,7 @@ function drawCol(keepFlow){
 function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a).map(b=>norm(b.a)));if(!fav.size)return [];
   const W=wantNorms(),seen=new Set(),out=[];for(const b of ALLB()){if(!b.y||b.y<YNOW-1||!b.a||!fav.has(norm(b.a)))continue;const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt)||seen.has(nt)||dismissed.has(b.id))continue;seen.add(nt);out.push(b);if(out.length>=8)break}
   return out.sort((a,b)=>(b.y||0)-(a.y||0)).map(b=>bItem(b,"rec"))}
-function drawNewAu(){const el=$("#newAu");if(!el)return;const L=newAuList();el.hidden=!L.length;if(!L.length){el.innerHTML="";return}el._l=L;
+function drawNewAu(){const el=$("#newAu");if(!el)return;const L=[];/* раздел «Новое от твоих авторов» убран по просьбе владелицы (18.11.2026) */el.hidden=!L.length;if(!L.length){el.innerHTML="";return}el._l=L;
   el.innerHTML=`<h3 class="shelf-h">Новое от твоих авторов</h3><div class="na-row">${L.map((x,i)=>`<button data-na="${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a).split(" ").slice(-1)[0])} · ${x.y}</em></button>`).join("")}</div>`}
 $("#newAu").addEventListener("click",e=>{const b=e.target.closest("[data-na]");if(!b)return;const x=$("#newAu")._l[+b.dataset.na];if(x){tgHaptic();bkcOpen(x,"rec")}});
 // «В тренде сейчас»: о чём говорят сейчас - вперемешку громкие книги года (премии, экранизации, бестселлеры) и хиты буктока, примерно 3 к 2 (список обновляется раз в месяц). Книги ищем в каталоге по названию и фамилии автора
