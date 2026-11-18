@@ -2338,6 +2338,8 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .pv-sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:11px;background:#fff;transition:transform .2s}
 #app .pv-sw.on{background:#8FD3A8}#app .pv-sw.on::after{transform:translateX(18px)}
 
+#app .ac-ph{display:inline-flex;align-items:center;gap:8px}
+#app .ac-ph img{width:28px;height:28px;border-radius:50%;object-fit:cover}
 /* ---------- итоги года ---------- */
 #app .wr{position:fixed;inset:0;z-index:96;display:none;background:#07060D;color:#F7F1E6;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 #app .wr.on{display:block}
@@ -6221,6 +6223,7 @@ function drawAcc(){const box=$("#accBox");if(!box)return;if(!box._tap){box._tap=
   box.innerHTML=`<h1 class="fr-h">Аккаунт</h1>
    ${needAuth()?`<button class="fr-nick new" data-acct><span>Войди, чтобы полки сохранились и друзья нашли тебя</span><b>Войти</b></button>`:""}
    <div class="ac-g">${(()=>{const nk=LS.get("zal.nick","");return nk?`<button class="ac-row" data-nick aria-label="Изменить ник"><span>Ник</span><b>@${esc(nk)}</b><svg class="fr-pen" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>`:needAuth()?"":`<button class="ac-row" data-nick><span>Ник</span><b>придумать</b><i>›</i></button>`})()}
+     ${needAuth()?"":`<button class="ac-row" data-myph aria-label="Фото профиля"><span>Фото</span><b class="ac-ph">${myPh()?`<img src="${esc(myPh())}" alt="" referrerpolicy="no-referrer">`:""}${LS.get("zal.myph","")?"изменить":myPh()?"своё":"добавить"}</b><i>›</i></button>`}
      <button class="ac-row" data-acc-fr aria-expanded="${ACCFR}"><span>Друзья</span><b>${FRIENDS.length||""}${REQS.length?` <em class="ac-new">+${REQS.length}</em>`:""}</b><i class="ac-ch${ACCFR?" on":""}">›</i></button>${fr}
      <button class="ac-row" data-priv><span>Что видят друзья</span><b>${privLabel()}</b><i>›</i></button></div>
    <div class="ac-g">${tgu?`<button class="ac-row" data-ntf role="switch" aria-checked="${ntf}"><span>Напоминания в Telegram</span><i class="ac-sw${ntf?" on":""}"></i></button>`:""}
@@ -6328,7 +6331,17 @@ const FRP={};   // загруженные профили друзей
 const hueOf=s=>hsh(String(s))%360;
 // фото из Telegram (если открыто для всех) поверх буквы; не загрузилось — остаётся буква
 const tgMe=()=>{try{return TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user||null}catch(e){return null}};
-const avaPh=uid=>{const me=NS.uid&&NS.uid();if(uid&&uid===me){const u=tgMe();return u&&u.photo_url||""}const p=typeof FRP!=="undefined"&&FRP[uid];return p&&typeof p.ph==="string"&&/^https:\/\//.test(p.ph)?p.ph:""};
+// своё фото: выбранное в «Аккаунте» (маленькая картинка хранится вместе с полками) важнее фото из Telegram
+const PH_OK=v=>typeof v==="string"&&(/^https:\/\//.test(v)||(v.length<80000&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(v)));
+const myPh=()=>{const v=LS.get("zal.myph","");if(PH_OK(v))return v;const u=tgMe();return u&&u.photo_url||""};
+const avaPh=uid=>{const me=NS.uid&&NS.uid();if(uid&&uid===me)return myPh();const p=typeof FRP!=="undefined"&&FRP[uid];return p&&PH_OK(p.ph)?p.ph:""};
+function myPhPick(){const i=document.createElement("input");i.type="file";i.accept="image/*";i.onchange=()=>{const f=i.files&&i.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();
+    im.onload=()=>{try{const S=192,c=document.createElement("canvas");c.width=c.height=S;const k=Math.max(S/im.naturalWidth,S/im.naturalHeight),w=im.naturalWidth*k,h=im.naturalHeight*k;c.getContext("2d").drawImage(im,(S-w)/2,(S-h)/2,w,h);
+      LS.set("zal.myph",c.toDataURL("image/jpeg",.82));toast("Фото обновлено");try{drawAcc()}catch(e){}try{pubCheck()}catch(e){}}catch(e){toast("Не получилось открыть это фото")}URL.revokeObjectURL(u)};
+    im.onerror=()=>{toast("Не получилось открыть это фото");URL.revokeObjectURL(u)};im.src=u};i.click()}
+document.addEventListener("click",e=>{const t=e.target;if(t.closest("[data-myph]")){tgHaptic();if(LS.get("zal.myph",""))vOpen(`<h3 class="vh">Фото</h3><div style="display:flex;flex-direction:column;gap:10px;margin-top:14px"><button class="btn w" data-myph-new>Выбрать другое</button><button class="btn" data-myph-del>Убрать фото</button></div>`);else myPhPick();return}
+  if(t.closest("[data-myph-new]")){vClose();myPhPick();return}
+  if(t.closest("[data-myph-del]")){LS.set("zal.myph","");vClose();toast("Фото убрано");try{drawAcc()}catch(x){}try{pubCheck()}catch(x){}}});
 const avatar=(n,uid,cls="")=>{const ph=avaPh(uid);return `<i class="ava ${cls}" style="--h:${hueOf(uid)}">${esc((n||"?").trim().charAt(0).toUpperCase())}${ph?`<img src="${esc(ph)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">`:""}</i>`};
 // что видят друзья: настройки в «Друзьях» (полки, оценки, отзывы)
 const PRIV=()=>Object.assign({shelf:1,rate:1,rv:1},LS.get("zal.priv",{}));
@@ -6343,7 +6356,7 @@ function privSheet(){const P=PRIV(),row=(k,t,d)=>`<button class="pv-row" data-pv
 document.addEventListener("click",e=>{if(e.target.closest("[data-priv]")){tgHaptic();privSheet();return}const r=e.target.closest("[data-pv]");if(!r)return;const P=PRIV(),k=r.dataset.pv;P[k]=P[k]?0:1;LS.set("zal.priv",P);tgHaptic();privSheet();try{pubCheck()}catch(x){}if(SCREEN==="fr")drawFr()});
 function snapRaw(){return {read:BOOKS.filter(b=>!SEC.has(norm(b.t))).map(b=>({t:b.t,a:b.a||"",r:b.r??null,rd:b.rd||"",ds:(b.ann||"").slice(0,300),...(b.pub&&b.n?{rv:String(b.n).slice(0,600)}:{})})),want:want.filter(w=>!SEC.has(norm(w.t))).map(w=>({t:w.t,a:w.a||""})),now:nowBook&&nowBook.t&&!SEC.has(norm(nowBook.t))?{t:nowBook.t,a:nowBook.a||""}:null}}
 function pubCheck(){if(!NS.on||VIEW||!(NS.hasTok&&NS.hasTok()))return;try{notifySync()}catch(e){}
-  {const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user,hs=[NS.email,u&&u.username?"@"+u.username:""].filter(Boolean),sig=hs.join("|")+"|"+NS.uid();if(hs.length&&NS.lookupPut&&localStorage.getItem("zal.sync.lk")!==sig)NS.lookupPut(hs).then(()=>localStorage.setItem("zal.sync.lk",sig)).catch(()=>{})}const cur=snapNow(),name=myName();{const u=tgMe();if(u&&u.photo_url)cur.ph=u.photo_url;if(u&&u.username)cur.tg=u.username}const sig=JSON.stringify([name,cur]);const prev=LS.get("zal.sync.pub",null);
+  {const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user,hs=[NS.email,u&&u.username?"@"+u.username:""].filter(Boolean),sig=hs.join("|")+"|"+NS.uid();if(hs.length&&NS.lookupPut&&localStorage.getItem("zal.sync.lk")!==sig)NS.lookupPut(hs).then(()=>localStorage.setItem("zal.sync.lk",sig)).catch(()=>{})}const cur=snapNow(),name=myName();{const u=tgMe(),ph=myPh();if(ph)cur.ph=ph;if(u&&u.username)cur.tg=u.username}const sig=JSON.stringify([name,cur]);const prev=LS.get("zal.sync.pub",null);
   if(prev&&prev.sig===sig)return;const ev=prev?prev.ev||[]:[],now=Date.now(),add=[];
   if(prev&&prev.snap){const pr=new Map(prev.snap.read.map(b=>[norm(b.t),b])),pw=new Set(prev.snap.want.map(w=>norm(w.t)));
     cur.read.forEach(b=>{const o=pr.get(norm(b.t));if(!o)add.push({k:"read",t:b.t,a:b.a,r:b.r,ts:now});else if(b.r!=null&&o.r!==b.r)add.push({k:"rate",t:b.t,a:b.a,r:b.r,ts:now})});
