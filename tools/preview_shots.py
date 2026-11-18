@@ -2,6 +2,7 @@
 import asyncio,json,os,urllib.parse,time,subprocess,glob
 from playwright.async_api import async_playwright
 os.makedirs("out",exist_ok=True);O="out/"
+ONLY=[x for x in os.environ.get("ONLY","").split(",") if x]
 async def idt(route):
   await route.fulfill(status=200,content_type="application/json",body=json.dumps({"localId":"u1","idToken":"t","refreshToken":"r","email":"anya@mail.ru","expiresIn":"3600"}))
 async def fs(route):
@@ -12,8 +13,8 @@ SLIDES=[
  ("2_feed","Лента","Что почитать —<br><em>подскажет Шуршуня</em>","Подбирает книги под твой вкус и не предлагает уже прочитанное. С каждой оценкой подборка точнее.","#4A2A7A","#D08A5A"),
  ("3_where","Без долгих поисков","Где прочитать —<br><em>сразу</em>","Нора покажет, где купить или прочитать нужную книгу.","#22406E","#C98A3A"),
  ("4_search","Поиск","Найдётся книга<br><em>на любой вечер</em>","Классика, дарк роман, новинки — фильтры по жанру, настроению и тропам.","#6E2A3C","#B0607A"),
- ("6_diary","Читательский дневник","Запиши,<br><em>как тебе книга</em>","Оценка, настроение, отзыв и любимые цитаты. Всё прочитанное - в одном дневнике.","#5A2A4E","#C98A3A"),
- ("7_club","Книжный клуб","Одна книга<br><em>на весь клуб</em>","Общий срок по частям, вопросы для разговора и полка прочитанного. Друзей можно позвать одной ссылкой.","#2A3E5E","#D0A060"),
+ ("6_diary","Читательский дневник","Запиши,<br><em>как тебе книга</em>","Оценка, настроение, отзыв и цитаты к каждой прочитанной книге.","#5A2A4E","#C98A3A"),
+ ("7_club","Книжный клуб","Одна книга<br><em>на весь клуб</em>","Общий срок, вопросы для разговора и полка прочитанного.","#2A3E5E","#D0A060"),
  ("5_stats","Статистика","Твой год<br><em>в книгах</em>","Страницы, любимые авторы и итоги года — красиво, хоть в сторис.","#3C2A6E","#C9708A"),
 ]
 DEMO={"rec":["Королевство шипов и роз|Маас","Там, где раки поют|Оуэнс","Тень ветра|Сафон","Семь мужей Эвелин Хьюго|Рид","До самого рая|Янагихара","Незримая жизнь Адди Ларю|Шваб","Шестёрка воронов|Бардуго"],
@@ -47,32 +48,33 @@ async def main():
     pg=await ctx.new_page();errs=[];pg.on("pageerror",lambda e:errs.append(str(e)[:200]));js=lambda c:pg.evaluate(c); w=lambda ms=1500:pg.wait_for_timeout(ms)
     clean="document.querySelectorAll('.toast,#toast,.tip,.tour').forEach(t=>t.remove())"
     shot=lambda n:pg.screenshot(path=O+n+".png")
-    await pg.goto("http://localhost:8766/app.html?app=1");await w(4000)
-    await js("const g=document.getElementById('introGo');g&&g.click()");await w(1500)
-    for step,idx in enumerate([[6,8,12,13,16,19],[5,6,7]]):
-      for i in idx:
-        await js(f"const o=document.querySelectorAll('#onbGrid .op')[{i}];o&&o.click()");await w(500)
-        await js("const r=document.querySelector('#rmSt [data-st=\"5\"]');r&&r.offsetParent&&r.click()");await w(450)
-      await js("document.getElementById('onbNext').click()");await w(1500)
-    await js("const a=document.querySelector('[data-acct]');a&&!document.getElementById('auth').classList.contains('on')&&a.click()");await w(800)
-    for sel,v in (("#auE","anya@mail.ru"),("#auP","secret123")):
-      try: await pg.fill(sel,v,timeout=3000)
-      except Exception: pass
-    await js("const g=document.getElementById('auGo');g&&g.click()");await w(3000)
-    await js(clean);await w(6000);await js(clean);await shot("1_home")
-    await js("document.querySelector('.dock [data-s=feed]').click()");await w(5000);await js(clean);await shot("2_feed")
-    await js("document.querySelector('.dock [data-s=col]').click()");await w(1500)
-    await js("document.querySelectorAll('#flow .cv')[4].click()");await w(5000)
-    await js("document.querySelector('.bkc-where').click()");await w(800)
-    await js("const o=document.querySelector('[data-wh=on]');o&&o.click()");await w(4000);await js(clean);await shot("3_where")
-    await js("document.querySelector('#vsheet .sh-bg').click()");await w(800)
-    await js("const c=document.querySelector('[data-bkc=close]');c&&c.click()");await w(800)
-    await js("document.querySelector('.dock [data-s=col]').click()");await w(1500)
-    await js("document.getElementById('srchB').click()");await w(1200)
-    await js("([...document.querySelectorAll('#fwrap button')].find(b=>/^Классика$/.test(b.textContent.trim()))||document.querySelector('#fwrap button')).click()");await w(400)
-    await js("document.querySelector('[data-fshow]').click()");await w(5000);await js(clean);await shot("4_search")
-    await js("location.reload()");await w(5000)
-    await js("document.querySelector('.dock [data-s=sum]').click()");await w(5000);await js(clean);await shot("5_stats")
+    if not ONLY:
+      await pg.goto("http://localhost:8766/app.html?app=1");await w(4000)
+      await js("const g=document.getElementById('introGo');g&&g.click()");await w(1500)
+      for step,idx in enumerate([[6,8,12,13,16,19],[5,6,7]]):
+        for i in idx:
+          await js(f"const o=document.querySelectorAll('#onbGrid .op')[{i}];o&&o.click()");await w(500)
+          await js("const r=document.querySelector('#rmSt [data-st=\"5\"]');r&&r.offsetParent&&r.click()");await w(450)
+        await js("document.getElementById('onbNext').click()");await w(1500)
+      await js("const a=document.querySelector('[data-acct]');a&&!document.getElementById('auth').classList.contains('on')&&a.click()");await w(800)
+      for sel,v in (("#auE","anya@mail.ru"),("#auP","secret123")):
+        try: await pg.fill(sel,v,timeout=3000)
+        except Exception: pass
+      await js("const g=document.getElementById('auGo');g&&g.click()");await w(3000)
+      await js(clean);await w(6000);await js(clean);await shot("1_home")
+      await js("document.querySelector('.dock [data-s=feed]').click()");await w(5000);await js(clean);await shot("2_feed")
+      await js("document.querySelector('.dock [data-s=col]').click()");await w(1500)
+      await js("document.querySelectorAll('#flow .cv')[4].click()");await w(5000)
+      await js("document.querySelector('.bkc-where').click()");await w(800)
+      await js("const o=document.querySelector('[data-wh=on]');o&&o.click()");await w(4000);await js(clean);await shot("3_where")
+      await js("document.querySelector('#vsheet .sh-bg').click()");await w(800)
+      await js("const c=document.querySelector('[data-bkc=close]');c&&c.click()");await w(800)
+      await js("document.querySelector('.dock [data-s=col]').click()");await w(1500)
+      await js("document.getElementById('srchB').click()");await w(1200)
+      await js("([...document.querySelectorAll('#fwrap button')].find(b=>/^Классика$/.test(b.textContent.trim()))||document.querySelector('#fwrap button')).click()");await w(400)
+      await js("document.querySelector('[data-fshow]').click()");await w(5000);await js(clean);await shot("4_search")
+      await js("location.reload()");await w(5000)
+      await js("document.querySelector('.dock [data-s=sum]').click()");await w(5000);await js(clean);await shot("5_stats")
     # дневник и клуб: отдельный вход с готовыми записями дневника и демо-клубом
     dc=await b.new_context(viewport={"width":390,"height":844},device_scale_factor=3,is_mobile=True,has_touch=True)
     await dc.route('**/identitytoolkit.googleapis.com/**',idt);await dc.route('**/firestore.googleapis.com/**',fsc)
@@ -96,9 +98,11 @@ async def main():
     print(errs)
     fp=await b.new_page(viewport={"width":1080,"height":1920})
     for i,(img,k,h,pp,a,bb) in enumerate(SLIDES):
+      if ONLY and img not in ONLY: continue
       q={"k":k,"h":h,"p":pp,"img":"../out/"+img+".png","a":a,"b":bb}
       await fp.goto("http://localhost:8766/tools/frame.html?i="+str(i)+"#"+urllib.parse.quote(json.dumps(q)));await fp.wait_for_timeout(1500)
       await fp.screenshot(path=O+f"nora_preview_{i+1}.png")
+    if ONLY: await b.close();return
     # видео ленты: как листаются книги (кадры через CDP screencast в полном разрешении)
     import base64
     vc=await b.new_context(viewport={"width":390,"height":844},device_scale_factor=3,is_mobile=True,has_touch=True)

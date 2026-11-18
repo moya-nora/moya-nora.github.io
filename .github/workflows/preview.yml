@@ -1,5 +1,8 @@
 name: preview-shots
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      only: {description: 'Только эти слайды через запятую (пусто - все)', required: false, default: ''}
 permissions: {contents: write}
 jobs:
   shots:
@@ -10,8 +13,8 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - run: pip install playwright pillow && python -m playwright install --with-deps chromium && (which ffmpeg || sudo apt-get install -y ffmpeg)
-      - run: (python -m http.server 8766 >/dev/null 2>&1 &) && sleep 2 && python tools/preview_shots.py
+      - run: (python -m http.server 8766 >/dev/null 2>&1 &) && sleep 2 && ONLY='${{ inputs.only }}' python tools/preview_shots.py
       - run: |
           git config user.email noreply@anthropic.com; git config user.name Claude
           git checkout -B preview-shots
-          git add -f out/*.png out/*.mp4 tools/frame.html && git commit -qm "preview shots" && git push -f origin preview-shots
+          git add -f out/*.png $(ls out/*.mp4 2>/dev/null) tools/frame.html && git commit -qm "preview shots" && git push -f origin preview-shots
