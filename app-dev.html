@@ -5,8 +5,8 @@ if(/tgWebApp/.test(q+h)||sa||/[?&](app|v)=/.test(q)||/=/.test(h)||ss.getItem("no
 <script>/* тестовая версия (app-dev.html): метка в углу, чтобы не спутать с настоящей */
 if(/app-dev/.test(location.pathname))addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.textContent="тестовая версия";d.style.cssText="position:fixed;z-index:99999;left:50%;transform:translateX(-50%);top:calc(6px + env(safe-area-inset-top,0px));padding:3px 10px;border-radius:10px;background:#E2B66B;color:#1B140A;font:600 11px/1.3 system-ui;pointer-events:none;opacity:.9";document.body.appendChild(d)});</script>
 <script>/* облако Норы (Google Firebase) в России часто недоступно: если прямой запрос не прошёл за 7 с,
-   повторяем его через наш шлюз в Yandex Cloud и дальше сутки ходим через шлюз. NORA_PX пустой - шлюз выключен. */
-window.NORA_PX="";
+   повторяем его через наш шлюз в Yandex Cloud и дальше сутки ходим через шлюз. Шлюз: Yandex API Gateway «nora» в облаке владелицы, спецификация tools/yc_gateway.yaml. */
+window.NORA_PX="https://d5d79f2ttn6u581sgv2f.sk0vql13.apigw.yandexcloud.net/";
 (function(){const PX=window.NORA_PX;if(!PX||!window.fetch)return;const H={"identitytoolkit.googleapis.com":"idt","securetoken.googleapis.com":"st","firestore.googleapis.com":"fs"};
   const of=window.fetch.bind(window),K="nora.px",DAY=864e5;
   const via=u=>{try{const x=new URL(u);const k=H[x.host];return k?PX.replace(/\/$/,"")+"/"+k+x.pathname+x.search:null}catch(e){return null}};
@@ -2904,7 +2904,7 @@ else setTimeout(()=>{booting=false},1500);
 // ---- вход по почте ----
 // запросы к облаку с ограничением по времени: без него кнопка «Создаю…» могла висеть бесконечно при плохой связи
 const NET_SLOW="Сервер Норы не ответил. Проверь интернет (или включи/выключи VPN) и нажми ещё раз";
-function tf(u,o={},ms=15000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);return fetch(u,{...o,signal:c.signal}).catch(e=>{throw new Error(e&&e.name==="AbortError"?NET_SLOW:(navigator.onLine===false?"Нет интернета - подключись и нажми ещё раз":NET_SLOW))}).finally(()=>clearTimeout(t))}
+function tf(u,o={},ms=25000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);return fetch(u,{...o,signal:c.signal}).catch(e=>{throw new Error(e&&e.name==="AbortError"?NET_SLOW:(navigator.onLine===false?"Нет интернета - подключись и нажми ещё раз":NET_SLOW))}).finally(()=>clearTimeout(t))}
 const upTo=(pr,ms)=>Promise.race([pr,new Promise(r=>setTimeout(r,ms))]);
 async function idt(path,body){const r=await tf(`https://identitytoolkit.googleapis.com/v1/accounts:${path}?key=${FB.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json","X-Firebase-Locale":"ru"},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));if(!r.ok){const m=String((j.error&&j.error.message)||"").split(" ")[0];
