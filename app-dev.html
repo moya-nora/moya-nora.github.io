@@ -7140,118 +7140,133 @@ async function wrImage(D){const c=document.createElement("canvas");c.width=1080;
   x.fillStyle="rgba(247,241,230,.55)";x.font=`500 28px ${FF}`;x.fillText("Собери свой год в книгах",540,fy+52);x.textAlign="left";
   return c}
 const wrTimes=k=>{const r=k>=10?Math.round(k):Math.round(k*10)/10;return r.toLocaleString("ru-RU")+" "+(Number.isInteger(r)?plural(r,"раз","раза","раз"):"раза")};
-// итоги года в эстетике буктока: страницы читательского дневника - бумага, полароиды с обложками на ленте, записи от руки, печать, библиотечная карточка, билет
+// итоги года в эстетике буктока - аппликация: рваная бумага слоями, вырезанные наклейки с белой каймой, полароиды на ленте, скрепки, лента-этикетка,
+// листок из тетради, записи от руки, печать. Только то, что человек правда отмечает: книги, оценки, жанры, месяцы и страницы книг
 const WRF=[["NoraHand","caveat-latin-700-normal","700"],["NoraHand","caveat-cyrillic-700-normal","700"],["NoraType","pt-mono-latin-400-normal","400"],["NoraType","pt-mono-cyrillic-400-normal","400"],["NoraSerif","cormorant-garamond-latin-600-normal","600"],["NoraSerif","cormorant-garamond-cyrillic-600-normal","600"],["NoraSerifI","cormorant-garamond-latin-600-italic","600"],["NoraSerifI","cormorant-garamond-cyrillic-600-italic","600"]];
 let WRFP=null;const wrFonts=()=>WRFP||(WRFP=Promise.all(WRF.map(([f,n,w])=>{try{const ff=new FontFace(f,`url(fonts/${n}.woff2)`,{weight:w,unicodeRange:/cyrillic/.test(n)?"U+0400-04FF,U+2116":"U+0000-03FF,U+2000-23FF,U+25A0-27BF"});document.fonts.add(ff);return ff.load().catch(()=>null)}catch(e){return null}})));
-async function wrCards(D){await wrFonts();const H="NoraHand, cursive",T="NoraType, monospace",S="NoraSerif, Georgia, serif",SI="NoraSerifI, Georgia, serif",FF=H;
-  const INK="#2E2230",RUST="#A8442F",n=D.L.length,out=[],h=Math.round((D.pg||0)/45);
+async function wrCards(D){await wrFonts();const H="NoraHand, cursive",T="NoraType, monospace",S="NoraSerif, Georgia, serif",SI="NoraSerifI, Georgia, serif";
+  const INK="#2E2230",RUST="#A8442F",n=D.L.length,out=[];
   let sd=11;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647,rr=(a,b)=>a+rnd()*(b-a);
   const SP=(x,v)=>{if("letterSpacing" in x)x.letterSpacing=v};
   const hero=D.top[0]||D.last,pool=[hero,...D.top.slice(1),...D.L.slice().reverse()].filter((b,i,a)=>b&&a.indexOf(b)===i).slice(0,6),ims=await Promise.all(pool.map(b=>wrCov(b).catch(()=>null)));
-  const imOf=b=>ims[pool.indexOf(b)]||null;
-  // бумага
-  const paper=(x,base)=>{x.fillStyle=base;x.fillRect(0,0,1080,1920);
-    for(let i=0;i<2600;i++){x.strokeStyle=rnd()<.5?"rgba(120,90,60,.05)":"rgba(255,255,255,.22)";x.lineWidth=rr(.6,1.6);const X=rr(0,1080),Y=rr(0,1920),a=rr(0,6.3),l=rr(4,18);x.beginPath();x.moveTo(X,Y);x.lineTo(X+Math.cos(a)*l,Y+Math.sin(a)*l);x.stroke()}
-    const v=x.createRadialGradient(540,900,300,540,960,1250);v.addColorStop(0,"rgba(0,0,0,0)");v.addColorStop(1,"rgba(90,60,30,.22)");x.fillStyle=v;x.fillRect(0,0,1080,1920)};
-  const dots=(x,col)=>{x.fillStyle=col;for(let X=60;X<1080;X+=44)for(let Y=60;Y<1920;Y+=44){x.beginPath();x.arc(X,Y,2,0,7);x.fill()}};
-  // лента
-  const tape=(x,cx,cy,w,rot,col)=>{x.save();x.translate(cx,cy);x.rotate(rot);x.globalAlpha=.82;x.fillStyle=col;x.beginPath();const hh=46,z=8;x.moveTo(-w/2,-hh/2);
-    for(let X=-w/2;X<w/2;X+=w/8)x.lineTo(X+w/16,-hh/2+(rnd()*3));x.lineTo(w/2,-hh/2);for(let Y=-hh/2;Y<hh/2;Y+=z)x.lineTo(w/2+(Y/z%2?-5:3),Y+z/2);x.lineTo(w/2,hh/2);x.lineTo(-w/2,hh/2);for(let Y=hh/2;Y>-hh/2;Y-=z)x.lineTo(-w/2+(Y/z%2?5:-3),Y-z/2);x.closePath();x.fill();
-    x.globalAlpha=.18;x.fillStyle="#fff";for(let X=-w/2+10;X<w/2;X+=26)x.fillRect(X,-hh/2,9,hh);x.restore()};
-  // полароид
-  const pola=(x,b,cx,cy,w,rot,cap)=>{const hh=w*1.5,p=w*.07,bt=w*.26;x.save();x.translate(cx,cy);x.rotate(rot);x.shadowColor="rgba(60,40,20,.35)";x.shadowBlur=28;x.shadowOffsetY=14;x.fillStyle="#FBF8F1";x.fillRect(-w/2-p,-hh/2-p,w+2*p,hh+p+bt);x.shadowColor="transparent";
-    x.save();x.translate(-w/2,-hh/2);wrCvDraw(x,imOf(b),b,w,hh,"NoraType, monospace",S,pool.indexOf(b)+2);x.restore();
+  const imOf=b=>ims[pool.indexOf(b)]||null,st=b=>b&&b.r!=null?Math.max(1,Math.min(5,Math.round(b.r/2))):0;
+  const fib=(x,X,Y,w,h,k)=>{for(let i=0;i<k;i++){x.strokeStyle=rnd()<.5?"rgba(90,60,30,.07)":"rgba(255,255,255,.25)";x.lineWidth=rr(.6,1.6);const a=rr(0,6.3),l=rr(4,16),px=X+rr(0,w),py=Y+rr(0,h);x.beginPath();x.moveTo(px,py);x.lineTo(px+Math.cos(a)*l,py+Math.sin(a)*l);x.stroke()}};
+  const paper=(x,base)=>{x.fillStyle=base;x.fillRect(0,0,1080,1920);fib(x,0,0,1080,1920,2600);const v=x.createRadialGradient(540,900,300,540,960,1250);v.addColorStop(0,"rgba(0,0,0,0)");v.addColorStop(1,"rgba(90,60,30,.2)");x.fillStyle=v;x.fillRect(0,0,1080,1920)};
+  // узоры бумаги
+  const pat=(x,kind,c1,c2)=>{const p=document.createElement("canvas");p.width=p.height=48;const q=p.getContext("2d");q.fillStyle=c1;q.fillRect(0,0,48,48);q.fillStyle=c2;
+    if(kind==="check"){q.globalAlpha=.5;q.fillRect(0,0,24,48);q.fillRect(0,0,48,24);q.globalAlpha=1;q.fillRect(0,0,24,24)}else if(kind==="dots"){[[12,12],[36,36]].forEach(([X,Y])=>{q.beginPath();q.arc(X,Y,5,0,7);q.fill()})}
+    else if(kind==="stripe"){q.fillRect(0,0,48,14);q.fillRect(0,24,48,6)}else if(kind==="flower"){[[14,14],[38,38]].forEach(([X,Y])=>{for(let i=0;i<5;i++){const a=i/5*Math.PI*2;q.beginPath();q.arc(X+Math.cos(a)*5,Y+Math.sin(a)*5,4,0,7);q.fill()}})}
+    else if(kind==="lines"){q.fillRect(0,40,48,2)}return x.createPattern(p,"repeat")};
+  // рваный край: точки по контуру прямоугольника со смещением
+  const tornPath=(x,w,h,j,sides)=>{const P=[],step=14;const e=(s)=>sides.includes(s)?j:2;
+    for(let X=0;X<=w;X+=step)P.push([X,rr(-e("t"),e("t"))]);for(let Y=0;Y<=h;Y+=step)P.push([w+rr(-e("r"),e("r")),Y]);for(let X=w;X>=0;X-=step)P.push([X,h+rr(-e("b"),e("b"))]);for(let Y=h;Y>=0;Y-=step)P.push([rr(-e("l"),e("l")),Y]);
+    x.beginPath();P.forEach(([X,Y],i)=>i?x.lineTo(X,Y):x.moveTo(X,Y));x.closePath()};
+  const torn=(x,cx,cy,w,h,rot,fill,o={})=>{x.save();x.translate(cx,cy);x.rotate(rot);x.translate(-w/2,-h/2);const sides=o.sides||"tblr",j=o.j||9;
+    x.save();x.shadowColor="rgba(60,40,20,.3)";x.shadowBlur=14;x.shadowOffsetY=6;x.fillStyle="#FBF7EE";tornPath(x,w,h,j+3,sides);x.fill();x.restore();
+    const sd0=sd;tornPath(x,w,h,j,sides);x.fillStyle=fill;x.fill();x.save();x.clip();fib(x,0,0,w,h,Math.round(w*h/900));if(o.lines){x.strokeStyle="rgba(70,110,160,.35)";x.lineWidth=2;for(let Y=o.lines;Y<h;Y+=o.lines){x.beginPath();x.moveTo(0,Y);x.lineTo(w,Y);x.stroke()}if(o.margin){x.strokeStyle="rgba(200,70,70,.45)";x.beginPath();x.moveTo(o.margin,0);x.lineTo(o.margin,h);x.stroke()}}x.restore();x.restore()};
+  // вырезанная наклейка с белой каймой
+  const shape=(x,k,s)=>{x.beginPath();if(k==="star"){for(let i=0;i<10;i++){const a=-Math.PI/2+i/10*Math.PI*2,q=i%2?s*.45:s;x.lineTo(Math.cos(a)*q,Math.sin(a)*q)}}
+    else if(k==="heart"){for(let i=0;i<=40;i++){const t=i/40*Math.PI*2;x.lineTo(s*Math.pow(Math.sin(t),3),-s*(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))/16)}}
+    else if(k==="moon"){x.arc(0,0,s,.6,Math.PI*2-.6,false);x.arc(s*.45,-s*.1,s*.78,Math.PI*2-.9,.9,true)}
+    else if(k==="flower"){for(let i=0;i<=60;i++){const a=i/60*Math.PI*2,q=s*(.72+.28*Math.cos(a*6));x.lineTo(Math.cos(a)*q,Math.sin(a)*q)}}
+    else if(k==="leaf"){x.moveTo(0,-s);x.quadraticCurveTo(s*.8,0,0,s);x.quadraticCurveTo(-s*.8,0,0,-s)}x.closePath()};
+  const stick=(x,k,cx,cy,s,rot,col,dot)=>{x.save();x.translate(cx,cy);x.rotate(rot);x.save();x.shadowColor="rgba(60,40,20,.32)";x.shadowBlur=12;x.shadowOffsetY=5;shape(x,k,s);x.lineWidth=s*.32;x.strokeStyle="#FFFDF8";x.lineJoin="round";x.stroke();x.fillStyle="#FFFDF8";x.fill();x.restore();
+    shape(x,k,s);x.fillStyle=col;x.fill();if(k==="flower"&&dot){x.fillStyle=dot;x.beginPath();x.arc(0,0,s*.3,0,7);x.fill()}if(k==="leaf"){x.strokeStyle="rgba(255,255,255,.5)";x.lineWidth=3;x.beginPath();x.moveTo(0,-s*.8);x.lineTo(0,s*.8);x.stroke()}
+    x.globalAlpha=.25;x.fillStyle="#fff";x.beginPath();x.ellipse(-s*.25,-s*.35,s*.25,s*.12,-.6,0,7);x.fill();x.restore()};
+  const tape=(x,cx,cy,w,rot,col)=>{x.save();x.translate(cx,cy);x.rotate(rot);x.globalAlpha=.8;x.fillStyle=col;const hh=46,z=8;x.beginPath();x.moveTo(-w/2,-hh/2);x.lineTo(w/2,-hh/2);for(let Y=-hh/2;Y<hh/2;Y+=z)x.lineTo(w/2+((Y/z|0)%2?-5:3),Y+z/2);x.lineTo(w/2,hh/2);x.lineTo(-w/2,hh/2);for(let Y=hh/2;Y>-hh/2;Y-=z)x.lineTo(-w/2+((Y/z|0)%2?5:-3),Y-z/2);x.closePath();x.fill();
+    x.globalAlpha=.2;x.fillStyle="#fff";for(let X=-w/2+10;X<w/2;X+=26)x.fillRect(X,-hh/2,9,hh);x.restore()};
+  const clip=(x,cx,cy,rot)=>{x.save();x.translate(cx,cy);x.rotate(rot);x.strokeStyle="#8E949C";x.lineWidth=7;x.lineCap="round";x.beginPath();x.moveTo(0,90);x.lineTo(0,-50);x.arc(14,-50,14,Math.PI,0);x.lineTo(28,70);x.arc(14,70,14,0,Math.PI);x.lineTo(0,-20);x.stroke();x.strokeStyle="rgba(255,255,255,.6)";x.lineWidth=2;x.beginPath();x.moveTo(-2,60);x.lineTo(-2,-40);x.stroke();x.restore()};
+  const dymo=(x,t,cx,cy,rot,col)=>{x.save();x.translate(cx,cy);x.rotate(rot);x.font=`400 34px ${T}`;SP(x,"6px");const w=x.measureText(t).width+60;x.shadowColor="rgba(0,0,0,.3)";x.shadowBlur=8;x.shadowOffsetY=4;x.fillStyle=col||"#2B2B33";wrRR(x,-w/2,-30,w,60,6);x.fill();x.shadowColor="transparent";
+    x.fillStyle="rgba(255,255,255,.08)";x.fillRect(-w/2,-30,w,14);x.fillStyle="#F4F1EA";x.textAlign="center";x.fillText(t,0,12);SP(x,"0px");x.textAlign="left";x.restore()};
+  const pola=(x,b,cx,cy,w,rot,cap)=>{const hh=w*1.5,p=w*.07,bt=w*.26;x.save();x.translate(cx,cy);x.rotate(rot);x.shadowColor="rgba(60,40,20,.35)";x.shadowBlur=26;x.shadowOffsetY=12;x.fillStyle="#FBF8F1";x.fillRect(-w/2-p,-hh/2-p,w+2*p,hh+p+bt);x.shadowColor="transparent";
+    x.save();x.translate(-w/2,-hh/2);wrCvDraw(x,imOf(b),b,w,hh,T,S,pool.indexOf(b)+2);x.restore();
     if(cap){x.fillStyle=INK;x.textAlign="center";let f=Math.round(w*.16);x.font=`700 ${f}px ${H}`;while(f>18&&x.measureText(cap).width>w){f-=2;x.font=`700 ${f}px ${H}`}x.fillText(cap,0,hh/2+bt*.68);x.textAlign="left"}x.restore()};
-  // от руки
   const hand=(x,t,X,Y,size,col,rot,al)=>{x.save();x.translate(X,Y);x.rotate(rot||0);x.fillStyle=col;x.font=`700 ${size}px ${H}`;x.textAlign=al||"left";x.fillText(t,0,0);x.restore()};
   const wob=(x,pts,col,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.lineCap="round";x.lineJoin="round";x.beginPath();pts.forEach(([X,Y],i)=>i?x.lineTo(X+rr(-1.5,1.5),Y+rr(-1.5,1.5)):x.moveTo(X,Y));x.stroke()};
   const circ=(x,cx,cy,rx,ry,col)=>{const P=[];for(let i=0;i<=64;i++){const a=-1.9+i/64*Math.PI*2.25,k=1+.04*Math.sin(i*.7);P.push([cx+Math.cos(a)*rx*k,cy+Math.sin(a)*ry*k])}wob(x,P,col,6)};
-  const arrow=(x,x1,y1,x2,y2,bend,col)=>{const P=[];const mx=(x1+x2)/2+bend,my=(y1+y2)/2-Math.abs(bend)*.4;for(let i=0;i<=24;i++){const t=i/24;P.push([(1-t)*(1-t)*x1+2*(1-t)*t*mx+t*t*x2,(1-t)*(1-t)*y1+2*(1-t)*t*my+t*t*y2])}wob(x,P,col,5);
+  const arrow=(x,x1,y1,x2,y2,bend,col)=>{const P=[],mx=(x1+x2)/2+bend,my=(y1+y2)/2-Math.abs(bend)*.4;for(let i=0;i<=24;i++){const t=i/24;P.push([(1-t)*(1-t)*x1+2*(1-t)*t*mx+t*t*x2,(1-t)*(1-t)*y1+2*(1-t)*t*my+t*t*y2])}wob(x,P,col,5);
     const a=Math.atan2(y2-my,x2-mx);wob(x,[[x2-Math.cos(a-.5)*30,y2-Math.sin(a-.5)*30],[x2,y2],[x2-Math.cos(a+.5)*30,y2-Math.sin(a+.5)*30]],col,5)};
-  const star=(x,cx,cy,r,col)=>{const P=[];for(let i=0;i<=10;i++){const a=-Math.PI/2+i/10*Math.PI*2,q=i%2?r*.42:r;P.push([cx+Math.cos(a)*q,cy+Math.sin(a)*q])}wob(x,P,col,4)};
-  const heart=(x,cx,cy,s,col)=>{const P=[];for(let i=0;i<=40;i++){const t=i/40*Math.PI*2;P.push([cx+s*16*Math.pow(Math.sin(t),3)/16,cy-s*(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))/16])}x.fillStyle=col;x.beginPath();P.forEach(([X,Y],i)=>i?x.lineTo(X,Y):x.moveTo(X,Y));x.fill()};
   const uline=(x,x1,x2,y,col)=>{const P=[];for(let X=x1;X<=x2;X+=12)P.push([X,y+Math.sin(X/18)*5]);wob(x,P,col,5)};
-  // печать
   const stamp=(x,cx,cy,r,rot,top,mid,col)=>{const c=document.createElement("canvas");c.width=c.height=r*2+20;const s=c.getContext("2d");s.translate(r+10,r+10);s.strokeStyle=col;s.fillStyle=col;s.lineWidth=7;s.beginPath();s.arc(0,0,r,0,7);s.stroke();s.lineWidth=3;s.beginPath();s.arc(0,0,r-16,0,7);s.stroke();
     s.font=`400 ${Math.round(r*.2)}px ${T}`;s.textAlign="center";const L=top.length,span=Math.PI*1.25;for(let i=0;i<L;i++){s.save();s.rotate(-span/2+span*(i+.5)/L);s.fillText(top[i],0,-r+38);s.restore()}
     s.font=`700 ${Math.round(r*.5)}px ${H}`;s.fillText(mid,0,r*.17);s.font=`400 ${Math.round(r*.15)}px ${T}`;s.fillText("★ ★ ★",0,r*.52);
     s.globalCompositeOperation="destination-out";for(let i=0;i<900;i++){s.globalAlpha=rnd()*.8;s.beginPath();s.arc(rr(-r-10,r+10),rr(-r-10,r+10),rr(.5,3),0,7);s.fill()}
     x.save();x.translate(cx,cy);x.rotate(rot);x.globalAlpha=.85;x.drawImage(c,-r-10,-r-10);x.restore()};
   const typed=(x,t,X,Y,size,col)=>{x.font=`400 ${size}px ${T}`;x.fillStyle=col;x.fillText(t,X,Y)};
-  const site=(x,col)=>hand(x,"nora-books.ru",540,1850,46,col||INK,-.02,"center");
-  const head=(x,t)=>{x.fillStyle=INK;x.font=`400 30px ${T}`;SP(x,"8px");x.textAlign="center";x.fillText(t,540,150);SP(x,"0px");x.textAlign="left"};
+  const site=x=>hand(x,"nora-books.ru",540,1860,46,INK,-.02,"center");
   const mk=base=>{const c=document.createElement("canvas");c.width=1080;c.height=1920;const x=c.getContext("2d");x.textBaseline="alphabetic";paper(x,base);return [c,x]};
-  const st=b=>b&&b.r!=null?Math.max(1,Math.min(5,Math.round(b.r/2))):0;
-  const TAPES=["#E7A38E","#B9CBB0","#E8CF8E","#C7B8DA","#A9C2D6"];
+  const TAPES=["#E7A38E","#B9CBB0","#E8CF8E","#C7B8DA","#A9C2D6"],genre=D.gk.length?String(GEN[D.gk[0][0]]||"").toLowerCase():"",bm=D.mon[D.best]||0;
 
-  // 1. главный лист - страница дневника
-  {const [c,x]=mk("#F3EADB");dots(x,"rgba(120,90,60,.13)");head(x,"ЧИТАТЕЛЬСКИЙ ДНЕВНИК");
-    x.fillStyle=INK;x.font=`600 200px ${S}`;x.textAlign="center";x.fillText(D.Y,540,380);x.font=`600 92px ${SI}`;x.fillStyle=RUST;x.fillText("мой год в книгах",540,480);x.textAlign="left";
-    stamp(x,905,250,104,.25,"НОРА · ИТОГИ ГОДА ·","Нора","#9C3B2A");
-    const sm=pool.slice(1,5),P=[[230,790,-.12],[850,800,.11],[220,1240,.08],[860,1250,-.09]];
-    sm.forEach((b,i)=>{const [X,Y,r]=P[i];pola(x,b,X,Y,230,r,"");tape(x,X+rr(-30,30),Y-200,150,r+rr(-.3,.3),TAPES[(i+1)%5])});
-    pola(x,hero,540,1000,380,-.035,D.top[0]?"книга года":"");tape(x,540,700,220,-.06,TAPES[0]);
-    if(D.top[0]){hand(x,"моя любимая!",860,560,64,RUST,-.08,"center");arrow(x,800,590,700,700,-60,RUST);heart(x,975,520,1.6,RUST)}
-    // число книг, обведённое от руки
-    hand(x,String(n),200,1640,190,INK,-.04,"center");circ(x,200,1580,140,110,RUST);hand(x,plural(n,"книга","книги","книг")+"!",200,1730,64,INK,-.04,"center");
-    // библиотечная карточка
-    x.save();x.translate(700,1610);x.rotate(.035);x.shadowColor="rgba(60,40,20,.3)";x.shadowBlur=20;x.shadowOffsetY=10;x.fillStyle="#F2E2B6";x.fillRect(-300,-190,600,380);x.shadowColor="transparent";
-      x.fillStyle=RUST;x.fillRect(-300,-190,600,10);x.strokeStyle="rgba(70,100,150,.35)";x.lineWidth=2;for(let Y=-110;Y<190;Y+=58){x.beginPath();x.moveTo(-280,Y);x.lineTo(280,Y);x.stroke()}x.strokeStyle="rgba(168,68,47,.45)";x.beginPath();x.moveTo(-120,-140);x.lineTo(-120,190);x.stroke();
-      typed(x,"КАРТОЧКА ЧИТАТЕЛЯ · "+D.Y,-280,-138,26,RUST);
-      const rows=[["тип",D.type[0]],["жанр",D.gk.length?String(GEN[D.gk[0][0]]||"").toLowerCase():"разный"],["стр.",D.pg?D.pg.toLocaleString("ru-RU"):"-"],["часов",h?String(h):"-"]];
-      rows.forEach(([k,v],i)=>{typed(x,k,-280,-122+58*(i+1)-10,26,"rgba(46,34,48,.6)");let f=50;x.font=`700 ${f}px ${H}`;while(f>28&&x.measureText(v).width>390){f-=2;x.font=`700 ${f}px ${H}`}x.fillStyle=INK;x.fillText(v,-100,-122+58*(i+1)-8)});
-    x.restore();
-    star(x,95,560,26,RUST);star(x,990,1440,20,"#C9913E");site(x);out.push(c)}
+  // 1. главный лист
+  {const [c,x]=mk("#F1E7D6");
+    torn(x,370,330,720,330,-.04,"#C9A57A",{j:12});torn(x,820,250,330,250,.07,pat(x,"check","#F3D9D2","#E3A79A"),{j:8});
+    x.fillStyle=INK;x.font=`600 210px ${S}`;x.fillText(D.Y,90,390);x.font=`600 78px ${SI}`;x.fillStyle="#FBF3E4";x.fillText("мой год в книгах",100,465);
+    dymo(x,"ЧИТАТЕЛЬСКИЙ ДНЕВНИК",420,140,-.03);stamp(x,860,260,98,.25,"НОРА · ИТОГИ ГОДА ·","Нора","#9C3B2A");
+    torn(x,250,980,330,560,.06,pat(x,"dots","#DCE6D3","#B9CBB0"),{j:10});torn(x,860,1010,300,600,-.05,pat(x,"stripe","#E9E2F1","#CFC2E2"),{j:10});
+    const sm=pool.slice(1,5),P=[[220,800,-.12],[860,810,.11],[215,1215,.08],[865,1230,-.09]];
+    sm.forEach((b,i)=>{const [X,Y,r]=P[i];pola(x,b,X,Y,215,r,"");tape(x,X+rr(-30,30),Y-188,140,r+rr(-.3,.3),TAPES[(i+1)%5])});
+    pola(x,hero,540,1010,370,-.035,D.top[0]?"книга года":"");tape(x,540,715,210,-.06,TAPES[0]);
+    if(D.top[0]){hand(x,"моя любимая!",810,605,58,RUST,-.08,"center");arrow(x,780,630,705,722,-50,RUST)}
+    stick(x,"heart",985,560,34,.2,"#D9534F");stick(x,"star",90,610,40,-.2,"#E8B64C");stick(x,"flower",120,1420,40,.1,"#E59AA0","#F2C14E");stick(x,"moon",990,1450,38,.4,"#6F7FB5");stick(x,"leaf",560,1395,30,1.2,"#7FA36B");
+    // листок из тетради с числом книг
+    torn(x,215,1640,330,330,-.06,"#FBF8EF",{sides:"t",j:12,lines:46,margin:60});
+    x.save();x.translate(215,1640);x.rotate(-.06);hand(x,String(n),0,40,170,INK,0,"center");circ(x,0,-15,120,95,RUST);hand(x,plural(n,"книга","книги","книг")+"!",0,135,58,INK,0,"center");x.restore();
+    // карточка читателя
+    x.save();x.translate(715,1640);x.rotate(.035);x.shadowColor="rgba(60,40,20,.3)";x.shadowBlur=18;x.shadowOffsetY=8;x.fillStyle="#F2E2B6";x.fillRect(-300,-180,600,360);x.shadowColor="transparent";
+      x.fillStyle=RUST;x.fillRect(-300,-180,600,10);x.strokeStyle="rgba(70,100,150,.35)";x.lineWidth=2;for(let Y=-100;Y<180;Y+=56){x.beginPath();x.moveTo(-280,Y);x.lineTo(280,Y);x.stroke()}x.strokeStyle="rgba(168,68,47,.45)";x.beginPath();x.moveTo(-120,-130);x.lineTo(-120,180);x.stroke();
+      typed(x,"КАРТОЧКА ЧИТАТЕЛЯ · "+D.Y,-280,-128,26,RUST);
+      const rows=[["тип",D.type[0]],["жанр",genre||"разный"],["месяц",bm?WR_MF[D.best]:"-"],["оценка",D.avg?"★ "+D.avg.toFixed(1).replace(".",","):"-"]];
+      rows.forEach(([k,v],i)=>{typed(x,k,-280,-112+56*(i+1)-10,24,"rgba(46,34,48,.6)");let f=48;x.font=`700 ${f}px ${H}`;while(f>28&&x.measureText(v).width>390){f-=2;x.font=`700 ${f}px ${H}`}x.fillStyle=INK;x.fillText(v,-100,-112+56*(i+1)-8)});
+    x.restore();clip(x,960,1470,.15);site(x);out.push(c)}
 
-  // 2. книга года крупно
-  {const [c,x]=mk("#EFE4D6");head(x,D.top[0]?"КНИГА ГОДА":"ПОСЛЕДНЯЯ КНИГА ГОДА");
-    pola(x,hero,540,800,500,.03,"");tape(x,350,420,190,-.5,TAPES[2]);tape(x,740,420,190,.45,TAPES[1]);
-    x.textAlign="center";x.fillStyle=INK;let f=96;x.font=`600 ${f}px ${S}`;const L=wrWrap(x,hero.t,940,2);while(f>56&&L.some(l=>x.measureText(l).width>940)){f-=4;x.font=`600 ${f}px ${S}`}
-    let y=1420;wrWrap(x,hero.t,940,2).forEach(l=>{x.fillText(l,540,y);y+=f*1.02});x.font=`600 52px ${SI}`;x.fillStyle="rgba(46,34,48,.75)";x.fillText(hero.a||"",540,y+6);x.textAlign="left";
-    const s=st(hero);for(let i=0;i<5;i++){star(x,540+(i-2)*78,y+100,28,i<s?RUST:"rgba(46,34,48,.25)");if(i<s){x.fillStyle="rgba(168,68,47,.85)";x.beginPath();for(let j=0;j<10;j++){const a=-Math.PI/2+j/10*Math.PI*2,q=j%2?11:26;x.lineTo(540+(i-2)*78+Math.cos(a)*q,y+100+Math.sin(a)*q)}x.fill()}}
-    hand(x,"перечитаю ещё!",870,1330,56,RUST,-.12,"center");heart(x,1000,1265,1.2,RUST);site(x);out.push(c)}
+  // 2. книга года
+  {const [c,x]=mk("#EFE4D3");torn(x,540,760,760,1000,.04,pat(x,"flower","#F2DCCF","#E7B9A5"),{j:14});torn(x,560,1500,880,330,-.02,"#FBF8EF",{j:10,lines:52});
+    dymo(x,D.top[0]?"КНИГА ГОДА":"ПОСЛЕДНЯЯ КНИГА",540,160,-.02);
+    pola(x,hero,540,760,470,.03,"");tape(x,355,385,190,-.5,TAPES[2]);tape(x,725,385,190,.45,TAPES[1]);
+    x.save();x.translate(560,1500);x.rotate(-.02);x.textAlign="center";x.fillStyle=INK;let f=86;x.font=`600 ${f}px ${S}`;while(f>50&&wrWrap(x,hero.t,800,2).some(l=>x.measureText(l).width>800)){f-=4;x.font=`600 ${f}px ${S}`}
+      const L=wrWrap(x,hero.t,800,2);let y=-60-(L.length-1)*f*.5;L.forEach(l=>{x.fillText(l,0,y);y+=f});x.font=`600 48px ${SI}`;x.fillStyle="rgba(46,34,48,.75)";x.fillText(hero.a||"",0,y+4);x.textAlign="left";x.restore();
+    const s=st(hero);for(let i=0;i<5;i++)stick(x,"star",380+i*80,1750,i<s?30:22,rr(-.3,.3),i<s?"#E8B64C":"#D8CFC0");
+    stick(x,"heart",900,1300,44,.2,"#D9534F");hand(x,"перечитаю ещё!",880,1240,52,RUST,-.12,"center");stick(x,"flower",150,380,46,.2,"#E59AA0","#F2C14E");stick(x,"leaf",960,560,36,-.6,"#7FA36B");site(x);out.push(c)}
 
-  // 3. страницы - стопка книг, нарисованная от руки
-  if(D.pg>=200){const [c,x]=mk("#F1E8DA");dots(x,"rgba(120,90,60,.12)");head(x,"СТРАНИЦЫ");
-    x.fillStyle=INK;x.font=`600 230px ${S}`;x.textAlign="center";x.fillText(D.pg.toLocaleString("ru-RU"),540,420);x.font=`600 80px ${SI}`;x.fillStyle=RUST;x.fillText(plural(D.pg,"страница","страницы","страниц"),540,570);x.textAlign="left";
-    uline(x,250,830,610,RUST);
-    const t=D.pg>=1300?`это «Война и мир» ${wrTimes(D.pg/1300)}`:D.pg>=480?`это «Мастер и Маргарита» ${wrTimes(D.pg/480)}`:"целая стопка историй";hand(x,t,540,720,64,INK,-.02,"center");
-    // стопка корешков
-    let y=1760;const k=Math.min(14,Math.max(5,Math.round(D.pg/600)));const CC=["#A8442F","#3E4E6E","#C9913E","#6E8763","#6B3550","#B97A58","#4F6B7A"];
-    for(let i=0;i<k;i++){const w=rr(420,560),hh=rr(54,74),X=540-w/2+rr(-30,30);x.save();x.translate(X+w/2,y-hh/2);x.rotate(rr(-.03,.03));x.fillStyle=CC[i%CC.length];x.fillRect(-w/2,-hh/2,w,hh);x.fillStyle="rgba(255,250,240,.55)";x.fillRect(-w/2+30,-4,w*.35,6);x.fillRect(w/2-60,-hh/2+8,8,hh-16);
-      x.strokeStyle="rgba(46,34,48,.55)";x.lineWidth=3;x.strokeRect(-w/2,-hh/2,w,hh);x.restore();y-=hh}
-    hand(x,"и это только начало",540,y-40,58,RUST,-.04,"center");star(x,200,y-60,22,RUST);star(x,880,y-80,18,"#C9913E");site(x);out.push(c)}
+  // 3. страницы
+  if(D.pg>=200){const [c,x]=mk("#F0E6D6");torn(x,540,420,820,420,-.03,"#FBF8EF",{j:12,lines:56,margin:90});dymo(x,"СТРАНИЦЫ",540,150,.02);
+    x.save();x.translate(540,420);x.rotate(-.03);x.fillStyle=INK;x.font=`600 200px ${S}`;x.textAlign="center";x.fillText(D.pg.toLocaleString("ru-RU"),0,50);x.font=`600 70px ${SI}`;x.fillStyle=RUST;x.fillText(plural(D.pg,"страница","страницы","страниц"),0,140);x.textAlign="left";x.restore();
+    const t=D.pg>=1300?`это «Война и мир» ${wrTimes(D.pg/1300)}`:D.pg>=480?`это «Мастер и Маргарита» ${wrTimes(D.pg/480)}`:"целая стопка историй";
+    torn(x,540,740,760,120,.02,"#C9A57A",{j:8});hand(x,t,540,762,60,"#FBF3E4",.02,"center");
+    let y=1780;const k=Math.min(13,Math.max(5,Math.round(D.pg/650))),CC=[["#A8442F","check"],["#3E4E6E","dots"],["#C9913E","stripe"],["#6E8763","dots"],["#6B3550","flower"],["#B97A58","stripe"],["#4F6B7A","check"]];
+    for(let i=0;i<k;i++){const w=rr(440,580),hh=rr(56,74),X=540+rr(-30,30),[col,pk]=CC[i%CC.length];torn(x,X,y-hh/2,w,hh,rr(-.025,.025),i%3===1?pat(x,pk,col,"rgba(255,255,255,.18)"):col,{j:4,sides:"lr"});
+      x.save();x.translate(X,y-hh/2);x.fillStyle="rgba(255,250,240,.6)";x.fillRect(-w*.2,-4,w*.3,6);x.restore();y-=hh-4}
+    hand(x,"и это только начало",540,y-40,58,RUST,-.04,"center");stick(x,"star",210,y-60,30,.2,"#E8B64C");stick(x,"heart",880,y-70,28,-.2,"#D9534F");site(x);out.push(c)}
 
-  // 4. часы - билет на поезд
-  if(h>=2){const [c,x]=mk("#ECE2D3");head(x,"ЧАСЫ С КНИГОЙ");x.fillStyle=INK;x.font=`600 260px ${S}`;x.textAlign="center";x.fillText(String(h),540,460);x.font=`600 80px ${SI}`;x.fillStyle=RUST;x.fillText(plural(h,"час","часа","часов")+" с книгой",540,560);x.textAlign="left";
-    const far=h>=166,trips=far?h/166:h/4;
-    x.save();x.translate(540,1050);x.rotate(-.04);x.shadowColor="rgba(60,40,20,.3)";x.shadowBlur=24;x.shadowOffsetY=12;x.fillStyle="#F6EBD0";wrRR(x,-430,-230,860,460,18);x.fill();x.shadowColor="transparent";
-      x.fillStyle="#ECE2D3";[-230,230].forEach(Y=>{x.beginPath();x.arc(200,Y,30,0,7);x.fill()});
-      x.setLineDash([10,10]);x.strokeStyle="rgba(46,34,48,.4)";x.lineWidth=3;x.beginPath();x.moveTo(200,-200);x.lineTo(200,200);x.stroke();x.setLineDash([]);
-      x.fillStyle=RUST;x.fillRect(-430,-230,630,64);typed(x,far?"ПОЕЗД «РОССИЯ» · БИЛЕТ":"«САПСАН» · БИЛЕТ",-400,-186,30,"#FBF3E2");
-      x.font=`600 78px ${S}`;x.fillStyle=INK;x.fillText("Москва",-400,-70);hand(x,"→",-400,48,70,RUST);x.font=`600 78px ${S}`;x.fillStyle=INK;x.fillText(far?"Владивосток":"Петербург",-330,60);
-      typed(x,"поездок: "+wrTimes(trips).replace(/ раза?$/,""),-400,150,34,INK);typed(x,"в пути: "+h+" ч",-400,196,30,"rgba(46,34,48,.65)");
-      x.save();x.translate(315,-110);x.rotate(-Math.PI/2);typed(x,"МЕСТО 1 · У ОКНА",-110,10,26,INK);x.restore();
-      stamp(x,315,130,74,-.3,"ПРОЧИТАНО · НОРА ·",D.Y.slice(2),"#3E4E6E");
-    x.restore();
-    hand(x,"с книгой можно было бы",540,1450,60,INK,-.02,"center");hand(x,far?"проехать через всю страну":`${wrTimes(trips)} доехать до Петербурга`,540,1530,66,RUST,-.02,"center");star(x,170,1700,26,RUST);star(x,920,1640,20,"#C9913E");site(x);out.push(c)}
+  // 4. самый читающий месяц - листок отрывного календаря и столбики из бумажных полосок
+  if(n>=2&&bm){const [c,x]=mk("#EDE3D2");dymo(x,"САМЫЙ ЧИТАЮЩИЙ МЕСЯЦ",540,150,-.02);
+    x.save();x.translate(540,680);x.rotate(-.04);x.save();x.shadowColor="rgba(60,40,20,.32)";x.shadowBlur=22;x.shadowOffsetY=10;x.fillStyle="#FBF8EF";x.fillRect(-300,-300,600,620);x.restore();
+      x.fillStyle=RUST;x.fillRect(-300,-300,600,120);[-180,-60,60,180].forEach(X=>{x.fillStyle="#EDE3D2";x.beginPath();x.arc(X,-300,16,0,7);x.fill();x.strokeStyle="#8E949C";x.lineWidth=6;x.beginPath();x.arc(X,-310,18,Math.PI*.9,Math.PI*2.1);x.stroke()});
+      x.fillStyle="#FBF3E4";x.font=`400 40px ${T}`;SP(x,"10px");x.textAlign="center";x.fillText(D.Y,0,-222);SP(x,"0px");
+      x.fillStyle=INK;let f=150;x.font=`600 ${f}px ${S}`;const m=WR_MF[D.best];while(f>70&&x.measureText(m).width>540){f-=6;x.font=`600 ${f}px ${S}`}x.fillText(m,0,20);
+      x.font=`700 76px ${H}`;x.fillStyle=RUST;x.fillText(`${bm} ${plural(bm,"книга","книги","книг")}`,0,150);x.font=`400 28px ${T}`;x.fillStyle="rgba(46,34,48,.55)";x.fillText("за один месяц",0,210);x.textAlign="left";
+      x.fillStyle="#FBF8EF";tornPath(x,600,30,10,"b");x.save();x.translate(-300,300);tornPath(x,600,30,10,"b");x.fill();x.restore();x.restore();
+    stick(x,"star",840,460,42,.3,"#E8B64C");
+    // год по месяцам
+    const mx=Math.max(1,...D.mon),bw=64,gap=14,x0=540-(12*bw+11*gap)/2,base=1690;torn(x,540,1540,900,470,.01,pat(x,"lines","#FBF8EF","rgba(70,110,160,.18)"),{j:10});
+    D.mon.forEach((v,i)=>{const hh=v?36+v/mx*230:14,X=x0+i*(bw+gap)+bw/2;torn(x,X,base-hh/2,bw,hh,rr(-.04,.04),i===D.best?RUST:["#C9A57A","#B9CBB0","#C7B8DA","#E7A38E"][i%4],{j:3,sides:"t"});
+      hand(x,WR_MN[i].slice(0,1).toUpperCase()+WR_MN[i].slice(1),X,base+56,34,INK,0,"center");if(v)hand(x,String(v),X,base-hh-14,40,i===D.best?RUST:INK,0,"center")});
+    hand(x,"мой ритм года",540,1250,60,RUST,-.03,"center");site(x);out.push(c)}
 
   // 5. читательский тип - карта таро
-  {const [c,x]=mk("#E9DFD0");head(x,"МОЙ ЧИТАТЕЛЬСКИЙ ТИП");
-    x.save();x.translate(540,960);x.rotate(.02);x.shadowColor="rgba(40,25,15,.4)";x.shadowBlur=40;x.shadowOffsetY=20;x.fillStyle="#2E2441";wrRR(x,-330,-560,660,1120,30);x.fill();x.shadowColor="transparent";
-      x.strokeStyle="#D9B46A";x.lineWidth=4;wrRR(x,-300,-530,600,1060,20);x.stroke();x.lineWidth=2;wrRR(x,-284,-514,568,1028,14);x.stroke();
-      x.fillStyle="#D9B46A";x.textAlign="center";x.font=`400 34px ${T}`;SP(x,"10px");x.fillText(["I","II","III","IV","V","VI","VII","VIII"][Object.keys(WR_TYPE).findIndex(k=>WR_TYPE[k]===D.type)]||"I",0,-440);SP(x,"0px");
-      // солнце/луна
-      x.beginPath();x.arc(0,-160,150,0,7);x.lineWidth=3;x.stroke();for(let i=0;i<24;i++){const a=i/24*Math.PI*2;x.beginPath();x.moveTo(Math.cos(a)*170,-160+Math.sin(a)*170);x.lineTo(Math.cos(a)*(i%2?200:230),-160+Math.sin(a)*(i%2?200:230));x.stroke()}
-      x.beginPath();x.arc(-30,-160,110,0,7);x.fill();x.fillStyle="#2E2441";x.beginPath();x.arc(10,-180,100,0,7);x.fill();
-      x.fillStyle="#D9B46A";[[-200,-380],[210,-350],[-220,60],[230,40],[0,-380]].forEach(([X,Y])=>{x.save();x.translate(X,Y);x.beginPath();for(let i=0;i<8;i++){const a=i/8*Math.PI*2,q=i%2?5:16;x.lineTo(Math.cos(a)*q,Math.sin(a)*q)}x.fill();x.restore()});
-      // открытая книга
+  {const [c,x]=mk("#E9DFCF");torn(x,540,960,800,1300,-.03,pat(x,"check","#E4D3C3","#D6BFA9"),{j:14});dymo(x,"МОЙ ЧИТАТЕЛЬСКИЙ ТИП",540,150,.02);
+    x.save();x.translate(540,960);x.rotate(.02);x.shadowColor="rgba(40,25,15,.4)";x.shadowBlur=40;x.shadowOffsetY=20;x.fillStyle="#2E2441";wrRR(x,-320,-540,640,1080,30);x.fill();x.shadowColor="transparent";
+      x.strokeStyle="#D9B46A";x.lineWidth=4;wrRR(x,-290,-510,580,1020,20);x.stroke();x.lineWidth=2;wrRR(x,-274,-494,548,988,14);x.stroke();
+      x.fillStyle="#D9B46A";x.textAlign="center";x.font=`400 34px ${T}`;SP(x,"10px");x.fillText(["I","II","III","IV","V","VI","VII","VIII"][Object.keys(WR_TYPE).findIndex(k=>WR_TYPE[k]===D.type)]||"I",0,-420);SP(x,"0px");
+      x.beginPath();x.arc(0,-150,140,0,7);x.lineWidth=3;x.stroke();for(let i=0;i<24;i++){const a=i/24*Math.PI*2;x.beginPath();x.moveTo(Math.cos(a)*160,-150+Math.sin(a)*160);x.lineTo(Math.cos(a)*(i%2?190:218),-150+Math.sin(a)*(i%2?190:218));x.stroke()}
+      x.beginPath();x.arc(-28,-150,104,0,7);x.fill();x.fillStyle="#2E2441";x.beginPath();x.arc(10,-170,94,0,7);x.fill();
+      x.fillStyle="#D9B46A";[[-200,-370],[205,-340],[-215,60],[225,40],[0,-370]].forEach(([X,Y])=>{x.save();x.translate(X,Y);x.beginPath();for(let i=0;i<8;i++){const a=i/8*Math.PI*2,q=i%2?5:16;x.lineTo(Math.cos(a)*q,Math.sin(a)*q)}x.fill();x.restore()});
       x.strokeStyle="#D9B46A";x.lineWidth=4;x.beginPath();x.moveTo(0,150);x.quadraticCurveTo(-90,110,-180,130);x.lineTo(-180,40);x.quadraticCurveTo(-90,20,0,60);x.quadraticCurveTo(90,20,180,40);x.lineTo(180,130);x.quadraticCurveTo(90,110,0,150);x.lineTo(0,60);x.stroke();
-      x.fillStyle="#F3E7CF";let f=66;x.font=`600 ${f}px ${S}`;const L=wrWrap(x,D.type[0].toUpperCase(),520,2);while(f>40&&L.some(l=>x.measureText(l).width>520)){f-=3;x.font=`600 ${f}px ${S}`}
-      let y=290;wrWrap(x,D.type[0].toUpperCase(),520,2).forEach(l=>{x.fillText(l,0,y);y+=f*1.05});
-      x.font=`600 40px ${SI}`;x.fillStyle="rgba(243,231,207,.8)";wrWrap(x,D.type[1],500,3).forEach(l=>{x.fillText(l,0,y+20);y+=48});x.textAlign="left";
-    x.restore();
-    hand(x,"это прям я",300,1640,70,RUST,-.08,"center");arrow(x,380,1600,440,1500,40,RUST);if(D.gk.length)hand(x,"любимый жанр - "+String(GEN[D.gk[0][0]]||"").toLowerCase(),540,1760,52,INK,-.01,"center");site(x);out.push(c)}
+      x.fillStyle="#F3E7CF";let f=64;x.font=`600 ${f}px ${S}`;while(f>40&&wrWrap(x,D.type[0].toUpperCase(),510,2).some(l=>x.measureText(l).width>510)){f-=3;x.font=`600 ${f}px ${S}`}
+      let y=280;wrWrap(x,D.type[0].toUpperCase(),510,2).forEach(l=>{x.fillText(l,0,y);y+=f*1.05});x.font=`600 38px ${SI}`;x.fillStyle="rgba(243,231,207,.8)";wrWrap(x,D.type[1],490,3).forEach(l=>{x.fillText(l,0,y+18);y+=46});x.textAlign="left";
+    x.restore();tape(x,290,430,170,-.6,TAPES[3]);tape(x,800,1500,170,-.5,TAPES[2]);
+    stick(x,"star",880,420,44,.3,"#E8B64C");stick(x,"moon",170,1380,40,.5,"#6F7FB5");
+    torn(x,300,1690,420,120,-.05,"#FBF8EF",{j:8});hand(x,"это прям я",300,1712,62,RUST,-.05,"center");if(genre){torn(x,740,1770,460,96,.04,"#C9A57A",{j:7});hand(x,"люблю: "+genre,740,1788,44,"#FBF3E4",.04,"center")}site(x);out.push(c)}
   return out}
 function wrFill(){const W=WR;if(!W||!W.u)return;const el=wrEl.querySelector("[data-wrpvs]");if(!el||el.dataset.ok)return;el.dataset.ok=1;el.innerHTML=W.u.map((u,i)=>`<img data-wrone="${i}" src="${u}" alt="Итоги года, картинка ${i+1}">`).join("")}
 function wrPrep(){if(!WR)return Promise.resolve(null);const W=WR;if(!W.p)W.p=wrCards(W.D).then(cs=>Promise.all(cs.map(c=>new Promise(r=>{try{c.toBlob(b=>r(b),"image/png")}catch(e){r(null)}})))).then(bs=>{bs=bs.filter(Boolean);return bs.length?bs:null}).catch(()=>null);
