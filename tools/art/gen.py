@@ -29,6 +29,12 @@ def call(prompt):
         return {"error": str(e)}, 0
 
 
+try:  # какие модели картинок есть у сервиса
+    rq = urllib.request.Request(BASE + "/models", headers={"Authorization": "Bearer " + KEY})
+    ms = [m.get("id", "") for m in json.loads(urllib.request.urlopen(rq, timeout=60).read()).get("data", [])]
+    print("модели с картинками:", [m for m in ms if "image" in m.lower() or "dall" in m.lower()] or "не видно", "| всего моделей:", len(ms))
+except Exception as e:  # noqa: BLE001
+    print("список моделей недоступен:", str(e)[:150])
 ok = 0
 for s in want:
     for i in range(N):
