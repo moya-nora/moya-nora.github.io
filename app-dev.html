@@ -2080,7 +2080,7 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .dlbl{margin:18px 0 6px;font-size:11px;font-weight:700;letter-spacing:.08em;opacity:.5;text-transform:uppercase}
 #app .drv{font:400 15px/1.6 DLit,Georgia,serif;white-space:pre-line}
 #app .dqc{position:relative;margin-top:8px;padding:10px 34px 10px 12px;border-left:2px solid #E2B66B;background:rgba(255,255,255,.05);border-radius:0 12px 12px 0;font:italic 400 14px/1.45 DLit,Georgia,serif}
-#app .dqc small{display:block;font:500 11px DMan;opacity:.55;margin-top:4px;font-style:normal}
+#app .dqc{overflow-wrap:anywhere;word-break:break-word}#app .dqt{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}#app .dqc.open .dqt{display:block;-webkit-line-clamp:unset}#app .dqm{display:block;margin-top:4px;padding:0;border:0;background:none;color:#E2B66B;font:600 12px DMan;font-style:normal}#app .drv{overflow-wrap:anywhere}#app .dqc small{display:block;font:500 11px DMan;opacity:.55;margin-top:4px;font-style:normal}
 #app .dqx{position:absolute;right:6px;top:6px;width:26px;height:26px;border:0;background:none;color:inherit;opacity:.5;padding:4px}#app .dqx svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
 #app .dacts,#app .dfn{display:flex;gap:8px;margin-top:22px}#app .dacts .btn,#app .dfn .btn{flex:1}
 #app .dfh{display:flex;justify-content:space-between;align-items:center}#app .dfk{font-size:12px;font-weight:700;letter-spacing:.06em;opacity:.5}
@@ -6775,25 +6775,25 @@ function dOpen(b,top){if(!b)return;const x=dItem(b),Q=bQuotes(b),dp=b.dp||{};
    ${(b.dm||[]).length?`<div class="dchips">${b.dm.map(m=>`<span>${esc(m)}</span>`).join("")}</div>`:""}
    ${DHOW.some(([k])=>dp[k])||dp.hero?`<div class="dfx">${DHOW.filter(([k])=>dp[k]).map(([k,l])=>`<div>${l}<b>${esc(dp[k])}</b></div>`).join("")}${dp.hero?`<div>Любимый герой<b>${esc(dp.hero)}</b></div>`:""}</div>`:""}
    ${b.n?`<div class="dlbl">Мой отзыв${b.pub?" · видят друзья":""}</div><div class="drv">${esc(b.n)}</div>`:""}
-   ${Q.length?`<div class="dlbl">Цитаты · ${Q.length}</div>${Q.map(q=>`<div class="dqc">«${esc(q.text)}»${q.page?`<small>стр. ${esc(q.page)}</small>`:""}</div>`).join("")}`:""}
-   <div class="dacts"><button class="btn" data-dedit="${esc(b.id)}">Изменить</button><button class="btn w" data-dshare="${esc(b.id)}">Поделиться</button></div></div>`,true);if(top||BKC)$("#vsheet").classList.add("ontop")}
+   ${Q.length?`<div class="dlbl">Цитаты · ${Q.length}</div>${Q.map(q=>`<div class="dqc"><span class="dqt">«${esc(q.text)}»</span>${q.page?`<small>стр. ${esc(q.page)}</small>`:""}</div>`).join("")}`:""}
+   <div class="dacts"><button class="btn" data-dedit="${esc(b.id)}">Изменить</button><button class="btn w" data-dshare="${esc(b.id)}">Поделиться</button></div></div>`,true);if(top||BKC)$("#vsheet").classList.add("ontop");dqFit()}
 function dShare(b){const dp=b.dp||{},Q=bQuotes(b);const txt=[`«${b.t}»${b.a?" - "+b.a:""}`,b.r!=null?"★".repeat(Math.round(b.r/2))+" "+dVerd(b):"",(b.dm||[]).join(", "),b.n||"",Q[0]?"«"+Q[0].text+"»":"","Мой читательский дневник в Норе: "+location.origin+"/"].filter(Boolean).join("\n\n");
   if(navigator.share){navigator.share({text:txt}).catch(()=>{});return}try{navigator.clipboard.writeText(txt).then(()=>toast("Скопировано - вставь в сообщение"))}catch(e){toast("Не получилось скопировать")}}
 // заполнение по шагам
 let DF=null;
 function dNew(b,step){if(!b)return;const ds=LS.get("zal.ddraft",{})[b.id];DF={b,step:step||0,r:b.r!=null?Math.round(b.r/2):0,dm:[...(b.dm||[])],dp:{...(b.dp||{})},n:ds!=null?ds:(b.n||""),pub:b.n?!!b.pub:false,top:!!BKC};dStep()}
-function dHead(t,sub){return `<div class="dfh"><div class="dfk">${DF.step+1} из 5</div><button class="dfx2" data-dfclose aria-label="Закрыть">${IC2.x}</button></div><div class="dfb">${cv(dItem(DF.b),40)}<div><b>${esc(DF.b.t)}</b><small>${esc(DF.b.a||"")}</small></div></div><h3 class="dft">${t}</h3>${sub?`<p class="dfs">${sub}</p>`:""}`}
+function dqFit(){requestAnimationFrame(()=>document.querySelectorAll("#vsheet .dqc").forEach(c=>{const t=c.querySelector(".dqt");if(!t||c.querySelector(".dqm"))return;if(t.scrollHeight>t.clientHeight+2){const b=document.createElement("button");b.className="dqm";b.textContent="Ещё";b.onclick=e=>{e.stopPropagation();const o=c.classList.toggle("open");b.textContent=o?"Свернуть":"Ещё"};t.after(b)}}))} function dHead(t,sub){return `<div class="dfh"><div class="dfk">${DF.step+1} из 5</div><button class="dfx2" data-dfclose aria-label="Закрыть">${IC2.x}</button></div><div class="dfb">${cv(dItem(DF.b),40)}<div><b>${esc(DF.b.t)}</b><small>${esc(DF.b.a||"")}</small></div></div><h3 class="dft">${t}</h3>${sub?`<p class="dfs">${sub}</p>`:""}`}
 function dNav(last){return `<div class="dfn">${DF.step?`<button class="btn" data-dfback>Назад</button>`:""}<button class="btn w" data-dfnext>${last?"Сохранить в дневник":"Дальше"}</button></div>`}
 function dStep(){const s=DF.step;let h="";
   if(s===0)h=dHead("Как тебе книга?")+`<div class="dfr">${DV.map((l,i)=>`<button data-dfr="${i+1}" class="${DF.r===i+1?"on":""}"><span>${l}</span><i>${"★".repeat(i+1)}</i></button>`).join("")}</div>`+dNav();
   if(s===1)h=dHead("Какая она?","Выбери до трёх слов")+`<div class="dfm">${DMOOD.map(m=>`<button data-dfm="${esc(m)}" class="${DF.dm.includes(m)?"on":""}">${esc(m)}</button>`).join("")}</div>`+dNav();
   if(s===2)h=dHead("Как читалась?","Можно пропустить любую строку")+DHOW.map(([k,l,o])=>`<div class="dfl">${l}</div><div class="dfm one">${o.map(v=>`<button data-dfh="${k}" data-v="${esc(v)}" class="${DF.dp[k]===v?"on":""}">${esc(v)}</button>`).join("")}</div>`).join("")+`<div class="dfl">Любимый герой</div><input class="sy-in" id="dfHero" maxlength="60" placeholder="Имя героя" value="${esc(DF.dp.hero||"")}">`+dNav();
-  if(s===3)h=`<div class="dfh"><div class="dfk">4 из 5</div><button class="dfx2" data-dfclose aria-label="Закрыть">${IC2.x}</button></div><h3 class="dft">Мой отзыв</h3><p class="dfs" id="dfWc">Без ограничений. Черновик сохраняется сам</p><textarea id="dfN" class="dfta" placeholder="Что зацепило, что нет, кому бы посоветовала">${esc(DF.n)}</textarea>
+  if(s===3)h=`<div class="dfh"><div class="dfk">4 из 5</div><button class="dfx2" data-dfclose aria-label="Закрыть">${IC2.x}</button></div><h3 class="dft">Мой отзыв</h3><textarea id="dfN" class="dfta" placeholder="Что зацепило, что нет, кому бы посоветовала">${esc(DF.n)}</textarea>
     <div class="rv-vis" id="dfVis"><button data-dfv="1" class="${DF.pub?"on":""}">Видят друзья</button><button data-dfv="0" class="${DF.pub?"":"on"}">Только я</button></div>`+dNav();
-  if(s===4){const Q=bQuotes(DF.b);h=dHead("Цитаты","Сколько угодно, любой длины. Можно пропустить")+Q.map(q=>`<div class="dqc">«${esc(q.text)}»${q.page?`<small>стр. ${esc(q.page)}</small>`:""}<button class="dqx" data-dfqx="${q.ts}" aria-label="Удалить">${IC2.x}</button></div>`).join("")+
+  if(s===4){const Q=bQuotes(DF.b);h=dHead("Цитаты")+Q.map(q=>`<div class="dqc"><span class="dqt">«${esc(q.text)}»</span>${q.page?`<small>стр. ${esc(q.page)}</small>`:""}<button class="dqx" data-dfqx="${q.ts}" aria-label="Удалить">${IC2.x}</button></div>`).join("")+
     `<textarea id="dfQ" class="sy-in dfqt" rows="2" placeholder="Фраза, которую хочется запомнить"></textarea><div class="dfqr"><button class="btn" data-dfqadd>+ Добавить цитату</button></div>`+dNav(true)}
-  vOpen(`<div class="dflow s${s}">${h}</div>`,true);$("#vsheet").classList.add("ontop");
-  const t=$("#dfN");if(t){const wc=()=>{const n=(t.value.trim().match(/\S+/g)||[]).length;$("#dfWc").textContent=n?`${n} ${plural(n,"слово","слова","слов")} · черновик сохранён`:"Без ограничений. Черновик сохраняется сам"};
+  vOpen(`<div class="dflow s${s}">${h}</div>`,true);dqFit();$("#vsheet").classList.add("ontop");
+  const t=$("#dfN");if(t){const wc=()=>{};
     t.addEventListener("input",()=>{DF.n=t.value;const d=LS.get("zal.ddraft",{});d[DF.b.id]=t.value;LS.set("zal.ddraft",d);wc()});wc();setTimeout(()=>{try{t.focus()}catch(e){}},300)}
   const q=$("#dfQ");if(q)autoGrow(q)}
 function dCollect(){const h=$("#dfHero");if(h)DF.dp.hero=h.value.trim();const t=$("#dfN");if(t)DF.n=t.value;const q=$("#dfQ");if(q&&q.value.trim())dQAdd()}
