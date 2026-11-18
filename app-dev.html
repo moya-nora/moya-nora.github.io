@@ -6972,9 +6972,11 @@ const SHVD="img/shelf/";let SHG=null,SHX=null,SHI=0;
 function shvInit(){if(SHX)return SHX;fetch(SHVD+"gap.json").then(r=>r.json()).then(j=>{SHG=j}).catch(()=>{});const im=new Image();im.onload=()=>{SHI=1};im.src=SHVD+"shelf.jpg";
   const el=document.createElement("div");el.className="shv";el.innerHTML=`<div class="shv-bg"></div><div class="shv-fl"></div><div class="shv-b"><b></b></div><div class="shv-sp">${Array.from({length:16},(_,i)=>`<i style="--dx:${Math.round((hsh("x"+i)%160-80)*(i%3?1:1.6))}px;--dy:${-30-hsh("y"+i)%130}px;--d:${(hsh("d"+i)%25)/100}s;--z:${3+hsh("z"+i)%4}px"></i>`).join("")}</div><div class="shv-t"><b></b><span></span></div>`;
   $("#app").appendChild(el);el.addEventListener("click",()=>shvEnd(true));SHX={el,run:0};return SHX}
-setTimeout(()=>{if(!RM)try{shvInit()}catch(e){}},4000);
+
 function shvEnd(fast){const X=SHX;if(!X||!X.run)return;X.run=0;clearTimeout(X.t);clearTimeout(X.t2);X.el.classList.add("out");setTimeout(()=>{if(!X.run)X.el.classList.remove("on","out","fly","land")},fast?220:420)}
-function shelfAnim(x,lab){if(RM)return;const X=shvInit();
+// по просьбе владелицы вместо анимации - короткое окошко «Добавлено…»
+function shelfAnim(x,lab){toast(/Хочу/.test(lab||"")?"Добавлено в «Хочу прочитать»":"Добавлено в «Прочитано»");tgHaptic("light")}
+function shelfAnimOld(x,lab){if(RM)return;const X=shvInit();
   if(!SHG||!SHI){shelfAnim0(x,lab);return}
   const el=X.el,u=imgOf(x),c=catOf(x)||{},bg=x.bg||c.bg||palOf(x.t)[0],sp=el.querySelector(".shv-b");
   sp.style.setProperty("--sb",bg);sp.style.backgroundImage=u?`url("${u.replace(/"/g,"%22")}")`:"none";sp.querySelector("b").textContent=x.t;
@@ -7151,7 +7153,7 @@ let WRFP=null;const wrFonts=()=>WRFP||(WRFP=Promise.all(WRF.map(([f,n,w,st])=>{t
 async function wrCards(D){await wrFonts();const S="NoraDisp, Georgia, serif",F="NoraSans, sans-serif",INK="#2B2440",ACC="#9A4A36",MUTE="rgba(43,36,64,.68)",n=D.L.length,out=[];
   const SP=(x,v)=>{if("letterSpacing" in x)x.letterSpacing=v};
   const pool=[D.top[0]||D.last,...D.top.slice(1),...D.L.slice().reverse()].filter((b,i,a)=>b&&a.indexOf(b)===i).slice(0,5),ims=await Promise.all(pool.map(b=>wrCov(b).catch(()=>null)));
-  const hero=pool[0],imOf=b=>ims[pool.indexOf(b)]||null,st=b=>b&&b.r!=null?Math.max(1,Math.min(5,Math.round(b.r/2))):0,genre=D.gk.length?String(GEN[D.gk[0][0]]||""):"";
+  const MIM=new Map(pool.map((b,k)=>[b,ims[k]])),hero=pool[0],imOf=b=>MIM.get(b)||null,st=b=>b&&b.r!=null?Math.max(1,Math.min(5,Math.round(b.r/2))):0,genre=D.gk.length?String(GEN[D.gk[0][0]]||""):"";
   const ART={};await Promise.all(["main","book","pages","month","type"].map(async k=>{ART[k]=await wrLd("img/itogi/g-"+k+".webp?v=3")}));
   const PAL=["#5B6B8C","#9A4A36","#6E8763","#7A5A86","#B08A3E"];
   const cover=(x,b,X,Y,w,h,i)=>{const im=imOf(b);x.save();x.shadowColor="rgba(43,36,64,.3)";x.shadowBlur=24;x.shadowOffsetY=10;x.fillStyle="#fff";x.fillRect(X,Y,w,h);x.restore();x.save();x.beginPath();x.rect(X,Y,w,h);x.clip();
@@ -7182,7 +7184,9 @@ async function wrCards(D){await wrFonts();const S="NoraDisp, Georgia, serif",F="
     x.font=`500 36px ${F}`;x.fillStyle=MUTE;wrWrap(x,t,900,2).forEach((l,i)=>x.fillText(l,80,640+i*48));site(x);out.push(c)}
   // 4. месяц
   {const bm=D.mon[D.best]||0;if(n>=2&&bm){const [c,x]=mk("month");kick(x,"САМЫЙ ЧИТАЮЩИЙ МЕСЯЦ",230);const m=WR_MF[D.best];x.fillStyle=INK;fitS(x,m,920,200);x.fillText(m.slice(0,1).toUpperCase()+m.slice(1),70,440);
-    x.font=`italic 600 58px ${S}`;x.fillText(`${bm} ${plural(bm,"книга","книги","книг")} за месяц`,80,560);x.font=`500 36px ${F}`;x.fillStyle=MUTE;wrWrap(x,"Месяц, когда «ещё одна глава» случалась каждый вечер",900,2).forEach((l,i)=>x.fillText(l,80,630+i*48));site(x);out.push(c)}}
+    x.font=`italic 600 58px ${S}`;x.fillText(`${bm} ${plural(bm,"книга","книги","книг")} за месяц`,80,560);
+    {const act=D.mon.filter(v=>v>0).length,avg=n/Math.max(1,act),r=bm/avg,rs=r>=10?Math.round(r):Math.round(r*10)/10,t=act>1&&r>=1.5?`Это в ${rs.toLocaleString("ru-RU")} ${Number.isInteger(rs)?plural(rs,"раз","раза","раз"):"раза"} больше, чем в обычный месяц года`:"Самый книжный месяц года";x.font=`500 36px ${F}`;x.fillStyle=MUTE;x.fillText(t,80,630)}
+    {const mb=D.L.filter(b=>+String(b.rd||"").slice(5,7)===D.best+1).slice(0,5),mi=await Promise.all(mb.map(b=>MIM.has(b)?MIM.get(b):wrCov(b).catch(()=>null)));mb.forEach((b,k)=>{MIM.set(b,mi[k]);cover(x,b,80+k*124,680,108,162,k)})};site(x);out.push(c)}}
   // 5. читательский тип
   {const [c,x]=mk("type");kick(x,"МОЙ ЧИТАТЕЛЬСКИЙ ТИП",230);x.fillStyle=INK;let f=110;x.font=`600 ${f}px ${S}`;while(f>56&&wrWrap(x,D.type[0],920,2).some(l=>x.measureText(l).width>920)){f-=6;x.font=`600 ${f}px ${S}`}
     let y=240+f;wrWrap(x,D.type[0],920,2).forEach(l=>{x.fillText(l,70,y);y+=f});x.font=`500 36px ${F}`;x.fillStyle=MUTE;wrWrap(x,D.type[1]+".",900,2).forEach(l=>{x.fillText(l,80,y+10);y+=48});
