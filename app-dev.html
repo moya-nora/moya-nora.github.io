@@ -6521,8 +6521,8 @@ const addFriend=(uid,n)=>{if(!FRIENDS.some(f=>f.uid===uid)){FRIENDS.push({uid,n:
 async function frReqPoll(){if(!NS.on||!NS.reqIncoming||!(NS.hasTok&&NS.hasTok()))return;let changed=false;
   try{const L=await NS.reqIncoming(),me=frTok();
     L.forEach(q=>{if(q.s==="a"&&!FRIENDS.some(f=>f.uid===q.f)&&(q.k===me||FROUT.some(o=>o.uid===q.f))){addFriend(q.f,q.n);changed=true;toast((q.n||"Друг")+" теперь в друзьях")}});
-    {const ci=L.find(q=>q.s==="c"&&q.k&&q.k!==(typeof CB!=="undefined"?CB.id:""));if(ci&&!$("#vsheet").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#auth").classList.contains("on")){NS.reqSet(ci.id,"d").catch(()=>{});try{cbJoinFlow(ci.k)}catch(e){}}}
-     const was=REQS.map(q=>q.id).join();REQS=L.filter(q=>q.s==="p"&&!FRIENDS.some(f=>f.uid===q.f));if(REQS.map(q=>q.id).join()!==was)changed=true;
+    {const ci=L.find(q=>q.s==="p"&&/^cl:/.test(q.k||"")&&q.k.slice(3)!==(typeof CB!=="undefined"?CB.id:""));if(ci&&!$("#vsheet").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#auth").classList.contains("on")){NS.reqSet(ci.id,"d").catch(()=>{});try{cbJoinFlow(ci.k.slice(3))}catch(e){}}}
+     const was=REQS.map(q=>q.id).join();REQS=L.filter(q=>q.s==="p"&&!/^cl:/.test(q.k||"")&&!FRIENDS.some(f=>f.uid===q.f));if(REQS.map(q=>q.id).join()!==was)changed=true;
     const seen=LS.get("zal.frrq",[]),fresh=REQS.find(q=>!seen.includes(q.id));
     if(fresh&&!$("#vsheet").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#auth").classList.contains("on")){LS.set("zal.frrq",[...seen,fresh.id].slice(-50));reqPopup(fresh)}}catch(e){}
   for(const o of FROUT.slice()){try{const d=await NS.reqGet(o.uid+"_"+NS.uid());if(d&&d.s==="a"){addFriend(o.uid,o.n);changed=true;toast((o.n||"Друг")+" принимает заявку — теперь в друзьях")}else if(d&&d.s==="d"){FROUT=FROUT.filter(x=>x.uid!==o.uid);froutSave()}}catch(e){}}
@@ -7738,7 +7738,7 @@ document.addEventListener("click",async e=>{const tb=e.target.closest("[data-cbt
   if(a==="ntfon"){vClose();try{notifySet(true)}catch(x2){}cbDraw();return}
   if(a==="invall"){CB.invAll=!CB.invAll;cbInviteSheet();return}
   if(a==="invlink"){shareSheet("Пригласить в клуб",cbInvText(),cbLink(),cbWeb());return}
-  if(a==="invfr"){const u=el.dataset.u;el.disabled=true;el.textContent="Отправляю…";let sent=false;try{sent=!!(NS.reqSend&&await NS.reqSend(u,myName(),"c",CB.id))}catch(x2){}
+  if(a==="invfr"){const u=el.dataset.u;el.disabled=true;el.textContent="Отправляю…";let sent=false;try{sent=!!(NS.reqSend&&await NS.reqSend(u,myName(),"p","cl:"+CB.id))}catch(x2){}
      if(sent){el.textContent="Приглашение отправлено";CB.invSent=[...(CB.invSent||[]),u];toast("Приглашение придёт в Нору");return}el.disabled=false;el.textContent="+ Пригласить";let p=FRP[u];if(!p){try{p=await NS.getProfile(u);if(p)FRP[u]=p}catch(x2){}}
     if(p&&p.tg){const url="https://t.me/"+encodeURIComponent(p.tg)+"?text="+encodeURIComponent(cbInvText()+" "+cbLink());try{if(TG&&TG.openTelegramLink)TG.openTelegramLink(url);else window.open(url,"_blank")}catch(x2){location.href=url}}
     else shareSheet("Пригласить в клуб",cbInvText(),cbLink(),cbWeb());return}

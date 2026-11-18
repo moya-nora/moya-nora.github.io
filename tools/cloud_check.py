@@ -13,9 +13,9 @@ def main():
     if c != 200:
         print("вход не удался", c, j); return
     H = {"Authorization": "Bearer " + j["idToken"]}; uid = j["localId"]
-    for s in ["p", "c"]:
+    for s in ["p"]:
         doc = f"requests/{uid}_{uid}"
-        fields = {"f": {"stringValue": uid}, "t": {"stringValue": uid}, "n": {"stringValue": "проверка"}, "s": {"stringValue": s}, "ts": {"integerValue": "1"}, "k": {"stringValue": "check"}}
+        fields = {"f": {"stringValue": uid}, "t": {"stringValue": uid}, "n": {"stringValue": "проверка"}, "s": {"stringValue": s}, "ts": {"integerValue": "1"}, "k": {"stringValue": "cl:check"}}
         r, c = http(FS + doc, {"fields": fields}, H, "PATCH")
         print(f"запись заявки s={s}:", c, "" if c == 200 else str(r)[:300])
         r2, c2 = http(FS + doc, None, H, "DELETE"); print("  удаление:", c2)
