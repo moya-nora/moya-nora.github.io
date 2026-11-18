@@ -1,0 +1,10 @@
+name: Проверка облака (вручную)
+on: {workflow_dispatch: {}}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Проверка
+        env: {BOT_FB_PASS: "${{ secrets.BOT_FB_PASS }}"}
+        run: python3 -u tools/cloud_check.py
