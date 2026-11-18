@@ -953,6 +953,7 @@ body.viewing #app .shelf-h{display:none}
 #app .sx-tabs button.on:not(.L *){background:#F5F5F7;color:#0B0B10}
 #app .sx-h:not(.L *){margin:18px 2px 4px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
 #app .sx-rec:not(.L *){display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#app .sx-coll{margin:16px 2px 6px}#app .sx-coll b{display:block;font:600 22px/1.2 var(--serif,Georgia)}#app .sx-coll span{display:block;margin-top:4px;font-size:13px;line-height:1.4;color:var(--ink2,rgba(255,255,255,.7))}#app .fr .sx-why{display:block;margin-top:3px;font-size:12px;color:var(--gold,#E2B66B);opacity:.85}#app .sx-think{margin:10px 2px;font-size:12.5px;opacity:.55}
 #app .sx-mean{display:flex;flex-direction:column;gap:2px;margin:14px 0 6px;padding:12px 14px;border-radius:16px;background:rgba(226,182,107,.1);box-shadow:inset 0 0 0 1px rgba(226,182,107,.25)}#app .sx-mean b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold,#E2B66B)}#app .sx-mean span{font-size:15px;color:var(--ink,#fff)}
 #app .sx-rec button:not(.L *){padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.07);font-size:13px;color:var(--ink2)}
 #app .sx-au:not(.L *){display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-top:6px}
@@ -5574,7 +5575,7 @@ const sxHas=x=>(SX.k==="films"?FM:BK).has(x);
 function hl(t,q){const s=String(t||""),nq=String(q||"").trim().toLowerCase().replace(/ё/g,"е");if(nq.length<2)return esc(s);const i=s.toLowerCase().replace(/ё/g,"е").indexOf(nq);
   return i<0?esc(s):esc(s.slice(0,i))+"<mark>"+esc(s.slice(i,i+nq.length))+"</mark>"+esc(s.slice(i+nq.length))}
 function sxRow(x,i){const st=sxHas(x),F=SX.k==="films";
-  return `<div class="fr" data-i="${i}">${cv(x,48)}<div class="tx"><b>${hl(x.t,SX.q)}</b><span>${hl([x.a,x.y,x.s?"сериал":"",F&&x.src&&x.src.hr===0?"не выходил в РФ":""].filter(Boolean).join(" · "),SX.q)}</span></div><div class="ac">${st?`<em>${st==="read"?(F?"Просмотрено":"Прочитано"):"В избранном"}</em>`:""}</div></div>`}
+  return `<div class="fr" data-i="${i}">${cv(x,48)}<div class="tx"><b>${hl(x.t,SX.q)}</b><span>${hl([x.a,x.y,x.s?"сериал":"",F&&x.src&&x.src.hr===0?"не выходил в РФ":""].filter(Boolean).join(" · "),SX.q)}</span>${x._w?`<small class="sx-why">${esc(x._w)}</small>`:""}</div><div class="ac">${st?`<em>${st==="read"?(F?"Просмотрено":"Прочитано"):"В избранном"}</em>`:""}</div></div>`}
 const POPF=[["Интерстеллар",2014],["Во все тяжкие",2008,1],["Друзья",1994,1],["Форрест Гамп",1994],["Побег из Шоушенка",1994],["Шерлок",2010,1],["Зелёная миля",1999],["Начало",2010],["Игра престолов",2011,1],["Титаник",1997],
   ["Бойцовский клуб",1999],["Чернобыль",2019,1],["Криминальное чтиво",1994],["Матрица",1999],["Очень странные дела",2016,1],["1+1",2011],["Амели",2001],["Унесённые призраками",2001],["Паразиты",2019],["Ла-Ла Ленд",2016],
   ["Остров проклятых",2010],["Тьма",2017,1],["Брат",1997],["Москва слезам не верит",1979],["Король Лев",1994],["Аркейн",2021,1],["Властелин колец: Братство Кольца",2001],["Отступники",2006],["Джентльмены",2019],["Иван Васильевич меняет профессию",1973],["Достучаться до небес",1997],["Амадей",1984]];
@@ -5647,15 +5648,17 @@ function sxDraw(state){const box=$("#fres");if(!box)return;const q=SX.q,F=SX.k==
   if(norm(q).length<2){const rec=recentGet(),coach=!LS.get("zal.coachsx",0);SX.list=[];
     h=(coach?`<div class="sx-feat" id="sxFeat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Шуршуня помнит каждую книгу на твоей полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`:"")+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+(F?"":`<h3 class="sx-h2">Попроси Шуршуню</h3><div class="sx-askg">${MEAN_EX.map((r,i)=>`<button class="ask-c" data-rq="${esc(r)}" style="--ac:${ASKC_COL[i%ASKC_COL.length]}"><span>${esc(r)}</span><i class="ask-f" data-askf="${i}">${askCovers(i)}</i></button>`).join("")}</div>`)+
       `<div class="fwrap inl" id="fwrap">${filtersHTML()}</div>${filtersFoot(true)}`;box.innerHTML=h;box._l=[];if(coach)setTimeout(sxCoach,450);return}
-  SX.st=state;if(SX.brain&&!F){if(SX.brain==="load")h+=`<div class="sx-brain ld"><b>Сверхмозг Шуршуни думает…</b><span>разбирает, чего тебе хочется - это до полуминуты</span></div>`;else if(SX.brain.length){const L=SX.brain.map(o=>{const it=bItem(o.b,"hit");it._w=o.w;return it});SX.brainL=L;h+=`<div class="sx-brain"><b>Сверхмозг Шуршуни советует</b><span>подобрано под твою просьбу</span></div>`+L.map((x,i)=>sxRow(x,"b"+i)).join("")}}
-  if(SX.mean&&!F){const M=SX.mean,L=M.list.slice(0,SX.mn||12).map(b=>bItem(b,"hit"));SX.meanL=L;
-    h+=`<div class="sx-mean"><b>Шуршуня понял</b><span>${esc((M.lab.length?M.lab:M.kw.map(w=>"«"+w+"…»")).join(" · "))}</span></div>`+L.map((x,i)=>sxRow(x,"m"+i)).join("")+(M.list.length>L.length?`<button class="sx-moref" data-sxmean>Показать ещё</button>`:"")}
+  SX.st=state;let COLL=false;if((SX.brain||SX.mean)&&!F){const ld=SX.brain==="load",BL=Array.isArray(SX.brain)?SX.brain:[],M=SX.mean,seen=new Set(),L=[];
+    for(const o of BL){if(L.length>=8)break;const n=norm(o.b.t);if(seen.has(n))continue;seen.add(n);const it=bItem(o.b,"hit");it._w=o.w;L.push(it)}
+    if(M)for(const b of M.list){if(L.length>=15)break;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);const it=bItem(b,"hit");it._w=meanWhy(M,b);L.push(it)}
+    SX.meanL=L;SX.brainL=[];COLL=true;const T=String(q).trim().replace(/^./,c=>c.toUpperCase());
+    h+=`<div class="sx-coll"><b>${esc(T)}</b><span>${esc(meanDesc(M))}</span></div>`+L.map((x,i)=>sxRow(x,"m"+i)).join("")+(ld?`<p class="sx-think">Шуршуня ищет ещё несколько книг…</p>`:"")}
   if(SX.authors.length)h+=`<div class="sx-h">Авторы</div><div class="sx-au">${SX.authors.map((a,i)=>`<button data-au="${i}"><i>${esc(a.name[0]||"?")}</i>${hl(a.name,q)}</button>`).join("")}</div>`;
-  const {vis,hid}=sxVis();
-  h+=vis.length||hid.length?`<div class="sx-h">${F?"Фильмы и сериалы":SX.mean?"Совпадения по названию":"Книги"}</div>`+sxHidBar(hid)+vis.map(sxRow).join(""):"";
+  let {vis,hid}=sxVis();if(COLL){vis=vis.filter(x=>strongHit(x,q)).slice(0,3);hid=[]}
+  h+=vis.length||hid.length?`<div class="sx-h">${F?"Фильмы и сериалы":COLL?"Совпадения по названию":"Книги"}</div>`+sxHidBar(hid)+vis.map(sxRow).join(""):"";
   if(state==="done"&&sxFilt()&&SX.list.length&&!vis.length&&!hid.length)h+=`<p class="hint">Книги нашлись, но под выбранные фильтры не подходит ни одна.</p><button class="sx-moref" data-sxfreset>Искать без фильтров</button>`;
   if(state==="load")h+='<div class="sk"></div><div class="sk"></div><div class="sk"></div>';
-  if(state==="done"&&!SX.list.length&&!SX.authors.length&&!SX.mean)h+=`<p class="hint">Ничего не нашлось. Попробуй часть названия${F?"":" или фамилию автора"}.</p>${F?`<button class="sx-manual" data-man>Добавить «${esc(q.trim())}» вручную</button>`:""}`;
+  if(state==="done"&&!SX.list.length&&!SX.authors.length&&!COLL)h+=`<p class="hint">Ничего не нашлось. Попробуй часть названия${F?"":" или фамилию автора"}.</p>${F?`<button class="sx-manual" data-man>Добавить «${esc(q.trim())}» вручную</button>`:""}`;
   if(state==="err")h+='<p class="hint">Каталог не ответил — проверь интернет.</p>';
   box.innerHTML=h;box._l=vis}
 function sxRefilter(){tgHaptic();SX.fn=40;const b=$("#sxf");if(b)b.innerHTML=sxFbar();if(norm(SX.q).length<2)sxDraw();else sxDraw("done")}
@@ -5720,18 +5723,31 @@ function meanParse(q){const s=" "+String(q).toLowerCase().replace(/ё/g,"е")+" 
   const used=[...MEAN_I.map(x=>x[0]),...MEAN_C.map(x=>x[0])];
   P.kw=s.split(/[^a-zа-я0-9-]+/).filter(w=>w.length>=4&&!MEAN_STOP.has(w)&&!used.some(rx=>rx.test(" "+w+" "))).map(w=>stemRu(w)).filter(w=>w.length>=3).slice(0,4);
   const wr=w=>new RegExp("[^а-яa-z0-9]"+w.replace(/[-]/g,"\\-"));P.ckr=new RegExp("[^а-яa-z0-9]("+(P.ck.join("|")||"\\uffff")+")");P.kwr=P.kw.map(wr);
-  P.kids=/дет|ребен|ребён|сыну|дочк|дочер|малыш/.test(s);P.nf=!!P.nfx||/нон|научпоп|документ|реальн|психолог|саморазв/.test(s);
+  P.play=/пьес|театр|драматург/.test(s);P.kids=/дет|ребен|ребён|сыну|дочк|дочер|малыш/.test(s);P.nf=!!P.nfx||/нон|научпоп|документ|реальн|психолог|саморазв/.test(s);
   P.ok=P.lab.length>0||P.kw.length>0;return P}
 function meanFind(q,k){const P=meanParse(q);if(!P.ok)return null;const W=wantNorms(),pos=Object.entries(P.t),out=[];
-  for(const b of ALLB()){const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt))continue;let s=0,hit=0;const tg=b.tags||[];
-    for(const [t,w] of pos)if(tg.includes(t)){s+=w;if(w>0)hit++}
+  const npos=pos.filter(([,w])=>w>0).length,need=npos>=3&&!P.c&&!P.kw.length?2:1,must=npos?pos.reduce((m,x)=>x[1]>m[1]?x:m)[0]:"";P.why=new Map();
+  for(const b of ALLB()){const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt))continue;let s=0,hit=0;const tg=b.tags||[],mt=[];
+    for(const [t,w] of pos)if(tg.includes(t)){s+=w;if(w>0){hit++;mt.push(t)}}
+    if(npos&&hit<need&&!P.c&&!P.kw.length)continue;if(must&&!P.c&&!tg.includes(must))continue;
+    if(!P.play&&MEAN_PLAY.test(" "+String(b.t||"").toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9]+/g," ").trim()+" "))continue;
+    const lit=String(b.id||"")[0]==="l";if(tg.includes("самиздат")||tg.includes("троп:popadan")||tg.includes("троп:academy")||/[–-]\s*\d+\s*$|(книга|часть|том)\s*\d/i.test(b.t||""))continue;
+    if(!P.play&&/(^|[^а-я])(пьес|драма в \S+ (действи|акт)|комеди[яи] в \S+ (действи|акт))/i.test(b.ann||""))continue;
     if(P.c){const own=P.c.has(b.c);const an=(b.ann||"")+" "+(b.when||"");const ink=P.ckr.test(" "+an.toLowerCase().replace(/ё/g,"е"));if(own||ink){s+=own&&ink?11:ink?9:3;hit++}else continue}
     if(P.kw.length){const an=((b.ann||"")+" "+(b.when||"")+" "+tg.join(" ")+" "+b.t).toLowerCase().replace(/ё/g,"е");let m=0;for(const r of P.kwr)if(r.test(" "+an))m++;if(m){s+=4*m;hit++}else if(!pos.length&&!P.c)continue}
-    if(P.len&&b.len){if(b.len===P.len){s+=3;hit++}else s-=3}
+    if(P.len&&b.len){if(b.len===P.len){s+=3;hit++;mt.unshift(b.pg?"около "+b.pg+" страниц":"короткая")}else s-=3}
     if(P.heavy!=null&&b.heavy>1)s-=4;if(b.g==="kids"&&!P.kids)s-=6;if(b.g==="nonfic"&&!P.nf)s-=3;
-    if(!hit||s<=0)continue;s+=(b.q||0)*.8+(b.acclaim&&b.acclaim.length?1.5:0)+(b.ann?1:0)+Math.random()*1.2;out.push([s,b])}
+    if(!hit||s<=0)continue;s+=(b.q?3+b.q:0)+(b.when?1:0)-(lit?3:0)+(b.acclaim&&b.acclaim.length?1.5:0)+(b.ann?1:0)+Math.log10((b.sl||0)+10)*.9+(imgOf(b)?.8:0)+Math.random()*.5;out.push([s,b]);if(mt.length)P.why.set(b,mt)}
   out.sort((a,b)=>b[0]-a[0]);const au=new Set(),L=[];for(const [,b] of out){if(au.has(b.a))continue;au.add(b.a);L.push(b);if(L.length>=(k||40))break}
-  return {lab:[...new Set(P.lab)],kw:P.kw,list:L}}
+  return {lab:[...new Set(P.lab)],kw:P.kw,list:L,why:P.why,t:P.t}}
+// пьесы не подходят под «почитать вечером», если о пьесах не просили
+const MEAN_PLAY=new RegExp(" ("+["кукольный дом","вишневый сад","трамвай желание","на дне","гедда габлер","чайка","три сестры","дядя ваня","ревизор","горе от ума","гроза","бесприданница","пигмалион","гамлет","король лир","макбет","отелло","ромео и джульетта","сон в летнюю ночь","двенадцатая ночь","укрощение строптивой","буря","тартюф","мещанин во дворянстве","кошка на раскаленной крыше","стеклянный зверинец","смерть коммивояжера","в ожидании годо","носороги","лысая певица","дни турбиных","бег","маскарад","недоросль","женитьба","на всякого мудреца довольно простоты","лес","живой труп","власть тьмы","антигона","царь эдип","медея","фауст","ричард iii","кто боится вирджинии вулф"].map(t=>t.replace(/ё/g,"е")).join("|")+") ");
+// как объяснить подборку по просьбе
+const MEAN_D={"как хороший сериал":"Книги с быстрым сюжетом и напряжением, которые читают запоем","не оторваться":"Напряжённые триллеры и детективы, от которых трудно оторваться","погрустить":"Грустные и атмосферные книги, чтобы побыть в этом настроении","чтобы стало теплее":"Светлые и тёплые книги, после которых становится легче","чтобы поплакать":"Пронзительные истории, над которыми плачут","посмеяться":"Смешные книги и сатира","уютное":"Уютные, тёплые книги без мрака","отдохнуть головой":"Лёгкие и светлые книги, когда хочется отдохнуть","сильная героиня":"Книги, где в центре сильная героиня и её судьба","на один вечер":"Короткие книги, которые можно прочитать за вечер","научиться мыслить":"Книги о психологии и мышлении, после которых думаешь иначе","подумать":"Книги, над которыми хочется подумать","страшное":"Жуткие и мистические книги","в дорогу":"Книги о путешествиях и приключениях","вдохновиться":"Вдохновляющие истории и биографии","о любви":"Романы о любви"};
+function meanDesc(M){if(!M)return "Подбираем книги под твою просьбу";const l=M.lab||[];for(const x of l)if(MEAN_D[x])return MEAN_D[x];
+  const tg=Object.entries(M.t||{}).filter(([,w])=>w>0).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([t])=>t);
+  return tg.length?"Подобрали книги, где есть: "+tg.join(", "):l.length?"Подобрали по смыслу: "+l.join(", "):"Книги, где в описании есть "+M.kw.map(w=>"«"+w+"…»").join(", ")}
+function meanWhy(M,b){const t=M&&M.why&&M.why.get(b);return t&&t.length?t.slice(0,3).join(", ").replace(/^./,c=>c.toUpperCase()):""}
 // «сверхмозг» Шуршуни: просьбу своими словами разбирает языковая модель и называет книги; берём те, что есть в каталоге, и сверху - найденные в сети
 const BRAIN={};
 async function brainAsk(q){const key=norm(q);if(BRAIN[key])return BRAIN[key];try{const c=sessionStorage.getItem("nora.br."+key);if(c)return BRAIN[key]=JSON.parse(c)}catch(e){}
@@ -5760,7 +5776,7 @@ function sxRun(){const q=$("#fq").value,my=++SX.seq;SX.q=q;SX.mode="q";clearTime
   {const h=SX.k!=="films"&&genreHit(q);if(h){const L=h[0]==="gen"?NF.gen:NF.trope;if(!L.includes(h[1]))L.push(h[1]);saveNF();SX.picks=true;SX.q="";$("#fq").value="";$(".sx-clear").hidden=true;
     const b=$("#sxf");if(b)b.innerHTML=sxFbar();SX.authors=[];sxDraw();tgHaptic();return}}
   annAll();if(norm(q).length<2){SX.authors=[];sxDraw();return}
-  SX.list=localFind(q);SX.authors=[];SX.mean=null;SX.mn=12;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=2&&/[а-яё]/i.test(q)&&(/^\s*(про|о|об|что-то|что-нибудь|когда|хочу|хочется|посоветуй|книг[аи]|как)\s/i.test(q)||!SX.list.slice(0,4).some(x=>strongHit(x,q)))){const M=meanFind(q,40);if(M&&M.list.length&&(M.lab.length||!SX.list.length))SX.mean=M}sxDraw("load");SX.brain=null;const titleLike=SX.list.slice(0,3).some(x=>strongHit(x,q)||lev(norm(x.t||""),norm(q))<=2);if(SX.k!=="films"&&!titleLike&&String(q).trim().split(/\s+/).length>=3){SX.brain="load";brainAsk(q).then(L=>{if(my!==SX.seq)return;SX.brain=brainUnpack(L||[]);sxDraw(SX.st||"done")})}
+  SX.list=localFind(q);SX.authors=[];SX.mean=null;SX.mn=12;if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=2&&/[а-яё]/i.test(q)&&(MEAN_EX.some(x=>norm(x)===norm(q))||/^\s*(про|о|об|что-то|что-нибудь|когда|хочу|хочется|посоветуй|книг[аи]|как)\s/i.test(q)||!SX.list.slice(0,4).some(x=>strongHit(x,q)))){const M=meanFind(q,40);if(M&&M.list.length&&(M.lab.length||!SX.list.length))SX.mean=M}sxDraw("load");SX.brain=null;const titleLike=SX.list.slice(0,3).some(x=>strongHit(x,q)||lev(norm(x.t||""),norm(q))<=2);if(SX.k!=="films"&&!titleLike&&String(q).trim().split(/\s+/).length>=3){SX.brain="load";brainAsk(q).then(L=>{if(my!==SX.seq)return;SX.brain=brainUnpack(L||[]);sxDraw(SX.st||"done")})}
   SX.t=setTimeout(async()=>{try{if(SX.k==="films")await loadFilms().catch(()=>{});if(my!==SX.seq)return;if(SX.k==="films")SX.list=localFind(q);
       const o=await (SX.k==="films"?onlineSeries(q):onlineBooks(q));if(my!==SX.seq)return;const seen=new Set(SX.list.map(x=>norm(x.t)+(x._f?x.y:"")));
       SX.list=[...SX.list,...o.works.filter(x=>{const n=norm(x.t)+(x._f?x.y:"");if(seen.has(n))return false;seen.add(n);return true})];SX.authors=o.au;sxDraw("done")}
