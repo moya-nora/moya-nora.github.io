@@ -7804,9 +7804,9 @@ new MutationObserver(()=>{if(!$("#vsheet").classList.contains("on"))CB.sheet=""}
 // приглашение в клуб: #cl=<id> или startapp=cl_<id>; ?club=1 включает раздел на этом устройстве
 (function(){const h=location.hash.match(/[#&]cl=([a-z0-9]{12,24})/),sp=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param||"",m=sp.match(/^cl_([a-z0-9]{12,24})$/),id=h?h[1]:m?m[1]:"";
   // ?club=1 или startapp=club (ссылки со страницы сайта «Книжный клуб») - включить раздел и сразу открыть его
-  if(/[?&]club=1/.test(location.search)||sp==="club"){LS.set("zal.clubon",1);cbDock();if(!id){const go=()=>{if($("#onb").classList.contains("on")||$("#intro").classList.contains("on")||$("#splash").classList.contains("on")){setTimeout(go,1200);return}show("club")};setTimeout(go,1500)}}
+  if(/[?&]club=1/.test(location.search)||sp==="club"){LS.set("zal.clubon",1);cbDock();if(!id){const go=()=>{if($("#onb").classList.contains("on")||$("#intro").classList.contains("on")||$("#splash")?.classList.contains("on")){setTimeout(go,1200);return}show("club")};setTimeout(go,1500)}}
   if(h)try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
-  if(id){LS.set("zal.clubon",1);const go=()=>{if($("#onb").classList.contains("on")||$("#intro").classList.contains("on")||$("#splash").classList.contains("on")){setTimeout(go,1200);return}cbJoinFlow(id)};setTimeout(go,1500)}
+  if(id){LS.set("zal.clubon",1);const go=()=>{if($("#onb").classList.contains("on")||$("#intro").classList.contains("on")||$("#splash")?.classList.contains("on")){setTimeout(go,1200);return}cbJoinFlow(id)};setTimeout(go,1500)}
   cbDock();setInterval(()=>{if(SCREEN==="club"&&CB.id&&!document.hidden&&Date.now()-CB.t>40000&&!$("#clBox").contains(document.activeElement))cbLoad()},15000);
   document.addEventListener("visibilitychange",()=>{if(!document.hidden&&SCREEN==="club"&&CB.id&&Date.now()-CB.t>8000)cbLoad()})})();
 // ---- своё предложение можно убрать: смахнуть влево или подержать палец ----
