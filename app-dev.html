@@ -966,7 +966,14 @@ body.viewing #app .shelf-h{display:none}
 #app .sx-tabs button.on:not(.L *){background:#F5F5F7;color:#0B0B10}
 #app .sx-h:not(.L *){margin:18px 2px 4px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
 #app .sx-rec:not(.L *){display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-#app .ush-new{flex:none;padding:10px 4px 11px!important;font-size:18px!important;line-height:1;color:var(--ink3)!important}#app .ush-pill{display:inline-flex!important;align-items:center;gap:2px;flex:0 1 auto!important;min-width:46px;max-width:110px}
+#app .ush-new{flex:none;padding:10px 4px 11px!important;font-size:18px!important;line-height:1;color:var(--ink3)!important}#app .ush-row{display:flex;gap:8px;margin:12px 16px 2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ush-row::-webkit-scrollbar{display:none}
+.ush-row button{flex:none;padding:8px 14px;border:0;border-radius:999px;background:rgba(255,255,255,.07);color:var(--ink2);font:600 14px DManrope,system-ui,sans-serif;white-space:nowrap}
+.ush-row button.on{background:rgba(255,255,255,.18);color:var(--ink)}
+.ush-row .ush-pl{min-width:38px;padding:8px 12px;font-size:17px;line-height:1}
+.ush-row .ush-cur{display:inline-flex;align-items:center;gap:6px}
+.ush-row .ush-cur svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ush-pill{display:inline-flex!important;align-items:center;gap:2px;flex:0 1 auto!important;min-width:46px;max-width:110px}
 #pills.pills.has-ush{gap:14px!important}
 #pills .ush-pill svg{display:block!important}
 .ush-pill span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -2081,6 +2088,7 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .bkc .bkc-rv.add small{font-weight:400;opacity:.6;font-size:12px}
 #app .bkc .bkc-rv.add svg{width:18px;height:18px}
 .rv-ta{min-height:96px!important;resize:none;line-height:1.45;font-size:16px}
+.rv-src{margin:16px 2px 6px;font-size:13px;font-weight:600;color:var(--ink3)}
 .rv-vis{display:flex;gap:4px;margin-top:10px;padding:3px;border-radius:12px;background:rgba(255,255,255,.08)}
 .rv-vis button{flex:1;padding:10px 6px;border:0;border-radius:9px;background:none;color:inherit;font:inherit;font-size:14px;font-weight:600;opacity:.65}
 .rv-vis button.on{background:rgba(255,255,255,.18);opacity:1}
@@ -5314,7 +5322,9 @@ function pillsFit(){const p=$("#pills");if(!p)return;const B=[...p.children];B.f
 addEventListener("resize",()=>{try{pillsFit()}catch(e){}});
 function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
-  if(colF==="diary"&&(VIEW||isF()))colF="read";$("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read],...(isF()?[]:[["diary","Дневник"]])]).map(([k,l])=>`<button class="${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("")+(VIEW||isF()?"":USH.length?`<button class="ush-pill ${ushOf(colF)?"on":""}" data-ushlist><span>${ushOf(colF)?esc(ushOf(colF).n):"Ещё"}</span><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg></button>`:`<button class="ush-new" data-ushnew aria-label="Новая полка">+</button>`);$("#pills").classList.toggle("has-ush",!VIEW&&!isF()&&USH.length>0);if(colF.startsWith("u:")&&!ushOf(colF))colF="read";{let ns=$("#nowS");if(!ns){ns=document.createElement("div");ns.id="nowS";$("#pills").before(ns)}ns.innerHTML=nowStrip()}
+  if(colF==="diary"&&(VIEW||isF()))colF="read";$("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read],...(isF()?[]:[["diary","Дневник"]])]).map(([k,l])=>`<button class="${colF===k||(k==="want"&&colF.startsWith("u:"))?"on":""}" data-f="${k}">${l}</button>`).join("");if(colF.startsWith("u:")&&!ushOf(colF))colF="want";
+  {let ur=$("#ushRow");if(!ur){ur=document.createElement("div");ur.id="ushRow";ur.className="ush-row";$("#pills").after(ur)}const on=!VIEW&&!isF()&&(colF==="want"||colF.startsWith("u:"));ur.hidden=!on;
+   if(on){ushSync();const cur=ushOf(colF);ur.innerHTML=`<button data-f="want" class="${colF==="want"?"on":""}">Все</button>${USH.map(z=>cur===z?`<button class="on ush-cur" data-ushed aria-label="Изменить полку «${esc(z.n)}»">${esc(z.n)}<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>`:`<button data-f="u:${z.id}">${esc(z.n)}</button>`).join("")}<button class="ush-pl" data-ushnew aria-label="Новая полка">+</button>`;const a=ur.querySelector(".ush-cur");if(a)requestAnimationFrame(()=>{try{a.scrollIntoView({inline:"nearest",block:"nearest"})}catch(e){}})}}{let ns=$("#nowS");if(!ns){ns=document.createElement("div");ns.id="nowS";$("#pills").before(ns)}ns.innerHTML=nowStrip()}
   {const dg=colF==="diary",cvx=$("#cviews"),ov=$("#oldv");$("#grid").classList.toggle("diary",dg);if(cvx)cvx.hidden=dg;if(ov)ov.hidden=dg;
    if(dg){$("#grid").innerHTML=diaryPage();if(SHQ){const q=norm(SHQ);[...$("#grid").children].forEach(el=>{if(!/^H\d/.test(el.tagName)&&!norm(el.textContent).includes(q))el.hidden=true})}const ds=$("#dstripB");if(ds)ds.innerHTML="";if(!keepFlow)drawFlow();drawNewAu();drawTrend();return}}
   const G=gridList(),GH=colF==="want"&&!isF()&&G.length>=4&&!SHQ?wantGrouped().H:{};$("#grid").innerHTML=G.map((x,i)=>`${GH[i]?`<h4 class="ggen">${esc(GH[i][0])}</h4>`:""}<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||(SHQ?`<p class="gempty">На этой полке нет «${esc(SHQ)}»</p>`:"")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
@@ -5540,6 +5550,7 @@ $("#luckGo").addEventListener("click",giftOpenFx);$("#gTile").innerHTML=`<img sr
 $("#colScroll").addEventListener("scroll",()=>{document.body.classList.toggle("topoff",$("#colScroll").scrollTop>16)},{passive:true});
 {const qi=$("#shQ"),qx=$("#shQx");if(qi){let qt=0;qi.addEventListener("input",()=>{clearTimeout(qt);qt=setTimeout(()=>{SHQ=qi.value.trim();qx.hidden=!SHQ;drawCol(true)},150)});qi.addEventListener("keydown",e=>{if(e.key==="Enter")qi.blur()});qx.addEventListener("click",()=>{qi.value="";SHQ="";qx.hidden=true;drawCol(true)})}}
 $("#shS").addEventListener("click",()=>{const l=$("#shqL"),i=$("#shQ");tgHaptic();if(l.hidden){l.hidden=false;setTimeout(()=>{try{i.focus()}catch(e){}},50)}else if(!i.value){l.hidden=true}else i.focus()});
+document.addEventListener("click",e=>{const r=e.target.closest("#ushRow");if(!r)return;if(e.target.closest("[data-ushnew]")){tgHaptic();ushNew();return}if(e.target.closest("[data-ushed]")){const s=ushOf(colF);if(s){tgHaptic();ushEdit(s)}return}const b=e.target.closest("[data-f]");if(b&&colF!==b.dataset.f){colF=b.dataset.f;drawCol(true);tgHaptic()}});
 $("#pills").addEventListener("click",e=>{if(e.target.closest("[data-ushnew]")){tgHaptic();ushNew();return}if(e.target.closest("[data-ushlist]")){tgHaptic();ushList();return}const b=e.target.closest("[data-f]");if(b){if(colF===b.dataset.f)return;colF=b.dataset.f;drawCol(true);tgHaptic()}});
 // ---------- виды полки: обложки, полки по странам, лента веков, карта, авторы (из первой Норы) ----------
 const cvw=document.createElement("div");cvw.className="cviews";cvw.id="cviews";$("#pills").after(cvw);
@@ -6840,7 +6851,7 @@ function rvSheet(x){const b=myRec(x);if(!b)return;let pub=b.n?(+b.pub||0):0;
    <div class="rv-one"><button class="btn w" id="rvSave">Сохранить</button></div>`);draw();$("#vsheet").classList.add("ontop");
   const t=$("#rvT");autoGrow(t);setTimeout(()=>{try{t.focus();t.setSelectionRange(t.value.length,t.value.length)}catch(e){}},250);
   $("#rvVis").onclick=e=>{const v=e.target.closest("[data-rvv]");if(!v)return;pub=+v.dataset.rvv||0;tgHaptic();draw()};
-  $("#rvSave").onclick=()=>{const ch={n:t.value.trim().slice(0,600),pub};noteLearn(ch.n,b.r);Object.assign(b,ch);
+  $("#rvSave").onclick=()=>{const wasAll=+b.pub===2,ch={n:t.value.trim().slice(0,600),pub};noteLearn(ch.n,b.r);Object.assign(b,ch);if(wasAll||pub===2)prvPut(b);
     if(b.user){const m=mine.find(y=>y.id===b.id);if(m)Object.assign(m,ch);saveMine()}else{EDITS[b.id]={...(EDITS[b.id]||{}),...ch};saveEdits()}
     try{pubCheck()}catch(e){}vClose();tgHaptic("success");toast(ch.n?(pub===2?"Отзыв сохранён - его увидят все читатели":pub?"Отзыв сохранён - друзья увидят его на твоей полке":"Отзыв сохранён"):"Отзыв убран");if(BKC&&BKC.x===x)bkcDraw(),bkcFit()}}
 // поля ввода растут вместе с текстом - не нужно писать в узкой строчке
@@ -6910,17 +6921,17 @@ function ushNew(after){vOpen(`<h3 class="vh">Новая полка</h3><input cl
   const i=$("#ushN"),ok=()=>{const n=i.value.trim();if(!n){i.focus();return}const s={id:Date.now().toString(36),n,b:[]};USH.push(s);ushSave();tgHaptic("success");if(after)after(s);else{vClose();colF="u:"+s.id;drawCol(true)}};
   $("#ushOk").onclick=ok;i.addEventListener("keydown",e=>{if(e.key==="Enter")ok()});setTimeout(()=>{try{i.focus()}catch(e){}},250)}
 function ushPick(x){const draw=()=>{vOpen(`<h3 class="vh">На полку</h3><div class="ush-l">${USH.map(s=>`<button data-ushp="${s.id}" class="${ushHas(s,x)?"on":""}"><span>${esc(s.n)}</span><i>${ushHas(s,x)?"✓":""}</i></button>`).join("")}<button data-ushp="+" class="ush-add">+ Новая полка</button></div>`);$("#vsheet").classList.add("ontop");
-    $("#vshBody").querySelectorAll("[data-ushp]").forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.ushp;if(id==="+"){ushNew(s=>{s.b.push({t:x.t,a:x.a||""});ushSave();toast("Добавлено на полку «"+s.n+"»");draw()});return}
-      const s=USH.find(z=>z.id===id);if(!s)return;if(ushHas(s,x))s.b=s.b.filter(z=>norm(z.t)!==norm(x.t));else s.b.unshift({t:x.t,a:x.a||""});ushSave();tgHaptic();draw()})};draw()}
+    $("#vshBody").querySelectorAll("[data-ushp]").forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.ushp;if(id==="+"){ushNew(s=>{s.b.push({t:x.t,a:x.a||""});if(!BK.has(x))BK.addWant(x);ushSave();toast("Добавлено на полку «"+s.n+"»");draw()});return}
+      const s=USH.find(z=>z.id===id);if(!s)return;if(ushHas(s,x))s.b=s.b.filter(z=>norm(z.t)!==norm(x.t));else{s.b.unshift({t:x.t,a:x.a||""});if(!BK.has(x))BK.addWant(x)}ushSave();vDirty=true;tgHaptic();draw()})};draw()}
+function ushSync(){if(ushSync.b)return;ushSync.b=1;let ch=false;try{USH.forEach(s=>ushItems(s).forEach(it=>{if(!BK.has(it)){try{BK.addWant(it);ch=true}catch(e){}}}))}finally{ushSync.b=0}if(ch){vDirty=true;setTimeout(()=>drawCol(true),0)}}
 // список своих полок: открыть, переименовать, удалить, создать новую
 function ushList(){const n=s=>s.b.length;vOpen(`<h3 class="vh">Мои полки</h3><div class="ush-l">${USH.map(s=>`<div class="ush-r ${colF==="u:"+s.id?"on":""}"><button class="ush-o" data-usho="${s.id}"><span>${esc(s.n)}</span><small>${n(s)} ${plural(n(s),"книга","книги","книг")}</small></button><button class="ush-e" data-ushe="${s.id}" aria-label="Изменить полку"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button></div>`).join("")}<button data-ushp="+" class="ush-add" id="ushAddL">+ Новая полка</button></div>`);$("#vsheet").classList.add("ontop");
   const B=$("#vshBody");B.querySelectorAll("[data-usho]").forEach(b=>b.onclick=e=>{e.stopPropagation();colF="u:"+b.dataset.usho;vClose();drawCol(true);tgHaptic()});
   B.querySelectorAll("[data-ushe]").forEach(b=>b.onclick=e=>{e.stopPropagation();const s=USH.find(z=>z.id===b.dataset.ushe);if(s){tgHaptic();ushEdit(s,true)}});
   $("#ushAddL").onclick=e=>{e.stopPropagation();ushNew()}}
 // «Добавить в избранное», когда есть свои полки: можно сразу выбрать, куда поставить
-function wantPick(x,done){const sel=new Set(["want"]);const draw=()=>{vOpen(`<h3 class="vh">Куда поставить?</h3><p class="ush-t">${esc(x.t)}</p><div class="ush-l">${[["want",T[REALM].want],...USH.map(s=>[s.id,s.n])].map(([k,l])=>`<button data-wpk="${k}" class="${sel.has(k)?"on":""}"><span>${esc(l)}</span><i>${sel.has(k)?"✓":""}</i></button>`).join("")}</div><div class="dfn"><button class="btn w" id="wpOk" ${sel.size?"":"disabled"}>Готово</button></div>`);$("#vsheet").classList.add("ontop");
-    $("#vshBody").querySelectorAll("[data-wpk]").forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.wpk;sel.has(k)?sel.delete(k):sel.add(k);tgHaptic();draw()});
-    $("#wpOk").onclick=e=>{e.stopPropagation();const names=[];if(sel.has("want")){BK.addWant(x);names.push(T[REALM].want)}USH.forEach(s=>{if(sel.has(s.id)&&!ushHas(s,x)){s.b.unshift({t:x.t,a:x.a||""});names.push(s.n)}});if(names.length>1||!sel.has("want"))ushSave();vDirty=true;vClose();toast(names.length===1&&sel.has("want")?"Добавлено в избранное":"Добавлено: "+names.map(n=>"«"+n+"»").join(", "));if(done)done()}};draw()}
+function wantPick(x,done){vOpen(`<h3 class="vh">Куда поставить?</h3><p class="ush-t">${esc(x.t)}</p><div class="ush-l"><button data-wpk="want"><span>Просто в избранное</span><i>›</i></button>${USH.map(s=>`<button data-wpk="${s.id}"><span>${esc(s.n)}</span><i>›</i></button>`).join("")}</div>`);$("#vsheet").classList.add("ontop");
+  $("#vshBody").querySelectorAll("[data-wpk]").forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.wpk,s=USH.find(z=>z.id===k);BK.addWant(x);if(s&&!ushHas(s,x)){s.b.unshift({t:x.t,a:x.a||""});ushSave()}vDirty=true;tgHaptic("success");vClose();if(done)done();toast(s?"Добавлено на полку «"+s.n+"»":"Добавлено в избранное")})}
 function ushEdit(s,back){vOpen(`<div class="imp-hd">${back?`<button class="sx-back" data-ushback aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>`:""}<h3 class="vh">Полка</h3></div><label class="ush-lb">Название</label><input class="sy-in" id="ushN" maxlength="40" value="${esc(s.n)}" autocomplete="off"><div class="dfn"><button class="btn w" id="ushOk">Сохранить</button></div><button class="ush-del" id="ushDel">Удалить полку</button>`);$("#vsheet").classList.add("ontop");
   const bk=$("#vshBody").querySelector("[data-ushback]");if(bk)bk.onclick=e=>{e.stopPropagation();tgHaptic();ushList()};
   $("#ushOk").onclick=e=>{e.stopPropagation();const n=$("#ushN").value.trim();if(n){s.n=n;ushSave()}drawCol(true);if(back)ushList();else vClose();toast("Сохранено")};
@@ -6984,8 +6995,8 @@ function dStep(){const s=DF.step;let h="";
   const q=$("#dfQ");if(q)autoGrow(q)}
 function dCollect(){const h=$("#dfHero");if(h)DF.dp.hero=h.value.trim();{const v=id=>{const e=$(id);return e?e.value.trim():null};const d1=v("#dfD1");if(d1!=null){DF.dp.d1=d1;DF.dp.d2=v("#dfD2");DF.dp.ser=v("#dfSer");const sn=parseInt(v("#dfSn"),10),sc=parseInt(v("#dfSc"),10);DF.dp.sn=Number.isFinite(sn)?sn:"";DF.dp.sc=Number.isFinite(sc)?sc:""}}const t=$("#dfN");if(t){DF.nh=rtClean(t.innerHTML);DF.n=rtText(DF.nh)}const q=$("#dfQ");if(q&&q.value.trim())dQAdd()}
 function dQAdd(){const q=$("#dfQ");if(!q||!q.value.trim())return;const b=DF.b;quotes.push({ts:Date.now(),book:b.id||b.t,bt:b.t,ba:b.a,text:q.value.trim(),page:""});saveQuotes();try{renderQuotes()}catch(e){}tgHaptic()}
-function dFinish(){const b=DF.b,ch={dm:DF.dm.slice(0,3),dp:DF.dp,n:String(DF.n||"").trim(),pub:+DF.pub||0};ch.nh="";if(DF.r)ch.r=DF.r*2;if(DF.dp.d2){ch.dd=DF.dp.d2;ch.rd=DF.dp.d2.slice(0,7)}else if(!b.dd)ch.dd=new Date().toISOString().slice(0,10);
-  noteLearn([ch.n,...ch.dm].join(" "),ch.r!=null?ch.r:b.r);bSave(b,ch);const d=LS.get("zal.ddraft",{});delete d[b.id];LS.set("zal.ddraft",d);const d2=LS.get("zal.ddrh",{});delete d2[b.id];LS.set("zal.ddrh",d2);goal("diary");tgHaptic("success");
+function dFinish(){const b=DF.b,wasAll=+b.pub===2,ch={dm:DF.dm.slice(0,3),dp:DF.dp,n:String(DF.n||"").trim(),pub:+DF.pub||0};ch.nh="";if(DF.r)ch.r=DF.r*2;if(DF.dp.d2){ch.dd=DF.dp.d2;ch.rd=DF.dp.d2.slice(0,7)}else if(!b.dd)ch.dd=new Date().toISOString().slice(0,10);
+  noteLearn([ch.n,...ch.dm].join(" "),ch.r!=null?ch.r:b.r);bSave(b,ch);if(wasAll||ch.pub===2)prvPut(b);const d=LS.get("zal.ddraft",{});delete d[b.id];LS.set("zal.ddraft",d);const d2=LS.get("zal.ddrh",{});delete d2[b.id];LS.set("zal.ddrh",d2);goal("diary");tgHaptic("success");
   const top=DF.top;DF=null;try{rerenderAll()}catch(e){}if(BKC){try{bkcDraw();bkcFit()}catch(e){}}if(SCREEN==="sum")drawCol(true);dOpen(b,top);toast("Записано в дневник")}
 $("#vshBody").addEventListener("click",e=>{const t=e.target;
   const op=t.closest("[data-dopen]");if(op){e.stopPropagation();tgHaptic();dOpen(BOOKS.find(b=>b.id===op.dataset.dopen));return}
@@ -7068,9 +7079,18 @@ function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();setTimeout(
 const rvClean=s=>String(s||"").replace(/\[(\/?)(b|i|u|s|p|q|spoiler|center|right|left)[^\]]*\]/gi,"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\r/g,"").replace(/\n{3,}/g,"\n\n").trim();
 // чужой отзыв целиком не перепечатываем: короткая выдержка и ссылка на источник
 const rvExc=t=>{t=String(t||"").replace(/\s+/g," ").trim();return t.length<=420?t:t.slice(0,420).replace(/\s+\S*$/,"").replace(/[ ,.;:-]+$/,"")+"…"};
-async function reviewsOpen(x){const m=META[ikey(x)]||{};tgHaptic();
+// отзывы «Всем»: общая коллекция prv, документ <ключ книги>__<uid>; читают все, пишет и удаляет только автор
+async function prvPut(b){try{const u=NS.uid&&NS.uid();if(!u)return;const k=cbK(b.t,b.a),id=k+"__"+u;
+  if(b.n&&+b.pub===2)await cbReq("prv/"+id,{method:"PATCH",body:cbEnc({k,t:b.t,a:b.a||"",n:myName()||"Читатель",r:b.r!=null?b.r:0,x:String(b.n).slice(0,2000),u:Date.now()})});
+  else await cbReq("prv/"+id,{method:"DELETE"})}catch(e){}}
+async function prvLoad(x){try{const r=await cbReq(":runQuery",{method:"POST",body:JSON.stringify({structuredQuery:{from:[{collectionId:"prv"}],where:{fieldFilter:{field:{fieldPath:"k"},op:"EQUAL",value:{stringValue:cbK(x.t,x.a)}}},limit:60}})});
+  if(!r.ok)return [];const j=await r.json();return (Array.isArray(j)?j:[]).filter(d=>d.document).map(d=>cbDec(d.document)).sort((a,b)=>(b.u||0)-(a.u||0))}catch(e){return []}}
+async function reviewsOpen(x){const m=META[ikey(x)]||{};tgHaptic();const pn=prvLoad(x);
+  const fillNora=async()=>{const me=NS.uid&&NS.uid(),L=(await pn).filter(r=>r.x&&!(me&&String(r._id||"").endsWith("__"+me)));const el=$("#rvNora");if(!el||!L.length)return;
+    el.innerHTML=`<p class="rv-src">Читатели Норы</p>`+L.map(r=>`<div class="rv"><div class="rv-h"><b>${esc(r.n||"Читатель")}</b>${r.r?`<span>★ ${r5(r.r)}</span>`:""}</div><p class="rv-t">${esc(r.x)}</p><button class="rv-more" data-rvmore>читать далее…</button></div>`).join("")+`<p class="rv-src">Другие отзывы</p>`;
+    el.querySelectorAll(".rv").forEach(v=>{const p=v.querySelector(".rv-t");if(p&&p.scrollHeight<=p.clientHeight+2){const b=v.querySelector(".rv-more");b&&b.remove()}})};
   const lr=await new Promise(r=>rvLoad(x,r)),mine=BOOKS.find(b=>norm(b.t)===norm(x.t));
-  const head=`<h3 class="vh">Отзывы о «${esc(x.t)}»</h3><button class="btn w rv-my" data-rv-write>${mine&&mine.n?"Изменить мой отзыв":"Написать свой отзыв"}</button>`+(mine&&mine.n?`<div class="rv mine"><div class="rv-h"><b>Мой отзыв</b>${mine.r!=null?`<span>★ ${r5(mine.r)}</span>`:""}</div><p class="rv-t">${esc(mine.n)}</p></div>`:"");
+  const head=`<h3 class="vh">Отзывы о «${esc(x.t)}»</h3><button class="btn w rv-my" data-rv-write>${mine&&mine.n?"Изменить мой отзыв":"Написать свой отзыв"}</button>`+(mine&&mine.n?`<div class="rv mine"><div class="rv-h"><b>Мой отзыв</b>${mine.r!=null?`<span>★ ${r5(mine.r)}</span>`:""}</div><p class="rv-t">${esc(mine.n)}</p></div>`:"")+`<div id="rvNora"></div>`;fillNora();
   const lrHtml=lr&&lr.L&&lr.L.length?lr.L.filter((r,i,a)=>a.findIndex(x=>x[0]===r[0])===i).map(r=>`<div class="rv"><div class="rv-h"><b>${esc(r[0])}</b>${r[2]?`<span>★ ${r[2]}</span>`:""}<small>${esc(r[1])}</small></div><p class="rv-t">${esc(r[3])}</p><button class="rv-more" data-rvmore>читать далее…</button></div>`).join("")+(litresId(x)?`<p class="sy-note">Отзывы читателей ЛитРес. <a href="https://www.litres.ru/pages/biblio_book/?art=${litresId(x)}" data-ext target="_blank" rel="noopener" style="text-decoration:underline">Все отзывы на ЛитРес</a></p>`:""):"";
   if(!m.w){vOpen(head+(lr&&lr.n?`<p class="sy-note">${lr.n.toLocaleString("ru-RU")} ${plural(lr.n,"отзыв","отзыва","отзывов")} читателей ЛитРес, здесь самые полезные</p>`:"")+`<div id="rvList">${lrHtml||`<p class="sy-note">Отзывов пока нет. Будь первым!</p>`}</div>`,true);$("#vsheet").classList.add("ontop");
     document.querySelectorAll("#rvList .rv").forEach(el=>{const p=el.querySelector(".rv-t");if(p&&p.scrollHeight<=p.clientHeight+2){const b=el.querySelector(".rv-more");b&&b.remove()}});return}
@@ -7127,7 +7147,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="want"&&USH.length&&!isF()&&L!=="friend"&&!BKC.sec){wantPick(x,()=>bkcClose());return}
   if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");bkcClose();return}
   if(a==="ush"){ushPick(x);return}if(a==="now"){nowSet(x);toast("Читаешь «"+x.t+"»");bkcClose();refresh();return}if(a==="prog"){bkcClose();setTimeout(nowOpen,200);return}
-  if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
+  if(a==="rm"){BK.rmWant(x);if(USH.some(s=>ushHas(s,x))){USH.forEach(s=>{s.b=s.b.filter(z=>norm(z.t)!==norm(x.t))});ushSave()}vDirty=true;toast("Убрано из избранного");bkcClose();return}
   if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
     const r=L==="read"?x:BK.read().find(y=>norm(y.t)===norm(x.t));if(r)BK.rmRead(r);vDirty=true;toast("Убрано с полки «Прочитано»");bkcClose();return}
   // поменять оценку прочитанной книги (или убрать её)
