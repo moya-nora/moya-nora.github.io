@@ -1,0 +1,22 @@
+name: Рисунки для итогов года (проба)
+on:
+  workflow_dispatch:
+    inputs:
+      scenes: {description: "сцены через запятую (пусто - все)", required: false, default: ""}
+      n: {description: "вариантов на сцену", required: false, default: "2"}
+      model: {description: "модель", required: false, default: "gpt-image-2"}
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Рисуем
+        env:
+          IMAGE_API_KEY: ${{ secrets.IMAGE_API_KEY }}
+          IMAGE_BASE_URL: ${{ secrets.IMAGE_BASE_URL }}
+          SCENES: ${{ inputs.scenes }}
+          N: ${{ inputs.n }}
+          IMAGE_MODEL: ${{ inputs.model }}
+        run: python3 -u tools/art/gen.py
+      - uses: actions/upload-artifact@v4
+        with: {name: art, path: art_out/, retention-days: 7}
