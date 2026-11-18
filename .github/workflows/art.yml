@@ -5,6 +5,7 @@ on:
       scenes: {description: "сцены через запятую (пусто - все)", required: false, default: ""}
       n: {description: "вариантов на сцену", required: false, default: "2"}
       model: {description: "модель", required: false, default: "gpt-image-2"}
+      base: {description: "адрес сервиса (пусто - из секрета или dindindon)", required: false, default: ""}
 permissions: {contents: write}
 jobs:
   gen:
@@ -14,7 +15,7 @@ jobs:
       - name: Рисуем
         env:
           IMAGE_API_KEY: ${{ secrets.IMAGE_API_KEY }}
-          IMAGE_BASE_URL: ${{ secrets.IMAGE_BASE_URL }}
+          IMAGE_BASE_URL: ${{ inputs.base || secrets.IMAGE_BASE_URL }}
           SCENES: ${{ inputs.scenes }}
           N: ${{ inputs.n }}
           IMAGE_MODEL: ${{ inputs.model }}
