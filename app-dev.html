@@ -7152,7 +7152,7 @@ async function wrCards(D){await wrFonts();const S="NoraDisp, Georgia, serif",F="
   const SP=(x,v)=>{if("letterSpacing" in x)x.letterSpacing=v};
   const pool=[D.top[0]||D.last,...D.top.slice(1),...D.L.slice().reverse()].filter((b,i,a)=>b&&a.indexOf(b)===i).slice(0,5),ims=await Promise.all(pool.map(b=>wrCov(b).catch(()=>null)));
   const hero=pool[0],imOf=b=>ims[pool.indexOf(b)]||null,st=b=>b&&b.r!=null?Math.max(1,Math.min(5,Math.round(b.r/2))):0,genre=D.gk.length?String(GEN[D.gk[0][0]]||""):"";
-  const ART={};await Promise.all(["main","book","pages","month","type"].map(async k=>{ART[k]=await wrLd("img/itogi/g-"+k+".webp?v=2")}));
+  const ART={};await Promise.all(["main","book","pages","month","type"].map(async k=>{ART[k]=await wrLd("img/itogi/g-"+k+".webp?v=3")}));
   const PAL=["#5B6B8C","#9A4A36","#6E8763","#7A5A86","#B08A3E"];
   const cover=(x,b,X,Y,w,h,i)=>{const im=imOf(b);x.save();x.shadowColor="rgba(43,36,64,.3)";x.shadowBlur=24;x.shadowOffsetY=10;x.fillStyle="#fff";x.fillRect(X,Y,w,h);x.restore();x.save();x.beginPath();x.rect(X,Y,w,h);x.clip();
     if(im){const s=Math.max(w/im.naturalWidth,h/im.naturalHeight),iw=im.naturalWidth*s,ih=im.naturalHeight*s;x.drawImage(im,X+(w-iw)/2,Y+(h-ih)/2,iw,ih)}
@@ -7182,7 +7182,7 @@ async function wrCards(D){await wrFonts();const S="NoraDisp, Georgia, serif",F="
     x.font=`500 36px ${F}`;x.fillStyle=MUTE;wrWrap(x,t,900,2).forEach((l,i)=>x.fillText(l,80,640+i*48));site(x);out.push(c)}
   // 4. месяц
   {const bm=D.mon[D.best]||0;if(n>=2&&bm){const [c,x]=mk("month");kick(x,"САМЫЙ ЧИТАЮЩИЙ МЕСЯЦ",230);const m=WR_MF[D.best];x.fillStyle=INK;fitS(x,m,920,200);x.fillText(m.slice(0,1).toUpperCase()+m.slice(1),70,440);
-    x.font=`italic 600 58px ${S}`;x.fillText(`${bm} ${plural(bm,"книга","книги","книг")} за месяц`,80,560);x.font=`500 36px ${F}`;x.fillStyle=MUTE;x.fillText("Подоконник, плед и ещё одна глава",80,630);site(x);out.push(c)}}
+    x.font=`italic 600 58px ${S}`;x.fillText(`${bm} ${plural(bm,"книга","книги","книг")} за месяц`,80,560);x.font=`500 36px ${F}`;x.fillStyle=MUTE;x.fillText("Дождь за окном и ещё одна глава",80,630);site(x);out.push(c)}}
   // 5. читательский тип
   {const [c,x]=mk("type");kick(x,"МОЙ ЧИТАТЕЛЬСКИЙ ТИП",230);x.fillStyle=INK;let f=110;x.font=`600 ${f}px ${S}`;while(f>56&&wrWrap(x,D.type[0],920,2).some(l=>x.measureText(l).width>920)){f-=6;x.font=`600 ${f}px ${S}`}
     let y=240+f;wrWrap(x,D.type[0],920,2).forEach(l=>{x.fillText(l,70,y);y+=f});x.font=`500 36px ${F}`;x.fillStyle=MUTE;wrWrap(x,D.type[1]+".",900,2).forEach(l=>{x.fillText(l,80,y+10);y+=48});
