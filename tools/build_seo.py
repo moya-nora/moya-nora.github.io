@@ -128,6 +128,8 @@ for b in books:
         b["ann"] = ANNX[_ak(b)]
 _n0 = len(books)
 books = [b for b in books if b["ann"] or ANNX.get(_ak(b)) != ""]
+import sys as _sys; _sys.path.insert(0, os.path.dirname(__file__)); from ban import is_ban  # нет в продаже в России - страниц не делаем
+books = [b for b in books if not is_ban(b["t"], b["a"])]
 print("описаний добавлено:", sum(1 for v in ANNX.values() if v), "книг убрано (описание не нашлось):", _n0 - len(books))
 print("книг с русским названием:", len(books), "из них с описанием:", sum(1 for b in books if b["ann"]))
 
