@@ -953,6 +953,10 @@ body.viewing #app .shelf-h{display:none}
 #app .sx-tabs button.on:not(.L *){background:#F5F5F7;color:#0B0B10}
 #app .sx-h:not(.L *){margin:18px 2px 4px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
 #app .sx-rec:not(.L *){display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#app .ush-new{flex:none;padding:10px 4px 11px!important;font-size:18px!important;line-height:1;color:var(--ink3)!important}#app .ush-l{display:flex;flex-direction:column;gap:6px;margin-top:6px}#app .ush-l button{display:flex;justify-content:space-between;align-items:center;min-height:50px;padding:0 16px;border-radius:14px;border:0;background:rgba(255,255,255,.07);color:inherit;font:600 15px DMan,sans-serif;text-align:left}#app .ush-l button.on{background:rgba(226,182,107,.16)}#app .ush-l i{font-style:normal;color:#E2B66B}#app .ush-l .ush-add{background:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);justify-content:center}
+#app .now-s{display:flex;gap:12px;align-items:center;width:calc(100% - 32px);margin:4px 16px 10px;padding:10px 12px;border-radius:18px;border:0;background:rgba(255,255,255,.07);color:inherit;text-align:left}#app .now-s>span{flex:1;min-width:0}#app .now-s b{display:block;font:700 15px/1.2 DMan,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#app .now-s small{display:block;font-size:12px;opacity:.55;margin-top:2px}#app .now-bar{display:block;height:4px;margin-top:8px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden}#app .now-bar em{display:block;height:100%;background:#E2B66B;border-radius:2px}#app .now-h{display:flex;gap:12px;align-items:center}#app .now-h b{display:block;font:700 17px DMan,sans-serif}#app .now-h small{font-size:13px;opacity:.55}#app .now-in{display:flex;gap:10px;margin-top:16px}#app .now-in label{flex:1;font-size:12px;font-weight:700;opacity:.8}#app .now-in input{margin-top:6px}
+#app .dfd{display:flex;align-items:center;gap:8px}#app .dfd input{flex:1;min-width:0;margin:0}#app .dfd .dfn2{flex:0 0 64px}#app .dfd span{opacity:.5;font-size:13px}
+.L .qform .fan-t{display:inline-block;margin-top:10px;padding:7px 14px;border-radius:999px;border:0;background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);font:600 13px inherit}.L .qform .fan-t.on{background:#F5F5F7;color:#0B0C11}.L .qform #bFan{margin-top:8px}.L .qform .imp-btn{margin-top:8px}
 #app .shh{display:flex;align-items:center;gap:8px;margin:4px 16px 6px}#app .shh h2{flex:1;min-width:0;margin:0;font:600 26px/1.1 var(--serif);letter-spacing:-.01em;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#app .shq[hidden]{display:none!important}#app .shh:has(.acct-in:not([hidden])) h2{font-size:23px}#app .shh:has(.acct-in:not([hidden])) [data-sht=fr]{display:none}#app .shh:has(.acct-in:not([hidden])){gap:6px}#app .shh .acct-in{height:38px;padding:0 14px;font-size:14px;margin-left:0}#app .shi{position:relative;flex:none;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.09);color:var(--ink);display:grid;place-items:center;padding:0}#app .shi svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}#app .shi .dot{position:absolute;top:6px;right:6px}#app .shh .shb{margin-left:-4px;background:none}#app #frScroll .shh{margin:4px 0 14px}body.viewing #app .shh .shi{display:none}
 #app #pills.pills{gap:22px;margin:10px 16px 0;padding:0;border-bottom:1px solid rgba(255,255,255,.1);overflow-x:auto}#app #pills.pills button{padding:10px 0 11px;margin-bottom:-1px;border-radius:0;background:none!important;box-shadow:none!important;color:var(--ink3);font-size:15px;font-weight:600;border-bottom:2px solid transparent}#app #pills.pills button.on{color:var(--ink);border-bottom-color:#E2B66B}#app #pills.pills button::before{display:none}
 #app .sx-coll{margin:16px 2px 6px}#app .sx-coll b{display:block;font:600 22px/1.2 var(--serif,Georgia)}#app .sx-coll span{display:block;margin-top:4px;font-size:13px;line-height:1.4;color:var(--ink2,rgba(255,255,255,.7))}#app .fr .sx-why{display:block;margin-top:3px;font-size:12px;color:var(--gold,#E2B66B);opacity:.85}#app .sx-think{margin:10px 2px;font-size:12.5px;opacity:.55}
@@ -3999,14 +4003,14 @@ function openAddBook(target,pre){const toW=target==="want";
   openSheet(`<div class="qform"><h3 class="qh">${toW?"Хочу прочитать":"Новая книга"}</h3>
    <input type="file" id="bPhoto" accept="image/*" multiple hidden>
    <button type="button" class="photo-btn" id="bPhotoBtn"><i class="qi"><svg viewBox="0 0 24 24"><path d="M8.2 6.5l1.1-1.7c.3-.5.8-.8 1.4-.8h2.6c.6 0 1.1.3 1.4.8l1.1 1.7H18a3 3 0 0 1 3 3V17a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V9.5a3 3 0 0 1 3-3z"/><circle cx="12" cy="13" r="3.6"/></svg></i><span><b>Сфотографируй книгу или сразу книжный шкаф</b></span></button>
-   <div class="ocr" id="bOcr" hidden></div>
+   ${toW?"":`<button type="button" class="photo-btn imp-btn" data-imp><i class="qi"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg></i><span><b>Загрузить из таблицы</b></span></button>`}<div class="ocr" id="bOcr" hidden></div>
    <div class="found" id="bFound"></div><div id="bUnk"></div>
    <label for="bT">Или впиши название</label><input id="bT" autocomplete="off" placeholder="Например, Мастер и Маргарита"><div class="sugg" id="bSugg"></div>
-   <label for="bA">Автор</label><input id="bA" autocomplete="off" placeholder="Если знаешь">
+   <label for="bA">Автор</label><input id="bA" autocomplete="off" placeholder="Если знаешь"><button type="button" class="fan-t" id="bFanT">Фанфик</button><input id="bFan" hidden autocomplete="off" placeholder="По какой вселенной">
    <div id="bOne"${toW?" hidden":""}><label>Оценка</label>${ratingPicker(null)}
    <label for="bN">Отзыв</label><textarea id="bN" placeholder="Что понравилось, что нет — по желанию"></textarea>${((PUB)=>`<div class="nvis" id="nVis"><button type="button" data-nv="0" class="${PUB?"":"on"}">Для себя</button><button type="button" data-nv="1" class="${PUB?"on":""}">Для других читателей</button></div>`)(false)}</div>
    <div class="sheet-actions"><button class="btn btn-main" id="bSave" style="margin-top:0" disabled>${toW?"В «Хочу прочитать»":"Поставить на полку"}</button></div></div>`);
-  const getR=bindRating(),T=$("#bT"),sv=$("#bSave");let picked=pre||null,found=[];if(pre){T.value=pre.t;$("#bA").value=pre.a||"";if(pre._fl)flEnrich(pre);setTimeout(()=>upd(),0)}
+  const getR=bindRating(),T=$("#bT"),sv=$("#bSave");$("#bFanT").onclick=()=>{const on=$("#bFanT").classList.toggle("on");$("#bFan").hidden=!on;if(on)$("#bFan").focus();haptic()};const fanOf=()=>$("#bFanT").classList.contains("on")?($("#bFan").value.trim()||"фанфик"):"";let picked=pre||null,found=[];if(pre){T.value=pre.t;$("#bA").value=pre.a||"";if(pre._fl)flEnrich(pre);setTimeout(()=>upd(),0)}
   const upd=()=>{sv.disabled=!T.value.trim()&&!found.length;$("#bOne").hidden=toW||found.length>0;const n=found.length+(T.value.trim()?1:0),nw=found.filter(b=>b._w).length+(T.value.trim()&&toW?1:0);sv.textContent=nw===0?"Поставить на полку":nw===n?"В «Хочу прочитать»":"Разложить книги"};
   let unk=[];
   const drawUnk=()=>{const el=$("#bUnk");el.innerHTML=unk.length?`<div class="unk-k">Не нашёл в каталоге, но прочитал на фото — нажми, если это книга</div><div class="unk">${unk.map((l,i)=>`<button type="button" data-u="${i}">+ ${esc(l)}</button>`).join("")}</div>`:"";
@@ -4052,9 +4056,9 @@ function openAddBook(target,pre){const toW=target==="want";
     all.filter(x=>x.w).forEach(x=>{if(want.some(w=>norm(w.t)===norm(x.t))||READ.has(norm(x.t)))return;
       let src=x.picked&&CATMAP[x.picked.id]?CATMAP[x.picked.id]:null;
       if(!src){const m=resolveMeta(x.t,x.a,x.picked);const c=CAT.find(z=>norm(z.t)===norm(m.t));src=c||{...m,id:"w"+Date.now()+"_"+wantAdded.length,bg:m.bg||PAL[hsh(m.t+m.a)%PAL.length][0],fg:m.fg||PAL[hsh(m.t+m.a)%PAL.length][1]}}
-      want.unshift({...src,when:src.when||(x.picked&&!toW?"Нашлась на твоей полке — ждёт своего часа":"Ждёт своего часа"),from:null});wantAdded.push(src)});
+      want.unshift({...src,...(fanOf()&&!x.picked?{fan:fanOf(),tags:["фанфик"]}:{}),when:src.when||(x.picked&&!toW?"Нашлась на твоей полке — ждёт своего часа":"Ждёт своего часа"),from:null});wantAdded.push(src)});
     const list=all.filter(x=>!x.w);
-    list.forEach(x=>{const m=resolveMeta(x.t,x.a,x.picked);const rec=addBook({t:m.t,a:m.a,c:m.c,y:m.y,g:m.g,r:single?getR():null,n:single?$("#bN").value.trim():"",pub:single&&nVisPub()?1:0,pg:m.pg,bg:m.bg,fg:m.fg,m:m.m,ann:m.ann,tags:m.tags,f:m.f||[]});added.push(rec);
+    list.forEach(x=>{const m=resolveMeta(x.t,x.a,x.picked);const fn=single&&!x.picked?fanOf():"";const rec=addBook({...(fn?{fan:fn}:{}),t:m.t,a:m.a,c:m.c,y:m.y,g:m.g,r:single?getR():null,n:single?$("#bN").value.trim():"",pub:single&&nVisPub()?1:0,pg:m.pg,bg:m.bg,fg:m.fg,m:m.m,ann:m.ann,tags:m.tags,f:m.f||[]});added.push(rec);
       const wi=want.findIndex(w=>norm(w.t)===norm(m.t));if(wi>=0)want.splice(wi,1)});
     saveWant();renderWant();closeSheet();haptic("ok");if(wantAdded.length&&!added.length&&shelfMode!=="want"){shelfMode="want";renderShelves();renderWantShelves()}
     const parts=[];if(added.length)parts.push(added.length>1?`${added.length} ${plural(added.length,"книга","книги","книг")} на полке`:`«${added[0].t}» на полке`);if(wantAdded.length)parts.push(wantAdded.length===1&&!added.length?`«${wantAdded[0].t}» в «Хочу прочитать»`:`${wantAdded.length} в «Хочу прочитать»`);if(!parts.length)parts.push("Эти книги уже есть");toast(parts.join(", "));
@@ -5224,7 +5228,7 @@ function recList(){if(isF()){if(!FILMS)return [];if(!recList._f||recList._v!==FS
 const flowList=()=>VIEW?(DATA().want().length?DATA().want():DATA().read().filter(x=>x.r!=null).sort((a,b)=>b.r-a.r).slice(0,20)):recList();
 let SHQ="";
 const shqHit=x=>{const q=norm(SHQ);return !q||norm(x.t||"").includes(q)||norm(x.a||"").includes(q)};
-const gridList0=()=>colF==="want"&&!isF()?wantGrouped().L:colF==="want"?DATA().want():DATA().read();
+const gridList0=()=>colF.startsWith("u:")?(ushOf(colF)?ushItems(ushOf(colF)):[]):colF==="want"&&!isF()?wantGrouped().L:colF==="want"?DATA().want():DATA().read();
 const gridList=()=>SHQ?gridList0().filter(shqHit):gridList0();
 function drawFlow(){const L=flowList();fi=L.length?((fi%L.length)+L.length)%L.length:0;
   $("#flow").innerHTML=L.slice(0,60).map(x=>cv(x,176)).join("");$("#flow")._sig=L.slice(0,60).map(x=>ikey(x)).join("|");$("#flow").classList.toggle("none",!L.length);$("#flowCap").classList.toggle("none",!L.length);[...$("#flow").children].forEach((c,i)=>{c.dataset.i=i});layoutFlow(true)}
@@ -5260,7 +5264,7 @@ function pillsFit(){const p=$("#pills");if(!p)return;const B=[...p.children];B.f
 addEventListener("resize",()=>{try{pillsFit()}catch(e){}});
 function drawCol(keepFlow){
   $("#vbanner").hidden=!VIEW;if(VIEW)$("#vbanner").innerHTML=`<b>Полки${SHARED&&SHARED.n?" — "+esc(SHARED.n):""}</b><span> · только для просмотра</span>`;
-  if(colF==="diary"&&(VIEW||isF()))colF="read";$("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read],...(isF()?[]:[["diary","Дневник"]])]).map(([k,l])=>`<button class="${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("");
+  if(colF==="diary"&&(VIEW||isF()))colF="read";$("#pills").innerHTML=(VIEW?[["read",T[REALM].read]]:[["want",T[REALM].want],["read",T[REALM].read],...(isF()?[]:[["diary","Дневник"],...USH.map(z=>["u:"+z.id,esc(z.n)])])]).map(([k,l])=>`<button class="${colF===k?"on":""}" data-f="${k}">${l}</button>`).join("")+(VIEW||isF()?"":`<button class="ush-new" data-ushnew aria-label="Новая полка">+</button>`);if(colF.startsWith("u:")&&!ushOf(colF))colF="read";{let ns=$("#nowS");if(!ns){ns=document.createElement("div");ns.id="nowS";$("#pills").before(ns)}ns.innerHTML=nowStrip()}
   {const dg=colF==="diary",cvx=$("#cviews"),ov=$("#oldv");$("#grid").classList.toggle("diary",dg);if(cvx)cvx.hidden=dg;if(ov)ov.hidden=dg;
    if(dg){$("#grid").innerHTML=diaryPage();if(SHQ){const q=norm(SHQ);[...$("#grid").children].forEach(el=>{if(!/^H\d/.test(el.tagName)&&!norm(el.textContent).includes(q))el.hidden=true})}const ds=$("#dstripB");if(ds)ds.innerHTML="";if(!keepFlow)drawFlow();drawNewAu();drawTrend();return}}
   const G=gridList(),GH=colF==="want"&&!isF()&&G.length>=4&&!SHQ?wantGrouped().H:{};$("#grid").innerHTML=G.map((x,i)=>`${GH[i]?`<h4 class="ggen">${esc(GH[i][0])}</h4>`:""}<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||(SHQ?`<p class="gempty">На этой полке нет «${esc(SHQ)}»</p>`:"")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
@@ -5486,7 +5490,7 @@ $("#luckGo").addEventListener("click",giftOpenFx);$("#gTile").innerHTML=`<img sr
 $("#colScroll").addEventListener("scroll",()=>{document.body.classList.toggle("topoff",$("#colScroll").scrollTop>16)},{passive:true});
 {const qi=$("#shQ"),qx=$("#shQx");if(qi){let qt=0;qi.addEventListener("input",()=>{clearTimeout(qt);qt=setTimeout(()=>{SHQ=qi.value.trim();qx.hidden=!SHQ;drawCol(true)},150)});qi.addEventListener("keydown",e=>{if(e.key==="Enter")qi.blur()});qx.addEventListener("click",()=>{qi.value="";SHQ="";qx.hidden=true;drawCol(true)})}}
 $("#shS").addEventListener("click",()=>{const l=$("#shqL"),i=$("#shQ");tgHaptic();if(l.hidden){l.hidden=false;setTimeout(()=>{try{i.focus()}catch(e){}},50)}else if(!i.value){l.hidden=true}else i.focus()});
-$("#pills").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){if(colF===b.dataset.f)return;colF=b.dataset.f;drawCol(true);tgHaptic()}});
+$("#pills").addEventListener("click",e=>{if(e.target.closest("[data-ushnew]")){tgHaptic();ushNew();return}const b=e.target.closest("[data-f]");if(b&&colF===b.dataset.f&&ushOf(colF)){tgHaptic();ushEdit(ushOf(colF));return}if(b){if(colF===b.dataset.f)return;colF=b.dataset.f;drawCol(true);tgHaptic()}});
 // ---------- виды полки: обложки, полки по странам, лента веков, карта, авторы (из первой Норы) ----------
 const cvw=document.createElement("div");cvw.className="cviews";cvw.id="cviews";$("#pills").after(cvw);
 const oldv=document.createElement("div");oldv.className="L oldv";oldv.id="oldv";$("#grid").after(oldv);
@@ -6708,7 +6712,8 @@ function bkcSec(x,L){if(x._f||L==="friend")return "";const st=BK.has(x),on=st?is
 function bkcActs(x,L){const st=BK.has(x);
   if(L==="luck")return st?`<button class="btn" disabled>${st==="read"?"Уже прочитано":"Уже в избранном"}</button>`:`<button class="btn w" data-bkc="want">Хочу прочитать</button>`;
   if(L==="friend"){const tw=st==="read"?`<button class="btn" disabled>Уже прочитано</button>`:st?`<button class="btn" disabled>Уже в избранном</button>`:`<button class="btn w" data-bkc="want">Тоже хочу</button>`;return tw+`<button class="btn" data-bkc="ask">Спросить, как тебе</button>`}
-  if(L==="top"||L==="want"||st==="want"||x.now)return `<button class="btn w" data-bkc="read">Прочитано</button>${x.now?"":`<button class="btn" data-bkc="rm">Убрать из избранного</button>`}`;
+  if(x.now||(nowBook&&norm(nowBook.t)===norm(x.t)))return `<button class="btn w" data-bkc="read">Прочитано</button><button class="btn" data-bkc="prog">Страница</button>`;
+  if(L==="top"||L==="want"||st==="want")return `<button class="btn w" data-bkc="read">Прочитано</button><button class="btn" data-bkc="now">Читаю</button>`;
   if(L==="read"||st==="read")return `<button class="btn" data-bkc="unread">Убрать из «Прочитано»</button>`;
   return `<button class="btn w" data-bkc="want">Добавить в избранное</button><button class="btn" data-bkc="read">Прочитано</button>`}
 // тропы и темы кнопками: нажала — открылись книги с тем же тропом; рядом «Ещё у автора»
@@ -6742,9 +6747,9 @@ function bkcDraw(){const {x,L}=BKC;
   bkcEl.innerHTML=`<button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button>${!x._f&&L!=="friend"&&BK.has(x)==="read"?`<button class="bkc-pen" data-bkc="edit" aria-label="Изменить оценку, отзыв и заметки"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>`:""}<div class="bkc-in">
    <div class="bkc-cv">${cv(x,200)}<button class="bkc-cov" data-bkc="cov" aria-label="Сменить обложку">${IC2.cov}<span>сменить обложку</span></button></div>
    <div class="bkc-covsw" hidden>${covRow(x)}</div>
-   <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>${(()=>{const g=genreLabel(x);return g?`<div class="bkc-gn">${esc(g)}</div>`:""})()}
+   <h2>${esc(x.t)}</h2><div class="bkc-a">${esc(x.a||"")}</div>${(()=>{const fn=x.src&&x.src.fan;if(fn)return `<div class="bkc-gn">${esc(fn==="фанфик"?"Фанфик":"Фанфик · "+fn)}</div>`;const g=genreLabel(x);return g?`<div class="bkc-gn">${esc(g)}</div>`:""})()}
    <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>${bkcTropes(x,L)}
-   <div class="bkc-tools"><button data-bkc="where">${IC2.pin}<span>Где прочитать</span></button>${(x._f||!SHOW_VIDS)?"":`<button data-bkc="vid">${IC2.play}<span>Обзоры</span></button>`}${bkcSec(x,L)}</div>
+   <div class="bkc-tools"><button data-bkc="where">${IC2.pin}<span>Где прочитать</span></button>${x._f||L==="friend"||VIEW?"":`<button data-bkc="ush"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>На полку</span></button>`}${(x._f||!SHOW_VIDS)?"":`<button data-bkc="vid">${IC2.play}<span>Обзоры</span></button>`}${bkcSec(x,L)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${esc(descOf(x))}</p></div>
    ${bkcRv(x,L)}${drugIs(x)?`<p class="bkc-law">${DRUG_TXT}</p>`:""}</div>
    <div class="bkc-bar">${bkcActs(x,L)}</div>`;const sc=bkcEl.querySelector(".bkc-in");if(sc)sc.scrollTop=0}
@@ -6771,7 +6776,7 @@ document.addEventListener("focusin",e=>{const t=e.target;if(t&&t.tagName==="TEXT
 // ---------- читательский дневник: оценка, настроение, как читалось, отзыв и цитаты к прочитанной книге ----------
 const DV=["Не моё","Так себе","Неплохо","Понравилась","Любимая"];
 const DMOOD=["романтичная","ироничная","лёгкая","уютная","грустная","напряжённая","мрачная","загадочная","заставляет подумать","вдохновляет","смешная","тяжёлая","атмосферная","трогательная"];
-const DHOW=[["p","Темп",["залпом","спокойно","медленно"]],["h","Держит",["сюжет","герои","атмосфера","всё вместе"]],["e","Финал",["идеальный","ожидаемый","открытый","расстроил"]]];
+const DHOW=[["fmt","Формат",["текст","аудио","текст и аудио"]],["p","Темп",["залпом","спокойно","медленно"]],["h","Держит",["сюжет","герои","атмосфера","всё вместе"]],["e","Финал",["идеальный","ожидаемый","открытый","расстроил"]]];
 const MON=["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"],MONG=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
 const hasEntry=b=>!!(b&&(b.n||(b.dm&&b.dm.length)||(b.dp&&Object.values(b.dp).some(Boolean))||bQuotes(b).length));
 const bQuotes=b=>b?quotes.filter(q=>q.book===(b.id||b.t)||(!q.book&&q.bt&&norm(q.bt)===norm(b.t))):[];
@@ -6798,7 +6803,7 @@ function diaryPage(){const L=diaryList(),td=diaryTodo();let h=td?`<button class=
 function dOpen(b,top){if(!b)return;const x=dItem(b),Q=bQuotes(b),dp=b.dp||{};
   vOpen(`<div class="dpage"><div class="dhero">${cv(x,96)}<div><b>${esc(b.t)}</b><small>${esc([b.a,dDate(b),b.pg?b.pg+" стр.":""].filter(Boolean).join(" · "))}</small>${b.r!=null?`<div class="dbig">${"★".repeat(Math.round(b.r/2))} ${esc(dVerd(b))}</div>`:""}</div></div>
    ${(b.dm||[]).length?`<div class="dchips">${b.dm.map(m=>`<span>${esc(m)}</span>`).join("")}</div>`:""}
-   ${DHOW.some(([k])=>dp[k])||dp.hero?`<div class="dfx">${DHOW.filter(([k])=>dp[k]).map(([k,l])=>`<div>${l}<b>${esc(dp[k])}</b></div>`).join("")}${dp.hero?`<div>Любимый герой<b>${esc(dp.hero)}</b></div>`:""}</div>`:""}
+   ${DHOW.some(([k])=>dp[k])||dp.hero||dp.ser||dp.d1?`<div class="dfx">${DHOW.filter(([k])=>dp[k]).map(([k,l])=>`<div>${l}<b>${esc(dp[k])}</b></div>`).join("")}${dp.hero?`<div>Любимый герой<b>${esc(dp.hero)}</b></div>`:""}${(()=>{if(!dp.d1||!(dp.d2||b.dd))return "";const n=Math.round((new Date(dp.d2||b.dd)-new Date(dp.d1))/864e5)+1;return n>0?`<div>Читалась<b>${n} ${plural(n,"день","дня","дней")}</b></div>`:""})()}${dp.ser?`<div>Серия<b>${esc(dp.ser)}${dp.sn?`, ${dp.sn}${dp.sc?" из "+dp.sc:""}`:dp.sc?`, ${dp.sc} ${plural(+dp.sc,"книга","книги","книг")}`:""}</b></div>`:""}</div>`:""}
    ${b.n?`<div class="dlbl">Мой отзыв${b.pub?" · видят друзья":""}</div><div class="drv">${rtOf(b)}</div>`:""}
    ${Q.length?`<div class="dlbl">Цитаты · ${Q.length}</div>${Q.map(q=>`<div class="dqc"><span class="dqt">«${esc(q.text)}»</span>${q.page?`<small>стр. ${esc(q.page)}</small>`:""}</div>`).join("")}`:""}
    <div class="dacts"><button class="btn" data-dedit="${esc(b.id)}">Изменить</button><button class="btn w" data-dshare="${esc(b.id)}">Поделиться</button></div></div>`,true);if(top||BKC)$("#vsheet").classList.add("ontop");dqFit()}
@@ -6822,12 +6827,70 @@ function rtWire(ed,onIn){const bar=ed.previousElementSibling;if(!bar||!bar.class
  bar.addEventListener("click",e=>{const x=e.target.closest("[data-rt]");if(!x)return;e.preventDefault();e.stopPropagation();ed.focus();const c=x.dataset.rt;try{if(c==="mark"){const sl=getSelection(),an=sl&&sl.anchorNode,el=an&&(an.nodeType===1?an:an.parentElement),hm=el&&el.closest("mark,[style*=background]");if(hm&&ed.contains(hm)&&hm!==ed){if(hm.tagName==="MARK"||hm.tagName==="SPAN")hm.replaceWith(...hm.childNodes);else hm.style.backgroundColor=""}else{document.execCommand("styleWithCSS",false,true);document.execCommand("hiliteColor",false,"rgba(226,182,107,.38)");document.execCommand("styleWithCSS",false,false)}}else document.execCommand(c,false,null)}catch(er){}tgHaptic("light");st();onIn()});
  document.addEventListener("selectionchange",()=>{if(document.activeElement===ed)st()});ed.addEventListener("input",onIn);
  ed.addEventListener("paste",e=>{const t=e.clipboardData;if(!t)return;e.preventDefault();document.execCommand("insertText",false,t.getData("text/plain"))})}
+// ---------- свои полки: человек сам создаёт полку («Почитать с клубом», «На осень») и кладёт туда книги ----------
+let USH=LS.get("zal.ush",[]);if(!Array.isArray(USH))USH=[];
+const ushSave=()=>{LS.set("zal.ush",USH);vDirty=true};
+const ushOf=k=>USH.find(s=>"u:"+s.id===k);
+const ushHas=(s,x)=>s.b.some(z=>norm(z.t)===norm(x.t));
+function ushItems(s){return s.b.map(z=>{const r=BOOKS.find(b=>norm(b.t)===norm(z.t))||want.find(w=>norm(w.t)===norm(z.t))||(nowBook&&norm(nowBook.t)===norm(z.t)?nowBook:null)||ALLB().find(b=>(b._n||norm(b.t))===norm(z.t)&&(!z.a||norm(b.a||"").includes(norm(String(z.a).split(" ").slice(-1)[0]))))||z;return bItem(r,BK.has(r)||"rec")})}
+function ushNew(after){vOpen(`<h3 class="vh">Новая полка</h3><input class="sy-in" id="ushN" maxlength="40" placeholder="Например, Почитать с клубом" autocomplete="off"><div class="dfn"><button class="btn w" id="ushOk">Создать</button></div>`);$("#vsheet").classList.add("ontop");
+  const i=$("#ushN"),ok=()=>{const n=i.value.trim();if(!n){i.focus();return}const s={id:Date.now().toString(36),n,b:[]};USH.push(s);ushSave();tgHaptic("success");if(after)after(s);else{vClose();colF="u:"+s.id;drawCol(true)}};
+  $("#ushOk").onclick=ok;i.addEventListener("keydown",e=>{if(e.key==="Enter")ok()});setTimeout(()=>{try{i.focus()}catch(e){}},250)}
+function ushPick(x){const draw=()=>{vOpen(`<h3 class="vh">На полку</h3><div class="ush-l">${USH.map(s=>`<button data-ushp="${s.id}" class="${ushHas(s,x)?"on":""}"><span>${esc(s.n)}</span><i>${ushHas(s,x)?"✓":""}</i></button>`).join("")}<button data-ushp="+" class="ush-add">+ Новая полка</button></div>`);$("#vsheet").classList.add("ontop");
+    $("#vshBody").querySelectorAll("[data-ushp]").forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.ushp;if(id==="+"){ushNew(s=>{s.b.push({t:x.t,a:x.a||""});ushSave();toast("Добавлено на полку «"+s.n+"»");draw()});return}
+      const s=USH.find(z=>z.id===id);if(!s)return;if(ushHas(s,x))s.b=s.b.filter(z=>norm(z.t)!==norm(x.t));else s.b.unshift({t:x.t,a:x.a||""});ushSave();tgHaptic();draw()})};draw()}
+function ushEdit(s){vOpen(`<h3 class="vh">${esc(s.n)}</h3><input class="sy-in" id="ushN" maxlength="40" value="${esc(s.n)}" autocomplete="off"><div class="dfn"><button class="btn" id="ushDel">Удалить полку</button><button class="btn w" id="ushOk">Сохранить</button></div>`);$("#vsheet").classList.add("ontop");
+  $("#ushOk").onclick=()=>{const n=$("#ushN").value.trim();if(n){s.n=n;ushSave()}vClose();drawCol(true)};
+  $("#ushDel").onclick=e=>{const b=e.currentTarget;if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно удалить? Книги останутся на своих полках";return}USH=USH.filter(z=>z!==s);ushSave();colF="read";vClose();drawCol(true)}}
+// ---------- «Читаю сейчас»: на какой странице остановилась ----------
+function nowSet(x){const src=x.src||x;const prev=nowBook;want=want.filter(w=>norm(w.t)!==norm(x.t));if(prev&&prev.id!=="now-none"&&norm(prev.t)!==norm(x.t))want.unshift(prev);
+  nowBook={...(src.t?src:x),t:x.t,a:x.a||src.a||"",pg:x.pg||src.pg||null,cur:0,ts:Date.now()};delete nowBook.now;saveNow();saveWant();vDirty=true}
+function nowPct(){const n=nowBook;if(!n||!n.pg||!n.cur)return 0;return Math.max(0,Math.min(100,Math.round(n.cur/n.pg*100)))}
+function nowStrip(){const n=nowBook;if(!n||VIEW||isF())return "";const p=nowPct();return `<button class="now-s" data-now>${cv(bItem(n,"now"),44)}<span><b>${esc(n.t)}</b><small>${esc(n.a||"")}</small><i class="now-bar"><em style="width:${p}%"></em></i><small>${n.cur?(n.pg?`${n.cur} / ${n.pg} · ${p}%`:`стр. ${n.cur}`):""}</small></span></button>`}
+function nowOpen(){const n=nowBook;if(!n)return;vOpen(`<div class="now-h">${cv(bItem(n,"now"),64)}<div><b>${esc(n.t)}</b><small>${esc(n.a||"")}</small></div></div>
+   <div class="now-in"><label>Страница<input class="sy-in" id="nowC" type="number" inputmode="numeric" min="0" value="${n.cur||""}"></label><label>Всего<input class="sy-in" id="nowP" type="number" inputmode="numeric" min="1" value="${n.pg||""}"></label></div>
+   <div class="dfn"><button class="btn" id="nowDone">Прочитано</button><button class="btn w" id="nowOk">Сохранить</button></div><button class="hl-more" id="nowOff">Отложить в «Хочу прочитать»</button>`);$("#vsheet").classList.add("ontop");
+  const rd=()=>{const c=parseInt($("#nowC").value,10),p=parseInt($("#nowP").value,10);if(Number.isFinite(p)&&p>0)n.pg=p;if(Number.isFinite(c)&&c>=0)n.cur=n.pg?Math.min(c,n.pg):c;n.ts=Date.now()};
+  $("#nowOk").onclick=()=>{rd();saveNow();tgHaptic("success");vClose();drawCol(true)};
+  $("#nowOff").onclick=()=>{rd();want.unshift(n);nowBook=null;saveNow();saveWant();vClose();drawCol(true);toast("В «Хочу прочитать»")};
+  $("#nowDone").onclick=()=>{rd();const x=bItem(n,"now");x.now=1;const rec=BK.markRead(x,null);nowBook=null;saveNow();vClose();refresh();const b=rec&&(BOOKS.find(z=>z.id===rec.id)||rec);if(b)setTimeout(()=>dNew(b),400)}}
+document.addEventListener("click",e=>{if(e.target.closest("[data-now]")){tgHaptic();nowOpen()}});
+// ---------- загрузка дневника из таблицы (Excel или CSV) ----------
+let XLSXP=null;const xlsxLoad=()=>XLSXP||(XLSXP=new Promise((ok,no)=>{if(window.XLSX)return ok(window.XLSX);const sc=document.createElement("script");sc.src="vendor/xlsx.mini.min.js";sc.onload=()=>ok(window.XLSX);sc.onerror=()=>{XLSXP=null;no(new Error("xlsx"))};document.head.appendChild(sc)}));
+function xlDate(v){if(v==null||v==="")return "";if(v instanceof Date&&!isNaN(v)){const d=new Date(v.getTime()+9e4);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+  if(typeof v==="number"&&v>20000&&v<80000){const d=new Date(Math.round((v-25569)*864e5));return d.toISOString().slice(0,10)}
+  const s=String(v).trim();let m=s.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})$/);if(m){let y=+m[3];if(y<100)y+=2000;return `${y}-${String(m[2]).padStart(2,"0")}-${String(m[1]).padStart(2,"0")}`}
+  m=s.match(/^(\d{4})-(\d{1,2})(?:-(\d{1,2}))?/);if(m)return `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]||1).padStart(2,"0")}`;
+  m=s.match(/^(\d{1,2})[./](\d{4})$/);if(m)return `${m[2]}-${String(m[1]).padStart(2,"0")}-01`;m=s.match(/^(\d{4})$/);if(m)return m[1]+"-01-01";
+  const mi=MON.findIndex(x=>norm(s).startsWith(norm(x).slice(0,3)));const y=s.match(/\d{4}/);if(mi>=0&&y)return `${y[0]}-${String(mi+1).padStart(2,"0")}-01`;return ""}
+function xlParse(rows){rows=rows.filter(r=>r&&r.some(c=>String(c??"").trim()));if(!rows.length)return [];
+  const H=[["t",/назван|книг|title/],["a",/автор|author/],["r",/оцен|рейтинг|балл|звезд|rating/],["d1",/начал|старт|start/],["d2",/законч|прочит|оконч|конец|финиш|дата|finish|read/],["ser",/^(?!.*(кол|номер|№)).*(сери|цикл)/],["sn",/(номер|№)\s*(в|книг)|часть|книга в|какая по счет|по счету/],["sc",/кол|количеств|всего|книг в/],["fmt",/формат|слуш|аудио|format/],["n",/коммент|отзыв|впечатл|заметк|review|note/],["g",/жанр|genre/]];
+  let hi=-1,map={};for(let i=0;i<Math.min(5,rows.length);i++){const m={};rows[i].forEach((c,j)=>{const v=String(c??"").toLowerCase().replace(/ё/g,"е").trim();if(!v)return;for(const [k,rx] of H){if(m[k]==null&&rx.test(v)){m[k]=j;break}}});if(m.t!=null){hi=i;map=m;break}}
+  if(hi<0){const r0=rows[0];const num=r0.length>2&&/^\d+$/.test(String(r0[0]).trim());map=num?{t:1,a:2}:{t:0,a:1}}
+  const out=[];rows.slice(hi+1).forEach(row=>{const g=k=>map[k]!=null?row[map[k]]:"";const t=String(g("t")??"").trim();if(!t||/^\d+$/.test(t))return;
+    let rv=g("r"),r=null;if(rv!==""&&rv!=null){const s=String(rv);const st=(s.match(/[★⭐*]/g)||[]).length;let x=st||parseFloat(s.replace(",","."));if(Number.isFinite(x)&&x>0)r=x}
+    const fmtS=String(g("fmt")||"").toLowerCase();const fmt=!fmtS?"":/и\s|оба|вместе|\+/.test(fmtS)&&/слуш|аудио/.test(fmtS)?"текст и аудио":/слуш|аудио/.test(fmtS)?"аудио":"текст";
+    const ser=String(g("ser")||"").trim(),sn=parseInt(g("sn"),10),sc=parseInt(g("sc"),10);
+    out.push({t,a:String(g("a")||"").trim(),r,d1:xlDate(g("d1")),d2:xlDate(g("d2")),fmt,ser:ser&&ser!=="-"&&ser!=="—"?ser:"",sn:Number.isFinite(sn)&&ser?sn:null,sc:Number.isFinite(sc)&&sc>1?sc:null,n:String(g("n")||"").trim()})});
+  const mx=Math.max(0,...out.map(o=>o.r||0)),k=mx<=5?2:mx<=10?1:10/mx;out.forEach(o=>{if(o.r!=null)o.r=Math.max(1,Math.min(10,Math.round(o.r*k)))});return out}
+async function xlFile(f){toast("Читаю таблицу…");try{let rows;
+    if(/\.csv$|text\/csv/i.test(f.name+f.type)){const tx=await f.text();const d=(tx.split("\n")[0].match(/;/g)||[]).length>(tx.split("\n")[0].match(/,/g)||[]).length?";":",";rows=tx.split(/\r?\n/).map(l=>{const o=[];let c="",q=false;for(const ch of l){if(ch==='"'){q=!q;continue}if(ch===d&&!q){o.push(c);c="";continue}c+=ch}o.push(c);return o})}
+    else{const X=await xlsxLoad(),wb=X.read(await f.arrayBuffer(),{type:"array",cellDates:true});const ws=wb.Sheets[wb.SheetNames[0]];rows=X.utils.sheet_to_json(ws,{header:1,raw:true,defval:""})}
+    const L=xlParse(rows);if(!L.length){toast("В таблице не нашлось книг");return}let n=0;
+    for(const o of L){const rec=BK.markRead({t:o.t,a:o.a},o.r,true);if(!rec)continue;const b=BOOKS.find(z=>z.id===rec.id)||rec;const dp={...(b.dp||{})};
+      if(o.fmt)dp.fmt=o.fmt;if(o.d1)dp.d1=o.d1;if(o.d2)dp.d2=o.d2;if(o.ser){dp.ser=o.ser;if(o.sn)dp.sn=o.sn;if(o.sc)dp.sc=o.sc}
+      const ch={dp};if(o.d2){ch.dd=o.d2;ch.rd=o.d2.slice(0,7)}if(o.n&&!b.n)ch.n=o.n;bSave(b,ch);n++}
+    tgHaptic("success");refresh();toast(n?`${n} ${plural(n,"книга","книги","книг")} на полке`:"Эти книги уже есть")}
+  catch(e){toast("Не получилось прочитать таблицу")}}
+function xlPick(){const i=document.createElement("input");i.type="file";i.accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv";i.onchange=()=>{if(i.files[0])xlFile(i.files[0])};i.click()}
+window._nf={xlParse,xlFile,xlsxLoad,bItem:(b,k)=>bItem(b,k),ALLB:()=>ALLB(),BK,drawCol:k=>drawCol(k),setF:k=>{colF=k},vClose:()=>vClose(),ushNew,ushPick,nowSet,nowOpen,get USH(){return USH},get nowBook(){return nowBook},bkcOpen:(x,L)=>bkcOpen(x,L),bkcClose:()=>bkcClose(),dNew:(b,st)=>dNew(b,st),dOpen:b=>dOpen(b)};
+document.addEventListener("click",e=>{if(e.target.closest("[data-imp]")){e.preventDefault();closeSheet();xlPick()}});
 function dHead(t,sub){return `<div class="dfh"><div class="dfk">${DF.step+1} из 5</div><button class="dfx2" data-dfclose aria-label="Закрыть">${IC2.x}</button></div><div class="dfb">${cv(dItem(DF.b),40)}<div><b>${esc(DF.b.t)}</b><small>${esc(DF.b.a||"")}</small></div></div><h3 class="dft">${t}</h3>${sub?`<p class="dfs">${sub}</p>`:""}`}
 function dNav(last){return `<div class="dfn">${DF.step?`<button class="btn" data-dfback>Назад</button>`:""}<button class="btn w" data-dfnext>${last?"Сохранить в дневник":"Дальше"}</button></div>`}
 function dStep(){const s=DF.step;let h="";
   if(s===0)h=dHead("Как тебе книга?")+`<div class="dfr">${DV.map((l,i)=>`<button data-dfr="${i+1}" class="${DF.r===i+1?"on":""}"><span>${l}</span><i>${"★".repeat(i+1)}</i></button>`).join("")}</div>`+dNav();
   if(s===1)h=dHead("Какая она?","Выбери до трёх слов")+`<div class="dfm">${DMOOD.map(m=>`<button data-dfm="${esc(m)}" class="${DF.dm.includes(m)?"on":""}">${esc(m)}</button>`).join("")}</div>`+dNav();
-  if(s===2)h=dHead("Как читалась?","Можно пропустить любую строку")+DHOW.map(([k,l,o])=>`<div class="dfl">${l}</div><div class="dfm one">${o.map(v=>`<button data-dfh="${k}" data-v="${esc(v)}" class="${DF.dp[k]===v?"on":""}">${esc(v)}</button>`).join("")}</div>`).join("")+`<div class="dfl">Любимый герой</div><input class="sy-in" id="dfHero" maxlength="60" placeholder="Имя героя" value="${esc(DF.dp.hero||"")}">`+dNav();
+  if(s===2)h=dHead("Как читалась?","Можно пропустить любую строку")+DHOW.map(([k,l,o])=>`<div class="dfl">${l}</div><div class="dfm one">${o.map(v=>`<button data-dfh="${k}" data-v="${esc(v)}" class="${DF.dp[k]===v?"on":""}">${esc(v)}</button>`).join("")}</div>`).join("")+`<div class="dfl">Любимый герой</div><input class="sy-in" id="dfHero" maxlength="60" placeholder="Имя героя" value="${esc(DF.dp.hero||"")}"><div class="dfl">Даты</div><div class="dfd"><input class="sy-in" id="dfD1" type="date" value="${esc(DF.dp.d1||"")}" aria-label="Начало"><span>-</span><input class="sy-in" id="dfD2" type="date" value="${esc(DF.dp.d2||DF.b.dd||"")}" aria-label="Конец"></div><div class="dfl">Серия</div><div class="dfd"><input class="sy-in" id="dfSer" maxlength="80" placeholder="Название серии" value="${esc(DF.dp.ser||"")}"><input class="sy-in dfn2" id="dfSn" type="number" inputmode="numeric" min="1" placeholder="№" value="${DF.dp.sn||""}"><span>из</span><input class="sy-in dfn2" id="dfSc" type="number" inputmode="numeric" min="1" placeholder="" value="${DF.dp.sc||""}"></div>`+dNav();
   if(s===3)h=`<div class="dfh"><div class="dfk">4 из 5</div><button class="dfx2" data-dfclose aria-label="Закрыть">${IC2.x}</button></div><h3 class="dft">Мой отзыв</h3>${rtBar()}<div id="dfN" class="dfta rte" contenteditable="true" data-ph="Что зацепило, что нет, кому бы посоветовала">${DF.nh}</div>
     <div class="rv-vis" id="dfVis"><button data-dfv="1" class="${DF.pub?"on":""}">Видят друзья</button><button data-dfv="0" class="${DF.pub?"":"on"}">Только я</button></div>`+dNav();
   if(s===4){const Q=bQuotes(DF.b);h=dHead("Цитаты")+Q.map(q=>`<div class="dqc"><span class="dqt">«${esc(q.text)}»</span>${q.page?`<small>стр. ${esc(q.page)}</small>`:""}<button class="dqx" data-dfqx="${q.ts}" aria-label="Удалить">${IC2.x}</button></div>`).join("")+
@@ -6835,9 +6898,9 @@ function dStep(){const s=DF.step;let h="";
   vOpen(`<div class="dflow s${s}">${h}</div>`,true);dqFit();$("#vsheet").classList.add("ontop");
   const t=$("#dfN");if(t){const sv=()=>{DF.nh=rtClean(t.innerHTML);DF.n=rtText(DF.nh);t.classList.toggle("emp",!DF.n);const d=LS.get("zal.ddrh",{});d[DF.b.id]=DF.nh;LS.set("zal.ddrh",d)};rtWire(t,sv);t.classList.toggle("emp",!String(DF.n||"").trim());setTimeout(()=>{try{t.focus()}catch(e){}},300)}
   const q=$("#dfQ");if(q)autoGrow(q)}
-function dCollect(){const h=$("#dfHero");if(h)DF.dp.hero=h.value.trim();const t=$("#dfN");if(t){DF.nh=rtClean(t.innerHTML);DF.n=rtText(DF.nh)}const q=$("#dfQ");if(q&&q.value.trim())dQAdd()}
+function dCollect(){const h=$("#dfHero");if(h)DF.dp.hero=h.value.trim();{const v=id=>{const e=$(id);return e?e.value.trim():null};const d1=v("#dfD1");if(d1!=null){DF.dp.d1=d1;DF.dp.d2=v("#dfD2");DF.dp.ser=v("#dfSer");const sn=parseInt(v("#dfSn"),10),sc=parseInt(v("#dfSc"),10);DF.dp.sn=Number.isFinite(sn)?sn:"";DF.dp.sc=Number.isFinite(sc)?sc:""}}const t=$("#dfN");if(t){DF.nh=rtClean(t.innerHTML);DF.n=rtText(DF.nh)}const q=$("#dfQ");if(q&&q.value.trim())dQAdd()}
 function dQAdd(){const q=$("#dfQ");if(!q||!q.value.trim())return;const b=DF.b;quotes.push({ts:Date.now(),book:b.id||b.t,bt:b.t,ba:b.a,text:q.value.trim(),page:""});saveQuotes();try{renderQuotes()}catch(e){}tgHaptic()}
-function dFinish(){const b=DF.b,ch={dm:DF.dm.slice(0,3),dp:DF.dp,n:String(DF.n||"").trim(),pub:DF.pub?1:0};ch.nh=ch.n&&/<(b|strong|i|em|u|s|strike|del|mark|ul|ol|li)\b/i.test(DF.nh||"")?rtClean(DF.nh):"";if(DF.r)ch.r=DF.r*2;if(!b.dd)ch.dd=new Date().toISOString().slice(0,10);
+function dFinish(){const b=DF.b,ch={dm:DF.dm.slice(0,3),dp:DF.dp,n:String(DF.n||"").trim(),pub:DF.pub?1:0};ch.nh=ch.n&&/<(b|strong|i|em|u|s|strike|del|mark|ul|ol|li)\b/i.test(DF.nh||"")?rtClean(DF.nh):"";if(DF.r)ch.r=DF.r*2;if(DF.dp.d2){ch.dd=DF.dp.d2;ch.rd=DF.dp.d2.slice(0,7)}else if(!b.dd)ch.dd=new Date().toISOString().slice(0,10);
   noteLearn([ch.n,...ch.dm].join(" "),ch.r!=null?ch.r:b.r);bSave(b,ch);const d=LS.get("zal.ddraft",{});delete d[b.id];LS.set("zal.ddraft",d);const d2=LS.get("zal.ddrh",{});delete d2[b.id];LS.set("zal.ddrh",d2);goal("diary");tgHaptic("success");
   const top=DF.top;DF=null;try{rerenderAll()}catch(e){}if(BKC){try{bkcDraw();bkcFit()}catch(e){}}if(SCREEN==="sum")drawCol(true);dOpen(b,top);toast("Записано в дневник")}
 $("#vshBody").addEventListener("click",e=>{const t=e.target;
@@ -6978,6 +7041,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="sec"){const st=BK.has(x);if(st){const on=!isSec(x);setSec(x,on);vDirty=true;toast(on?"Теперь эту книгу видите только вы":"Книгу снова видят друзья")}else BKC.sec=!BKC.sec;const el=bkcEl.querySelector(".bkc-sec");if(el)el.outerHTML=bkcSec(x,L);return}
   if(a==="ask"){goal("ask_friend");frAsk(x);return}if(a==="rv"){dNew(myRec(x));return}if(a==="lnext"){luckCardNext();return}if(a==="dopen"){dOpen(myRec(x),true);return}
   if(a==="want"){BK.addWant(x);if(BKC.sec)setSec(x,true);vDirty=true;toast(L==="friend"?"Добавлено в избранное - теперь она есть и у тебя":BKC.sec?"Добавлено в секретное избранное":"Добавлено в избранное");bkcClose();return}
+  if(a==="ush"){ushPick(x);return}if(a==="now"){nowSet(x);toast("Читаешь «"+x.t+"»");bkcClose();refresh();return}if(a==="prog"){bkcClose();setTimeout(nowOpen,200);return}
   if(a==="rm"){BK.rmWant(x);vDirty=true;toast("Убрано из избранного");bkcClose();return}
   if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
     const r=L==="read"?x:BK.read().find(y=>norm(y.t)===norm(x.t));if(r)BK.rmRead(r);vDirty=true;toast("Убрано с полки «Прочитано»");bkcClose();return}
