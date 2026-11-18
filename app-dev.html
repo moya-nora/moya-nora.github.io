@@ -7157,40 +7157,50 @@ async function wrCards(D){const cs=getComputedStyle(wrEl),SF=(cs.getPropertyValu
   const site=x=>{x.font=`700 30px ${FF}`;const t="nora-books.ru",w=x.measureText(t).width+60;x.fillStyle="rgba(255,250,242,.94)";wrRR(x,540-w/2,1818,w,64,32);x.fill();x.fillStyle=INK;x.textAlign="center";x.fillText(t,540,1861);x.textAlign="left"};
   // 1. обложка года
   {const [c,x]=mk("a","#F4E4D0");brand(x);kick(x,"МОЙ ГОД В КНИГАХ","#B5584A",320);x.fillStyle=INK;fit(x,String(n),900,300,600,SF);x.fillText(String(n),66,600);
-    x.font=`600 66px ${SF}`;x.fillText(`${plural(n,"книга","книги","книг")} за ${D.Y}`,80,690);x.font=`500 40px ${FF}`;x.fillStyle="rgba(59,37,71,.8)";x.fillText(n>1?"и в каждой - целый мир":"и в ней - целый мир",80,760);site(x);out.push(c)}
+    x.font=`600 66px ${SF}`;x.fillText(`${plural(n,"книга","книги","книг")} за ${D.Y}`,80,700);site(x);out.push(c)}
   // 2. страницы
   if(D.pg>=200){const [c,x]=mk("b","#DCD3EE");brand(x);kick(x,"СТРАНИЦЫ","#7A3E5A",320);const v=D.pg.toLocaleString("ru-RU");x.fillStyle=INK;fit(x,v,500,170,600,SF);x.fillText(v,76,480);
     x.font=`600 56px ${SF}`;x.fillText(plural(D.pg,"страница","страницы","страниц"),80,560);
-    const t=D.pg>=1300?`Это «Война и мир» ${wrTimes(D.pg/1300)} подряд. Толстой бы гордился`:D.pg>=480?`Это «Мастер и Маргарита» ${wrTimes(D.pg/480)} подряд. Воланд одобряет`:"Целая стопка историй - и это только начало";
+    const t=D.pg>=1300?`Это как прочитать «Войну и мир» ${wrTimes(D.pg/1300)}`:D.pg>=480?`Это как прочитать «Мастера и Маргариту» ${wrTimes(D.pg/480)}`:"Целая стопка историй";
     x.font=`500 40px ${FF}`;x.fillStyle="rgba(59,37,71,.85)";para(x,t,80,650,470,54,4);site(x);out.push(c)}
   // 3. часы с книгой
   const h=Math.round((D.pg||0)/45);
   if(h>=2){const [c,x]=mk("e","#F7D9C4");brand(x);kick(x,"ЧАСЫ С КНИГОЙ","#B5584A",300);x.fillStyle=INK;fit(x,String(h),900,230,600,SF);x.fillText(String(h),70,500);
-    x.font=`600 56px ${SF}`;x.fillText(`${plural(h,"час","часа","часов")} в других мирах`,80,580);
-    const t=h>=166?`За это время поезд «Россия» ${wrTimes(h/166)} доехал бы до Владивостока - и за окном сменилась бы вся страна`:h>=4?`За это время «Сапсан» ${wrTimes(h/4)} домчал бы до Петербурга - а книги унесли гораздо дальше`:"Целый вечер в другом мире";
+    x.font=`600 56px ${SF}`;x.fillText(`${plural(h,"час","часа","часов")} наедине с книгой`,80,580);
+    const t=h>=166?`За это время поезд «Россия» доехал бы из Москвы во Владивосток ${wrTimes(h/166)}`:h>=4?`За это время «Сапсан» съездил бы из Москвы в Петербург ${wrTimes(h/4)}`:"Целый вечер в другом мире";
     x.font=`500 38px ${FF}`;x.fillStyle="rgba(59,37,71,.85)";para(x,t,80,650,900,50,2);site(x);out.push(c)}
   // 4. читательский тип
   {const [c,x]=mk("c","#2B2F55");brand(x,true);kick(x,"МОЙ ЧИТАТЕЛЬСКИЙ ТИП","#F2C14E",320);x.fillStyle="#F7F1E6";let s=fit(x,D.type[0].split(" ").sort((a,b)=>b.length-a.length)[0],900,104,600,SF);
     let y=para(x,D.type[0],80,440,920,s*1.05,2);x.font=`500 38px ${FF}`;x.fillStyle="rgba(247,241,230,.8)";y=para(x,D.type[1]+".",80,y+20,900,50,2);
     if(D.gk.length){x.font=`700 32px ${FF}`;x.fillStyle="#F2C14E";x.fillText(`Любимый жанр - ${String(GEN[D.gk[0][0]]||"").toLowerCase()}`,80,y+40)}site(x);out.push(c)}
   // 5. книга года
-  {const hero=D.top[0]||D.last,[c,x]=mk("d","#CFE0C8");brand(x);kick(x,D.top[0]?"КНИГА, КОТОРАЯ СДЕЛАЛА МОЙ ГОД":"ПОСЛЕДНЯЯ КНИГА ГОДА","#4E6E4A",300);
+  {const hero=D.top[0]||D.last,[c,x]=mk("d","#CFE0C8");brand(x);kick(x,D.top[0]?"МОЯ КНИГА ГОДА":"ПОСЛЕДНЯЯ КНИГА ГОДА","#4E6E4A",300);
     x.fillStyle=INK;let s=fit(x,String(hero.t).split(" ").sort((a,b)=>b.length-a.length)[0],900,84,600,SF);let y=para(x,hero.t,80,400,920,s*1.08,2);
     const st=D.top[0]&&hero.r!=null?Math.max(1,Math.min(5,Math.round(hero.r/2))):0;x.font=`500 36px ${FF}`;x.fillStyle="rgba(59,37,71,.8)";x.fillText((st?"★".repeat(st)+"  ·  ":"")+(wrWrap(x,hero.a,760,1)[0]||""),80,y+10);
     const im=await wrCov(hero).catch(()=>null);x.save();x.translate(540,1150);x.rotate(-.052);x.translate(-210,-315);wrCvDraw(x,im,hero,420,630,FF,SF,1);x.restore();if(A.d2)x.drawImage(A.d2,0,0,1080,1920);site(x);out.push(c)}
-  // 6. сводный лист - в той же светлой гамме, что и остальные
-  {const [c,x]=mk("","#F4E4D0");let g=x.createLinearGradient(0,0,0,1920);g.addColorStop(0,"#F4E4D0");g.addColorStop(.55,"#EBDDEB");g.addColorStop(1,"#DCD3EE");x.fillStyle=g;x.fillRect(0,0,1080,1920);
-    [[930,420,260,"#F7D9C4"],[120,1100,300,"#CFE0C8"],[960,1560,280,"#F2DDA8"]].forEach(([X,Y,R,C])=>{x.fillStyle=C;x.globalAlpha=.7;x.beginPath();x.arc(X,Y,R,0,7);x.fill()});x.globalAlpha=1;
-    x.fillStyle="#E7A94F";[[180,560,16],[900,760,12],[820,1240,10],[150,1500,12]].forEach(([X,Y,R])=>{x.beginPath();for(let i=0;i<8;i++){const q=i/8*Math.PI*2,r=i%2?R*.38:R;x.lineTo(X+Math.cos(q)*r,Y+Math.sin(q)*r)}x.fill()});
-    brand(x);x.textAlign="center";x.fillStyle="#B5584A";x.font=`700 30px ${FF}`;SP(x,"6px");x.fillText("МОЙ ГОД ОДНИМ ЛИСТОМ",540,330);SP(x,"0px");x.fillStyle=INK;x.font=`600 124px ${SF}`;x.fillText(`Мой ${D.Y}`,540,470);x.fillStyle="#B5584A";x.font=`italic 600 124px ${SF}`;x.fillText("в книгах",540,590);
-    const hero=D.top[0]||D.last,pool=[hero,...D.top.slice(1),...D.L.slice().reverse()].filter((b,i,a)=>b&&a.indexOf(b)===i).slice(0,3),ims=await Promise.all(pool.map(b=>wrCov(b).catch(()=>null)));
-    const put=(j,cx,cy,w,h,rot)=>{const b=pool[j];if(!b)return;x.save();x.translate(cx,cy);x.rotate(rot);x.shadowColor="rgba(59,37,71,.35)";x.shadowBlur=50;x.shadowOffsetY=26;x.fillStyle="#fff";wrRR(x,-w/2,-h/2,w,h,w/24);x.fill();x.shadowColor="transparent";x.translate(-w/2,-h/2);wrCvDraw(x,ims[j],b,w,h,FF,SF,j+3);x.restore()};
-    put(2,800,960,250,375,.2);put(1,280,960,250,375,-.2);put(0,540,930,330,495,-.03);x.textAlign="center";
-    let y=1260;x.fillStyle=INK;x.font=`600 52px ${SF}`;wrWrap(x,hero.t,900,2).forEach(l=>{x.fillText(l,540,y);y+=60});x.fillStyle="rgba(59,37,71,.75)";x.font=`500 32px ${FF}`;x.fillText((D.top[0]?"книга года  ·  ":"")+(wrWrap(x,hero.a,600,1)[0]||""),540,y-4);y+=56;
-    const cols=[[String(n),plural(n,"книга","книги","книг")]];if(D.pg){cols.push([D.pg.toLocaleString("ru-RU"),plural(D.pg,"страница","страницы","страниц")]);if(h>=2)cols.push([String(h),plural(h,"час","часа","часов")])}
-    const cw=920/cols.length;cols.forEach(([v,l],i)=>{const cx=80+cw*i+cw/2;let nf=96;x.font=`600 ${nf}px ${SF}`;while(nf>56&&x.measureText(v).width>cw-40){nf-=4;x.font=`600 ${nf}px ${SF}`}x.fillStyle=INK;x.fillText(v,cx,y+80);x.font=`500 30px ${FF}`;x.fillStyle="rgba(59,37,71,.7)";x.fillText(l,cx,y+124);if(i){x.fillStyle="rgba(59,37,71,.18)";x.fillRect(80+cw*i-1,y+14,2,116)}});
-    y+=170;x.fillStyle="rgba(255,250,242,.9)";wrRR(x,110,y,860,140,70);x.fill();x.fillStyle="#B5584A";x.font=`700 24px ${FF}`;SP(x,"5px");x.fillText("МОЙ ЧИТАТЕЛЬСКИЙ ТИП",540,y+52);SP(x,"0px");
-    let fs=52;x.font=`600 ${fs}px ${SF}`;while(fs>34&&x.measureText(D.type[0]).width>800){fs-=2;x.font=`600 ${fs}px ${SF}`}x.fillStyle=INK;x.fillText(D.type[0],540,y+112);x.textAlign="left";site(x);out.push(c)}
+  // главный лист - первым в серии: коллаж обложек года, наклейка с числом книг, книга года, страницы, часы и читательский тип
+  {const [c,x]=mk("","#F4E4D0");let g=x.createLinearGradient(0,0,0,1920);g.addColorStop(0,"#F6E7D4");g.addColorStop(1,"#EFD9C6");x.fillStyle=g;x.fillRect(0,0,1080,1920);
+    x.fillStyle="#E9C3A8";x.beginPath();x.ellipse(540,1010,520,430,-.15,0,7);x.fill();x.fillStyle="#DCD3EE";x.beginPath();x.ellipse(860,1240,260,220,.3,0,7);x.fill();x.fillStyle="#CFE0C8";x.beginPath();x.ellipse(170,760,200,170,.2,0,7);x.fill();
+    brand(x);x.fillStyle=INK;x.font=`600 150px ${SF}`;x.fillText(`Мой ${D.Y}`,70,420);x.fillStyle="#B5584A";x.font=`italic 600 150px ${SF}`;x.fillText("в книгах",70,560);
+    const hero=D.top[0]||D.last,pool=[hero,...D.top.slice(1),...D.L.slice().reverse()].filter((b,i,a)=>b&&a.indexOf(b)===i).slice(0,7),ims=await Promise.all(pool.map(b=>wrCov(b).catch(()=>null)));
+    const tile=(j,cx,cy,w,h,rot)=>{const b=pool[j];if(!b)return;x.save();x.translate(cx,cy);x.rotate(rot);x.shadowColor="rgba(59,37,71,.32)";x.shadowBlur=40;x.shadowOffsetY=20;x.fillStyle="#FFFAF2";wrRR(x,-w/2-12,-h/2-12,w+24,h+24,14);x.fill();x.shadowColor="transparent";x.translate(-w/2,-h/2);wrCvDraw(x,ims[j],b,w,h,FF,SF,j+3);x.restore()};
+    [[1,175,860,-.09],[2,905,870,.08],[3,330,1150,.06],[4,760,1160,-.07],[5,120,1150,-.05],[6,960,1150,.1]].forEach(([j,X,Y,r])=>tile(j,X,Y,200,300,r));
+    tile(0,540,990,330,495,-.035);
+    // наклейка
+    x.save();x.translate(870,470);x.rotate(.18);x.shadowColor="rgba(59,37,71,.3)";x.shadowBlur=24;x.shadowOffsetY=10;x.fillStyle="#C9705A";x.beginPath();for(let i=0;i<40;i++){const q=i/40*Math.PI*2,r=i%2?120:132;x.lineTo(Math.cos(q)*r,Math.sin(q)*r)}x.closePath();x.fill();x.shadowColor="transparent";
+      x.textAlign="center";x.fillStyle="#FFF6E8";let nf=fit(x,String(n),190,118,600,SF);x.fillText(String(n),0,22);x.font=`700 30px ${FF}`;x.fillText(plural(n,"книга","книги","книг").toUpperCase(),0,66);x.restore();
+    if(D.top[0]){x.save();x.translate(705,770);x.rotate(.2);x.fillStyle="#F2C14E";x.beginPath();for(let i=0;i<40;i++){const q=i/40*Math.PI*2,r=i%2?62:68;x.lineTo(Math.cos(q)*r,Math.sin(q)*r)}x.closePath();x.fill();x.fillStyle=INK;x.textAlign="center";x.font=`800 22px ${FF}`;SP(x,"2px");x.fillText("КНИГА",2,-2);x.fillText("ГОДА",2,24);SP(x,"0px");x.restore()}
+    // под коллажем
+    x.textAlign="center";let y=1370;x.fillStyle=INK;x.font=`600 56px ${SF}`;wrWrap(x,hero.t,920,2).forEach(l=>{x.fillText(l,540,y);y+=62});
+    const st=D.top[0]&&hero.r!=null?Math.max(1,Math.min(5,Math.round(hero.r/2))):0;x.font=`500 32px ${FF}`;x.fillStyle="rgba(59,37,71,.78)";x.fillText((st?"★".repeat(st)+"  ·  ":"")+(wrWrap(x,hero.a,640,1)[0]||""),540,y-6);y+=40;
+    const chips=[];if(D.pg)chips.push(`${D.pg.toLocaleString("ru-RU")} ${plural(D.pg,"страница","страницы","страниц")}`);if(h>=2)chips.push(`${h} ${plural(h,"час","часа","часов")} с книгой`);if(D.gk.length)chips.push(String(GEN[D.gk[0][0]]||""));
+    x.font=`600 30px ${FF}`;const cw=chips.map(t=>x.measureText(t).width+56),tot=cw.reduce((a,b)=>a+b,0)+16*(chips.length-1);let cx=540-Math.min(tot,960)/2;
+    chips.forEach((t,i)=>{x.strokeStyle="rgba(59,37,71,.35)";x.lineWidth=3;wrRR(x,cx,y,cw[i],64,32);x.stroke();x.fillStyle=INK;x.fillText(t,cx+cw[i]/2,y+43);cx+=cw[i]+16});y+=100;
+    x.fillStyle=INK;wrRR(x,90,y,900,150,75);x.fill();x.fillStyle="#F2C14E";x.font=`700 24px ${FF}`;SP(x,"5px");x.fillText("МОЙ ЧИТАТЕЛЬСКИЙ ТИП",540,y+54);SP(x,"0px");
+    let fs=54;x.font=`600 ${fs}px ${SF}`;while(fs>34&&x.measureText(D.type[0]).width>800){fs-=2;x.font=`600 ${fs}px ${SF}`}x.fillStyle="#FFF6E8";x.fillText(D.type[0],540,y+116);x.textAlign="left";site(x);out.unshift(c)}
+  // лёгкое зерно, как у печатной иллюстрации
+  try{const nz=document.createElement("canvas");nz.width=nz.height=256;const nx=nz.getContext("2d"),id=nx.createImageData(256,256);for(let i=0;i<id.data.length;i+=4){const v=Math.random()*255;id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=22}nx.putImageData(id,0,0);
+    out.forEach(c=>{const x=c.getContext("2d");x.save();x.globalCompositeOperation="overlay";x.fillStyle=x.createPattern(nz,"repeat");x.fillRect(0,0,1080,1920);x.restore()})}catch(e){}
   return out}
 function wrFill(){const W=WR;if(!W||!W.u)return;const el=wrEl.querySelector("[data-wrpvs]");if(!el||el.dataset.ok)return;el.dataset.ok=1;el.innerHTML=W.u.map((u,i)=>`<img data-wrone="${i}" src="${u}" alt="Итоги года, картинка ${i+1}">`).join("")}
 function wrPrep(){if(!WR)return Promise.resolve(null);const W=WR;if(!W.p)W.p=wrCards(W.D).then(cs=>Promise.all(cs.map(c=>new Promise(r=>{try{c.toBlob(b=>r(b),"image/png")}catch(e){r(null)}})))).then(bs=>{bs=bs.filter(Boolean);return bs.length?bs:null}).catch(()=>null);
