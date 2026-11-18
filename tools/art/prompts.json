@@ -5,6 +5,11 @@
   "book": "A giant open book standing upright on a quiet meadow like a doorway, warm light pouring out of its pages, a small person walking towards it along a path, a few birds in the sky.",
   "pages": "A young man with short hair and a beard sitting cross-legged on top of a very tall, slightly wobbly tower of colorful books that rises above the rooftops of a small city, reading calmly, a ladder leaning against the tower, soft clouds around.",
   "month": "A young woman curled up on a wide windowsill, a closed book resting on her knees, she is turned towards the window and dreamily looking out at the rain, potted plants and a stack of books on the sill, a cat sleeping at her feet, a cozy room with a lamp.",
-  "type": "A young man and a young woman sitting face to face in a small wooden rowing boat drifting on a calm lake at golden hour, talking and smiling at each other, not reading; closed books stacked in the boat between them, an oar resting on the side, reeds and distant hills, reflections on the water."
+  "type": "A young man and a young woman sitting face to face in a small wooden rowing boat drifting on a calm lake at golden hour, talking and smiling at each other, not reading; closed books stacked in the boat between them, an oar resting on the side, reeds and distant hills, reflections on the water.",
+  "stat": {
+   "p": "A cozy reading nook seen from the side: a young woman sitting in a deep armchair with a book, next to her a tall wooden bookshelf, a small round side table with a cup of tea and a little stack of books, a floor lamp with warm light, a potted plant, a sleeping cat on a cushion. Around the shelf float a few small decorative golden elements: a ribbon medal, a small star and a tiny trophy, like reading achievements.",
+   "style": "Modern editorial book illustration for a reading app, flat organic shapes with subtle shading, visible fine grain and risograph-like texture, muted warm palette (mustard, terracotta, sage green, soft navy, cream, lavender) on a deep warm dark-brown background. Simple stylized person with calm closed eyes. Wide horizontal banner composition: all objects and the person are in the RIGHT 55% of the image, the LEFT 45% is a calm plain dark background with nothing in it, so text can be placed there. No text, no letters, no numbers, no logos, no watermarks. Hands hidden or very simplified.",
+   "size": "1536x1024"
+  }
  }
 }

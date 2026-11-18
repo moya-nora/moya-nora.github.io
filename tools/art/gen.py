@@ -17,8 +17,8 @@ if not BASE.endswith("/v1"):
     BASE += "/v1"
 
 
-def call(prompt):
-    body = json.dumps({"model": MODEL, "prompt": prompt, "size": "1024x1536", "n": 1, "quality": "high"}).encode()
+def call(prompt, size="1024x1536"):
+    body = json.dumps({"model": MODEL, "prompt": prompt, "size": size, "n": 1, "quality": "high"}).encode()
     req = urllib.request.Request(BASE + "/images/generations", data=body, headers={"Content-Type": "application/json", "Authorization": "Bearer " + KEY})
     try:
         with urllib.request.urlopen(req, timeout=300) as r:
@@ -38,7 +38,9 @@ except Exception as e:  # noqa: BLE001
 ok = 0
 for s in want:
     for i in range(N):
-        j, c = call(P["scenes"][s] + "\n\n" + P["style"])
+        sc = P["scenes"][s]
+        wide = isinstance(sc, dict)
+        j, c = call((sc["p"] if wide else sc) + "\n\n" + (sc.get("style") or P["style"] if wide else P["style"]), sc.get("size", "1536x1024") if wide else "1024x1536")
         if c != 200:
             print(s, i, "ошибка", c, str(j)[:300]); continue
         d = (j.get("data") or [{}])[0]
