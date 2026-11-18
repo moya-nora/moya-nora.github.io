@@ -1,0 +1,18 @@
+name: Бот — итоги года (1 и 26 декабря)
+on:
+  schedule:
+    - cron: "41 8 1,26 12 *"   # 11:41 по Москве
+  workflow_dispatch:
+concurrency: {group: bot-wrap, cancel-in-progress: false}
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Рассылка
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          BOT_FB_PASS: ${{ secrets.BOT_FB_PASS }}
+          DRY: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && 'dec1' || '' }}
+        run: python3 -u tools/bot_wrap.py

@@ -2391,6 +2391,7 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .wr-pv{align-self:center;width:min(100%,250px,calc((100vh - 300px) * 9 / 16));aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#140C1A;display:flex;align-items:center;justify-content:center;box-shadow:0 30px 60px -20px #000,0 0 0 1px rgba(243,209,154,.3)}
 #app .wr-pv img{width:100%;height:100%;display:block;object-fit:cover}
 #app .wr-pv i{font-style:normal;font-size:14px;color:rgba(247,241,230,.6)}
+#app .wr-home{margin:0 0 16px}
 #app .wr-pvs{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:4px -24px 0;padding:6px 24px 12px;min-height:180px;align-items:center;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 #app .wr-pvs::-webkit-scrollbar{display:none}
 #app .wr-pvs img{flex:none;height:min(50vh,440px);aspect-ratio:9/16;border-radius:14px;scroll-snap-align:center;box-shadow:0 20px 40px -18px #000,0 0 0 1px rgba(243,209,154,.25)}
@@ -5303,10 +5304,11 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   const free=b=>{const n=b._n||norm(b.t);return !READ.has(n)&&!W.has(n)&&!dismissed.has(b.id)&&!seen.has(n)};
   const take=(arr,k=14)=>{const out=[],au=new Set();for(const b of arr){if(out.length>=k)break;if(!free(b)||au.has(b.a))continue;au.add(b.a);out.push(b)}out.forEach(b=>seen.add(b._n||norm(b.t)));return out};
   const GP=gpref(),hit=b=>{try{return GP.some(g=>genPass(b,g))}catch(e){return false}},res=[];
+  // «По твоему вкусу» - первым, сразу под «Шуршуня советует»: подбор по прочитанному, оценкам и «Хочу прочитать»
+  if(BOOKS.length||want.length||GP.length){const q=tasteQ(),lk=take(topK(L,120,b=>free(b)?feedScore(b,q)+(imgOf(b)?2:0):null).map(z=>z.b));lk.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["like","По твоему вкусу","Подобрали по прочитанному, твоим оценкам и «Хочу прочитать»",lk])}
   // в тренде: свои жанры первыми (одного автора можно дважды — там серии)
   {const tr=trendBooks().filter(free).slice(0,16);tr.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["trend","В тренде сейчас","Громкие книги, о которых сейчас говорят",tr])}
   {const NL=newLoved(),bt=NL.filter(free).slice(0,16);bt.forEach(b=>seen.add(b._n||norm(b.t)));res.push(["newlove",NL.label,"Вышли за последний год, и у них уже сотни и тысячи оценок читателей",bt])}
-  if(BOOKS.length||want.length||GP.length){const q=tasteQ();res.push(["like","Тебе понравится","По твоим полкам и оценкам",take(topK(L,120,b=>free(b)?feedScore(b,q)+(imgOf(b)?2:0):null).map(z=>z.b))])}
   const mix=arr=>arr.map(b=>({b,s:(hit(b)?1:0)+Math.random()})).sort((x,y)=>y.s-x.s).map(z=>z.b);
   res.push(["booktok","Хиты буктока","О них спорят в тиктоке и на ютубе",take(mix(booktokBooks()),16)]);
   res.push(["cozy","Уютные детективы","Плед, чай и убийство, которое раскроют к последней главе",take(mix(listBooks(COZY_L)))]);
@@ -6325,8 +6327,7 @@ try{if(sessionStorage.getItem("nsync.applied")){sessionStorage.removeItem("nsync
 const SPL={stop:false,k:0};
 // в заставке — только настоящие обложки (из кэша), без пустых рисованных; пока картинка не готова, ячейка просто тёмная
 function splashRun(){const sp=$("#splash"),reel=$("#spReel");if(!sp||!reel)return;
-  const own=[...BOOKS.map(b=>bItem(b,"read")),...want.map(w=>bItem(w,"want"))].map(imgOf).filter(Boolean);
-  const rest=Object.values(IMG).filter(u=>u&&u[0]!=="!"&&!own.includes(u));const U=[...own.sort(()=>Math.random()-.5),...rest.sort(()=>Math.random()-.5)].slice(0,60);
+  const U=Array.from({length:30},(_,k)=>"img/splash/"+String(k+1).padStart(2,"0")+".webp"); /* одни и те же обложки с нашего сайта, без интернета и без пустых ячеек */
   const tile=u=>`<i class="spt"><img src="${esc(u)}" alt="" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('ok')"></i>`;
   const cells=reel.children.length;if(!U.length)return;for(let c=0;c<cells;c++){reel.children[c].outerHTML=tile(U[c%U.length])}SPL.k=cells;
   const tick=()=>{if(SPL.stop||U.length<=cells)return;const n=2+Math.floor(Math.random()*4);for(let m=0;m<n;m++){const c=reel.children[Math.floor(Math.random()*cells)];if(c&&c.classList.contains("ok")){const u=U[(SPL.k++)%U.length],im=new Image();im.referrerPolicy="no-referrer";im.onload=()=>{c.querySelector("img").src=u};im.src=u}}
@@ -6950,9 +6951,14 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody"))return;
   const w=t.closest("[data-wh]");if(w){e.stopPropagation&&e.stopPropagation();whereOpen($("#vshBody")._wx,w.dataset.wh);tgHaptic();return}
   const u=t.closest("[data-whu]");if(u){try{window.ym&&ym(114237349,"reachGoal","where_go",{store:u.dataset.whk})}catch(e){}openLink(u.dataset.whu);return}});
-(function(){let y0=null,dy=0;bkcEl.addEventListener("touchstart",e=>{y0=null;if(e.target.closest("button"))return;{const d=e.target.closest("#bkcDw");if(d&&(d.scrollTop>0||d.scrollHeight>d.clientHeight+2))return}y0=e.touches[0].clientY;dy=0},{passive:true});
-  bkcEl.addEventListener("touchmove",e=>{if(y0==null)return;dy=Math.max(0,e.touches[0].clientY-y0);bkcEl.firstElementChild.style.transform=`translateY(${dy*.6}px)`},{passive:true});
-  bkcEl.addEventListener("touchend",()=>{if(y0==null)return;y0=null;bkcEl.firstElementChild.style.transform="";if(dy>110)bkcClose()})})();
+(function(){let y0=null,dy=0,hx0=null,hy0=0,hdx=0,hz=0;bkcEl.addEventListener("touchstart",e=>{y0=null;hx0=null;hdx=0;hz=0;const t0=e.touches[0];if(!e.target.closest(".na-row,.mini,input,textarea,[data-noswipe]")){hx0=t0.clientX;hy0=t0.clientY}if(e.target.closest("button"))return;{const d=e.target.closest("#bkcDw");if(d&&(d.scrollTop>0||d.scrollHeight>d.clientHeight+2))return}y0=t0.clientY;dy=0},{passive:true});
+  bkcEl.addEventListener("touchmove",e=>{const t=e.touches[0];
+    // смахнуть вправо - закрыть карточку (как «назад»)
+    if(hx0!=null){const dx=t.clientX-hx0,dv=Math.abs(t.clientY-hy0);if(!hz&&(dx>12||dv>12))hz=dx>12&&dx>dv*1.4?1:-1;if(hz===1){hdx=Math.max(0,dx);y0=null;bkcEl.firstElementChild.style.transform=`translateX(${hdx}px)`;bkcEl.firstElementChild.style.opacity=String(Math.max(.4,1-hdx/600));return}}
+    if(y0==null)return;dy=Math.max(0,t.clientY-y0);bkcEl.firstElementChild.style.transform=`translateY(${dy*.6}px)`},{passive:true});
+  bkcEl.addEventListener("touchend",()=>{const c=bkcEl.firstElementChild;
+    if(hz===1){hx0=null;hz=0;if(hdx>90){c.style.transition="transform .2s ease,opacity .2s ease";c.style.transform="translateX(110%)";c.style.opacity="0";setTimeout(()=>{bkcClose();c.style.transition="";c.style.transform="";c.style.opacity=""},190)}else{c.style.transition="transform .2s ease";c.style.transform="";c.style.opacity="";setTimeout(()=>{c.style.transition=""},220)}return}
+    hx0=null;if(y0==null)return;y0=null;c.style.transform="";if(dy>110)bkcClose()})})();
 if(TG&&TG.BackButton)try{TG.BackButton.onClick(()=>{if(bkcEl.classList.contains("on")&&!$("#vsheet").classList.contains("on"))bkcClose()})}catch(e){}
 
 // ---------- фишка: книга встаёт на полку ----------
@@ -7076,7 +7082,7 @@ function wrSlides(D){const n=D.L.length,S=[],bk=plural(n,"книга","книг�
 let WR=null;const wrEl=document.createElement("div");wrEl.className="wr";$("#app").appendChild(wrEl);
 function wrDraw(){const i=WR.i,S=WR.S;wrEl.style.setProperty("--wc",WR_COL[i%WR_COL.length]);
   wrEl.innerHTML=`<div class="wr-bg"></div><svg class="wr-arch" viewBox="0 0 100 60"><path d="M10,60V34a40,40 0 0 1 80,0V60M24,60V36a26,26 0 0 1 52,0V60M38,60V40a12,12 0 0 1 24,0V60"/></svg><div class="wr-bars">${S.map((_,j)=>`<i${j<=i?` class="on"`:""}></i>`).join("")}</div><button class="wr-x" data-wrx aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="wr-s">${S[i]}</div>`;if(i===S.length-1){if(WR.u)wrFill();else wrPrep()}}
-function wrOpen(){const D=wrData();if(!D){toast("Итоги появятся, когда отметишь прочитанное в этом году");return}WR={D,S:wrSlides(D),i:0};wrEl.classList.add("on");wrDraw();setTimeout(()=>{try{wrPrep()}catch(e){}},400);tgHaptic("medium");try{goal("wrap")}catch(e){}try{syncBack()}catch(e){}}
+function wrOpen(){const D=wrData();if(!D){toast("Итоги появятся, когда отметишь прочитанное в этом году");return}try{LS.set("zal.wrseen",D.Y)}catch(e){}WR={D,S:wrSlides(D),i:0};wrEl.classList.add("on");wrDraw();setTimeout(()=>{try{wrPrep()}catch(e){}},400);tgHaptic("medium");try{goal("wrap")}catch(e){}try{syncBack()}catch(e){}}
 function wrClose(){WR=null;wrEl.classList.remove("on");wrEl.innerHTML="";try{syncBack()}catch(e){}}
 // картинка 1080×1920 для сторис: стена из обложек года на фоне, веер из трёх любимых книг, цифры года и читательский тип.
 // Обложки грузим с разрешением на холст (напрямую или через wsrv.nl); если не вышло - рисуем свою обложку, чтобы картинка всё равно была красивой
@@ -7204,7 +7210,22 @@ wrEl.addEventListener("click",e=>{if(!WR)return;if(e.target.closest("[data-wrimg
   const back=e.clientX<innerWidth*.3;if(back){if(WR.i>0){WR.i--;wrDraw();tgHaptic()}}else if(WR.i<WR.S.length-1){WR.i++;wrDraw();tgHaptic()}});
 document.addEventListener("click",e=>{if(e.target.closest("[data-wropen]"))wrOpen()});
 // вход - карточка наверху «Статистики»
-{const ds0=drawSum;drawSum=function(){ds0.apply(this,arguments);try{const m=$("#sumMore"),D=!VIEW&&!isF()&&wrData();if(m&&D&&!m.querySelector(".wr-open"))m.insertAdjacentHTML("afterbegin",`<button class="wr-open" data-wropen><div><b>Итоги ${D.Y} года</b><span>Твой год в книгах - листай и делись</span></div><em>${D.L.length}</em></button>`)}catch(e){}}}
+// итоги года видны только в сезон: с 1 декабря по 31 января (в январе - за прошлый год). Для проверки вне сезона: ?wr=1 в адресе
+const wrSeason=()=>{try{if(/[?&]wr=1/.test(location.search))sessionStorage.setItem("nora.wr","1");if(sessionStorage.getItem("nora.wr"))return true}catch(e){}const m=new Date().getMonth();return m===11||m===0};
+// «Мой год» на полках: вместо общей статистики - только цель на год (и карточка итогов в сезон). Вся статистика - в итогах года
+function goalCard(){const Y=String(new Date().getFullYear()),goal=LS.get("zal.goal",24),r=DATA().read(),yr=r.filter(x=>String(x.rd||"").startsWith(Y)).length,pct=Math.min(1,yr/goal),C=2*Math.PI*52;
+  const now=new Date(),day=(now-new Date(now.getFullYear(),0,1))/864e5+1,diff=Math.round(yr-goal*day/365),left=Math.max(0,goal-yr),perM=left?Math.ceil(left/(12-now.getMonth())):0;
+  const pace=yr>=goal?"Цель выполнена - можно поднять планку":!yr?"Отмечай прочитанное - кольцо будет заполняться":diff>0?`Опережаешь план на ${diff} ${plural(diff,"книгу","книги","книг")}`:diff<0?"Чуть отстаёшь, но всё успеешь":"Идёшь точно по графику";
+  return `<div class="sc gl lv-goal" data-goal><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="tr"/><circle cx="60" cy="60" r="52" class="pr" style="stroke-dasharray:${C};stroke-dashoffset:${C*(1-pct)}"/></svg><div class="lv-g"><small>Цель на ${Y}</small><b>${yr}<i> из ${goal}</i></b><span>${pace}</span>${left&&yr?`<em>чтобы успеть - по ${perM} ${plural(perM,"книге","книги","книг")} в месяц</em>`:""}</div><u>изменить</u></div>`}
+{const ds0=drawSum;drawSum=function(){ds0.apply(this,arguments);try{const m=$("#sumMore");if(!m||VIEW||isF())return;
+  const b=$("#bento");if(b)b.hidden=true;const h=document.querySelector(".stat-h");if(h)h.textContent="Мой год";
+  m.innerHTML=goalCard();const D=wrSeason()&&wrData();
+  if(D)m.insertAdjacentHTML("afterbegin",`<button class="wr-open" data-wropen><div><b>Итоги ${D.Y} года</b><span>Твой год в книгах - листай и делись</span></div><em>${D.L.length}</em></button>`)}catch(e){}}}
+// в сезон - карточка итогов и наверху главной; открыть сразу: ссылка #wrap или запуск бота с параметром wrap
+function wrHome(){try{const t=$("#trend");if(!t||document.getElementById("wrHome"))return;const D=wrSeason()&&!VIEW&&!isF()&&wrData();if(!D)return;
+  t.insertAdjacentHTML("beforebegin",`<button class="wr-open wr-home" id="wrHome" data-wropen><div><b>Твои итоги ${D.Y} готовы</b><span>Год в книгах - листай и делись в сторис</span></div><em>${D.L.length}</em></button>`)}catch(e){}}
+setTimeout(wrHome,1500);
+{const sp=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param;if(/(^|[#&])wrap\b/.test(location.hash)||sp==="wrap"){if(location.hash)history.replaceState(null,"",location.pathname+location.search);setTimeout(()=>{if(wrSeason())wrOpen()},1800)}}
 {const sb1=syncBack;syncBack=function(){sb1();try{if(WR&&TG&&TG.BackButton)TG.BackButton.show()}catch(e){}}}
 if(TG&&TG.BackButton)try{TG.BackButton.onClick(()=>{if(WR)wrClose()})}catch(e){}
 window.NWRAP={open:wrOpen,data:wrData};
