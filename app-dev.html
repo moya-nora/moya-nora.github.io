@@ -7152,14 +7152,14 @@ async function wrCards(D){await wrFonts();const S="NoraDisp, Georgia, serif",F="
   const SP=(x,v)=>{if("letterSpacing" in x)x.letterSpacing=v};
   const pool=[D.top[0]||D.last,...D.top.slice(1),...D.L.slice().reverse()].filter((b,i,a)=>b&&a.indexOf(b)===i).slice(0,5),ims=await Promise.all(pool.map(b=>wrCov(b).catch(()=>null)));
   const hero=pool[0],imOf=b=>ims[pool.indexOf(b)]||null,st=b=>b&&b.r!=null?Math.max(1,Math.min(5,Math.round(b.r/2))):0,genre=D.gk.length?String(GEN[D.gk[0][0]]||""):"";
-  const ART={};await Promise.all(["main","book","pages","month","type"].map(async k=>{ART[k]=await wrLd("img/itogi/g-"+k+".webp?v=1")}));
+  const ART={};await Promise.all(["main","book","pages","month","type"].map(async k=>{ART[k]=await wrLd("img/itogi/g-"+k+".webp?v=2")}));
   const PAL=["#5B6B8C","#9A4A36","#6E8763","#7A5A86","#B08A3E"];
   const cover=(x,b,X,Y,w,h,i)=>{const im=imOf(b);x.save();x.shadowColor="rgba(43,36,64,.3)";x.shadowBlur=24;x.shadowOffsetY=10;x.fillStyle="#fff";x.fillRect(X,Y,w,h);x.restore();x.save();x.beginPath();x.rect(X,Y,w,h);x.clip();
     if(im){const s=Math.max(w/im.naturalWidth,h/im.naturalHeight),iw=im.naturalWidth*s,ih=im.naturalHeight*s;x.drawImage(im,X+(w-iw)/2,Y+(h-ih)/2,iw,ih)}
     else{x.fillStyle=PAL[i%PAL.length];x.fillRect(X,Y,w,h);x.fillStyle="#F6F0E6";x.textAlign="center";let f=Math.round(w/7);x.font=`600 ${f}px ${S}`;const lw=Math.max(...String(b.t||"").split(/\s+/).map(z=>x.measureText(z).width));if(lw>w*.82){f=Math.floor(f*w*.82/lw);x.font=`600 ${f}px ${S}`}
       const L=wrWrap(x,b.t,w*.82,4);let y=Y+h*.5-(L.length-1)*f*.55;L.forEach(l=>{x.fillText(l,X+w/2,y);y+=f*1.1});x.textAlign="left"}x.restore()};
   const mk=k=>{const c=document.createElement("canvas");c.width=1080;c.height=1920;const x=c.getContext("2d");x.textBaseline="alphabetic";const a=ART[k];let top="#D9D3EA",top0="rgba(217,211,234,0)";
-    if(a){try{const t=document.createElement("canvas");t.width=1;t.height=1;const q=t.getContext("2d");q.drawImage(a,0,a.naturalHeight*.06,a.naturalWidth,6,0,0,1,1);const p=q.getImageData(0,0,1,1).data;top=`rgb(${p[0]},${p[1]},${p[2]})`;top0=`rgba(${p[0]},${p[1]},${p[2]},0)`}catch(e){}}
+    if(a){try{const t=document.createElement("canvas");t.width=1;t.height=1;const q=t.getContext("2d");q.drawImage(a,0,a.naturalHeight*.12,a.naturalWidth*.16,6,0,0,1,1);const p=q.getImageData(0,0,1,1).data;top=`rgb(${p[0]},${p[1]},${p[2]})`;top0=`rgba(${p[0]},${p[1]},${p[2]},0)`}catch(e){}}
     x.fillStyle=top;x.fillRect(0,0,1080,1920);if(a){const cy=a.naturalHeight*.05;x.drawImage(a,0,cy,a.naturalWidth,a.naturalHeight-cy,0,380,1080,1540)}{const g=x.createLinearGradient(0,370,0,700);g.addColorStop(0,top);g.addColorStop(1,top0);x.fillStyle=g;x.fillRect(0,370,1080,330)}
     x.font=`700 24px ${F}`;SP(x,"6px");x.fillStyle=INK;x.fillText("НОРА",80,120);x.textAlign="right";x.fillStyle=MUTE;x.fillText(`ИТОГИ ${D.Y}`,1000,120);x.textAlign="left";SP(x,"0px");return [c,x]};
   const kick=(x,t,y)=>{x.font=`700 26px ${F}`;SP(x,"6px");x.fillStyle=ACC;x.fillText(t,80,y);SP(x,"0px")};
