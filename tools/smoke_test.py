@@ -94,6 +94,16 @@ def main():
         js("document.querySelector('#sumScroll [data-sht=fr]').click()")
         pg.wait_for_timeout(600)
         check("приложение: «Полки друзей» открываются", js("document.querySelector('#s-fr').classList.contains('on')&&document.querySelector('.dock button.on').dataset.s==='sum'"))
+        js("document.querySelector('.dock [data-s=sum]').click()")
+        pg.wait_for_timeout(600)
+        check("приложение: шапка полок со значками", js("!!document.querySelector('#sumScroll .shh #addIn')&&!!document.querySelector('#shS')"))
+        check("приложение: кнопка новой полки", js("!!document.querySelector('#pills [data-ushnew]')"))
+        js("document.querySelector('#pills [data-ushnew]').click()")
+        pg.wait_for_timeout(500)
+        js("document.querySelector('#ushN').value='Тест';document.querySelector('#ushOk').click()")
+        pg.wait_for_timeout(600)
+        check("приложение: своя полка создаётся", js("[...document.querySelectorAll('#pills button')].some(b=>b.textContent==='Тест')"))
+        check("приложение: разбор таблицы дневника", js("(()=>{const L=_nf.xlParse([['№','Название','Автор','Оценка','Формат'],[1,'Книга','Автор',5,'слушала']]);return L.length===1&&L[0].t==='Книга'&&L[0].r===10&&L[0].fmt==='аудио'})()"))
         check("приложение: нет ошибок в коде", not errs, errs)
 
         # --- сайт ---
