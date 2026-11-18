@@ -24,6 +24,6 @@ jobs:
           cd art_out && ls && [ "$(ls | wc -l)" -gt 0 ] || exit 0
           git init -q && git checkout -q -b art-trials
           git config user.name nora-bot && git config user.email nora-bot@users.noreply.github.com
-          git fetch -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" art-trials && git reset -q --soft FETCH_HEAD || true
+          git fetch -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" art-trials && git reset -q FETCH_HEAD && git checkout -q -- . || true
           mkdir -p run-${{ github.run_id }} && mv *.png run-${{ github.run_id }}/
           git add -A && git commit -q -m "пробные рисунки ${{ github.run_id }}" && git push -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:art-trials

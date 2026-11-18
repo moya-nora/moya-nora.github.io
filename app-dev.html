@@ -7069,7 +7069,7 @@ function wrSlides(D){const n=D.L.length,S=[],bk=plural(n,"книга","книг�
   if(D.au.length&&D.au[0][1]>=2)S.push(`<div class="wr-k">Автор года</div><h2 class="wr-h">${esc(D.au[0][0])}</h2><p class="wr-p"><b>${D.au[0][1]} ${plural(D.au[0][1],"книга","книги","книг")}</b> этого автора за год.${D.au[1]&&D.au[1][1]>=2?` Следом - ${esc(D.au[1][0])}.`:""}</p>`);
   S.push(`<div class="wr-k">Твой читательский тип</div><h2 class="wr-h" style="font-size:38px">${D.type[0]}</h2><p class="wr-p">${D.type[1]}.</p>`);
   try{const sh=(typeof CB!=="undefined"&&CB.id&&CB.club&&CB.d.shelf||[]).length;if(sh)S.push(`<div class="wr-k">Вместе</div><div class="wr-big">${sh}</div><h2 class="wr-h">${plural(sh,"книга","книги","книг")} с клубом «${esc(CB.club.n)}»</h2>`)}catch(e){}
-  S.push(`<div class="wr-k">Для сторис</div><h2 class="wr-h" style="font-size:26px">Твой год - в пяти страницах</h2><div class="wr-pvs" data-wrpvs><i>Собираю страницы…</i></div><p class="wr-p wr-pvh">Нажми на картинку, чтобы поделиться только ею</p><button class="wr-btn" data-wrshare>Поделиться всеми</button>`);
+  S.push(`<div class="wr-k">Для сторис</div><h2 class="wr-h" style="font-size:26px">Твой год в картинках</h2><div class="wr-pvs" data-wrpvs><i>Собираю страницы…</i></div><p class="wr-p wr-pvh">Нажми на картинку, чтобы поделиться только ею</p><button class="wr-btn" data-wrshare>Поделиться всеми</button>`);
   return S}
 let WR=null;const wrEl=document.createElement("div");wrEl.className="wr";$("#app").appendChild(wrEl);
 function wrDraw(){const i=WR.i,S=WR.S;wrEl.style.setProperty("--wc",WR_COL[i%WR_COL.length]);
@@ -7144,116 +7144,49 @@ async function wrImage(D){const c=document.createElement("canvas");c.width=1080;
   x.fillStyle="rgba(247,241,230,.55)";x.font=`500 28px ${FF}`;x.fillText("Собери свой год в книгах",540,fy+52);x.textAlign="left";
   return c}
 const wrTimes=k=>{const r=k>=10?Math.round(k):Math.round(k*10)/10;return r.toLocaleString("ru-RU")+" "+(Number.isInteger(r)?plural(r,"раз","раза","раз"):"раза")};
-// итоги года - редакционный стиль, как литературный журнал: много воздуха, крупная антиква, тонкие линейки, одна акцентная краска,
-// настоящие обложки как главная картинка. Строгая сетка: поля 90, шапка и подвал с номером страницы на каждом листе
+// итоги года - рисунки (img/itogi/g-*.webp, сделаны нейросетью по описаниям из tools/art/prompts.json), сверху спокойное небо или стена под цифры
 const WRF=[["NoraDisp","cormorant-garamond-latin-600-normal","600","normal"],["NoraDisp","cormorant-garamond-cyrillic-600-normal","600","normal"],["NoraDisp","cormorant-garamond-latin-600-italic","600","italic"],["NoraDisp","cormorant-garamond-cyrillic-600-italic","600","italic"],
   ["NoraSans","manrope-latin-500-normal","500","normal"],["NoraSans","manrope-cyrillic-500-normal","500","normal"],["NoraSans","manrope-latin-700-normal","700","normal"],["NoraSans","manrope-cyrillic-700-normal","700","normal"]];
 let WRFP=null;const wrFonts=()=>WRFP||(WRFP=Promise.all(WRF.map(([f,n,w,st])=>{try{const ff=new FontFace(f,`url(fonts/${n}.woff2)`,{weight:w,style:st,unicodeRange:/cyrillic/.test(n)?"U+0400-04FF,U+2116":"U+0000-03FF,U+2000-23FF,U+25A0-27BF"});document.fonts.add(ff);return ff.load().catch(()=>null)}catch(e){return null}})));
-async function wrCards(D){await wrFonts();const S="NoraDisp, Georgia, serif",F="NoraSans, sans-serif";
-  const CREAM="#F3EEE6",INK="#1D1A22",ACC="#B4533A",MUTE="rgba(29,26,34,.55)",n=D.L.length,out=[];
+async function wrCards(D){await wrFonts();const S="NoraDisp, Georgia, serif",F="NoraSans, sans-serif",INK="#2B2440",ACC="#9A4A36",MUTE="rgba(43,36,64,.68)",n=D.L.length,out=[];
   const SP=(x,v)=>{if("letterSpacing" in x)x.letterSpacing=v};
-  const pool=[D.top[0]||D.last,...D.top.slice(1),...D.L.slice().reverse()].filter((b,i,a)=>b&&a.indexOf(b)===i).slice(0,9),ims=await Promise.all(pool.map(b=>wrCov(b).catch(()=>null)));
-  const hero=pool[0],imOf=b=>ims[pool.indexOf(b)]||null,st=b=>b&&b.r!=null?Math.max(1,Math.min(5,Math.round(b.r/2))):0;
-  const PAL=["#2F3E46","#7A3B2E","#3D4A3A","#5B3A55","#24324A","#8A6A3A","#4A2E2E","#3E5560","#6B4E3D"];
-  // своя обложка, если чужую нельзя положить на холст: строгая, как у классических серий
-  const cover=(x,b,X,Y,w,h,i)=>{const im=imOf(b);x.save();x.beginPath();x.rect(X,Y,w,h);x.clip();
+  const pool=[D.top[0]||D.last,...D.top.slice(1),...D.L.slice().reverse()].filter((b,i,a)=>b&&a.indexOf(b)===i).slice(0,5),ims=await Promise.all(pool.map(b=>wrCov(b).catch(()=>null)));
+  const hero=pool[0],imOf=b=>ims[pool.indexOf(b)]||null,st=b=>b&&b.r!=null?Math.max(1,Math.min(5,Math.round(b.r/2))):0,genre=D.gk.length?String(GEN[D.gk[0][0]]||""):"";
+  const ART={};await Promise.all(["main","book","pages","month","type"].map(async k=>{ART[k]=await wrLd("img/itogi/g-"+k+".webp?v=1")}));
+  const PAL=["#5B6B8C","#9A4A36","#6E8763","#7A5A86","#B08A3E"];
+  const cover=(x,b,X,Y,w,h,i)=>{const im=imOf(b);x.save();x.shadowColor="rgba(43,36,64,.3)";x.shadowBlur=24;x.shadowOffsetY=10;x.fillStyle="#fff";x.fillRect(X,Y,w,h);x.restore();x.save();x.beginPath();x.rect(X,Y,w,h);x.clip();
     if(im){const s=Math.max(w/im.naturalWidth,h/im.naturalHeight),iw=im.naturalWidth*s,ih=im.naturalHeight*s;x.drawImage(im,X+(w-iw)/2,Y+(h-ih)/2,iw,ih)}
-    else{x.fillStyle=PAL[i%PAL.length];x.fillRect(X,Y,w,h);x.fillStyle="rgba(243,238,230,.9)";x.fillRect(X+w*.1,Y+h*.62,w*.8,1.5);x.textAlign="center";
-      let f=Math.round(w/7.5);x.font=`600 ${f}px ${S}`;const words=String(b.t||"").split(/\s+/);const lw=Math.max(...words.map(z=>x.measureText(z).width));if(lw>w*.8){f=Math.floor(f*w*.8/lw);x.font=`600 ${f}px ${S}`}
-      const L=wrWrap(x,b.t,w*.8,4);let y=Y+h*.58-(L.length-1)*f*1.05;L.forEach(l=>{x.fillText(l,X+w/2,y);y+=f*1.05});
-      x.font=`500 ${Math.max(9,Math.round(w/17))}px ${F}`;SP(x,`${Math.max(1,w/120)}px`);x.fillStyle="rgba(243,238,230,.7)";x.fillText(String((b.a||"").split(" ").slice(-1)[0]||"").toUpperCase(),X+w/2,Y+h*.74);SP(x,"0px");x.textAlign="left"}
-    const g=x.createLinearGradient(X,0,X+w*.06,0);g.addColorStop(0,"rgba(0,0,0,.25)");g.addColorStop(1,"rgba(0,0,0,0)");x.fillStyle=g;x.fillRect(X,Y,w*.06,h);x.restore()};
-  const shadow=(x,X,Y,w,h,a)=>{x.save();x.shadowColor=`rgba(0,0,0,${a})`;x.shadowBlur=50;x.shadowOffsetY=28;x.fillStyle="#000";x.fillRect(X,Y,w,h);x.restore()};
-  // настроение: размытые обложки как цветной свет, мягкий свет из окна, пылинки в луче, тонкие золотые рисунки
-  const soft=(x,src,X,Y,w,h,alpha)=>{try{const t=document.createElement("canvas");t.width=14;t.height=20;const q=t.getContext("2d");q.drawImage(src,0,0,14,20);const t2=document.createElement("canvas");t2.width=56;t2.height=80;const q2=t2.getContext("2d");q2.imageSmoothingQuality="high";q2.drawImage(t,0,0,56,80);
-    x.save();x.globalAlpha=alpha;x.imageSmoothingQuality="high";x.drawImage(t2,X,Y,w,h);x.restore();return true}catch(e){return false}};
-  const mosaicSoft=(x,alpha)=>{const t=document.createElement("canvas");t.width=300;t.height=450;const q=t.getContext("2d");q.fillStyle=PAL[0];q.fillRect(0,0,300,450);
-    for(let i=0;i<9;i++){const b=pool[i%pool.length];if(!b)continue;cover(q,b,(i%3)*100,Math.floor(i/3)*150,100,150,i)}return soft(x,t,-200,-200,1480,2320,alpha)};
-  const motes=(x,cx,cy,r,col,k)=>{for(let i=0;i<k;i++){const a=Math.random()*6.3,d=Math.sqrt(Math.random())*r,R=Math.random()*3+1;x.fillStyle=col.replace("A",(.15+Math.random()*.5).toFixed(2));x.beginPath();x.arc(cx+Math.cos(a)*d,cy+Math.sin(a)*d*.7,R,0,7);x.fill()}};
-  const windowLight=(x)=>{const t=document.createElement("canvas");t.width=54;t.height=96;const q=t.getContext("2d");q.fillStyle="rgba(255,236,200,0)";q.fillRect(0,0,54,96);q.save();q.translate(27,48);q.rotate(-.5);q.fillStyle="rgba(255,232,190,.9)";
-    [[-30,-40,22,30],[-4,-40,22,30],[-30,-6,22,30],[-4,-6,22,30]].forEach(([a,b,c,d])=>q.fillRect(a,b,c,d));q.restore();x.save();x.globalCompositeOperation="soft-light";x.globalAlpha=.9;x.drawImage(t,-100,200,1300,2300);x.restore();
-    x.save();x.globalAlpha=.35;x.drawImage(t,-100,200,1300,2300);x.restore()};
-  const cup=(x,cx,cy,s,col)=>{x.save();x.translate(cx,cy);x.scale(s,s);x.strokeStyle=col;x.lineWidth=2.4/s;x.lineCap="round";x.beginPath();x.moveTo(-30,0);x.lineTo(-24,40);x.quadraticCurveTo(0,52,24,40);x.lineTo(30,0);x.closePath();x.stroke();x.beginPath();x.arc(36,16,11,-1.4,1.4);x.stroke();
-    x.beginPath();x.ellipse(0,46,44,8,0,0,Math.PI);x.stroke();[-10,6].forEach(X=>{x.beginPath();x.moveTo(X,-10);x.bezierCurveTo(X-10,-24,X+10,-34,X,-50);x.stroke()});x.restore()};
-  const candle=(x,cx,cy,s,col)=>{x.save();x.translate(cx,cy);x.scale(s,s);const g=x.createRadialGradient(0,-70,2,0,-70,120);g.addColorStop(0,"rgba(255,200,120,.55)");g.addColorStop(1,"rgba(255,200,120,0)");x.fillStyle=g;x.fillRect(-140,-200,280,280);
-    x.strokeStyle=col;x.lineWidth=2.4/s;x.strokeRect(-18,-40,36,90);x.beginPath();x.moveTo(0,-40);x.lineTo(0,-52);x.stroke();x.fillStyle="#F6C979";x.beginPath();x.moveTo(0,-90);x.quadraticCurveTo(14,-62,0,-54);x.quadraticCurveTo(-14,-62,0,-90);x.fill();
-    x.beginPath();x.ellipse(0,56,46,9,0,0,7);x.stroke();x.restore()};
-  // новогоднее: снег, гирлянда с тёплыми огоньками, еловые ветки с игрушками, мандарины
-  const PINE="#2E4A3B",PINE2="#3F6250";
-  const snow=(x,k,dark,top)=>{for(let i=0;i<k;i++){const X=Math.random()*1080,Y=(top||0)+Math.random()*(1920-(top||0)),r=Math.random()<.12?Math.random()*7+5:Math.random()*3+1.2,a=r>5?.25:.35+Math.random()*.5;
-    if(r>5){const g=x.createRadialGradient(X,Y,0,X,Y,r);g.addColorStop(0,`rgba(255,255,255,${a})`);g.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=g}else x.fillStyle=dark?`rgba(255,255,255,${a})`:`rgba(255,255,255,${a+.2})`;
-    x.beginPath();x.arc(X,Y,r,0,7);x.fill()}};
-  const garland=(x,y0,sag,k,dark)=>{const P=t=>[60+t*960,y0+Math.sin(t*Math.PI)*sag];x.strokeStyle=dark?"rgba(243,238,230,.35)":"rgba(29,26,34,.45)";x.lineWidth=2;x.beginPath();for(let i=0;i<=60;i++){const [X,Y]=P(i/60);i?x.lineTo(X,Y):x.moveTo(X,Y)}x.stroke();
-    const C=["#FFD58A","#FFB36B","#FFE6B0","#FF9F6B"];for(let i=0;i<k;i++){const [X,Y]=P((i+.5)/k);const c=C[i%4],g=x.createRadialGradient(X,Y+16,0,X,Y+16,48);g.addColorStop(0,c.replace(")",",.55)").replace("#","rgba(").replace(/rgba\(([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})/i,(m,a,b,d)=>`rgba(${parseInt(a,16)},${parseInt(b,16)},${parseInt(d,16)}`));g.addColorStop(1,"rgba(255,200,120,0)");
-      x.fillStyle=g;x.fillRect(X-50,Y-34,100,100);x.fillStyle=dark?"#6E6A72":"#5A5560";x.fillRect(X-4,Y-2,8,9);x.fillStyle=c;x.beginPath();x.ellipse(X,Y+18,7,11,0,0,7);x.fill();x.fillStyle="rgba(255,255,255,.7)";x.beginPath();x.ellipse(X-2,Y+14,2,4,0,0,7);x.fill()}};
-  const fir=(x,cx,cy,len,rot,sc)=>{x.save();x.translate(cx,cy);x.rotate(rot);x.scale(sc||1,sc||1);x.strokeStyle="#5B4632";x.lineWidth=5;x.lineCap="round";x.beginPath();x.moveTo(0,0);x.quadraticCurveTo(len*.5,len*.05,len,0);x.stroke();
-    for(let i=0;i<len;i+=7){const t=i/len,X=i,Y=len*.05*4*t*(1-t)*.5,l=46*(1-t*.55);[-1,1].forEach(d=>{x.strokeStyle=(i/7)%3?PINE:PINE2;x.lineWidth=3.2;x.beginPath();x.moveTo(X,Y);x.lineTo(X+l*.55,Y+d*l);x.stroke()})}
-    for(let b=0;b<3;b++){const X=len*(.25+b*.25);for(let i=0;i<10;i++){[-1,1].forEach(d=>{x.strokeStyle=PINE2;x.lineWidth=2.6;x.beginPath();x.moveTo(X+i*3,d*(10+i*2));x.lineTo(X+i*3+20,d*(34+i*2));x.stroke()})}}x.restore()};
-  const ball=(x,cx,cy,r,c1,c2)=>{x.strokeStyle="rgba(200,170,110,.8)";x.lineWidth=2;x.beginPath();x.moveTo(cx,cy-r-6);x.lineTo(cx,cy-r-60);x.stroke();x.fillStyle="#C9A15A";x.fillRect(cx-r*.28,cy-r-8,r*.56,10);
-    const g=x.createRadialGradient(cx-r*.35,cy-r*.35,r*.1,cx,cy,r);g.addColorStop(0,c1);g.addColorStop(1,c2);x.fillStyle=g;x.beginPath();x.arc(cx,cy,r,0,7);x.fill();x.fillStyle="rgba(255,255,255,.55)";x.beginPath();x.ellipse(cx-r*.38,cy-r*.4,r*.18,r*.1,-.7,0,7);x.fill()};
-  const mandarin=(x,cx,cy,r,rot)=>{x.save();x.translate(cx,cy);x.rotate(rot);x.shadowColor="rgba(80,40,10,.3)";x.shadowBlur=18;x.shadowOffsetY=8;const g=x.createRadialGradient(-r*.35,-r*.35,r*.1,0,0,r);g.addColorStop(0,"#FFB45A");g.addColorStop(1,"#E2701E");x.fillStyle=g;x.beginPath();x.ellipse(0,0,r,r*.9,0,0,7);x.fill();x.shadowColor="transparent";
-    x.fillStyle="rgba(150,60,0,.18)";for(let i=0;i<40;i++){const a=Math.random()*6.3,d=Math.random()*r*.85;x.beginPath();x.arc(Math.cos(a)*d,Math.sin(a)*d*.9,1.4,0,7);x.fill()}x.fillStyle="#5E4A2A";x.beginPath();x.arc(0,-r*.86,4,0,7);x.fill();
-    x.fillStyle="#3F6250";x.beginPath();x.moveTo(2,-r*.86);x.quadraticCurveTo(r*.5,-r*1.25,r*.85,-r*1.0);x.quadraticCurveTo(r*.45,-r*.8,2,-r*.86);x.fill();x.restore()};
-  // сетка листа: шапка и подвал
-  const frame=(x,dark,page,label)=>{const c=dark?"rgba(243,238,230,.85)":INK,m=dark?"rgba(243,238,230,.5)":MUTE,ln=dark?"rgba(243,238,230,.25)":"rgba(29,26,34,.2)";
-    x.fillStyle=ln;x.fillRect(90,200,900,1.5);x.fillRect(90,1760,900,1.5);
-    x.font=`700 24px ${F}`;SP(x,"6px");x.fillStyle=c;x.textAlign="left";x.fillText("НОРА",90,170);x.textAlign="center";x.fillStyle=m;x.fillText(label,540,170);x.textAlign="right";x.fillStyle=c;x.fillText(D.Y,990,170);
-    x.font=`500 24px ${F}`;SP(x,"3px");x.textAlign="left";x.fillStyle=m;x.fillText("nora-books.ru",90,1806);x.textAlign="right";x.fillText(`${String(page).padStart(2,"0")} / 05`,990,1806);SP(x,"0px");x.textAlign="left"};
-  const mk=bg=>{const c=document.createElement("canvas");c.width=1080;c.height=1920;const x=c.getContext("2d");x.textBaseline="alphabetic";x.fillStyle=bg;x.fillRect(0,0,1080,1920);
-    // едва заметная фактура бумаги
-    const id=x.getImageData(0,0,1080,1920),d=id.data;for(let i=0;i<d.length;i+=4){const v=(Math.random()-.5)*7;d[i]+=v;d[i+1]+=v;d[i+2]+=v}x.putImageData(id,0,0);return [c,x]};
-  const caps=(x,t,X,Y,col,size,al)=>{x.font=`700 ${size||24}px ${F}`;SP(x,"5px");x.fillStyle=col;x.textAlign=al||"left";x.fillText(t,X,Y);SP(x,"0px");x.textAlign="left"};
-  const fitS=(x,t,w,s,style)=>{x.font=`${style||""} 600 ${s}px ${S}`;while(s>30&&x.measureText(t).width>w){s-=4;x.font=`${style||""} 600 ${s}px ${S}`}return s};
-  const genre=D.gk.length?String(GEN[D.gk[0][0]]||""):"";
-
-  // 01. обложка номера: заголовок, мозаика обложек, три цифры, читательский тип
-  {const [c,x]=mk(CREAM);mosaicSoft(x,.22);{const g=x.createLinearGradient(0,0,0,1920);g.addColorStop(0,"rgba(243,238,230,.55)");g.addColorStop(1,"rgba(243,238,230,.2)");x.fillStyle=g;x.fillRect(0,0,1080,1920)}windowLight(x);snow(x,140,false);frame(x,false,1,"ГОД В КНИГАХ");garland(x,22,42,11,false);fir(x,1110,230,420,2.75,1);ball(x,880,400,30,"#E7836A","#9C2E22");ball(x,975,350,22,"#F3D28C","#B8873A");
-    x.fillStyle=INK;x.font=`600 150px ${S}`;x.fillText("Мой год",84,370);x.font=`italic 600 150px ${S}`;x.fillStyle=ACC;x.fillText("в книгах",84,505);
-    x.font=`italic 600 44px ${S}`;x.fillStyle=MUTE;x.fillText(`${n} ${plural(n,"книга","книги","книг")} - ${n} ${plural(n,"мир","мира","миров")}, где мне довелось побывать`,90,585);
-    const k=pool.length>=8?8:pool.length>=6?6:pool.length>=4?4:pool.length,cols=k>=8?4:k>=6?3:k>=4?2:k,rows=Math.ceil(k/cols),gap=18,tw=Math.min(300,(900-gap*(cols-1))/cols),th=tw*1.5,x0=540-(tw*cols+gap*(cols-1))/2,y0=650;
-    for(let i=0;i<k;i++){const X=x0+(i%cols)*(tw+gap),Y=y0+Math.floor(i/cols)*(th+gap);shadow(x,X,Y,tw,th,.14);cover(x,pool[i],X,Y,tw,th,i)}
-    const yb=Math.max(1290,y0+rows*th+gap*(rows-1)+60);
-    const cols3=[[String(n),plural(n,"книга","книги","книг")],[D.pg?D.pg.toLocaleString("ru-RU"):"—",D.pg?plural(D.pg,"страница","страницы","страниц"):"страниц"],[D.avg?D.avg.toFixed(1).replace(".",","):"—","средняя оценка"]];
-    cols3.forEach(([v,l],i)=>{const cx=90+300*i+150;x.textAlign="center";x.fillStyle=INK;fitS(x,v,260,104);x.fillText(v,cx,yb+76);caps(x,l.toUpperCase(),cx,yb+130,MUTE,19,"center");if(i){x.fillStyle="rgba(29,26,34,.2)";x.fillRect(90+300*i,yb+6,1.5,134)}});
-    caps(x,"МОЙ ЧИТАТЕЛЬСКИЙ ТИП",540,yb+250,ACC,20,"center");x.textAlign="center";x.fillStyle=INK;fitS(x,D.type[0],900,64,"italic");x.fillText(D.type[0],540,yb+330);x.textAlign="left";out.push(c)}
-
-  // 02. книга года: тёмный лист, одна обложка в свете
-  {const [c,x]=mk(INK);{const im=imOf(hero);if(im&&soft(x,im,-260,-200,1600,2320,.55)){const v=x.createRadialGradient(540,800,200,540,900,1200);v.addColorStop(0,"rgba(29,26,34,.25)");v.addColorStop(1,"rgba(29,26,34,.92)");x.fillStyle=v;x.fillRect(0,0,1080,1920)}}snow(x,180,true);frame(x,true,2,D.top[0]?"КНИГА ГОДА":"ПОСЛЕДНЯЯ КНИГА");garland(x,22,42,11,true);
-    let glow="rgba(180,83,58,.35)";const im=imOf(hero);if(im){try{const t=document.createElement("canvas");t.width=t.height=1;const q=t.getContext("2d");q.drawImage(im,0,0,1,1);const p=q.getImageData(0,0,1,1).data;glow=`rgba(${p[0]},${p[1]},${p[2]},.55)`}catch(e){}}
-    const g=x.createRadialGradient(540,800,40,540,800,620);g.addColorStop(0,glow);g.addColorStop(1,"rgba(29,26,34,0)");x.fillStyle=g;x.fillRect(0,200,1080,1300);
-    const w=460,h=690,X=540-w/2,Y=400;motes(x,540,760,560,"rgba(255,226,180,A)",90);shadow(x,X,Y,w,h,.6);cover(x,hero,X,Y,w,h,0);
-    x.textAlign="center";x.fillStyle=CREAM;let f=fitS(x,String(hero.t).split(" ").sort((a,b)=>b.length-a.length)[0],900,92);x.font=`600 ${f}px ${S}`;let y=1220;wrWrap(x,hero.t,900,2).forEach(l=>{x.fillText(l,540,y);y+=f});
-    caps(x,String(hero.a||"").toUpperCase(),540,y+10,"rgba(243,238,230,.6)",22,"center");
-    const s=st(hero);x.textAlign="center";if(s){x.font=`400 44px ${S}`;SP(x,"14px");x.fillStyle="#D9A05B";x.fillText("★".repeat(s)+"☆".repeat(5-s),546,y+95);SP(x,"0px")}x.textAlign="center";x.font=`italic 600 46px ${S}`;x.fillStyle="rgba(243,238,230,.75)";x.fillText("история, которая осталась со мной",540,y+(s?185:110));x.textAlign="left";out.push(c)}
-
-  // 03. страницы: большая цифра и книги года по толщине
-  {const [c,x]=mk("#F1E9DD");windowLight(x);snow(x,110,false);frame(x,false,3,"СТРАНИЦЫ");fir(x,1110,250,380,2.8,1);mandarin(x,860,520,52,.3);mandarin(x,950,560,44,-.4);mandarin(x,905,470,38,.9);
-    const v=D.pg?D.pg.toLocaleString("ru-RU"):String(n);x.fillStyle=INK;let f=fitS(x,v,900,260);x.fillText(v,80,500);caps(x,D.pg?plural(D.pg,"СТРАНИЦА","СТРАНИЦЫ","СТРАНИЦ")+" ЗА ГОД":plural(n,"КНИГА","КНИГИ","КНИГ")+" ЗА ГОД",90,610,ACC,24);
-    x.font=`italic 600 52px ${S}`;x.fillStyle=INK;x.fillText(`${D.pg?D.pg.toLocaleString("ru-RU"):n} раз «ещё одну страницу и спать»`,90,700);const t=D.pg>=1300?`Это «Война и мир» ${wrTimes(D.pg/1300)}.`:D.pg>=480?`Это «Мастер и Маргарита» ${wrTimes(D.pg/480)}.`:"";if(t){x.font=`italic 600 40px ${S}`;x.fillStyle=MUTE;x.fillText(t,90,760)}
-    const L=D.L.filter(b=>b.pg>0).sort((a,b)=>b.pg-a.pg).slice(0,8),mx=Math.max(1,...L.map(b=>b.pg));caps(x,"КНИГИ ГОДА ПО ТОЛЩИНЕ",90,860,MUTE,20);
-    L.forEach((b,i)=>{const Y=905+i*104,w=Math.max(40,b.pg/mx*900);x.fillStyle=i===0?ACC:"rgba(29,26,34,.7)";x.fillRect(90,Y,w,30);x.font=`600 36px ${S}`;x.fillStyle=INK;x.fillText(wrWrap(x,b.t,700,1)[0]||"",90,Y+76);
-      x.font=`500 22px ${F}`;x.fillStyle=MUTE;x.textAlign="right";x.fillText(b.pg.toLocaleString("ru-RU"),990,Y+84);x.textAlign="left"});out.push(c)}
-
-  // 04. ритм года: месяц-рекордсмен и двенадцать тонких столбиков
-  {const [c,x]=mk("#1F1B26");mosaicSoft(x,.18);{const v=x.createRadialGradient(820,520,40,820,520,900);v.addColorStop(0,"rgba(255,190,110,.22)");v.addColorStop(1,"rgba(31,27,38,.9)");x.fillStyle=v;x.fillRect(0,0,1080,1920)}motes(x,820,520,420,"rgba(255,220,170,A)",50);candle(x,860,560,1.4,"rgba(243,238,230,.7)");snow(x,170,true);
-    frame(x,true,4,"РИТМ ГОДА");garland(x,22,42,11,true);fir(x,1110,260,380,2.75,1);ball(x,690,380,24,"#E7836A","#9C2E22");const bm=D.mon[D.best]||0;
-    caps(x,"САМЫЙ ЧИТАЮЩИЙ МЕСЯЦ",90,330,"#D9A05B",24);x.fillStyle="#F3EEE6";const m=WR_MF[D.best]||"";let f=fitS(x,m,900,230);x.fillText(m.slice(0,1).toUpperCase()+m.slice(1),80,560);
-    x.font=`italic 600 54px ${S}`;x.fillStyle="rgba(243,238,230,.75)";x.fillText(`${bm} ${plural(bm,"книга","книги","книг")} - книги не отпускали`,90,690);
-    const mx=Math.max(1,...D.mon),bw=48,gap=(900-12*bw)/11,base=1580;x.fillStyle="rgba(243,238,230,.25)";x.fillRect(90,base,900,1.5);
-    D.mon.forEach((v,i)=>{const X=90+i*(bw+gap),hh=v?Math.max(10,v/mx*640):4;{const g=x.createLinearGradient(0,base-hh,0,base);g.addColorStop(0,i===D.best?"#F2C27A":"rgba(243,238,230,.75)");g.addColorStop(1,i===D.best?"#B4533A":"rgba(243,238,230,.25)");x.fillStyle=g;x.fillRect(X,base-hh,bw,hh)}
-      if(v){x.font=`600 36px ${S}`;x.textAlign="center";x.fillStyle=i===D.best?"#F2C27A":"#F3EEE6";x.fillText(String(v),X+bw/2,base-hh-18)}caps(x,WR_MN[i].slice(0,1).toUpperCase(),X+bw/2,base+50,"rgba(243,238,230,.5)",20,"center")});
-    x.textAlign="left";out.push(c)}
-
-  // 05. читательский тип: тёмный лист, одна тонкая эмблема и текст
-  {const [c,x]=mk("#191622");mosaicSoft(x,.2);{const v=x.createRadialGradient(540,640,60,540,700,1100);v.addColorStop(0,"rgba(217,160,91,.18)");v.addColorStop(1,"rgba(25,22,34,.93)");x.fillStyle=v;x.fillRect(0,0,1080,1920)}
-    for(let i=0;i<120;i++){x.fillStyle=`rgba(243,238,230,${(.1+Math.random()*.6).toFixed(2)})`;x.beginPath();x.arc(Math.random()*1080,220+Math.random()*1500,Math.random()*1.8+.4,0,7);x.fill()}
-    snow(x,150,true);frame(x,true,5,"ЧИТАТЕЛЬСКИЙ ТИП");garland(x,22,42,11,true);const G="#D9A05B";
-    x.strokeStyle=G;x.lineWidth=2;x.beginPath();x.arc(540,640,190,0,7);x.stroke();x.beginPath();x.arc(540,640,170,0,7);x.lineWidth=1;x.stroke();
-    {const t=document.createElement("canvas");t.width=t.height=240;const q=t.getContext("2d");q.fillStyle=G;q.beginPath();q.arc(120,120,110,0,7);q.fill();q.globalCompositeOperation="destination-out";q.beginPath();q.arc(168,90,100,0,7);q.fill();x.drawImage(t,420,520)}
-    for(let i=0;i<36;i++){const a=i/36*Math.PI*2,r1=200,r2=i%3?212:228;x.beginPath();x.moveTo(540+Math.cos(a)*r1,640+Math.sin(a)*r1);x.lineTo(540+Math.cos(a)*r2,640+Math.sin(a)*r2);x.stroke()}
-    x.textAlign="center";x.fillStyle=CREAM;let f=fitS(x,D.type[0].split(" ").sort((a,b)=>b.length-a.length)[0],900,120);x.font=`600 ${f}px ${S}`;let y=1040;wrWrap(x,D.type[0],900,2).forEach(l=>{x.fillText(l,540,y);y+=f});
-    x.font=`italic 600 50px ${S}`;x.fillStyle="rgba(243,238,230,.7)";wrWrap(x,D.type[1]+".",820,3).forEach(l=>{x.fillText(l,540,y+30);y+=60});
-    if(genre){caps(x,"ЛЮБИМЫЙ ЖАНР",540,y+140,G,20,"center");x.font=`600 56px ${S}`;x.fillStyle=CREAM;x.textAlign="center";x.fillText(genre,540,y+210)}x.textAlign="center";x.font=`italic 600 54px ${S}`;x.fillStyle=G;x.fillText("С новым книжным годом!",540,1690);x.textAlign="left";out.push(c)}
+    else{x.fillStyle=PAL[i%PAL.length];x.fillRect(X,Y,w,h);x.fillStyle="#F6F0E6";x.textAlign="center";let f=Math.round(w/7);x.font=`600 ${f}px ${S}`;const lw=Math.max(...String(b.t||"").split(/\s+/).map(z=>x.measureText(z).width));if(lw>w*.82){f=Math.floor(f*w*.82/lw);x.font=`600 ${f}px ${S}`}
+      const L=wrWrap(x,b.t,w*.82,4);let y=Y+h*.5-(L.length-1)*f*.55;L.forEach(l=>{x.fillText(l,X+w/2,y);y+=f*1.1});x.textAlign="left"}x.restore()};
+  const mk=k=>{const c=document.createElement("canvas");c.width=1080;c.height=1920;const x=c.getContext("2d");x.textBaseline="alphabetic";const a=ART[k];let top="#D9D3EA",top0="rgba(217,211,234,0)";
+    if(a){try{const t=document.createElement("canvas");t.width=1;t.height=1;const q=t.getContext("2d");q.drawImage(a,0,a.naturalHeight*.06,a.naturalWidth,6,0,0,1,1);const p=q.getImageData(0,0,1,1).data;top=`rgb(${p[0]},${p[1]},${p[2]})`;top0=`rgba(${p[0]},${p[1]},${p[2]},0)`}catch(e){}}
+    x.fillStyle=top;x.fillRect(0,0,1080,1920);if(a){const cy=a.naturalHeight*.05;x.drawImage(a,0,cy,a.naturalWidth,a.naturalHeight-cy,0,380,1080,1540)}{const g=x.createLinearGradient(0,370,0,700);g.addColorStop(0,top);g.addColorStop(1,top0);x.fillStyle=g;x.fillRect(0,370,1080,330)}
+    x.font=`700 24px ${F}`;SP(x,"6px");x.fillStyle=INK;x.fillText("НОРА",80,120);x.textAlign="right";x.fillStyle=MUTE;x.fillText(`ИТОГИ ${D.Y}`,1000,120);x.textAlign="left";SP(x,"0px");return [c,x]};
+  const kick=(x,t,y)=>{x.font=`700 26px ${F}`;SP(x,"6px");x.fillStyle=ACC;x.fillText(t,80,y);SP(x,"0px")};
+  const fitS=(x,t,w,s,it)=>{x.font=`${it?"italic ":""}600 ${s}px ${S}`;while(s>30&&x.measureText(t).width>w){s-=4;x.font=`${it?"italic ":""}600 ${s}px ${S}`}return s};
+  const site=x=>{x.font=`700 28px ${F}`;const t="nora-books.ru",w=x.measureText(t).width+56;x.fillStyle="rgba(255,251,244,.92)";wrRR(x,540-w/2,1812,w,60,30);x.fill();x.fillStyle=INK;x.textAlign="center";x.fillText(t,540,1852);x.textAlign="left"};
+  // 1. главный
+  {const [c,x]=mk("main");kick(x,"МОЙ ГОД В КНИГАХ",230);x.fillStyle=INK;fitS(x,String(n),600,250);x.fillText(String(n),70,480);const w0=x.measureText(String(n)).width;
+    x.font=`italic 600 64px ${S}`;x.fillStyle=INK;x.fillText(plural(n,"книга","книги","книг"),110+w0,410);x.font=`italic 600 44px ${S}`;x.fillStyle=MUTE;x.fillText(`прочитано за ${D.Y}`,110+w0,470);
+    const k=Math.min(5,pool.length);pool.slice(0,k).forEach((b,i)=>cover(x,b,80+i*124,560,108,162,i));
+    x.font=`600 40px ${S}`;x.fillStyle=INK;x.fillText(`Мой читательский тип: ${D.type[0].toLowerCase()}`,80,800);site(x);out.push(c)}
+  // 2. книга года
+  {const [c,x]=mk("book");kick(x,D.top[0]?"КНИГА ГОДА":"ПОСЛЕДНЯЯ КНИГА ГОДА",230);cover(x,hero,80,280,200,300,0);
+    x.fillStyle=INK;let f=72;x.font=`600 ${f}px ${S}`;while(f>44&&wrWrap(x,hero.t,640,3).some(l=>x.measureText(l).width>640)){f-=4;x.font=`600 ${f}px ${S}`}let y=330+f*.5;wrWrap(x,hero.t,640,3).forEach(l=>{x.fillText(l,320,y);y+=f*1.02});
+    x.font=`italic 600 40px ${S}`;x.fillStyle=MUTE;x.fillText(wrWrap(x,hero.a,640,1)[0]||"",320,y+6);const s=st(hero);if(s){x.font=`400 40px ${S}`;SP(x,"10px");x.fillStyle=ACC;x.fillText("★".repeat(s),320,y+70);SP(x,"0px")}
+    x.font=`italic 600 44px ${S}`;x.fillStyle=INK;x.fillText("Книга, которая открыла новый мир",80,680);site(x);out.push(c)}
+  // 3. страницы
+  if(D.pg>=200){const [c,x]=mk("pages");kick(x,"СТРАНИЦЫ",230);x.fillStyle=INK;const v=D.pg.toLocaleString("ru-RU");fitS(x,v,920,220);x.fillText(v,70,450);
+    x.font=`italic 600 58px ${S}`;x.fillText(plural(D.pg,"страница","страницы","страниц")+" за год",80,570);
+    const t=D.pg>=1300?`Это как прочитать «Войну и мир» ${wrTimes(D.pg/1300)}`:D.pg>=480?`Это как прочитать «Мастера и Маргариту» ${wrTimes(D.pg/480)}`:"Целая башня из историй";
+    x.font=`500 36px ${F}`;x.fillStyle=MUTE;wrWrap(x,t,900,2).forEach((l,i)=>x.fillText(l,80,640+i*48));site(x);out.push(c)}
+  // 4. месяц
+  {const bm=D.mon[D.best]||0;if(n>=2&&bm){const [c,x]=mk("month");kick(x,"САМЫЙ ЧИТАЮЩИЙ МЕСЯЦ",230);const m=WR_MF[D.best];x.fillStyle=INK;fitS(x,m,920,200);x.fillText(m.slice(0,1).toUpperCase()+m.slice(1),70,440);
+    x.font=`italic 600 58px ${S}`;x.fillText(`${bm} ${plural(bm,"книга","книги","книг")} за месяц`,80,560);x.font=`500 36px ${F}`;x.fillStyle=MUTE;x.fillText("Подоконник, плед и ещё одна глава",80,630);site(x);out.push(c)}}
+  // 5. читательский тип
+  {const [c,x]=mk("type");kick(x,"МОЙ ЧИТАТЕЛЬСКИЙ ТИП",230);x.fillStyle=INK;let f=110;x.font=`600 ${f}px ${S}`;while(f>56&&wrWrap(x,D.type[0],920,2).some(l=>x.measureText(l).width>920)){f-=6;x.font=`600 ${f}px ${S}`}
+    let y=240+f;wrWrap(x,D.type[0],920,2).forEach(l=>{x.fillText(l,70,y);y+=f});x.font=`500 36px ${F}`;x.fillStyle=MUTE;wrWrap(x,D.type[1]+".",900,2).forEach(l=>{x.fillText(l,80,y+10);y+=48});
+    if(genre){x.font=`italic 600 46px ${S}`;x.fillStyle=ACC;x.fillText("Любимый жанр - "+genre.toLowerCase(),80,y+60)}site(x);out.push(c)}
   return out}
 function wrFill(){const W=WR;if(!W||!W.u)return;const el=wrEl.querySelector("[data-wrpvs]");if(!el||el.dataset.ok)return;el.dataset.ok=1;el.innerHTML=W.u.map((u,i)=>`<img data-wrone="${i}" src="${u}" alt="Итоги года, картинка ${i+1}">`).join("")}
 function wrPrep(){if(!WR)return Promise.resolve(null);const W=WR;if(!W.p)W.p=wrCards(W.D).then(cs=>Promise.all(cs.map(c=>new Promise(r=>{try{c.toBlob(b=>r(b),"image/png")}catch(e){r(null)}})))).then(bs=>{bs=bs.filter(Boolean);return bs.length?bs:null}).catch(()=>null);
