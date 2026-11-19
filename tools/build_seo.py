@@ -645,6 +645,54 @@ def curate_ok(b, path):
     if path == "zhanr-kids" and inlist(b, "notkids"):
         return False
     return True
+# ---- ПРАВИЛА ПОДБОРОК: чтобы в подборке не было сюрпризов (описание правил - notes/collections_rules.md) ----
+# 1) везде: нет в продаже в России, ЛГБТ, самиздат, без описания - не берём
+# 2) 18+ (books/curate.json «adult») - только во «взрослых» подборках (проверка - в curate_ok ниже)
+# 3) детские книги - только в детских, подростковых, зимних и новогодних подборках
+# 4) нон-фикшн - только в своём жанре, в подборке премий и в подарочных разделах «нон-фикшн»
+# 5) у подборок про настроение - запрет на книги с противоположным настроением
+KIDS_OK = {"zhanr-kids", "young-adult", "kniga-v-podarok-podrostku", "knigi-dlya-zimnih-vecherov", "novogodnee-nastroenie", "chto-pochitat-na-novogodnie-kanikuly", "knigi-v-podarok-na-novyy-god", "uyutnye"}
+NF_OK = {"zhanr-nonfic", "zastavlyayut-zadumatsya", "s-premiyami", "kniga-v-podarok-muzhchine", "kniga-v-podarok-kollege", "knigi-v-podarok-na-novyy-god", "chitayut-seychas"}
+SAFE |= {"novogodnee-nastroenie", "smeshnye", "trogatelnye", "na-odin-vecher", "kniga-v-podarok-podrostku"}
+MOOD_NO = {
+    "uyutnye": ("мрачное", "жутковатое", "хоррор", "антиутопия", "постапокалипсис"),
+    "novogodnee-nastroenie": ("мрачное", "жутковатое", "хоррор", "антиутопия", "постапокалипсис"),
+    "smeshnye": ("мрачное", "жутковатое", "хоррор", "грустное", "антиутопия", "постапокалипсис"),
+    "na-odin-vecher": ("мрачное", "хоррор"),
+    "trogatelnye": ("хоррор", "жутковатое"),
+    "strashnye": ("тёплое",),
+    "romantezi": ("хоррор",),
+    "lyubovnye-romany": ("хоррор", "жутковатое"),
+    "young-adult": ("хоррор",),
+    "zhanr-kids": ("хоррор", "мрачное"),
+}
+MANUAL = {p_ for p_, *_ in SEASON} | {"chitayut-seychas"}   # подборки, собранные руками: настроение не проверяем, только безопасность
+def rule_why(b, path):
+    """почему книга не подходит подборке (пустая строка - подходит)"""
+    if "самиздат" in b["tags"]:
+        return "самиздат"
+    if b["g"] == "kids" and path not in KIDS_OK and not path.startswith("strana-"):
+        return "детская"
+    if b["g"] == "nonfic" and path not in NF_OK and path not in MANUAL:
+        return "нон-фикшн"
+    if path not in MANUAL:
+        bad = [t for t in MOOD_NO.get(path, ()) if t in b["tags"]]
+        if bad:
+            return "настроение: " + bad[0]
+    return ""
+_rdrop = {}
+def rule_ok(b, path):
+    w = rule_why(b, path)
+    if w:
+        _rdrop.setdefault(path, []).append(f"{b['t']} ({w})")
+    return not w
+for _p in list(SECTS):
+    SECTS[_p] = [(h_, sub_, [b for b in l_ if rule_ok(b, _p)]) for h_, sub_, l_ in SECTS[_p]]
+coll_data = [(p_, t_, l_, [b for b in L_ if rule_ok(b, p_)]) for p_, t_, l_, L_ in coll_data]
+with open(os.path.join(ROOT, "tools", "coll_rules_report.txt"), "w", encoding="utf-8") as _f:
+    for _p, _l in sorted(_rdrop.items()):
+        _f.write(f"{_p}: убрано {len(set(_l))}\n" + "".join(f"  - {x}\n" for x in dict.fromkeys(_l)))
+print("правила подборок убрали:", {k: len(set(v)) for k, v in _rdrop.items()})
 _drop = {}
 for _p in list(SECTS):
     SECTS[_p] = [(h_, sub_, [b for b in l_ if curate_ok(b, _p) or _drop.setdefault(_p, []).append(b["t"])]) for h_, sub_, l_ in SECTS[_p]]
