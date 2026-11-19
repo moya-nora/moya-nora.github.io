@@ -1,0 +1,44 @@
+name: iOS
+# Сборка Норы для iPhone (native/, Capacitor) на Mac от GitHub: проверка, что проект собирается,
+# и скриншоты с симулятора для страницы в App Store. Результат - в ветке ios-build (не на сайте).
+# Подписанная сборка для App Store появится, когда будет аккаунт Apple Developer.
+on:
+  workflow_dispatch:
+  push:
+    paths: ["native/**", ".github/workflows/ios.yml"]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Capacitor
+        working-directory: native
+        run: npm install --no-audit --no-fund && npx cap sync ios
+      - name: Сборка для симулятора
+        working-directory: native/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO | tail -30
+          ls build/Build/Products/Debug-iphonesimulator/
+      - name: Запуск на симуляторе и скриншоты
+        run: |
+          mkdir -p out
+          DEV=$(xcrun simctl list devices available | grep -E "iPhone 1[6-9] Pro Max" | tail -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+          NAME=$(xcrun simctl list devices available | grep "$DEV" | sed -E 's/^ *//; s/ \(.*//')
+          echo "Симулятор: $NAME" | tee out/info.txt
+          xcrun simctl boot "$DEV"; sleep 25
+          xcrun simctl install "$DEV" native/ios/App/build/Build/Products/Debug-iphonesimulator/App.app
+          xcrun simctl launch "$DEV" ru.norabooks.app; sleep 30
+          xcrun simctl io "$DEV" screenshot out/shot-1.png; sleep 15
+          xcrun simctl io "$DEV" screenshot out/shot-2.png
+      - name: Положить в ветку ios-build
+        run: |
+          cd out
+          git init -q -b ios-build
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          git add -A; git commit -qm "Сборка ${{ github.sha }}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ios-build

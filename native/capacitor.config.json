@@ -1,0 +1,11 @@
+{
+  "appId": "ru.norabooks.app",
+  "appName": "Моя Нора",
+  "webDir": "www",
+  "server": {
+    "url": "https://nora-books.ru/app.html?app=1&src=ios",
+    "allowNavigation": ["nora-books.ru", "*.nora-books.ru", "*.googleapis.com", "*.firebaseapp.com", "*.yandexcloud.net", "mc.yandex.ru", "*.gstatic.com"]
+  },
+  "ios": { "contentInset": "never", "backgroundColor": "#05060A", "scheme": "Nora" },
+  "plugins": { "LocalNotifications": { "iconColor": "#E8A15A" } }
+}

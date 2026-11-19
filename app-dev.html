@@ -3569,6 +3569,8 @@ const hydrate=list=>list.map(x=>typeof x==="string"?(LIB[x]?{...LIB[x],id:x}:nul
 const compact=()=>want.map(s=>LIB[s.id]&&!s.from?s.id:(LIB[s.id]?{id:s.id,from:s.from,...LIB[s.id]}:s));
 let want=hydrate(LS.get(KEY,null)||(GUEST?[]:Object.keys(WANT)));
 const TG=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initData?window.Telegram.WebApp:null;
+/* приложение из Google Play / RuStore / App Store: платные клубы не показываем (правила магазинов об оплате цифрового) */
+const STORE=(()=>{try{const ss=sessionStorage,m=location.search.match(/[?&]src=(android|ios)/);if(m)ss.setItem("nora.store",m[1]);else if(/^android-app:/.test(document.referrer))ss.setItem("nora.store","android");return ss.getItem("nora.store")||""}catch(e){return ""}})();
 function saveWant(){
   const data=compact();LS.set(KEY,data);
   if(TG&&TG.CloudStorage){const ids=data.map(x=>typeof x==="string"?x:(x.id&&LIB[x.id]?x.id:null)).filter(Boolean);try{TG.CloudStorage.setItem("want",JSON.stringify(ids))}catch(e){}}
@@ -6388,9 +6390,10 @@ function drawAcc(){const box=$("#accBox");if(!box)return;if(!box._tap){box._tap=
      <a class="ac-row" href="mailto:nora.books@mail.ru" data-mail><span>Написать на почту</span><b>nora.books@mail.ru</b></a>
      ${STORE?"":`<button class="ac-row" data-collab><span>Сотрудничество</span><i>›</i></button>`}
      <a class="ac-row" href="https://nora-books.ru/privacy.html" data-ext target="_blank" rel="noopener"><span>Конфиденциальность</span><i>›</i></a>
-     ${NS.email||(NS.key&&NS.key())?`<button class="ac-row ac-out" data-sy-out><span>Выйти</span></button>`:""}</div>`}
+     ${NS.email||(NS.key&&NS.key())?`<button class="ac-row ac-out" data-sy-out><span>Выйти</span></button>`:""}
+     ${STORE&&(NS.email||(NS.key&&NS.key()))?`<button class="ac-row ac-out" data-sy-del><span>Удалить аккаунт</span></button>`:""}</div>`}
 // «Аккаунт» обрабатывает нажатия сам (не зависит от общих обработчиков страницы) и дальше их не пускает
-function accTap(e){const t=e.target,stop=()=>{e.stopPropagation();e.preventDefault()};
+function accTap(e){const t=e.target,stop=()=>{e.stopPropagation();e.preventDefault()};if(t.closest("[data-sy-del]")){stop();syncClick(t);return}
   try{
   if(t.closest("[data-acc-fr]")){stop();ACCFR=!ACCFR;tgHaptic();drawAcc();return}
   if(t.closest("[data-nick]")){stop();tgHaptic();nickSheet();return}
@@ -7637,8 +7640,6 @@ function cbQs(p){const b=CB.d.book;if(!b)return [];const n=cbParts(),own=CBVQ&&C
 // ---------- клубы с ведущими (books/hosted.json, заполняет Нора). Вступление пока через бота: заявка -> владелица присылает оплату и приглашение ----------
 let HC=null,HCP=null;
 const HCDEV=/app-dev/.test(location.pathname);
-/* приложение из Google Play / RuStore: платные клубы не показываем (правила магазинов об оплате цифрового) */
-const STORE=(()=>{try{const ss=sessionStorage;if(/[?&]src=android/.test(location.search)||/^android-app:/.test(document.referrer))ss.setItem("nora.store","android");return ss.getItem("nora.store")||""}catch(e){return ""}})();
 function hcLoad(){if(HCP)return HCP;HCP=fetch("books/hosted.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{clubs:[]}).then(j=>{HC=(j.clubs||[]).filter(c=>HCDEV||!c.demo);if(SCREEN==="club"&&!CB.id)cbDraw()}).catch(()=>{HC=[]});return HCP}
 const hcDate=d=>{const t=new Date(d+"T12:00:00");return isNaN(t)?"":t.getDate()+" "+["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"][t.getMonth()]};
 const hcLeft=c=>Math.max(0,(c.seats||0)-(c.taken||0));

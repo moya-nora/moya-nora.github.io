@@ -1,0 +1,11 @@
+{
+  "name": "nora-native",
+  "private": true,
+  "description": "Нора для iPhone (App Store): оболочка Capacitor вокруг nora-books.ru/app.html",
+  "dependencies": {
+    "@capacitor/core": "8.6.2",
+    "@capacitor/ios": "8.6.2",
+    "@capacitor/local-notifications": "8.3.1"
+  },
+  "devDependencies": { "@capacitor/cli": "8.6.2" }
+}
