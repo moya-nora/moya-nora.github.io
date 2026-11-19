@@ -594,8 +594,16 @@ SEASON = [
    ("Полезные", "Нон-фикшн без занудства.",
     "Атомные привычки|Клир;Шум|Канеман;Думай медленно|Канеман;Мозг материален|Казанцева;Магия утра|Элрод;Эссенциализм|Маккеон;Сила воли|Макгонигал;Поток|Чиксентмихайи;Кругом одни идиоты|Эриксон;Sapiens|Харари")],
   "Какую книгу подарить коллеге или начальнику на Новый год"),
+ ("kniga-dlya-taynogo-santy", "Книга для Тайного Санты", "Подарок на работу или в компании, где не все близко знакомы: недорогие, небольшие книги, которые порадуют почти любого.",
+  [("Свежее: книги последних лет", "Новые добрые книги, о которых сейчас говорят.",
+    "Пока не остыл кофе|Кавагути;Добро пожаловать в «Книжный в Хюнамдоне»|Хван;Магазин шаговой недоступности|Ким;Магазин снов мистера Талергута|Ли;Полночная библиотека|Хейг;Клуб убийств по четвергам|Осман;Проект «Аве Мария»|Вейер;Энциклопедия фей Эмили Уайлд|Фосетт;Голландский дом|Пэтчетт;Кафе на краю земли|Стрелеки"),
+   ("Тонкие и тёплые", "Прочитать за вечер и запомнить надолго.",
+    "Маленький принц|Сент-Экзюпери;Рождественская песнь в прозе|Диккенс;Рождество и красный кардинал|Флэгг;Старик и море|Хемингуэй;Вино из одуванчиков|Брэдбери;Чайка по имени Джонатан Ливингстон|Бах;Миссис Харрис едет в Париж|Гэллико;Шоколад|Харрис;Ветер в ивах|Грэм;Зимнее солнцестояние|Пилчер"),
+   ("С юмором", "Когда хочется, чтобы человек улыбнулся.",
+    "Трое в лодке, не считая собаки|Джером;Автостопом по Галактике|Адамс;Двенадцать стульев|Ильф;Понедельник начинается в субботу|Стругацк;Манюня|Абгарян;Бабушка велела кланяться|Бакман;Вторая жизнь Уве|Бакман;Золотой телёнок|Ильф;Благие знамения|Пратчетт;Похождения бравого солдата Швейка|Гашек")],
+  "Книга для Тайного Санты: недорогой подарок коллеге или другу"),
 ]
-GIFT = {"knigi-v-podarok-na-novyy-god", "kniga-v-podarok-podruge", "kniga-v-podarok-mame", "kniga-v-podarok-muzhchine", "kniga-v-podarok-podrostku", "kniga-v-podarok-kollege"}
+GIFT = {"kniga-dlya-taynogo-santy", "knigi-v-podarok-na-novyy-god", "kniga-v-podarok-podruge", "kniga-v-podarok-mame", "kniga-v-podarok-muzhchine", "kniga-v-podarok-podrostku", "kniga-v-podarok-kollege"}
 SECTS = {}
 SEO_T = {"novogodnee-nastroenie": "Книги с новогодней атмосферой: что почитать под Новый год"}
 for _i, (_p, _t, _l, _txt, _ft) in enumerate(SEASON):
@@ -624,7 +632,7 @@ _CS = {k: _curset(k) for k in ("adult", "lgbt", "notkids", "notteen")}
 def inlist(b, name):
     t_, a_ = nk(b["t"]), nk(b["a"])
     return any((t_ == t or t_.startswith(t)) and s in a_ for t, s in _CS[name])
-SAFE = {"knigi-v-podarok-na-novyy-god", "kniga-v-podarok-podrostku", "kniga-v-podarok-kollege", "kniga-v-podarok-mame",
+SAFE = {"kniga-dlya-taynogo-santy", "knigi-v-podarok-na-novyy-god", "kniga-v-podarok-podrostku", "kniga-v-podarok-kollege", "kniga-v-podarok-mame",
         "chto-pochitat-na-novogodnie-kanikuly", "knigi-dlya-zimnih-vecherov", "uyutnye", "zhanr-kids", "young-adult"}
 TEEN = {"zhanr-kids", "young-adult", "kniga-v-podarok-podrostku"}
 def curate_ok(b, path):
@@ -678,7 +686,7 @@ QUICK = [p for p in ("chitayut-seychas", "novogodnee-nastroenie", "chto-pochitat
 tname = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
 chips = lambda cur: '<nav class="chips"><a class="find" href="/poisk.html">Найти книгу по жанру и настроению</a>' + "".join(f'<a href="/c/{p}.html"{" class=on" if p == cur else ""}>{esc(tname(p))}</a>' for p in QUICK) + "</nav>"
 GIFT_NAV = [("kniga-v-podarok-podruge", "Подруге"), ("kniga-v-podarok-mame", "Маме"), ("kniga-v-podarok-muzhchine", "Мужчине"),
-            ("kniga-v-podarok-podrostku", "Подростку"), ("kniga-v-podarok-kollege", "Коллеге"), ("knigi-v-podarok-na-novyy-god", "Всем на Новый год")]
+            ("kniga-v-podarok-podrostku", "Подростку"), ("kniga-v-podarok-kollege", "Коллеге"), ("kniga-dlya-taynogo-santy", "Тайному Санте"), ("knigi-v-podarok-na-novyy-god", "Всем на Новый год")]
 GIFT_NAV = [(p_, t_) for p_, t_ in GIFT_NAV if any(q == p_ for q, _, _, _ in coll_data)]
 GIFT_ERID = '<p class="erid gerid">Реклама · Читай-город, erid: 2W5zFJkZEDg · ООО ЛИТРЕС, ИНН 7719571260, erid: 2VfnxyNkZrY</p>'
 
