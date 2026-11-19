@@ -70,6 +70,7 @@ def main():
     lines.append("Перешли это в чат проекта - разберём.")
     text = "\n".join(lines)
     print(text)
+    save_list(groups, docs)
     if DRY or not TOKEN or not owner:
         return
     j, c = http(f"https://api.telegram.org/bot{TOKEN}/sendMessage", {"chat_id": owner, "text": text, "disable_web_page_preview": True})
@@ -80,6 +81,24 @@ def main():
         _, c = http("https://firestore.googleapis.com/v1/" + d["name"], headers=H, method="DELETE")
         gone += c == 200
     print("удалено:", gone)
+
+
+def save_list(groups, docs):
+    """полный список ошибок - в tools/errs_last.json (последние 14 дней), чтобы разбирать их по коду, а не по сводке"""
+    fl = lambda d: {k: list(v.values())[0] for k, v in d.get("fields", {}).items()}
+    full = []
+    for (m, s, l), g in sorted(groups.items(), key=lambda x: -x[1]["n"]):
+        ex = next((fl(d) for d in docs if (fl(d).get("m", ""), fl(d).get("s", ""), str(fl(d).get("l", ""))) == (m, s, l)), {})
+        full.append({"n": g["n"], "m": m, "s": s, "l": l, "where": sorted(x for x in g["u"] if x), "sample": ex})
+    if DRY:
+        print(json.dumps(full, ensure_ascii=False, indent=1)[:20000]); return
+    path = os.path.join(ROOT, "tools", "errs_last.json")
+    try:
+        old = json.load(open(path, encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        old = []
+    import time
+    json.dump(([{"day": time.strftime("%Y-%m-%d"), "errors": full}] + old)[:14], open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
 def collab(H, owner):
