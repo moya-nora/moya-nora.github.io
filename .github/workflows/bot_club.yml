@@ -1,7 +1,7 @@
 name: Бот — напоминания книжного клуба
 on:
   schedule:
-    - cron: "12 6 * * *"   # каждый день, 09:12 по Москве
+    - cron: "12 * * * *"   # каждый час: днём обычные напоминания, и «встреча через час»
   workflow_dispatch:
 permissions: {contents: write}
 concurrency: {group: bot-club, cancel-in-progress: false}

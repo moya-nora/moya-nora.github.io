@@ -2,9 +2,11 @@
 """Напоминания книжного клуба в боте - раз в день, утром.
 
 Кому: тем, кто состоит в клубе и включил в Норе напоминания в Telegram (запись notify/<uid> с полем club, читает только бот).
-Что пишет (не больше одного сообщения в день):
+Запуск раз в час. Обычные сообщения - только днём (с 9 до 22 по времени участника), не больше одного в день:
   • клуб начал новую книгу; • до срока 2 дня; • срок сегодня (только тем, кто ещё не отметил);
-  • встреча завтра; • встреча сегодня.
+  • встреча назначена / отменена; • встреча завтра; • встреча сегодня.
+И в любое время - «встреча через час» (кто не ответил «Не смогу»).
+Встречи могут повторяться: d.mrep = 7, 14 или 30 (раз в месяц), пропущенные - d.mskip.
 Бот входит в Firebase так же, как bot_weekly.py (секрет BOT_FB_PASS). Что уже отправлено - tools/bot_club.json.
 DRY=1 - только показать тексты. Нужен секрет BOT_TOKEN."""
 import html, json, os, re, sys, time, urllib.request
@@ -38,12 +40,30 @@ def hm(ts, tz):
     return f"{t.tm_hour:02d}:{t.tm_min:02d}"
 
 
+def next_ts(ts, rep, skip, now):
+    """Ближайшая встреча с учётом повтора; встреча «живёт» 3 часа от начала."""
+    t, i = ts, 0
+    while (t < now - 3 * 3600 * 1000 or t in skip) and i < 400:
+        if not rep:
+            return 0
+        if rep == 30:
+            g = time.gmtime(t / 1000); y, mo = g.tm_year + (g.tm_mon // 12), g.tm_mon % 12 + 1
+            import calendar
+            day = min(g.tm_mday, calendar.monthrange(y, mo)[1])
+            t = int(calendar.timegm((y, mo, day, g.tm_hour, g.tm_min, 0)) * 1000)
+        else:
+            t += rep * DAY
+        i += 1
+    return t
+
+
 def club_msgs(name, d, members, uid, now):
     """Список (ключ, текст) для одного участника. d - данные клуба, members - {uid: данные участника}."""
     out = []
-    tz = d.get("tz", 180)
-    today = day_no(now, tz)
     me = members.get(uid) or {}
+    tz = me.get("tz", d.get("tz", 180))   # время - по часовому поясу участника
+    today = day_no(now, tz)
+    hour = local(now, tz).tm_hour
     b = d.get("book")
     if b and d.get("start"):
         parts = max(1, d.get("parts") or 4); per = d.get("per") or 7
@@ -63,15 +83,17 @@ def club_msgs(name, d, members, uid, now):
                             + ("Если книга дочитана - отметь это в клубе и поставь оценку." if parts == 1 else "Если часть дочитана - отметь её в клубе, и откроются вопросы для обсуждения.")))
     # варианты времени предлагают участники; встреча - назначенная ведущим или время, которое подошло всем
     opts = {t for t in (d.get("mopts") or []) if t > now}
-    for mu, x in members.items():
-        if d.get("demo") or mu == d.get("_o"):   # с ведущим время предлагает только он
-            opts |= {t for t in (x.get("mo") or []) if t > now}
+    for mu, x in members.items():   # время предлагает любой участник
+        opts |= {t for t in (x.get("mo") or []) if t > now}
     votes = lambda t: sum(1 for x in members.values() if t in (x.get("mv") or []))
     mx = d.get("mcx") or 0
     if mx > now and not (d.get("meet") or {}).get("ts"):
         out.append((f"mx:{mx}", f"❌ Встреча клуба «{name}» {dm(mx, tz)} в {hm(mx, tz)} отменена. Новое время появится в клубе."))
     m = d.get("meet")
-    if not (m and m.get("ts", 0) > now):
+    if m and m.get("ts"):
+        t = next_ts(m["ts"], d.get("mrep") or 0, d.get("mskip") or [], now)
+        m = {**m, "ts": t} if t else None
+    if not (m and m.get("ts", 0) > now - 3 * 3600 * 1000):
         full = sorted(t for t in opts if len(members) >= 2 and votes(t) >= len(members))
         m = {"ts": full[0]} if full else None
     if m:
@@ -79,19 +101,25 @@ def club_msgs(name, d, members, uid, now):
         go = sum(1 for x in members.values() if (x.get("rs") or {}).get(str(m["ts"])) == 1)
         mine = (me.get("rs") or {}).get(str(m["ts"]))
         about = f" Обсуждаем «{b['t']}»." if b else ""
+        loc = d.get("mloc") or {}
+        mins = (m["ts"] - now) / 60000
+        if 0 < mins <= 75 and mine != 0:
+            out.append((f"h1:{m['ts']}", f"⏰ Скоро встреча клуба «{name}» - в {hm(m['ts'], tz)}." + (f"\nСсылка: {loc['v']}" if loc.get("v") and loc.get("t") != "off" else f"\nМесто: {loc['v']}" if loc.get("v") else "")))
         if left == 1:
             out.append((f"m1:{m['ts']}", f"📅 Завтра в {hm(m['ts'], tz)} встреча клуба «{name}».{about}" + ("" if mine in (0, 1) else "\nОтметь, придёшь ли ты.")))
         elif left == 0:
             out.append((f"m0:{m['ts']}", f"📅 Сегодня клуб «{name}» собирается в {hm(m['ts'], tz)}.{about}" + (f"\nПридут: {go}." if go else "")))
         elif left > 1 and d.get("meet"):
-            loc = d.get("mloc") or {}
+            rep = {7: " Встречаемся каждую неделю.", 14: " Встречаемся раз в две недели.", 30: " Встречаемся раз в месяц."}.get(d.get("mrep") or 0, "")
             where = (" Онлайн." if loc.get("t") != "off" else f" Место: {loc.get('v')}.") if loc.get("v") else ""
-            out.append((f"ms:{m['ts']}", f"📅 Встреча клуба «{name}» назначена: {dm(m['ts'], tz)}, {hm(m['ts'], tz)}.{about}{where}" + ("" if mine in (0, 1) else "\nОтметь в клубе, придёшь ли ты.")))
+            out.append((f"ms:{m['ts']}", f"📅 Встреча клуба «{name}» назначена: {dm(m['ts'], tz)}, {hm(m['ts'], tz)}.{about}{where}{rep}" + ("" if mine in (0, 1) else "\nОтметь в клубе, придёшь ли ты.")))
         elif left > 1 and not d.get("meet"):
             out.append((f"ma:{m['ts']}", f"✅ Клуб «{name}» выбрал время встречи: {dm(m['ts'], tz)}, {hm(m['ts'], tz)} - оно подошло всем."))
     elif opts and not [t for t in (me.get("mv") or []) if t in opts]:
         L = sorted(opts, key=lambda t: (-votes(t), t))
         out.append((f"mv:{min(opts)}", f"🗳 Клуб «{name}» выбирает время встречи. Отметь, когда тебе удобно:\n" + "\n".join(f"• {dm(t, tz)}, {hm(t, tz)}" for t in L)))
+    if not 9 <= hour < 22:   # ночью и рано утром - только «через час»
+        out = [x for x in out if x[0].startswith("h1:")]
     return out
 
 
