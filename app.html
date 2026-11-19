@@ -2331,6 +2331,7 @@ html[data-theme="light"] #app .lv-goal .tr{stroke:rgba(20,21,27,.1)}
 #app .bkc .bkc-rv.add svg{grid-row:1/3}
 #app .bkc .bkc-rv.add small{grid-column:2}
 
+#app .hsw{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:12px;text-align:left}#app .hsw li{font-size:15px;line-height:1.45;color:rgba(255,255,255,.75)}#app .hsw b{color:#fff}
 /* плашка «на экран Домой» */
 #app .hsb{display:flex!important;align-items:center;gap:12px;padding:10px 10px 10px 12px!important;border-radius:22px!important;background:rgba(24,22,34,.96)!important;color:#fff!important;box-shadow:0 18px 40px -12px rgba(0,0,0,.8),inset 0 0 0 1px rgba(255,255,255,.08)!important}
 #app .hsb img{width:46px!important;height:46px!important;border-radius:12px!important;flex:none}
@@ -6132,6 +6133,7 @@ const TOURS={
   col:[["#recH","Знакомься: это Шуршуня","Книжный дух Норы. Он живёт между полками, перечитал тысячи книг и подбирает их лично для тебя. Чем больше ты отмечаешь прочитанного и любимого, тем точнее его советы."],
        ["#flow","Его подборка для тебя","Листай обложки и нажми на книгу - откроются описание, отзывы читателей и где её найти."],
        ["#srchB","Поиск","Ищи по названию или просто попроси своими словами: «грустно, и хочу погрустить», «что-то как хороший сериал»."],
+       ['#clubDock:not([hidden])',"Книжный клуб","Здесь можно создать свой клуб и читать одну книгу вместе с друзьями."],
        ['.dock [data-s="sum"]',"Полки и дневник","Здесь твои книги, отзывы и читательский дневник. Сверху видно, сохранены ли полки в аккаунте."]],
   fr:[[".fr-nick,.fr-add","Друзья","Скажи другу свой ник - он найдёт тебя за секунду. Или добавь его по нику, почте или ссылке: вы увидите полки, оценки и отзывы друг друга."]],
   sum:[]};
@@ -6676,6 +6678,13 @@ function hsDue(){if(VIEW||HS.get("web")||HS.get("never"))return false;if((HS.get
   const days=(Date.now()-HS.get("first"))/864e5;
   if(TG&&(days<1||(HS.get("opens")||0)<2))return false;   // без Telegram предлагаем уже в первый заход, в Telegram - со второго дня
   if(Date.now()-(HS.get("last")||0)<7*864e5)return false;return true}
+// после регистрации: когда закончится знакомство с экраном - объясняем, зачем Нора на экране «Домой», и показываем, как поставить
+function hsWhy(){const mode=TG?"tg":"web";HS.set("last",Date.now());
+  vOpen(`<div class="hsi"><img class="hsi-logo" src="icons/icon-512.png?v=5" alt=""><h3 class="vh">Поставь Нору на экран «Домой»</h3>
+   <ul class="hsw"><li><b>В одно касание.</b> Иконка рядом с другими приложениями - не нужно искать вкладку или ссылку.</li><li><b>Во весь экран.</b> Без адресной строки и вкладок браузера - как обычное приложение.</li><li><b>Ты всегда в аккаунте.</b> Полки, дневник и клуб под рукой, а напоминания Шуршуни ведут прямо в Нору.</li></ul>
+   <div class="sheet-btns" style="display:flex;flex-direction:column;gap:10px;margin-top:18px"><button class="btn w" data-hswhy="${mode}">Показать, как поставить</button><button class="btn" data-hswhyno>Позже</button></div></div>`)}
+setInterval(()=>{try{if(!LS.get("zal.hsup",0)||VIEW||STORE)return;if(standalone()){LS.set("zal.hsup",0);return}if(document.querySelector(".tour,#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on,#bkc.on"))return;LS.set("zal.hsup",0);hsWhy()}catch(e){}},3000);
+document.addEventListener("click",e=>{const g=e.target.closest("[data-hswhy]");if(g){e.stopPropagation();vClose();setTimeout(()=>hsInstall(g.dataset.hswhy),350);return}if(e.target.closest("[data-hswhyno]")){e.stopPropagation();vClose()}},true);
 function hsCheck(){if(STORE||!hsDue())return;if(standalone()){HS.set("web",1);return}
   hsShow(TG?"tg":"web")}
 const hsEl=document.createElement("div");hsEl.className="hsb";$("#app").appendChild(hsEl);
@@ -6746,7 +6755,7 @@ function authDraw(){const up=authMode==="up";
   go.onclick=async()=>{let e=$("#auE").value.trim();const p=$("#auP").value;const nv="";if(!e||!p){msg.textContent="Впиши почту и пароль";return}try{e=authId(e,up).e}catch(x){msg.textContent=x.message;return}go.disabled=true;go.textContent=up?"Создаю…":"Вхожу…";msg.textContent="";
     
     try{if(up){try{await NS.signUp(e,p)}catch(x){if(/уже занят/.test(x.message)){try{await signInK(e,p)}catch(y){throw new Error(e.endsWith(LOGIN_DOM)?"Такой логин уже занят - придумай другой":"На эту почту уже есть Нора - войди с её паролем")}}else throw x}}else await signInK(e,p);
-      if(nv)LS.set("zal.name",nv.slice(0,40));else if(!LS.get("zal.name","")&&NS.getProfile){try{const pf=await Promise.race([NS.getProfile(NS.uid()),new Promise(r=>setTimeout(()=>r(null),5000))]);if(pf&&pf.n)LS.set("zal.name",String(pf.n).slice(0,40))}catch(x){}}authEl.classList.remove("on");tgHaptic("medium");toast(up?"Аккаунт создан":"Вход выполнен");const n=authNext;authNext=null;if(n)n();setTimeout(()=>{nickAuto();pubCheck();inviteCheck()},800)}
+      if(nv)LS.set("zal.name",nv.slice(0,40));else if(!LS.get("zal.name","")&&NS.getProfile){try{const pf=await Promise.race([NS.getProfile(NS.uid()),new Promise(r=>setTimeout(()=>r(null),5000))]);if(pf&&pf.n)LS.set("zal.name",String(pf.n).slice(0,40))}catch(x){}}authEl.classList.remove("on");tgHaptic("medium");toast(up?"Аккаунт создан":"Вход выполнен");if(up)LS.set("zal.hsup",1);const n=authNext;authNext=null;if(n)n();setTimeout(()=>{nickAuto();pubCheck();inviteCheck()},800)}
     catch(x){msg.textContent=x.message;go.disabled=false;go.textContent=up?"Создать аккаунт":"Войти"}};
   $("#auP").onkeydown=e=>{if(e.key==="Enter")go.click()}}
 // книга из сообщения бота: app.html?bk=Название|Автор — сразу открываем её карточку
@@ -7900,7 +7909,7 @@ new MutationObserver(()=>{if(!$("#vsheet").classList.contains("on"))CB.sheet=""}
 // приглашение в клуб: #cl=<id> или startapp=cl_<id>; ?club=1 включает раздел на этом устройстве
 (function(){const h=location.hash.match(/[#&]cl=([a-z0-9]{12,24})/),sp=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param||"",m=sp.match(/^cl_([a-z0-9]{12,24})$/),id=h?h[1]:m?m[1]:"";
   // ?club=1 или startapp=club (ссылки со страницы сайта «Книжный клуб») - включить раздел и сразу открыть его
-  if(/[?&]club=1/.test(location.search)||sp==="club"){LS.set("zal.clubon",1);cbDock();if(!id){const go=()=>{if($("#onb").classList.contains("on")||$("#intro").classList.contains("on")||$("#splash")?.classList.contains("on")){setTimeout(go,1200);return}show("club")};setTimeout(go,1500)}}
+  if(/[?&]club=1/.test(location.search)||sp==="club"){LS.set("zal.clubon",1);cbDock();if(!id&&needAuth()){const go=()=>{if($("#splash")?.classList.contains("on")){setTimeout(go,800);return}authMode="up";authShow(()=>{$("#intro").classList.remove("on");$("#onb").classList.remove("on");LS.set("zal.onb",1);show("col");setTimeout(()=>tour("col"),900)})};setTimeout(go,1200)}}
   if(h)try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
   if(id){LS.set("zal.clubon",1);const go=()=>{if($("#onb").classList.contains("on")||$("#intro").classList.contains("on")||$("#splash")?.classList.contains("on")){setTimeout(go,1200);return}cbJoinFlow(id)};setTimeout(go,1500)}
   cbDock();setInterval(()=>{if(SCREEN==="club"&&CB.id&&!document.hidden&&Date.now()-CB.t>40000&&!$("#clBox").contains(document.activeElement))cbLoad()},15000);
