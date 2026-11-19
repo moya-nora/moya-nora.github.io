@@ -67,6 +67,9 @@ def club_msgs(name, d, members, uid, now):
         if d.get("demo") or mu == d.get("_o"):   # с ведущим время предлагает только он
             opts |= {t for t in (x.get("mo") or []) if t > now}
     votes = lambda t: sum(1 for x in members.values() if t in (x.get("mv") or []))
+    mx = d.get("mcx") or 0
+    if mx > now and not (d.get("meet") or {}).get("ts"):
+        out.append((f"mx:{mx}", f"❌ Встреча клуба «{name}» {dm(mx, tz)} в {hm(mx, tz)} отменена. Новое время появится в клубе."))
     m = d.get("meet")
     if not (m and m.get("ts", 0) > now):
         full = sorted(t for t in opts if len(members) >= 2 and votes(t) >= len(members))
@@ -81,7 +84,9 @@ def club_msgs(name, d, members, uid, now):
         elif left == 0:
             out.append((f"m0:{m['ts']}", f"📅 Сегодня клуб «{name}» собирается в {hm(m['ts'], tz)}.{about}" + (f"\nПридут: {go}." if go else "")))
         elif left > 1 and d.get("meet"):
-            out.append((f"ms:{m['ts']}", f"📅 Встреча клуба «{name}» назначена: {dm(m['ts'], tz)}, {hm(m['ts'], tz)}.{about}" + ("" if mine in (0, 1) else "\nОтметь в клубе, придёшь ли ты.")))
+            loc = d.get("mloc") or {}
+            where = (" Онлайн." if loc.get("t") != "off" else f" Место: {loc.get('v')}.") if loc.get("v") else ""
+            out.append((f"ms:{m['ts']}", f"📅 Встреча клуба «{name}» назначена: {dm(m['ts'], tz)}, {hm(m['ts'], tz)}.{about}{where}" + ("" if mine in (0, 1) else "\nОтметь в клубе, придёшь ли ты.")))
         elif left > 1 and not d.get("meet"):
             out.append((f"ma:{m['ts']}", f"✅ Клуб «{name}» выбрал время встречи: {dm(m['ts'], tz)}, {hm(m['ts'], tz)} - оно подошло всем."))
     elif opts and not [t for t in (me.get("mv") or []) if t in opts]:
