@@ -7493,23 +7493,46 @@ async function wrCards(D){await wrFonts();const H="NoraHead, sans-serif",F="Nora
   // 2. книга года
   {const [c,x]=mk("main");AL="left";cap(x,D.top[0]?"Моя книга года":"Последняя книга года",Y0);let y=big2(x,hero.t,Y0+20,100,44,4);y=line(x,auN(hero.a),y);const s=st(hero);
     if(s){x.font=`400 64px ${F}`;x.fillStyle=ACC;if("letterSpacing" in x)x.letterSpacing="10px";x.fillText("★".repeat(s),X,y+96);if("letterSpacing" in x)x.letterSpacing="0px"}site(x);out.push(c)}
-  // 3. страницы + страницы по месяцам на плашке
+  // 3. страницы
   if(D.pg>=200){const [c,x]=mk("pages");AL="left";cap(x,"Страницы",Y0);let y=big(x,D.pg.toLocaleString("ru-RU"),Y0+40,230,90);y=line(x,plural(D.pg,"страница","страницы","страниц")+" за год",y);
     const m=Math.round(D.pg/2*.2),len=m>=1000?`${(Math.round(m/100)/10).toLocaleString("ru-RU")} км`:`${m.toLocaleString("ru-RU")} ${plural(m,"метр","метра","метров")}`;note(x,`Если разложить все листы в ряд, получится дорожка длиной ${len}`,y);site(x);out.push(c)}
-  // 4. месяц + столбики по месяцам на плашке внизу
+  // 4. месяц
   {const bm=D.mon[D.best]||0;if(n>=2&&bm){const [c,x]=mk("month");AL="left";cap(x,"Самый читающий месяц",Y0);const m=WR_MF[D.best];let y=big(x,m.slice(0,1).toUpperCase()+m.slice(1),Y0+40,190,90);y=line(x,`${bm} ${plural(bm,"книга","книги","книг")} за месяц`,y);
     const act=D.mon.filter(v=>v>0).length,avg=n/Math.max(1,act),r=bm/avg,rs=r>=10?Math.round(r):Math.round(r*10)/10;note(x,act>1&&r>=1.5?`В ${rs.toLocaleString("ru-RU")} ${Number.isInteger(rs)?plural(rs,"раз","раза","раз"):"раза"} больше, чем в обычный месяц`:"Самый книжный месяц года",y);
-    const PY=1430,PH=340;panel(x,PY,PH);x.font=`700 54px ${HAND}`;x.fillStyle=PLUM;x.fillText("Книги по месяцам",110,PY+76);
-    const bw=56,gap=(840-12*bw)/11,base=PY+PH-62,hmax=170,mx=Math.max(1,...D.mon);
-    D.mon.forEach((v,i)=>{const bx=120+i*(bw+gap),bh=v?Math.max(14,Math.round(v/mx*hmax)):6;x.fillStyle=i===D.best?ACC:"rgba(90,47,102,.32)";wrRR(x,bx,base-bh,bw,bh,12);x.fill();
-      if(v){x.font=`600 26px ${F}`;x.fillStyle=i===D.best?ACC:MUTE;x.textAlign="center";x.fillText(String(v),bx+bw/2,base-bh-12);x.textAlign="left"}
-      x.font=`500 26px ${F}`;x.fillStyle=i===D.best?INK:MUTE;x.textAlign="center";x.fillText(WR_MN[i][0].toUpperCase(),bx+bw/2,base+40);x.textAlign="left"});
     site(x);out.push(c)}}
-  // 5. читательский тип + любимые жанры полосками на плашке
+  // 5. читательский тип
   {const [c,x]=mk("type");AL="center";cap(x,"Мой читательский тип",Y0);let y=big2(x,D.type[0],Y0+20,110,44,3);note(x,D.type[1]+".",y);
-    const G=D.gk.slice(0,3);if(G.length){const PY=1810-110-(110+G.length*86),PH=110+G.length*86;panel(x,PY,PH);x.font=`700 54px ${HAND}`;x.fillStyle=PLUM;x.fillText("Любимые жанры",110,PY+76);
-      G.forEach(([g,v],i)=>{const yy=PY+110+i*86;x.font=`500 34px ${F}`;x.fillStyle=INK;x.fillText(String(GEN[g]||g),110,yy+30);x.textAlign="right";x.fillStyle=MUTE;x.fillText(`${v} ${plural(v,"книга","книги","книг")}`,970,yy+30);x.textAlign="left";
-        x.fillStyle="rgba(90,47,102,.14)";wrRR(x,110,yy+46,860,16,8);x.fill();x.fillStyle=i?"rgba(90,47,102,.55)":ACC;wrRR(x,110,yy+46,Math.max(24,860*v/G[0][1]),16,8);x.fill()})}
+    site(x);out.push(c)}
+  // 6. последний лист - цифры года для сторис: страницы главные, вокруг - плитки разного вида в той же гамме
+  {const c=document.createElement("canvas");c.width=1080;c.height=1920;const x=c.getContext("2d");x.textBaseline="alphabetic";
+    {const g=x.createLinearGradient(0,0,0,1920);g.addColorStop(0,"#C9B8E0");g.addColorStop(.55,"#E3CFE0");g.addColorStop(1,"#F2D3C2");x.fillStyle=g;x.fillRect(0,0,1080,1920)}
+    {const a=ART.main;if(a){const s=1080/a.naturalWidth,H0=330,sy=Math.max(0,a.naturalHeight-H0/s);x.drawImage(a,0,sy,a.naturalWidth,a.naturalHeight-sy,0,1920-H0,1080,H0)}}
+    x.font=`600 30px ${F}`;x.fillStyle=INK;x.fillText("Нора",80,130);
+    x.font=`700 104px ${HAND}`;x.fillStyle=PLUM;x.textAlign="center";x.fillText(`Мой ${D.Y} в цифрах`,540,280);x.textAlign="left";
+    const card=(X0,Y,w,h,bg,stroke)=>{x.save();if(bg){x.shadowColor="rgba(43,36,64,.16)";x.shadowBlur=36;x.shadowOffsetY=10;x.fillStyle=bg;wrRR(x,X0,Y,w,h,44);x.fill()}x.restore();if(stroke){x.strokeStyle=stroke;x.lineWidth=4;wrRR(x,X0+2,Y+2,w-4,h-4,42);x.stroke()}};
+    const fitF=(t,max,s,fam,wt)=>{x.font=`${wt||600} ${s}px ${fam||H}`;while(s>24&&x.measureText(t).width>max){s-=4;x.font=`${wt||600} ${s}px ${fam||H}`}return s};
+    // страницы - главное
+    const pg=D.pg||0,pv=pg.toLocaleString("ru-RU");card(60,340,960,440,"rgba(255,251,244,.95)");
+    x.textAlign="center";x.font=`500 40px ${F}`;x.fillStyle=MUTE;x.fillText(pg?plural(pg,"страница прочитана","страницы прочитано","страниц прочитано"):"страниц пока не посчитано",540,420);
+    fitF(pv,860,230);x.fillStyle=ACC;x.fillText(pg?pv:"-",540,640);
+    if(pg){const m=Math.round(pg/2*.2),len=m>=1000?`${(Math.round(m/100)/10).toLocaleString("ru-RU")} км`:`${m.toLocaleString("ru-RU")} ${plural(m,"метр","метра","метров")}`;x.font=`700 54px ${HAND}`;x.fillStyle=PLUM;x.fillText(`дорожка из листов длиной ${len}`,540,726)}
+    x.textAlign="left";
+    // плитки 2×2: каждая по-своему
+    const TW=465,TH=270,L0=60,R0=555,Y1=820,Y2=1120;
+    // книги - тёмная плитка
+    card(L0,Y1,TW,TH,PLUM);x.fillStyle="#FFF6EC";fitF(String(n),300,170);x.fillText(String(n),L0+40,Y1+180);const nw=x.measureText(String(n)).width;x.font=`500 40px ${F}`;x.fillStyle="rgba(255,246,236,.8)";x.fillText(plural(n,"книга","книги","книг"),L0+60+nw,Y1+180);x.font=`500 32px ${F}`;x.fillText("прочитано за год",L0+40,Y1+232);
+    // месяц - светлая плитка, рукописный
+    {const bm=D.mon[D.best]||0,m=WR_MF[D.best]||"";card(R0,Y1,TW,TH,"rgba(255,251,244,.95)");x.font=`500 32px ${F}`;x.fillStyle=MUTE;x.fillText("самый читающий месяц",R0+40,Y1+70);
+      fitF(m.slice(0,1).toUpperCase()+m.slice(1),TW-80,110,HAND,700);x.fillStyle=PLUM;x.fillText(m.slice(0,1).toUpperCase()+m.slice(1),R0+40,Y1+180);x.font=`500 32px ${F}`;x.fillStyle=INK;x.fillText(bm?`${bm} ${plural(bm,"книга","книги","книг")}`:"",R0+40,Y1+232)}
+    // жанр - плитка с контуром
+    {const g=genre||"Разные жанры";card(L0,Y2,TW,TH,null,PLUM);x.font=`500 32px ${F}`;x.fillStyle=MUTE;x.fillText("любимый жанр",L0+40,Y2+70);x.fillStyle=INK;let f=56;x.font=`600 ${f}px ${H}`;while(f>28&&wrWrap(x,g,TW-80,2).some(l=>x.measureText(l).width>TW-80)){f-=4;x.font=`600 ${f}px ${H}`}wrWrap(x,g,TW-80,2).forEach((l,i)=>x.fillText(l,L0+40,Y2+150+i*f*1.1))}
+    // оценка или самая толстая книга - персиковая плитка
+    {card(R0,Y2,TW,TH,"#F1C4AE");x.font=`500 32px ${F}`;x.fillStyle="rgba(43,36,64,.75)";
+      if(D.avg){x.fillText("средняя оценка",R0+40,Y2+70);x.font=`600 120px ${H}`;x.fillStyle=ACC;const v=D.avg.toFixed(1).replace(".",",");x.fillText(v,R0+40,Y2+200);const vw=x.measureText(v).width;x.font=`400 60px ${F}`;x.fillText("★",R0+60+vw,Y2+196)}
+      else if(D.long&&D.long.pg){x.fillText("самая толстая книга",R0+40,Y2+70);x.font=`600 110px ${H}`;x.fillStyle=ACC;x.fillText(String(D.long.pg),R0+40,Y2+196);x.font=`500 32px ${F}`;x.fillStyle=INK;x.fillText("страниц",R0+40,Y2+240)}
+      else{x.fillText("книг в клубе и на полках",R0+40,Y2+70);x.font=`600 110px ${H}`;x.fillStyle=ACC;x.fillText(String(n),R0+40,Y2+196)}}
+    // читательский тип - строка-лента
+    {const t=D.type[0];card(60,1420,960,130,"rgba(255,251,244,.95)");x.font=`500 32px ${F}`;x.fillStyle=MUTE;x.fillText("мой читательский тип",100,1478);x.font=`700 ${fitF(t,500,64,HAND,700)}px ${HAND}`;x.fillStyle=PLUM;x.textAlign="right";x.fillText(t,980,1505);x.textAlign="left"}
     site(x);out.push(c)}
   return out}
 function wrFill(){if(WR&&WR.u&&!wrEl.querySelector(".wr-full"))wrDraw()}
