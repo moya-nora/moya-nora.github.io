@@ -80,6 +80,8 @@ def club_msgs(name, d, members, uid, now):
             out.append((f"m1:{m['ts']}", f"📅 Завтра в {hm(m['ts'], tz)} встреча клуба «{name}».{about}" + ("" if mine in (0, 1) else "\nОтметь, придёшь ли ты.")))
         elif left == 0:
             out.append((f"m0:{m['ts']}", f"📅 Сегодня клуб «{name}» собирается в {hm(m['ts'], tz)}.{about}" + (f"\nПридут: {go}." if go else "")))
+        elif left > 1 and d.get("meet"):
+            out.append((f"ms:{m['ts']}", f"📅 Встреча клуба «{name}» назначена: {dm(m['ts'], tz)}, {hm(m['ts'], tz)}.{about}" + ("" if mine in (0, 1) else "\nОтметь в клубе, придёшь ли ты.")))
         elif left > 1 and not d.get("meet"):
             out.append((f"ma:{m['ts']}", f"✅ Клуб «{name}» выбрал время встречи: {dm(m['ts'], tz)}, {hm(m['ts'], tz)} - оно подошло всем."))
     elif opts and not [t for t in (me.get("mv") or []) if t in opts]:
