@@ -7864,6 +7864,9 @@ function cbOpts(){const now=Date.now(),S=new Set((CB.d.mopts||[]).filter(t=>t>no
 function cbMeetTopic(ts){const b=CB.d.book;if(!b)return "";const n=cbParts();if(n<=1)return `Обсуждаем «${b.t}»`;let k=0;for(let i=1;i<=n;i++)if(cbDue(i)<=ts+36e5)k=i;return k>=n?`Обсуждаем всю книгу «${b.t}»`:k?`Обсуждаем часть ${k} «${b.t}»`:`Обсуждаем начало «${b.t}»`}
 const cbLoc=()=>{const l=CB.d.mloc;return l&&l.v?l:null};
 const cbLocUrl=l=>l.t==="on"?(/^https?:\/\//.test(l.v)?l.v:(/^[\w.-]+\.[a-z]{2,}\//i.test(l.v)?"https://"+l.v:"")):"https://yandex.ru/maps/?text="+encodeURIComponent(l.v);
+// файл календаря (.ics) для встроенного календаря телефона; при повторе встречи - правило повтора
+const cbIcs=ts=>{const f=t=>new Date(t).toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,""),l=cbLoc(),e=s=>String(s||"").replace(/([,;\\])/g,"\\$1").replace(/\n/g,"\\n"),rp=CB.d.mrep;
+  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Nora//Club//RU","BEGIN:VEVENT","UID:"+CB.id+"-"+ts+"@nora-books.ru","DTSTAMP:"+f(Date.now()),"DTSTART:"+f(ts),"DTEND:"+f(ts+5400e3),"SUMMARY:"+e("Книжный клуб «"+CB.club.n+"»"),"DESCRIPTION:"+e(cbMeetTopic(ts)+(l&&l.t==="on"?"\n"+l.v:"")),...(l&&l.t!=="on"?["LOCATION:"+e(l.v)]:[]),...(rp?["RRULE:"+(rp===30?"FREQ=MONTHLY":"FREQ=WEEKLY;INTERVAL="+rp/7)]:[]),"BEGIN:VALARM","TRIGGER:-PT1H","ACTION:DISPLAY","DESCRIPTION:"+e("Встреча книжного клуба"),"END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n")};
 const cbGcal=ts=>{const f=t=>new Date(t).toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,""),l=cbLoc();return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("Книжный клуб «"+CB.club.n+"»")+"&dates="+f(ts)+"/"+f(ts+5400e3)+"&details="+encodeURIComponent(cbMeetTopic(ts)+(l&&l.t==="on"?"\n"+l.v:""))+(l&&l.t!=="on"?"&location="+encodeURIComponent(l.v):"")+(CB.d.mrep?"&recur="+encodeURIComponent("RRULE:"+(CB.d.mrep===30?"FREQ=MONTHLY":"FREQ=WEEKLY;INTERVAL="+CB.d.mrep/7)):"")};
 // повтор: 7, 14 дней или 30 = раз в месяц; пропущенные встречи - в mskip. Встреча видна, пока не прошло 3 часа от начала
 function cbNextTs(ts,rep,skip,now){const sk=skip||[],live=now-3*36e5;let t=ts,i=0;while((t<live||sk.includes(t))&&i<400){if(!rep)return 0;if(rep===30){const d=new Date(t);d.setMonth(d.getMonth()+1);t=d.getTime()}else t+=rep*864e5;i++}return t}
@@ -7934,7 +7937,15 @@ document.addEventListener("click",async e=>{const tb=e.target.closest("[data-cbt
   if(a==="meet"&&(cbOwner()||cbMe())){cbMeetSheet();return}
   if(a==="lfmt"){d.mloc={t:el.dataset.v,v:(($("#cbLoc")||{}).value||"").trim()};document.querySelectorAll('[data-cb="lfmt"]').forEach(b=>b.classList.toggle("on",b===el));const i=$("#cbLoc");if(i)i.placeholder=el.dataset.v==="off"?"Адрес или место, например кафе «Буквы»":"Ссылка на звонок: Zoom, Телемост, Telegram";return}
   if(a==="locopen"){const l=cbLoc(),u=l&&cbLocUrl(l);if(u){try{if(TG&&/^https:\/\/t\.me\//.test(u))TG.openTelegramLink(u);else if(TG&&TG.openLink)TG.openLink(u);else window.open(u,"_blank")}catch(x2){location.href=u}}return}
-  if(a==="gcal"){const u=cbGcal(+el.dataset.ts);try{TG&&TG.openLink?TG.openLink(u):window.open(u,"_blank")}catch(x2){location.href=u}return}
+  if(a==="gcal"){const ts=+el.dataset.ts;cbSheet(`<h3>Добавить в календарь</h3><button class="cb-b w" data-cb="ical" data-ts="${ts}">Календарь телефона</button><button class="cb-b" data-cb="gcal2" data-ts="${ts}">Google Календарь</button>`,"cal");return}
+  if(a==="gcal2"){const u=cbGcal(+el.dataset.ts);try{TG&&TG.openLink?TG.openLink(u):window.open(u,"_blank")}catch(x2){location.href=u}return}
+  if(a==="ical"){const ts=+el.dataset.ts,ics=cbIcs(ts);vClose();
+    // в Telegram файл календаря не открыть - отдаём его через страницу сайта, она откроется в браузере телефона
+    if(TG&&TG.openLink){try{TG.openLink(location.origin+"/ics.html#"+encodeURIComponent(btoa(unescape(encodeURIComponent(ics)))))}catch(x2){}return}
+    try{const bl=new Blob([ics],{type:"text/calendar;charset=utf-8"}),f=new File([bl],"vstrecha-kluba.ics",{type:"text/calendar"});
+      if(/iPhone|iPad|iPod/.test(navigator.userAgent)){location.href="data:text/calendar;charset=utf-8,"+encodeURIComponent(ics);return}
+      if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(()=>{});return}
+      const u=URL.createObjectURL(bl),l=document.createElement("a");l.href=u;l.download="vstrecha-kluba.ics";document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}catch(x2){toast("Не получилось - попробуй Google Календарь")}return}
   if(a==="mpin"&&!cbHost()&&cbMe()){const ts=+el.dataset.ts;d.meet={ts,pin:1,by:cbUid()};if(await cbPutClub()){cbDraw();toast("Время закреплено - клуб получит напоминание")}return}
   if(a==="mopt"&&(cbOwner()||cbMe())){const dv=$("#cbMeetD").value,tv=$("#cbMeetT").value||"20:00",ts=dv?new Date(dv+"T"+tv).getTime():0,now=Date.now();if(!ts||isNaN(ts)||ts<now){toast("Выбери день и время");return}
     if(cbOpts().some(o=>o.ts===ts)){if(!(me.mv||[]).includes(ts)){me.mv=[...(me.mv||[]),ts];cbPutMe(me)}vClose();cbDraw();toast("Такой вариант уже есть - он отмечен как удобный тебе");return}

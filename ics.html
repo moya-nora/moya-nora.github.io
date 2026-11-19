@@ -1,0 +1,13 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Добавить встречу в календарь - Нора</title>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#05060A;color:#fff;font:16px/1.5 -apple-system,system-ui,sans-serif;text-align:center;padding:24px}
+a{display:inline-block;margin-top:18px;padding:14px 26px;border-radius:26px;background:#F5F5F7;color:#0B0C11;text-decoration:none;font-weight:600}</style></head>
+<body><div><p id="t">Открываю календарь…</p><a id="go" href="#" hidden>Добавить в календарь</a></div>
+<script>/* встреча клуба из Telegram: приложение передаёт файл календаря в адресе, страница открывает его во встроенном календаре телефона */
+(function(){try{var ics=decodeURIComponent(escape(atob(decodeURIComponent(location.hash.slice(1))))),u;
+if(!/^BEGIN:VCALENDAR/.test(ics))throw 0;
+if(/iPhone|iPad|iPod/.test(navigator.userAgent))u="data:text/calendar;charset=utf-8,"+encodeURIComponent(ics);
+else u=URL.createObjectURL(new Blob([ics],{type:"text/calendar;charset=utf-8"}));
+var a=document.getElementById("go");a.href=u;a.setAttribute("download","vstrecha-kluba.ics");a.hidden=false;
+document.getElementById("t").textContent="Нажми, чтобы добавить встречу клуба в календарь телефона.";
+setTimeout(function(){location.href=u},300)}catch(e){document.getElementById("t").textContent="Не получилось открыть встречу. Вернись в Нору и попробуй ещё раз."}})();</script></body></html>
