@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Яндекс Книги</title>
+<style>html,body{margin:0;height:100%;background:#07060D;color:#F7F1E6;font:15px system-ui,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center}a{color:#F3D19A}</style>
+</head><body>
+<p id="m">Открываю книгу в Яндекс Книгах…</p>
+<script>
+/* переход в поиск книги на сайте Яндекс Книг: прямая ссылка из приложения открывала главную приложения Яндекс Книг, а не книгу */
+(function(){var q=new URLSearchParams(location.search).get("q")||"";var u="https://books.yandex.ru/search?text="+encodeURIComponent(q);
+  document.getElementById("m").innerHTML='Открываю книгу в Яндекс Книгах… <br><br><a href="'+u.replace(/"/g,"%22")+'">Открыть</a>';
+  setTimeout(function(){location.replace(u)},60)})();
+</script>
+</body></html>

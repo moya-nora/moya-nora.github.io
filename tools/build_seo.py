@@ -389,7 +389,7 @@ def WHERE(b):
     q = urllib.parse.quote(b["t"] + " " + b["a"].split(" ")[-1]); qt = urllib.parse.quote(b["t"])
     icon = lambda d: f'<img src="/img/where/{d}.png" alt="" width="22" height="22" loading="lazy">'
     PIN = '<svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg>'
-    ON = [("litres.ru", "ЛитРес", LR_T.replace("{url}", urllib.parse.quote((f"https://www.litres.ru/pages/biblio_book/?art={lit_id(b)}" if lit_id(b) else f"https://www.litres.ru/search/?q={q}"), safe=""))), ("books.yandex.ru", "Яндекс Книги", f"https://books.yandex.ru/search?text={q}"),
+    ON = [("litres.ru", "ЛитРес", LR_T.replace("{url}", urllib.parse.quote((f"https://www.litres.ru/pages/biblio_book/?art={lit_id(b)}" if lit_id(b) else f"https://www.litres.ru/search/?q={q}"), safe=""))), ("books.yandex.ru", "Яндекс Книги", f"/ya.html?q={q}"),
           ("ozon.ru", "Ozon", f"https://www.ozon.ru/search/?text={q}&category=16500")]
     OFF = [("", "Книжные рядом", "https://yandex.ru/maps/?text=" + urllib.parse.quote("книжный магазин")), ("chitai-gorod.ru", "Читай-город", f"https://www.chitai-gorod.ru/search?phrase={qt}&partnerId=1006702&utm_source=affiliate&utm_medium=cpa&utm_campaign=1006702&sub_3=2W5zFJkZEDg&erid=2W5zFJkZEDg"),
            ("bookvoed.ru", "Буквоед", f"https://www.bookvoed.ru/search?q={qt}")]
