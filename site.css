@@ -325,3 +325,25 @@ h1{letter-spacing:-.015em}h1,h2,h3{font-weight:600}
 .nad-x{position:absolute;top:6px;right:8px;width:28px;height:28px;border:0;background:none;color:var(--ink3);font-size:20px;line-height:1;cursor:pointer;z-index:1}
 @media (max-width:640px){.nad{left:10px;right:10px;bottom:10px;width:auto;padding:12px;bottom:calc(10px + env(safe-area-inset-bottom))}}
 @media (prefers-reduced-motion:reduce){.nad,.nad-s{transition:none}}
+/* подвал - компактный, как на обычных сайтах */
+.ft2{padding:40px 0 34px;border-top:1px solid var(--line);margin-top:40px}
+.ft2 .ft2-in{display:flex;align-items:center;justify-content:space-between;gap:16px 30px;flex-wrap:wrap}
+.ft2 .logo{display:inline-flex;align-items:center;gap:10px;color:#fff;font:600 18px/1 var(--sans);margin:0}.ft2 .logo img{width:30px;height:30px;border-radius:8px}
+.ft2 nav{display:flex;flex-wrap:wrap;gap:8px 22px}.ft2 nav a,.ft2 .ft2-b a{display:inline;margin:0;color:var(--ink2);font-size:14px}.ft2 nav a:hover,.ft2 .ft2-b a:hover{color:#fff}
+.ft2 .ft2-b{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:22px;color:var(--ink3);font-size:13px}.ft2 .ft2-b a{font-size:13px;color:var(--ink3)}
+@media (max-width:640px){.ft2 nav{gap:10px 18px}.ft2 nav a{font-size:13.5px}}
+/* книжный клуб: подборка ближе к описанию, финальный призыв - в общем ряду */
+.legal + .clubsh{margin-top:-80px}.clubsh + .legal{padding-top:28px}
+.legal .clubend .ctas{margin-top:16px}
+/* значок входа в правом верхнем углу */
+.enter{position:absolute;z-index:20;top:calc(14px + env(safe-area-inset-top));right:16px;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
+.enter svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}.enter:hover{color:var(--gold2)}
+/* тест на главной - заметный: переливающаяся рамка и лёгкое «дыхание» */
+.morec.mtest{position:relative;isolation:isolate;display:flex;flex-direction:column;gap:6px;background:linear-gradient(135deg,rgba(226,182,107,.16),rgba(176,68,98,.14));animation:mtpulse 2.6s ease-in-out infinite}
+.morec.mtest small{font:500 14px/1.35 var(--sans);color:var(--gold2)}
+.morec.mtest::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;padding:1.5px;background:linear-gradient(110deg,rgba(243,209,154,.15) 20%,#F3D19A 45%,#E8907A 55%,rgba(243,209,154,.15) 80%) 0 0/250% 100%;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mtshine 3s linear infinite}
+@keyframes mtshine{to{background-position:-250% 0}}
+@keyframes mtpulse{0%,100%{transform:none;box-shadow:0 0 0 rgba(243,209,154,0)}50%{transform:scale(1.015);box-shadow:0 8px 40px -10px rgba(243,209,154,.45)}}
+@media (prefers-reduced-motion:reduce){.morec.mtest,.morec.mtest::before{animation:none}}
+.legal .btn{color:#0B0C11}
