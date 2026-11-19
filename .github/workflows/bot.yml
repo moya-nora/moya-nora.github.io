@@ -15,6 +15,8 @@ jobs:
     timeout-minutes: 355
     steps:
       - uses: actions/checkout@v4
+      - name: Библиотека веб-пушей
+        run: pip install -q pywebpush || true
       - name: Слушать бота
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}

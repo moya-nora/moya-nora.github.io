@@ -2,7 +2,7 @@
 """Бот сразу пишет о заявке в друзья и о приглашении в книжный клуб.
 
 Вызывается из дежурства бота (bot_relay.py) примерно раз в минуту: tick(state, save).
-Кому: тем, у кого в Норе включены напоминания в Telegram (запись notify/<uid> с полем tg).
+Кому: тем, у кого в Норе включены уведомления (запись notify/<uid>): поле tg - сообщение в Telegram, поле wp - веб-пуш в браузер.
 Что: заявки requests/* не старше двух суток (статус "p", а по ссылке-приглашению - уже "a"):
   • k пустой - «Имя хочет добавить тебя в друзья»;
   • k = "cl:<id клуба>" - «Имя зовёт тебя в книжный клуб «Название»»;
@@ -51,7 +51,7 @@ def _auth():
 
 
 def _people(H):
-    """uid → chat id в Telegram (у кого включены напоминания). Обновляется раз в 10 минут."""
+    """uid → {tg: chat id в Telegram, wp: подписка веб-пушей} (у кого включены уведомления). Обновляется раз в 10 минут."""
     if time.time() - _s["people_t"] < 600:
         return _s["people"]
     out, page = {}, ""
@@ -62,8 +62,8 @@ def _people(H):
         for doc in j.get("documents") or []:
             try:
                 v = json.loads(doc["fields"]["d"]["stringValue"])
-                if v.get("tg"):
-                    out[doc["name"].rsplit("/", 1)[1]] = str(v["tg"])
+                if v.get("tg") or (isinstance(v.get("wp"), dict) and v["wp"].get("endpoint")):
+                    out[doc["name"].rsplit("/", 1)[1]] = {"tg": str(v["tg"]) if v.get("tg") else "", "wp": v.get("wp")}
             except Exception:  # noqa: BLE001
                 pass
         page = j.get("nextPageToken") or ""
@@ -89,6 +89,27 @@ def text_for(q, club=""):
     if k:   # пришли по ссылке-приглашению: приложение само добавит в друзья
         return f"🎉 {who} в Норе по твоему приглашению - теперь вы друзья.", "Открыть Нору"
     return f"👋 {who} хочет добавить тебя в друзья в Норе.", "Открыть Нору"
+
+
+def push(sub, txt, btn=""):
+    """Веб-пуш в браузер (для тех, кто не в Telegram). Ключ - tools/vapid.py."""
+    try:
+        from pywebpush import webpush, WebPushException
+        import vapid
+    except Exception as e:  # noqa: BLE001
+        print("веб-пуш недоступен:", str(e)[:100]); return False
+    priv = vapid.keys()[0]
+    if not priv:
+        return False
+    try:
+        webpush(subscription_info=sub, data=json.dumps({"title": "Нора", "body": txt, "url": APP + "?app=1", "tag": "req"}, ensure_ascii=False),
+                vapid_private_key=priv, vapid_claims={"sub": "mailto:support@nora-books.ru"}, ttl=86400)
+        return True
+    except WebPushException as e:
+        print("веб-пуш не ушёл:", getattr(e.response, "status_code", "?"))
+    except Exception as e:  # noqa: BLE001
+        print("веб-пуш ошибка:", str(e)[:120])
+    return False
 
 
 def tick(state, save=None, force=False):
@@ -134,9 +155,13 @@ def tick(state, save=None, force=False):
         txt, btn = text_for(r, _club_name(cid, H) if re.fullmatch(r"[a-z0-9]{12,24}", cid or "-") else "")
         if not txt:
             continue
-        chat = people[r["t"]]
-        print("заявка →", chat, txt)
-        if not DRY:
+        who = people[r["t"]]
+        print("заявка →", who["tg"] or "веб", txt)
+        if not DRY and not who["tg"]:
+            if push(who["wp"], txt, btn):
+                n += 1
+        elif not DRY:
+            chat = who["tg"]
             body = {"chat_id": int(chat), "text": html.unescape(txt),
                     "reply_markup": {"inline_keyboard": [[{"text": btn, "web_app": {"url": APP}}]]}}
             req = urllib.request.Request(f"https://api.telegram.org/bot{TOKEN}/sendMessage", data=json.dumps(body).encode(),

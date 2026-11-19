@@ -6426,7 +6426,7 @@ document.addEventListener("click",e=>{const t=e.target;
   const d2=t.closest("[data-acc-del2]");if(d2){FRIENDS=FRIENDS.filter(x=>x.uid!==d2.dataset.accDel2);frSave();vClose();drawAcc();toast("Удалено из друзей");return}
   const sh=t.closest("[data-sht]");if(sh){const v=sh.dataset.sht;if(v!==SCREEN){tgHaptic();show(v)}return}});
 // ---------- новости о книгах в Telegram (по согласию) ----------
-function notifyData(){const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(!u)return null;
+function notifyData(){const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(!u){const wp=LS.get("zal.wp",null);return wp&&wp.endpoint?{wp,n:myName()}:null}
   const fav=[...new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a&&b.a!=="Автор не указан").map(b=>b.a))].slice(0,60);
   return {tg:u.id,n:myName(),club:LS.get("zal.club","")||"",want:want.slice(0,200).map(w=>({t:w.t,a:w.a||""})),read:BOOKS.slice(-400).map(b=>norm(b.t)),fav,fr:FRIENDS.map(f=>f.uid).filter(Boolean).slice(0,100)}}
 function notifySync(force){if(!LS.get("zal.ntf",0)||!NS.notifyPut||!(NS.hasTok&&NS.hasTok()))return;const d=notifyData();if(!d)return;const sig=JSON.stringify(d);
@@ -6765,8 +6765,21 @@ function bkParam(){try{const v=new URLSearchParams(location.search).get("bk");if
 function askWrite(){try{if(!TG||!TG.requestWriteAccess||LS.get("zal.wa",0)||!BOOKS.length)return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#bkc.on"))return setTimeout(askWrite,20000);
   LS.set("zal.wa",1);TG.requestWriteAccess(ok=>{if(ok&&localStorage.getItem("zal.ntf")==null){LS.set("zal.ntf",1);notifySync(true)}})}catch(e){}}
 // напоминания бота включены по умолчанию у всех в Telegram; выключить - внизу «Статистики»
+// веб-пуши для тех, кто не в Telegram: бот пишет о заявках в друзья и в клуб (sw.js, ключ - tools/vapid.py)
+const WP_KEY="BL17banwC6BxRTnT1U6kf5aKtNN69kIHbTdABa3FDZaRzJNAUmitA18EiJmxMPgNurMUqa57j7Zh7C18YEQwxJs";
+const wpOK=()=>!TG&&"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window&&window.isSecureContext;
+const wpKey=()=>{const b=atob(WP_KEY.replace(/-/g,"+").replace(/_/g,"/")+"=".repeat((4-WP_KEY.length%4)%4));return Uint8Array.from(b,c=>c.charCodeAt(0))};
+async function wpSub(){const reg=await navigator.serviceWorker.register("/sw.js");await navigator.serviceWorker.ready;
+  const sub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:wpKey()});
+  const j=sub.toJSON();if(!j||!j.endpoint)return false;LS.set("zal.wp",{endpoint:j.endpoint,keys:j.keys});LS.set("zal.ntf",1);notifySync(true);return true}
+async function wpOn(){LS.set("zal.wpask",1);vClose();try{const p=await Notification.requestPermission();if(p!=="granted")return;if(await wpSub())toast("Уведомления включены")}catch(e){toast("Браузер не дал включить уведомления")}}
+function wpCheck(){try{if(!wpOK()||!(NS.hasTok&&NS.hasTok()))return;const p=Notification.permission;
+  if(p==="granted"){if(!LS.get("zal.wp",null)&&localStorage.getItem("zal.ntf")!=="0")wpSub().catch(()=>{});return}
+  if(p!=="default"||LS.get("zal.wpask",0)||["#vsheet","#auth","#onb","#intro"].some(q=>{const e=$(q);return e&&e.classList.contains("on")}))return;
+  LS.set("zal.wpask",1);vOpen(`<h3 class="vh">Сообщать о заявках в друзья и приглашениях в клуб?</h3><div class="fr-yn"><button class="btn w" data-wp-yes>Да</button><button class="btn" data-wp-no>Не сейчас</button></div>`)}catch(e){}}
+document.addEventListener("click",e=>{if(e.target.closest("[data-wp-yes]")){wpOn()}else if(e.target.closest("[data-wp-no]"))vClose()});
 function ntfDefault(){try{const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(u&&localStorage.getItem("zal.ntf")==null){LS.set("zal.ntf",1);notifySync(true)}}catch(e){}}
-function afterSplash(){setTimeout(ntfDefault,6000);setTimeout(()=>{if(SCREEN==="col")tour("col")},2600);setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&Date.now()-(+LS.get("zal.authskip",0)||0)>3*864e5)authShow()}
+function afterSplash(){setTimeout(ntfDefault,6000);setTimeout(wpCheck,20000);setTimeout(()=>{if(SCREEN==="col")tour("col")},2600);setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&Date.now()-(+LS.get("zal.authskip",0)||0)>3*864e5)authShow()}
 
 
 // ---------- смена обложки вручную: фото / рисунок / другое издание ----------
