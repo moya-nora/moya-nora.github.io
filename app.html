@@ -2476,7 +2476,7 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .wr-pvh{font-size:13px!important;opacity:.7;margin:0!important}
 #app .wr-imgs{display:flex;gap:12px;overflow-x:auto;max-width:100%;max-height:74%;scroll-snap-type:x mandatory}
 #app .wr-imgs img{flex:none;height:min(66vh,560px);aspect-ratio:9/16;border-radius:16px;scroll-snap-align:center;-webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default}
-#app .st{padding-bottom:20px}#app .st-n{margin:4px 2px 10px;font-size:13px;color:var(--ink3);line-height:1.4}#app .st-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 6px}
+#app .st{padding-bottom:20px}#app .st-v{border-radius:14px;background:rgba(255,255,255,.05);padding:10px 12px;margin:0 0 8px}#app .st-vh{display:flex;gap:6px;font-size:12px;color:var(--ink3)}#app .st-vh i{margin-left:auto;font-style:normal;opacity:.6}#app .st-v p{margin:5px 0 0;font-size:13.5px;line-height:1.45;color:var(--ink);overflow-wrap:anywhere}#app .st-n{margin:4px 2px 10px;font-size:13px;color:var(--ink3);line-height:1.4}#app .st-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 6px}
 #app .st-t{border-radius:16px;background:rgba(255,255,255,.06);padding:12px 14px;display:flex;flex-direction:column;gap:2px}#app .st-t b{font-family:var(--serif);font-size:30px;font-weight:600;line-height:1.05;color:#F3D19A}#app .st-t span{font-size:13px;color:var(--ink)}#app .st-t small{font-size:12px;color:var(--ink3)}
 #app .st-h{margin:20px 2px 6px;font-size:15px;font-weight:600}#app .st-ch{display:block;width:100%;height:110px;border-radius:12px;background:rgba(255,255,255,.04)}#app .st-ax{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin:4px 2px 0}
 #app .st-top{margin:6px 0 10px;padding:0;list-style:none;counter-reset:s}#app .st-top li{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid rgba(255,255,255,.07)}#app .st-top li span{flex:1;min-width:0;font-size:14px}#app .st-top li small{display:block;font-size:12px;color:var(--ink3)}#app .st-top li b{color:#F3D19A;font-size:15px}
@@ -7216,7 +7216,7 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="read"){const pre=BKC.sec?true:null;bkcClose();RMPRE=pre;rmAsk(x,null,n=>{BK.markRead(x,n*2);refresh()},"Без оценки",()=>{BK.markRead(x,null);refresh()})}});
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest("#vshBody"))return;
   const w=t.closest("[data-wh]");if(w){e.stopPropagation&&e.stopPropagation();whereOpen($("#vshBody")._wx,w.dataset.wh);tgHaptic();return}
-  const u=t.closest("[data-whu]");if(u){try{window.ym&&ym(114237349,"reachGoal","where_go",{store:u.dataset.whk})}catch(e){}openLink(u.dataset.whu);return}});
+  const u=t.closest("[data-whu]");if(u){try{window.ym&&ym(114237349,"reachGoal","where_go",{store:u.dataset.whk})}catch(e){}try{EV.add("where_go",u.dataset.whk)}catch(e){}openLink(u.dataset.whu);return}});
 (function(){let y0=null,dy=0,hx0=null,hy0=0,hdx=0,hz=0;bkcEl.addEventListener("touchstart",e=>{y0=null;hx0=null;hdx=0;hz=0;const t0=e.touches[0];if(!e.target.closest(".na-row,.mini,input,textarea,[data-noswipe]")){hx0=t0.clientX;hy0=t0.clientY}if(e.target.closest("button"))return;{const d=e.target.closest("#bkcDw");if(d&&(d.scrollTop>0||d.scrollHeight>d.clientHeight+2))return}y0=t0.clientY;dy=0},{passive:true});
   bkcEl.addEventListener("touchmove",e=>{const t=e.touches[0];
     // смахнуть вправо - закрыть карточку (как «назад»)
@@ -7260,7 +7260,30 @@ function shelfAnimOld(x,lab){if(RM)return;const X=shvInit();
   void el.offsetWidth;el.classList.add("fly");X.run=1;tgHaptic("light");
   X.t2=setTimeout(()=>{if(!X.run)return;el.classList.add("land");tgHaptic("rigid")},1000);X.t=setTimeout(()=>shvEnd(),2700)}
 // цели в Метрике: какие действия люди делают (без личных данных)
-const goal=n=>{try{window.ym&&ym(114237349,"reachGoal",n)}catch(e){}};
+let goal=n=>{try{window.ym&&ym(114237349,"reachGoal",n)}catch(e){}};
+// журнал действий (анонимно): что люди делают в Норе, без ника, почты и аккаунта. Случайный номер устройства живёт только в этом браузере.
+// Действия копятся в сеансе и уходят пачкой в ev/ (не чаще раза в 40 с и при сворачивании). Раз в день бот (tools/bot_stats.py) собирает их в статистику владелицы и удаляет.
+const EV=(()=>{const Q=[],T0=Date.now();let id="",n0=0,sent=0,tm=0,last="";
+  try{id=localStorage.getItem("nora.evid")||"";if(!id){id=Math.random().toString(36).slice(2,10);localStorage.setItem("nora.evid",id);n0=1}}catch(e){id="x"+Math.random().toString(36).slice(2,8)}
+  const ua=navigator.userAgent,tg=!!(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData)||/tgWebApp/.test(location.hash),
+    src=(location.search.match(/[?&]src=(android|ios)/)||[])[1],
+    where=src==="android"?"Android-приложение":src==="ios"?"iPhone-приложение":tg?"Telegram":(matchMedia("(display-mode: standalone)").matches||navigator.standalone)?"иконка на экране":"браузер",
+    dev=/iPhone|iPad/.test(ua)?"iPhone":/Android/.test(ua)?"Android":"компьютер",
+    own=()=>{try{return !!(localStorage.getItem("zal.owner")||localStorage.getItem("nora.stk")||LS.get("zal.who","")==="owner")}catch(e){return false}},
+    test=/app-dev/.test(location.pathname);
+  const flush=()=>{clearTimeout(tm);tm=0;if(Q.length<=sent)return;const part=Q.slice(sent,sent+120);sent+=part.length;
+    const f={k:{stringValue:id+"."+T0},d:{stringValue:id},w:{stringValue:where},p:{stringValue:dev},n:{booleanValue:!!n0},o:{booleanValue:own()},v:{booleanValue:test},
+      s:{integerValue:String(T0)},e:{stringValue:JSON.stringify(part)},t:{timestampValue:new Date().toISOString()}};
+    try{fetch("https://firestore.googleapis.com/v1/projects/nora-ed429/databases/(default)/documents/ev?key=AIzaSyD9yfazxfKpaEk1BNFDN61dEB3pfxT9cS4",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:f}),keepalive:true}).catch(()=>{})}catch(e){}};
+  const add=(c,x)=>{try{if(Q.length>=300)return;x=x==null?"":String(x).replace(/\s+/g," ").trim().slice(0,60);const k=c+"|"+x;if(k===last)return;last=k;
+    Q.push(x?[Math.round((Date.now()-T0)/1000),c,x]:[Math.round((Date.now()-T0)/1000),c]);if(!tm)tm=setTimeout(flush,40000)}catch(e){}};
+  addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flush()});addEventListener("pagehide",flush);
+  add("open");return {add,flush}})();
+window._ev=EV;
+{const g0=goal;goal=n=>{g0(n);if(!/^card/.test(n))EV.add(n)}}
+{const s0=show;show=function(s){if(s!==SCREEN)EV.add("scr",s);return s0.apply(this,arguments)}}
+{const b0=bkcOpen;bkcOpen=function(x,L){if(x&&!VIEW)EV.add(L==="friend"?"book_fr":"book",(x.t||"")+(x.a?" - "+x.a:""));return b0.apply(this,arguments)}}
+{const o0=openSearch;openSearch=function(){EV.add("search");return o0.apply(this,arguments)};const r0=sxRun;let qt=0;sxRun=function(){const r=r0.apply(this,arguments);clearTimeout(qt);qt=setTimeout(()=>{const q=($("#fq")||{}).value||"";if(q.trim().length>=3)EV.add("q",q)},1800);return r}}
 // аккаунт предлагаем сразу после первой книги на полке (и снова при следующем запуске, если вход слетел)
 function authNudge(){try{if(!needAuth()||sessionStorage.getItem("nora.an"))return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on,.tour")||BKC)return setTimeout(authNudge,6000);
   sessionStorage.setItem("nora.an","1");const back=!!(NS.email||LS.get("zal.sync.was",0));
@@ -7544,6 +7567,19 @@ window.NWRAP={open:wrOpen,data:wrData};
   const m=location.hash.match(/[#&]st=([0-9a-f]{64})/);if(m){try{localStorage.setItem(STK,m[1])}catch(e){}history.replaceState(null,"",location.pathname+location.search);setTimeout(()=>stOpen(),900)}
   const bars=(L,col)=>{const mx=Math.max(1,...L.map(z=>z[1])),w=100/L.length;return `<svg class="st-ch" viewBox="0 0 100 42" preserveAspectRatio="none">${L.map((z,i)=>`<rect x="${(i*w+w*.15).toFixed(2)}" y="${(40-z[1]/mx*36).toFixed(2)}" width="${(w*.7).toFixed(2)}" height="${Math.max(.6,z[1]/mx*36).toFixed(2)}" rx=".6" fill="${col}"/>`).join("")}</svg><div class="st-ax"><span>${L[0][0].slice(8,10)}.${L[0][0].slice(5,7)}</span><span>сегодня</span></div>`};
   const line=L=>{if(L.length<2)return `<p class="st-n">История появится через пару дней - бот считает раз в сутки.</p>`;const mx=Math.max(1,...L.map(z=>z.a1)),P=L.map((z,i)=>`${(i/(L.length-1)*100).toFixed(2)},${(40-z.a1/mx*36).toFixed(2)}`).join(" ");return `<svg class="st-ch" viewBox="0 0 100 42" preserveAspectRatio="none"><polyline points="${P}" fill="none" stroke="#F3D19A" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg>`};
+  const LI=(L,f)=>L&&L.length?`<ol class="st-top">${L.map(f).join("")}</ol>`:`<p class="st-n">Пока пусто.</p>`;
+  const evHTML=E=>{if(!E)return `<h4 class="st-h">Что делают в приложении</h4><p class="st-n">Журнал действий появится после следующего подсчёта бота.</p>`;
+    const T=(n,l)=>`<div class="st-t"><b>${Number(n||0).toLocaleString("ru-RU")}</b><span>${l}</span></div>`;
+    return `<h4 class="st-h">Что делают в приложении</h4>
+      <div class="st-g">${T(E.ppl7,"человек за 7 дней")}${T(E.ses7,"визитов за 7 дней")}${T(E.back7,"заходили в разные дни")}</div>
+      <h4 class="st-h">Визиты по дням</h4>${bars(E.ses.map(z=>[z[0],z[1]]),"#F3D19A")}
+      <h4 class="st-h">Действия за 7 дней</h4>${LI(E.acts,([a,n,p])=>`<li><span>${esc(a)}<small>${p} ${plural(p,"человек","человека","человек")}</small></span><b>${n}</b></li>`)}
+      <h4 class="st-h">Куда заходят</h4>${LI(E.scr,([a,n])=>`<li><span>${esc(a)}</span><b>${n}</b></li>`)}
+      <h4 class="st-h">Что искали</h4>${LI(E.q,([a,n])=>`<li><span>${esc(a)}</span><b>${n}</b></li>`)}
+      <h4 class="st-h">Какие книги открывали</h4>${LI(E.bk,([a,n])=>`<li><span>${esc(a)}</span><b>${n}</b></li>`)}
+      ${E.shop&&E.shop.length?`<h4 class="st-h">Уходили в магазины</h4>${LI(E.shop,([a,n])=>`<li><span>${esc(a)}</span><b>${n}</b></li>`)}`:""}
+      <h4 class="st-h">Откуда открывают</h4>${LI(E.where,([a,n])=>`<li><span>${esc(a)}</span><b>${n}</b></li>`)}
+      <h4 class="st-h">Последние визиты</h4>${(E.stories||[]).map(v=>`<div class="st-v"><div class="st-vh">${esc(v.t)} · ${esc(v.w)}, ${esc(v.p)}${v.n?" · новый":""}${v.m?` · ${v.m} мин`:""}<i>№${esc(v.id)}</i></div><p>${v.s.length?v.s.map(esc).join(" → "):"открыл и закрыл"}${v.more?` → ещё ${v.more}`:""}</p></div>`).join("")||`<p class="st-n">Пока пусто.</p>`}`};
   window.stOpen=async function(){const k=stk();if(!k)return;vOpen(`<div class="st"><h3 class="vh">Статистика Норы</h3><p class="st-n">Загружаю…</p></div>`,true);
     try{const r=await fetch(`https://firestore.googleapis.com/v1/projects/nora-ed429/databases/(default)/documents/stats/${k}`,{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json(),D=JSON.parse(j.fields.d.stringValue);
       const t=new Date(D.t),T=(n,l,s)=>`<div class="st-t"><b>${Number(n||0).toLocaleString("ru-RU")}</b><span>${l}</span>${s?`<small>${s}</small>`:""}</div>`;
@@ -7554,6 +7590,7 @@ window.NWRAP={open:wrOpen,data:wrData};
         <h4 class="st-h">Заходили за сутки, по дням</h4>${line(D.hist||[])}
         <div class="st-g">${T(D.read,"книг отмечено прочитанными")}${T(D.want,"книг в «Хочу прочитать»")}${T(D.notify,"подписаны на напоминания бота")}</div>
         <h4 class="st-h">Чаще всего на полках</h4><ol class="st-top">${(D.top||[]).map(([b,a,n])=>`<li><span>${esc(b)}<small>${esc(a)}</small></span><b>${n}</b></li>`).join("")}</ol>
+        ${evHTML(D.ev)}
         <p class="st-n">Цифры сводные: имена и почты сюда не попадают. Ссылку на этот экран никому не пересылай.</p></div>`}
     catch(e){$("#vshBody").innerHTML=`<div class="st"><h3 class="vh">Статистика Норы</h3><p class="st-n">Пока нет данных: бот ещё не посчитал или ссылка устарела. Открой свежую ссылку из бота.</p></div>`}};
   document.addEventListener("click",e=>{if(e.target.closest("[data-stats]"))stOpen()});
