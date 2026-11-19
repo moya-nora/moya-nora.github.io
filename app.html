@@ -2462,7 +2462,12 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .wr-pv{align-self:center;width:min(100%,250px,calc((100vh - 300px) * 9 / 16));aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#140C1A;display:flex;align-items:center;justify-content:center;box-shadow:0 30px 60px -20px #000,0 0 0 1px rgba(243,209,154,.3)}
 #app .wr-pv img{width:100%;height:100%;display:block;object-fit:cover}
 #app .wr-pv i{font-style:normal;font-size:14px;color:rgba(247,241,230,.6)}
-#app .wr-home{margin:0 0 16px}
+#app .wr-open.wr-home{margin:0 0 16px;position:relative;overflow:hidden;aspect-ratio:2.2/1;align-items:flex-start;padding:20px 20px;border:0;background:#3E2A55 url(img/itogi/card2.webp?v=1) center/cover no-repeat;box-shadow:0 18px 40px -22px rgba(0,0,0,.9)}
+#app .wr-home::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(40,24,58,.55),rgba(40,24,58,0) 60%);pointer-events:none}
+#app .wr-home>div{position:relative;max-width:55%}
+#app .wr-home b{font-size:23px;line-height:1.1}
+#app .wr-home span{margin-top:6px;font-size:13.5px;color:rgba(247,241,230,.85)}
+#app .wr-home em{position:absolute;left:20px;bottom:16px;margin:0;font-size:40px}#app .wr-home em small{font-family:DManrope,system-ui,sans-serif;font-size:14px;font-weight:600;color:rgba(247,241,230,.85)}
 #app .wr-pvs{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:4px -24px 0;padding:6px 24px 12px;min-height:180px;align-items:center;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 #app .wr-pvs::-webkit-scrollbar{display:none}
 #app .wr-pvs img{flex:none;height:min(50vh,440px);aspect-ratio:9/16;border-radius:14px;scroll-snap-align:center;box-shadow:0 20px 40px -18px #000,0 0 0 1px rgba(243,209,154,.25)}
@@ -7513,7 +7518,7 @@ document.addEventListener("click",e=>{if(e.target.closest("[data-statopen]")){st
 {const da=drawAcc;drawAcc=function(){da.apply(this,arguments);try{const b=$("#accBox");if(b&&!VIEW&&!b.querySelector("[data-statopen]")){const h=b.querySelector(".ac-top")||b.querySelector("h1,h2");const html=`<button class="ac-stat" data-statopen><span><b>Статистика</b></span><i>›</i></button>`;if(h)h.insertAdjacentHTML("afterend",html);else b.insertAdjacentHTML("afterbegin",html)}}catch(e){}}}
 // в сезон - карточка итогов и наверху главной; открыть сразу: ссылка #wrap или запуск бота с параметром wrap
 function wrHome(){try{const t=$("#trend");if(!t||document.getElementById("wrHome"))return;const D=wrSeason()&&!VIEW&&!isF()&&wrData();if(!D)return;
-  t.insertAdjacentHTML("beforebegin",`<button class="wr-open wr-home" id="wrHome" data-wropen><div><b>Твои итоги ${D.Y} готовы</b><span>Год в книгах - листай и делись в сторис</span></div><em>${D.L.length}</em></button>`)}catch(e){}}
+  t.insertAdjacentHTML("beforebegin",`<button class="wr-open wr-home" id="wrHome" data-wropen><div><b>Твои итоги ${D.Y}</b><span>Год в книгах - листай и делись</span></div><em>${D.L.length}<small> ${plural(D.L.length,"книга","книги","книг")}</small></em></button>`)}catch(e){}}
 setTimeout(wrHome,1500);
 {const sp=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param;if(/(^|[#&])wrap\b/.test(location.hash)||sp==="wrap"){if(location.hash)history.replaceState(null,"",location.pathname+location.search);setTimeout(()=>{if(wrSeason())wrOpen()},1800)}}
 {const sb1=syncBack;syncBack=function(){sb1();try{if(WR&&TG&&TG.BackButton)TG.BackButton.show()}catch(e){}}}
