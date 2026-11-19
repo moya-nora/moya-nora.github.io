@@ -6673,7 +6673,7 @@ function hsDue(){if(VIEW||HS.get("web")||HS.get("never"))return false;if((HS.get
   const days=(Date.now()-HS.get("first"))/864e5;
   if(TG&&(days<1||(HS.get("opens")||0)<2))return false;   // без Telegram предлагаем уже в первый заход, в Telegram - со второго дня
   if(Date.now()-(HS.get("last")||0)<7*864e5)return false;return true}
-function hsCheck(){if(!hsDue())return;if(standalone()){HS.set("web",1);return}
+function hsCheck(){if(STORE||!hsDue())return;if(standalone()){HS.set("web",1);return}
   hsShow(TG?"tg":"web")}
 const hsEl=document.createElement("div");hsEl.className="hsb";$("#app").appendChild(hsEl);
 // «Нора на экране Домой»: плашка как у больших приложений + наглядная инструкция с картинками интерфейса телефона
@@ -6710,7 +6710,7 @@ document.addEventListener("click",e=>{if(e.target.closest("[data-hs-any]")){tgHa
     try{TG&&TG.openLink?TG.openLink(u,{try_instant_view:false}):window.open(u,"_blank")}catch(x){window.open(u,"_blank")}}});
 // пришли из Telegram по кнопке «Открыть в браузере» - сразу показываем, как поставить иконку
 if(!TG&&/[?&]hs=1/.test(location.search)){const go=()=>{if(standalone())return;if(document.querySelector("#onb.on,#intro.on,#splash.on,#auth.on")){setTimeout(go,1500);return}hsInstall("web")};setTimeout(go,2500)}
-const hsCan=()=>!VIEW&&!standalone()&&!HS.get("web");
+const hsCan=()=>!STORE&&!VIEW&&!standalone()&&!HS.get("web");
 
 // внешние ссылки: внутри Telegram обычная ссылка не открывается — открываем через Telegram
 document.addEventListener("click",e=>{const a=e.target.closest("a[data-ext]");if(!a)return;const u=a.href;if(!TG)return;e.preventDefault();
