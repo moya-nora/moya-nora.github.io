@@ -538,7 +538,44 @@ SEASON = [
    ("Тому, у кого всё есть", "Большие книги-события: такие дарят в красивом издании.",
     "Мастер и Маргарита|Булгаков;Сто лет одиночества|Маркес;Шантарам|Робертс;Проект «Аве Мария»|Вейер;Sapiens|Харари;Хоббит, или Туда и обратно|Толкин")],
   "Какую книгу подарить на Новый год: подруге, маме, тому, кто читает редко"),
+ ("kniga-v-podarok-podruge", "Какую книгу подарить подруге", "Выбирай по тому, что она читает сейчас, - тогда книга не уйдёт пылиться на полку.",
+  [("Если она читает фэнтези и ромэнтези", "Драконы, фейри и любовь, от которой не оторваться до утра.",
+    "Четвёртое крыло|Яррос;Энциклопедия фей Эмили Уайлд|Фосетт;Ночной цирк|Моргенштерн;Цирцея|Миллер;Медведь и соловей|Арден;Жестокий принц|Блэк;Шестёрка воронов|Бардуго"),
+   ("Если любит истории про любовь", "Тёплые и красивые романы, которые хочется перечитывать.",
+    "Там, где раки поют|Оуэнс;До встречи с тобой|Мойес;Гипотеза любви|Хейзелвуд;Дневник памяти|Спаркс;Гордость и предубеждение|Остин;Джейн Эйр|Бронте"),
+   ("Если любит детективы", "Сюжеты, из-за которых она забудет про телефон.",
+    "Клуб убийств по четвергам|Осман;Загадка номера 622|Диккер;Безмолвный пациент|Михаэлидес;Исчезнувшая|Флинн;Убийство в «Восточном экспрессе»|Кристи")],
+  "Какую книгу подарить подруге на Новый год и день рождения"),
+ ("kniga-v-podarok-mame", "Какую книгу подарить маме", "Тёплые истории, после которых захочется позвонить и обсудить.",
+  [("Добрые и светлые", "Книги, от которых становится уютно.",
+    "Вторая жизнь Уве|Бакман;Пока не остыл кофе|Кавагути;Полночная библиотека|Хейг;Вино из одуванчиков|Брэдбери;Маленькие женщины|Олкотт;Кафе на краю земли|Стрелеки"),
+   ("Большие истории о семье и судьбе", "Романы, в которых живёшь несколько вечеров подряд.",
+    "Зимний сад|Ханна;Соловей|Ханна;Книжный вор|Зусак;Тень ветра|Сафон;Зулейха открывает глаза|Яхина;Лавр|Водолазкин"),
+   ("Если она любит классику", "Красивое издание любимой книги - подарок, который остаётся надолго.",
+    "Мастер и Маргарита|Булгаков;Анна Каренина|Толстой;Ребекка|дю Морье;Унесённые ветром|Митчелл;Гордость и предубеждение|Остин")],
+  "Какую книгу подарить маме: тёплые романы и красивая классика"),
+ ("kniga-v-podarok-muzhchine", "Какую книгу подарить мужчине", "Мужу, папе, брату или другу - по тому, что он любит.",
+  [("Если любит фантастику", "Большие идеи и сюжеты, от которых не оторваться.",
+    "Проект «Аве Мария»|Вейер;Марсианин|Вейер;Дюна|Герберт;Задача трёх тел|Лю;Стрелок|Кинг;Автостопом по галактике|Адамс"),
+   ("Если любит приключения и детективы", "Погони, загадки и герои, за которых переживаешь.",
+    "Граф Монте-Кристо|Дюма;Шантарам|Робертс;Тень ветра|Сафон;Девушка с татуировкой дракона|Ларссон;Имя розы|Эко;Хоббит, или Туда и обратно|Толкин"),
+   ("Если читает нон-фикшн", "Книги, которые потом цитируют за ужином.",
+    "Sapiens|Харари;Ружья, микробы и сталь|Даймонд;Думай медленно|Канеман;Атомные привычки|Клир;Краткая история времени|Хокинг")],
+  "Какую книгу подарить мужчине, мужу или папе"),
+ ("kniga-v-podarok-podrostku", "Какую книгу подарить подростку", "Книги, которые читают не по списку, а потому что интересно.",
+  [("Фэнтези и приключения", "Миры, в которые уходят с головой.",
+    "Гарри Поттер и философский камень|Роулинг;Шестёрка воронов|Бардуго;Тень и кость|Бардуго;Перси Джексон и похититель молний|Риордан;Хоббит, или Туда и обратно|Толкин"),
+   ("Антиутопии и тайны", "Сюжеты, которые обсуждают с друзьями.",
+    "Голодные игры|Коллинз;Бегущий в лабиринте|Дэшнер;Дивергент|Рот;Чудо|Паласио;Виноваты звёзды|Грин;Дающий|Лоури")],
+  "Какую книгу подарить подростку: фэнтези, антиутопии, детективы"),
+ ("kniga-v-podarok-kollege", "Какую книгу подарить коллеге", "Когда человека знаешь не очень близко: книги, которые нравятся почти всем.",
+  [("Лёгкие и добрые", "Можно прочитать за пару вечеров.",
+    "Маленький принц|Сент-Экзюпери;Пока не остыл кофе|Кавагути;Кафе на краю земли|Стрелеки;Клуб убийств по четвергам|Осман;Вторая жизнь Уве|Бакман"),
+   ("Полезные", "Нон-фикшн без занудства.",
+    "Атомные привычки|Клир;Думай медленно|Канеман;Sapiens|Харари;Эссенциализм|Маккеон;Джедайские техники|Дорофеев;Сила воли|Макгонигал;Поток|Чиксентмихайи")],
+  "Какую книгу подарить коллеге или начальнику на Новый год"),
 ]
+GIFT = {"knigi-v-podarok-na-novyy-god", "kniga-v-podarok-podruge", "kniga-v-podarok-mame", "kniga-v-podarok-muzhchine", "kniga-v-podarok-podrostku", "kniga-v-podarok-kollege"}
 SECTS = {}
 SEO_T = {"novogodnee-nastroenie": "Книги с новогодней атмосферой: что почитать под Новый год"}
 for _i, (_p, _t, _l, _txt, _ft) in enumerate(SEASON):
@@ -589,10 +626,34 @@ QUICK = [p for p in ("chitayut-seychas", "novogodnee-nastroenie", "chto-pochitat
          if any(q == p for q, _, _, _ in coll_data)]
 tname = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
 chips = lambda cur: '<nav class="chips"><a class="find" href="/poisk.html">Найти книгу по жанру и настроению</a>' + "".join(f'<a href="/c/{p}.html"{" class=on" if p == cur else ""}>{esc(tname(p))}</a>' for p in QUICK) + "</nav>"
+GIFT_NAV = [("kniga-v-podarok-podruge", "Подруге"), ("kniga-v-podarok-mame", "Маме"), ("kniga-v-podarok-muzhchine", "Мужчине"),
+            ("kniga-v-podarok-podrostku", "Подростку"), ("kniga-v-podarok-kollege", "Коллеге"), ("knigi-v-podarok-na-novyy-god", "Всем на Новый год")]
+GIFT_NAV = [(p_, t_) for p_, t_ in GIFT_NAV if any(q == p_ for q, _, _, _ in coll_data)]
+GIFT_ERID = '<p class="erid gerid">Реклама · Читай-город, erid: 2W5zFJkZEDg · ООО ЛИТРЕС, ИНН 7719571260, erid: 2VfnxyNkZrY</p>'
+
+
+def BUY(b):  # под книгой в подарочных подборках: сразу купить бумажную или электронную
+    qt = urllib.parse.quote(b["t"]); q = urllib.parse.quote(b["t"] + " " + b["a"].split(" ")[-1])
+    cg = f"https://www.chitai-gorod.ru/search?phrase={qt}&partnerId=1006702&utm_source=affiliate&utm_medium=cpa&utm_campaign=1006702&sub_3=2W5zFJkZEDg&erid=2W5zFJkZEDg"
+    lr = LR_T.replace("{url}", urllib.parse.quote((f"https://www.litres.ru/pages/biblio_book/?art={lit_id(b)}" if lit_id(b) else f"https://www.litres.ru/search/?q={q}"), safe=""))
+    g = lambda k: f"try{{ym(114237349,'reachGoal','gift_buy',{{store:'{k}'}})}}catch(e){{}}"
+    return (f'<div class="buy"><a href="{cg}" rel="nofollow noopener sponsored" target="_blank" onclick="{g("chitai")}">Купить книгу</a>'
+            f'<a href="{lr}" rel="nofollow noopener sponsored" target="_blank" onclick="{g("litres")}">Электронная</a></div>')
+
+
+def gchips(cur):
+    return '<nav class="chips gnav">' + "".join(f'<a href="/c/{p_}.html"{" class=on" if p_ == cur else ""}>{esc(t_)}</a>' for p_, t_ in GIFT_NAV) + "</nav>"
+
+
+def gcard(b, n, path):
+    return f'<div class="gk">{card(b, n, True)}{BUY(b)}</div>' if path in GIFT else card(b, n, True)
+
+
 for path, title, lead, L in coll_data:
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="/c/">Подборки</a></div>'
             f'<div class="ph"><div><h1>{esc(title)}</h1><p class="lead">{esc(lead)}</p></div><div class="cnt gl">{len(L)} книг</div></div>'
-            f'{chips(path)}' + ('<nav class="chips whonav">' + "".join(f'<a href="#who{n_}">{esc(h_)}</a>' for n_, (h_, _, _) in enumerate(SECTS[path])) + '</nav>' + "".join(f'<section class="who" id="who{n_}"><h2>{esc(h_)}</h2><p class="lead">{esc(sub_)}</p><div class="grid">{"".join(card(b, i + 1, True) for i, b in enumerate(l_))}</div></section>' for n_, (h_, sub_, l_) in enumerate(SECTS[path])) if path in SECTS else f'<div class="grid">{"".join(card(b, i + 1, True) for i, b in enumerate(L))}</div>')
+            f'{gchips(path) if path in GIFT else chips(path)}' + ('<nav class="chips whonav">' + "".join(f'<a href="#who{n_}">{esc(h_)}</a>' for n_, (h_, _, _) in enumerate(SECTS[path])) + '</nav>' + "".join(f'<section class="who" id="who{n_}"><h2>{esc(h_)}</h2><p class="lead">{esc(sub_)}</p><div class="grid">{"".join(gcard(b, i + 1, path) for i, b in enumerate(l_))}</div></section>' for n_, (h_, sub_, l_) in enumerate(SECTS[path])) if path in SECTS else f'<div class="grid">{"".join(card(b, i + 1, True) for i, b in enumerate(L))}</div>')
+            + (GIFT_ERID if path in GIFT else "")
             + '<div class="hook gl"><div><b>Хочешь ещё таких же?</b><p>Отметь в Норе пару книг из этой подборки - и Шуршуня будет приносить похожие, которых ещё нет на твоей полке.</p></div>'
               '<div class="ctas"><a class="btn" href="/app.html?app=1" onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}">Подобрать под мой вкус</a><a class="btn ghost" href="/test.html">Пройти тест</a></div></div>'
             + f'{FINAL}</div>')
@@ -1084,7 +1145,7 @@ def seed_card(b):
 
 after = [b for g in groups.values() for b in g]
 after = onepa(sorted(after, key=lambda b: (TORD.get(nk(b["t"]) + "|" + b["a"].split(" ")[-1].lower().replace("ё", "е"), 999), not b["cat"], -(b["q"] or 0))))[:16]
-HOME_SHELVES = [("chitayut-seychas", None), ("novogodnee-nastroenie", "Книги с запахом мандаринов"), ("zhanr-fantasy", "Популярное фэнтези"), ("na-odin-vecher", None)]
+HOME_SHELVES = [("chitayut-seychas", None), ("novogodnee-nastroenie", "Книги с запахом мандаринов"), ("knigi-v-podarok-na-novyy-god", "Что подарить на Новый год"), ("zhanr-fantasy", "Популярное фэнтези")]
 HOME_SHELVES = [(p, t) for p, t in HOME_SHELVES if get(p)]
 lead_of = lambda p: next(l for q, _, l, _ in coll_data if q == p)
 title_of = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
