@@ -2468,6 +2468,12 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .st-t{border-radius:16px;background:rgba(255,255,255,.06);padding:12px 14px;display:flex;flex-direction:column;gap:2px}#app .st-t b{font-family:var(--serif);font-size:30px;font-weight:600;line-height:1.05;color:#F3D19A}#app .st-t span{font-size:13px;color:var(--ink)}#app .st-t small{font-size:12px;color:var(--ink3)}
 #app .st-h{margin:20px 2px 6px;font-size:15px;font-weight:600}#app .st-ch{display:block;width:100%;height:110px;border-radius:12px;background:rgba(255,255,255,.04)}#app .st-ax{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin:4px 2px 0}
 #app .st-top{margin:6px 0 10px;padding:0;list-style:none;counter-reset:s}#app .st-top li{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid rgba(255,255,255,.07)}#app .st-top li span{flex:1;min-width:0;font-size:14px}#app .st-top li small{display:block;font-size:12px;color:var(--ink3)}#app .st-top li b{color:#F3D19A;font-size:15px}
+#app .wr-full{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:calc(var(--sat,0px) + 34px) 0 calc(96px + env(safe-area-inset-bottom,0px))}
+#app .wr-full img{max-width:100%;max-height:100%;aspect-ratio:9/16;object-fit:contain;border-radius:16px;box-shadow:0 30px 60px -20px #000;pointer-events:none}
+#app .wr-shb{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(26px + env(safe-area-inset-bottom,0px));z-index:5;min-width:200px}
+#app .wr-load{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:rgba(247,241,230,.75);font-size:15px}
+#app .wr-load i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(243,209,154,.25);border-top-color:#F3D19A;animation:wrSpin 1s linear infinite}
+@keyframes wrSpin{to{transform:rotate(360deg)}}
 #app .wr-pk{justify-content:flex-end;padding-bottom:calc(30px + env(safe-area-inset-bottom,0px))}
 #app .wr-pkh{margin:0 0 4px;font:600 26px NoraDisp,"Cormorant Garamond",serif;color:#F7F1E6;align-self:stretch;text-align:left}
 #app .wr-nets{display:flex;flex-direction:column;gap:8px;align-self:stretch}
@@ -7321,10 +7327,17 @@ function wrSlides(D){const n=D.L.length,S=[],bk=plural(n,"книга","книг�
   S.push(`<div class="wr-k">Для сторис</div><h2 class="wr-h" style="font-size:26px">Твой год в картинках</h2><div class="wr-pvs" data-wrpvs><i>Собираю страницы…</i></div><button class="wr-btn" data-wrshare>Поделиться</button>`);
   return S}
 let WR=null;const wrEl=document.createElement("div");wrEl.className="wr";$("#app").appendChild(wrEl);
-function wrDraw(){const i=WR.i,S=WR.S;wrEl.style.setProperty("--wc",WR_COL[i%WR_COL.length]);
-  wrEl.innerHTML=`<div class="wr-bg"></div><svg class="wr-arch" viewBox="0 0 100 60"><path d="M10,60V34a40,40 0 0 1 80,0V60M24,60V36a26,26 0 0 1 52,0V60M38,60V40a12,12 0 0 1 24,0V60"/></svg><div class="wr-bars">${S.map((_,j)=>`<i${j<=i?` class="on"`:""}></i>`).join("")}</div><button class="wr-x" data-wrx aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="wr-s">${S[i]}</div>`;if(i===S.length-1){if(WR.u)wrFill();else wrPrep()}}
-function wrOpen(){const D=wrData();if(!D){toast("Итоги появятся, когда отметишь прочитанное в этом году");return}try{LS.set("zal.wrseen",D.Y)}catch(e){}WR={D,S:wrSlides(D),i:0};wrEl.classList.add("on");wrDraw();setTimeout(()=>{try{wrPrep()}catch(e){}},400);tgHaptic("medium");try{goal("wrap")}catch(e){}try{syncBack()}catch(e){}}
+// итоги года - только картинки (рисунки нейросети с цифрами человека), листаются как сторис; «Поделиться» внизу у каждой
+function wrDraw(){const W=WR;if(!W)return;const U=W.u||[];W.S=U;
+  if(!U.length){wrEl.innerHTML=`<div class="wr-bg"></div><button class="wr-x" data-wrx aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="wr-load"><i></i><span>Собираю твой год…</span></div>`;wrPrep();return}
+  const i=Math.min(W.i,U.length-1);W.i=i;
+  wrEl.innerHTML=`<div class="wr-bg"></div><div class="wr-full"><img src="${U[i]}" alt="Итоги года, картинка ${i+1}"></div><div class="wr-bars">${U.map((_,j)=>`<i${j<=i?` class="on"`:""}></i>`).join("")}</div><button class="wr-x" data-wrx aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><button class="wr-btn wr-shb" data-wrone="${i}">Поделиться</button>`}
+function wrOpen(){const D=wrData();if(!D){toast("Итоги появятся, когда отметишь прочитанное в этом году");return}try{LS.set("zal.wrseen",D.Y)}catch(e){}WR={D,S:[],i:0};wrEl.classList.add("on");wrDraw();setTimeout(()=>{try{wrPrep()}catch(e){}},400);tgHaptic("medium");try{goal("wrap")}catch(e){}try{syncBack()}catch(e){}}
 function wrClose(){WR=null;wrEl.classList.remove("on");wrEl.innerHTML="";try{syncBack()}catch(e){}}
+// итоги года закрываются смахиванием вниз
+{let y0=null,x0=0,dy=0,on=false;wrEl.addEventListener("touchstart",e=>{if(e.target.closest(".wr-img"))return;const t=e.touches[0];y0=t.clientY;x0=t.clientX;dy=0;on=false},{passive:true});
+  wrEl.addEventListener("touchmove",e=>{if(y0==null)return;const t=e.touches[0],ddy=t.clientY-y0,ddx=t.clientX-x0;if(!on){if(Math.abs(ddy)<12&&Math.abs(ddx)<12)return;if(ddy>0&&ddy>Math.abs(ddx)*1.3)on=true;else{y0=null;return}}dy=Math.max(0,ddy);wrEl.style.transition="none";wrEl.style.transform=`translateY(${dy}px)`;wrEl.style.opacity=String(Math.max(.4,1-dy/innerHeight))},{passive:true});
+  wrEl.addEventListener("touchend",()=>{if(!on){y0=null;return}wrEl.style.transition="transform .22s ease,opacity .22s ease";if(dy>innerHeight*.18){wrEl.style.transform="translateY(100%)";wrEl.style.opacity="0";tgHaptic();setTimeout(()=>{wrClose();wrEl.style.transform="";wrEl.style.opacity="";wrEl.style.transition=""},220)}else{wrEl.style.transform="";wrEl.style.opacity=""}y0=null;on=false;wrEl._sw=Date.now()})}
 // картинка 1080×1920 для сторис: стена из обложек года на фоне, веер из трёх любимых книг, цифры года и читательский тип.
 // Обложки грузим с разрешением на холст (напрямую или через wsrv.nl); если не вышло - рисуем свою обложку, чтобы картинка всё равно была красивой
 const wrLd=src=>new Promise(r=>{if(!src)return r(null);const i=new Image();i.crossOrigin="anonymous";const t=setTimeout(()=>r(null),4500);i.onload=()=>{clearTimeout(t);r(i.naturalWidth?i:null)};i.onerror=()=>{clearTimeout(t);r(null)};i.src=src});
@@ -7439,9 +7452,9 @@ async function wrCards(D){await wrFonts();const S="NoraDisp, Georgia, serif",F="
     let y=240+f;wrWrap(x,D.type[0],920,2).forEach(l=>{x.fillText(l,70,y);y+=f});x.font=`500 36px ${F}`;x.fillStyle=MUTE;wrWrap(x,D.type[1]+".",900,2).forEach(l=>{x.fillText(l,80,y+10);y+=48});
     if(genre){x.font=`italic 600 46px ${S}`;x.fillStyle=ACC;x.fillText("Любимый жанр - "+genre.toLowerCase(),80,y+60)}site(x);out.push(c)}
   return out}
-function wrFill(){const W=WR;if(!W||!W.u)return;const el=wrEl.querySelector("[data-wrpvs]");if(!el||el.dataset.ok)return;el.dataset.ok=1;el.innerHTML=W.u.map((u,i)=>`<img data-wrone="${i}" src="${u}" alt="Итоги года, картинка ${i+1}">`).join("")}
+function wrFill(){if(WR&&WR.u&&!wrEl.querySelector(".wr-full"))wrDraw()}
 function wrPrep(){if(!WR)return Promise.resolve(null);const W=WR;if(!W.p)W.p=wrCards(W.D).then(cs=>Promise.all(cs.map(c=>new Promise(r=>{try{c.toBlob(b=>r(b),"image/png")}catch(e){r(null)}})))).then(bs=>{bs=bs.filter(Boolean);return bs.length?bs:null}).catch(()=>null);
-  W.p.then(bs=>{if(!bs)return;W.o=bs;W.u=bs.map(b=>URL.createObjectURL(b));if(WR===W)wrFill()});return W.p}
+  W.p.then(bs=>{if(!bs){if(WR===W){const l=wrEl.querySelector(".wr-load span");if(l)l.textContent="Не получилось собрать картинки. Закрой и открой ещё раз"}return}W.o=bs;W.u=bs.map(b=>URL.createObjectURL(b));if(WR===W)wrFill()});return W.p}
 // «Поделиться»: выбор, куда; для сторис уходит одна картинка 9:16 (главная или та, что нажата)
 const WR_NET={ig:["Сторис в Instagram","https://www.instagram.com/"],vk:["Сторис ВКонтакте","https://vk.com/"],tg:["Telegram",""],save:["Сохранить на телефон",""]};
 function wrPick(one){tgHaptic();const d=document.createElement("div");d.className="wr-img wr-pk";
@@ -7452,7 +7465,7 @@ async function wrShare(one,net){if(!WR)return;const D=WR.D;tgHaptic();const bs=W
   if(net!=="save"){try{if(navigator.canShare&&navigator.canShare({files:fs})){if(story)toast(net==="ig"?"Выбери Instagram, потом «История»":"Выбери ВКонтакте, потом «История»");await navigator.share({files:fs});try{goal("wrap_share_"+(net||"all"))}catch(e){}return}}catch(e){if(e&&e.name==="AbortError")return}}
   const ap=WR_NET[net]&&WR_NET[net][1];
   const d=document.createElement("div");d.className="wr-img";d.innerHTML=`<div class="wr-imgs">${pick.map(b=>`<img alt="Итоги года" src="${URL.createObjectURL(b)}">`).join("")}</div><p>${story?`Зажми картинку и выбери «Сохранить в Фото». Потом открой ${net==="ig"?"Instagram":"ВКонтакте"}, нажми «История» и выбери её из галереи.`:"Зажми картинку и выбери «Сохранить в Фото»."}</p>${ap?`<button class="wr-btn" data-wrapp="${ap}">Открыть ${net==="ig"?"Instagram":"ВКонтакте"}</button>`:""}<button class="wr-btn ${ap?"ghost":""}" data-wrimgx>Готово</button>`;wrEl.appendChild(d);try{goal("wrap_share_"+(net||"all"))}catch(e){}}
-wrEl.addEventListener("click",e=>{if(!WR)return;if(e.target.closest("[data-wrimgx]")){wrEl.querySelectorAll(".wr-img").forEach(d=>d.remove());return}{const n=e.target.closest("[data-wrnet]");if(n){const o=n.dataset.wrn1;wrEl.querySelectorAll(".wr-pk").forEach(d=>d.remove());wrShare(o===""?null:+o,n.dataset.wrnet);return}}{const a=e.target.closest("[data-wrapp]");if(a){const u=a.dataset.wrapp;try{TG&&TG.openLink?TG.openLink(u):window.open(u,"_blank")}catch(x){location.href=u}return}}if(e.target.closest(".wr-img"))return;
+wrEl.addEventListener("click",e=>{if(!WR)return;if(wrEl._sw&&Date.now()-wrEl._sw<350)return;if(e.target.closest("[data-wrimgx]")){wrEl.querySelectorAll(".wr-img").forEach(d=>d.remove());return}{const n=e.target.closest("[data-wrnet]");if(n){const o=n.dataset.wrn1;wrEl.querySelectorAll(".wr-pk").forEach(d=>d.remove());wrShare(o===""?null:+o,n.dataset.wrnet);return}}{const a=e.target.closest("[data-wrapp]");if(a){const u=a.dataset.wrapp;try{TG&&TG.openLink?TG.openLink(u):window.open(u,"_blank")}catch(x){location.href=u}return}}if(e.target.closest(".wr-img"))return;
   if(e.target.closest("[data-wrx]")){wrClose();return}if(e.target.closest("[data-wrshare]")){wrPick(null);return}{const o=e.target.closest("[data-wrone]");if(o){wrPick(+o.dataset.wrone);return}}if(e.target.closest(".wr-pvs"))return;
   const back=e.clientX<innerWidth*.3;if(back){if(WR.i>0){WR.i--;wrDraw();tgHaptic()}}else if(WR.i<WR.S.length-1){WR.i++;wrDraw();tgHaptic()}});
 document.addEventListener("click",e=>{if(e.target.closest("[data-wropen]"))wrOpen()});
