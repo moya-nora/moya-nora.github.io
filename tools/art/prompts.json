@@ -35,6 +35,21 @@
    "p": "App icon and logo for «Нора» - a cozy Russian book app (\"burrow\", a night library by candlelight). Start from the current logo: four nested rounded arches like the entrance to a burrow or a doorway, colors from outside in: plum #8A4C86, coral #D46A66, apricot #F4A766, glowing cream #FFF4D2 in the center, on a deep aubergine-night background (#2E2150 to #0B0812). In the current version the arches run off the bottom edge - fix that: the whole mark must sit fully inside the square, optically centered, with generous even margins.\n\nVariant 5: monogram - the Cyrillic letter «Н» elegantly formed by the inner arches (two pillars and a crossbar of light), centered; small wordmark «Нора» in serif under it.",
    "style": "Flat vector app icon, square 1:1, clean geometric shapes, smooth gradients, no 3D, no photorealism, no mockup, no frame, no extra words or letters except the word specified. If the word «Нора» is drawn, spell it exactly in Russian Cyrillic: Н-о-р-а, one word, elegant, well kerned, centered.",
    "size": "1024x1024"
+  },
+  "wrcard1": {
+   "p": "A cozy evening scene on the right: a young woman curled in a big armchair reading a book under a warm floor lamp, a tall stack of books beside her, a sleepy cat on the armrest, a window with a calm dusk sky behind.",
+   "style": "Same illustration style as the reading app's year-in-review pictures: modern editorial book illustration, flat organic shapes with subtle shading, fine grain and risograph-like texture, muted pastel palette (lavender, sage green, peach, mustard, terracotta, soft navy, cream), simple stylized people with calm closed eyes. Wide horizontal banner composition. The LEFT half of the image must be a calm, plain, slightly darker soft color field (deep lavender-plum dusk) with no objects at all, so white text can be placed there; all illustrated elements sit in the right half. No text, no letters, no numbers, no logos, no frame.",
+   "size": "1536x1024"
+  },
+  "wrcard2": {
+   "p": "On the right: a big tree on a soft hill at golden dusk, a girl lying on a picnic blanket reading and a young man leaning against the trunk with a book, books and a teapot around, a cat asleep - the same characters as in the year-in-review pictures, seen from a distance.",
+   "style": "Same illustration style as the reading app's year-in-review pictures: modern editorial book illustration, flat organic shapes with subtle shading, fine grain and risograph-like texture, muted pastel palette (lavender, sage green, peach, mustard, terracotta, soft navy, cream), simple stylized people with calm closed eyes. Wide horizontal banner composition. The LEFT half of the image must be a calm, plain, slightly darker soft color field (deep lavender-plum dusk) with no objects at all, so white text can be placed there; all illustrated elements sit in the right half. No text, no letters, no numbers, no logos, no frame.",
+   "size": "1536x1024"
+  },
+  "wrcard3": {
+   "p": "On the right: an open giant book standing like a doorway on a meadow at dusk, warm light glowing from its pages, a small figure of a reader walking towards it with a book under the arm, a few floating pages like birds.",
+   "style": "Same illustration style as the reading app's year-in-review pictures: modern editorial book illustration, flat organic shapes with subtle shading, fine grain and risograph-like texture, muted pastel palette (lavender, sage green, peach, mustard, terracotta, soft navy, cream), simple stylized people with calm closed eyes. Wide horizontal banner composition. The LEFT half of the image must be a calm, plain, slightly darker soft color field (deep lavender-plum dusk) with no objects at all, so white text can be placed there; all illustrated elements sit in the right half. No text, no letters, no numbers, no logos, no frame.",
+   "size": "1536x1024"
   }
  }
 }
