@@ -972,6 +972,12 @@ body.viewing #app .shelf-h{display:none}
 .ush-row button.on{background:rgba(255,255,255,.18);color:var(--ink)}
 .ush-row .ush-pl{min-width:38px;padding:8px 12px;font-size:17px;line-height:1}
 .ush-row .ush-cur{display:inline-flex;align-items:center;gap:6px}
+.ush-row[hidden]{display:none!important}
+.ush-row button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ush-row .ush-del{display:grid;place-items:center;width:38px;padding:0;background:rgba(229,120,100,.2);color:#F09A86}
+.ush-row .ush-del svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ush-row .shake{animation:ushShake .35s ease-in-out 2}
+@keyframes ushShake{25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
 .ush-row .ush-cur svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .ush-pill{display:inline-flex!important;align-items:center;gap:2px;flex:0 1 auto!important;min-width:46px;max-width:110px}
 #pills.pills.has-ush{gap:14px!important}
@@ -5291,7 +5297,7 @@ function recList(){if(isF()){if(!FILMS)return [];if(!recList._f||recList._v!==FS
 const flowList=()=>VIEW?(DATA().want().length?DATA().want():DATA().read().filter(x=>x.r!=null).sort((a,b)=>b.r-a.r).slice(0,20)):recList();
 let SHQ="";
 const shqHit=x=>{const q=norm(SHQ);return !q||norm(x.t||"").includes(q)||norm(x.a||"").includes(q)};
-const gridList0=()=>colF.startsWith("u:")?(ushOf(colF)?ushItems(ushOf(colF)):[]):colF==="want"&&!isF()?wantGrouped().L:colF==="want"?DATA().want():DATA().read();
+const gridList0=()=>colF.startsWith("u:")?(ushOf(colF)?ushItems(ushOf(colF)):[]):colF==="want"&&!isF()?wantGrouped().L:colF==="want"?DATA().want():!isF()&&!VIEW?genGrouped(DATA().read()).L:DATA().read();
 const gridList=()=>SHQ?gridList0().filter(shqHit):gridList0();
 function drawFlow(){const L=flowList();fi=L.length?((fi%L.length)+L.length)%L.length:0;
   $("#flow").innerHTML=L.slice(0,60).map(x=>cv(x,176)).join("");$("#flow")._sig=L.slice(0,60).map(x=>ikey(x)).join("|");$("#flow").classList.toggle("none",!L.length);$("#flowCap").classList.toggle("none",!L.length);[...$("#flow").children].forEach((c,i)=>{c.dataset.i=i});layoutFlow(true)}
@@ -5321,7 +5327,8 @@ function stepFlow(d){const n=Math.min(60,flowList().length);if(n<2)return;fi=((f
 // «Хочу прочитать» по жанрам: сначала жанры, где больше книг
 const WG_ORDER=["romantasy","darkrom","romance","ya","fantasy","scifi","dystopia","detective","thriller","horror","histnov","adventure","humor","classic","rusprose","forprose","modern","kids","nonfic","bio","psy","popsci","histnf","samizdat"];
 function wantGenre(x){const c=catOf(x)||x.src||x;try{for(const g of WG_ORDER)if(genPass(c,g))return genLabel(g)}catch(e){}return c.g&&GEN[c.g]?GEN[c.g]:"Другое"}
-function wantGrouped(){const W=DATA().want(),by=new Map();W.forEach(x=>{const g=wantGenre(x);if(!by.has(g))by.set(g,[]);by.get(g).push(x)});
+function wantGrouped(){return genGrouped(DATA().want())}
+function genGrouped(W){const by=new Map();W.forEach(x=>{const g=wantGenre(x);if(!by.has(g))by.set(g,[]);by.get(g).push(x)});
   const groups=[...by.entries()].sort((a,b)=>(a[0]==="Другое")-(b[0]==="Другое")||b[1].length-a[1].length);const L=[],H={};groups.forEach(([g,arr])=>{H[L.length]=[g,arr.length];L.push(...arr)});return {L,H}}
 function pillsFit(){const p=$("#pills");if(!p)return;const B=[...p.children];B.forEach(b=>b.style.fontSize="");let f=14;requestAnimationFrame(()=>{while(f>10.5&&p.scrollWidth>p.clientWidth+1){f-=.5;B.forEach(b=>{b.style.fontSize=f+"px";b.style.paddingLeft=b.style.paddingRight=(f<12.5?7:10)+"px"})}})}
 addEventListener("resize",()=>{try{pillsFit()}catch(e){}});
@@ -5332,8 +5339,8 @@ function drawCol(keepFlow){
    if(on){ushSync();const cur=ushOf(colF);ur.innerHTML=`<button data-f="want" class="${colF==="want"?"on":""}">Все</button>${USH.map(z=>cur===z?`<button class="on ush-cur" data-ushed aria-label="Изменить полку «${esc(z.n)}»">${esc(z.n)}<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>`:`<button data-f="u:${z.id}">${esc(z.n)}</button>`).join("")}<button class="ush-pl" data-ushnew aria-label="Новая полка">+</button>`;const a=ur.querySelector(".ush-cur");if(a)requestAnimationFrame(()=>{try{a.scrollIntoView({inline:"nearest",block:"nearest"})}catch(e){}})}}{let ns=$("#nowS");if(!ns){ns=document.createElement("div");ns.id="nowS";$("#pills").before(ns)}ns.innerHTML=nowStrip()}
   {const dg=colF==="diary",cvx=$("#cviews"),ov=$("#oldv");$("#grid").classList.toggle("diary",dg);if(cvx)cvx.hidden=dg;if(ov)ov.hidden=dg;
    if(dg){$("#grid").innerHTML=diaryPage();if(SHQ){const q=norm(SHQ);[...$("#grid").children].forEach(el=>{if(!/^H\d/.test(el.tagName)&&!norm(el.textContent).includes(q))el.hidden=true})}const ds=$("#dstripB");if(ds)ds.innerHTML="";if(!keepFlow)drawFlow();drawNewAu();drawTrend();return}}
-  const G=gridList(),GH=colF==="want"&&!isF()&&G.length>=4&&!SHQ?wantGrouped().H:{};$("#grid").innerHTML=G.map((x,i)=>`${GH[i]?`<h4 class="ggen">${esc(GH[i][0])}</h4>`:""}<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||(SHQ?`<p class="gempty">На этой полке нет «${esc(SHQ)}»</p>`:"")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
-  {let hc=$("#hsCard");if(!hc){hc=document.createElement("div");hc.id="hsCard";$("#sumScroll").appendChild(hc)}hc.innerHTML=hsCan()?`<button class="hs-card" data-hs-any><img src="icons/icon-512.png?v=5" alt=""><span><b>Нора как приложение</b><small>Иконка на экране «Домой» - открывается в одно касание</small></span><i>Добавить</i></button>`:""}{let ac=$("#acctL");if(!ac){ac=document.createElement("div");ac.id="acctL";const st=$(".shelves-top");st&&st.after(ac)}ac.innerHTML=acctLine()}{let ds=$("#dstripB");if(!ds){ds=document.createElement("div");ds.id="dstripB";($("#oldv")||$("#grid")).after(ds)}ds.innerHTML=colF==="read"&&!VIEW?diaryStrip():""}if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
+  const G=gridList(),GH=(colF==="want"||(colF==="read"&&!VIEW))&&!isF()&&G.length>=4&&!SHQ?(colF==="want"?wantGrouped():genGrouped(DATA().read())).H:{};$("#grid").innerHTML=G.map((x,i)=>`${GH[i]?`<h4 class="ggen">${esc(GH[i][0])}</h4>`:""}<button data-g="${i}">${cv(x,110)}<small>${isSec(x)?`<i class="lk">${ICLOCK}</i>`:""}${esc(x.t)}</small>${x.r!=null&&colF==="read"?`<em>★ ${r5(x.r)}</em>`:""}</button>`).join("")||(SHQ?`<p class="gempty">На этой полке нет «${esc(SHQ)}»</p>`:"")||`<p class="gempty">${colF==="read"?(isF()?"Здесь появятся просмотренные фильмы.":"Здесь появятся прочитанные книги."):""}</p>`;
+  {let hc=$("#hsCard");if(!hc){hc=document.createElement("div");hc.id="hsCard";$("#sumScroll").appendChild(hc)}hc.innerHTML=hsCan()?`<button class="hs-card" data-hs-any><img src="icons/icon-512.png?v=5" alt=""><span><b>Нора как приложение</b><small>Иконка на экране «Домой» - открывается в одно касание</small></span><i>Добавить</i></button>`:""}{let ac=$("#acctL");if(!ac){ac=document.createElement("div");ac.id="acctL";const st=$(".shelves-top");st&&st.after(ac)}ac.innerHTML=acctLine()}{let ds=$("#dstripB");if(!ds){ds=document.createElement("div");ds.id="dstripB";($("#oldv")||$("#grid")).after(ds)}ds.innerHTML=""}if(!keepFlow)drawFlow();drawViews();drawNewAu();drawTrend()}
 // «Новое от твоих авторов»: свежие книги (этот и прошлый год) авторов, которых человек оценил на 4–5, и ещё не на полках
 function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a).map(b=>norm(b.a)));if(!fav.size)return [];
   const W=wantNorms(),seen=new Set(),out=[];for(const b of ALLB()){if(!b.y||b.y<YNOW-1||!b.a||!fav.has(norm(b.a)))continue;const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt)||seen.has(nt)||dismissed.has(b.id))continue;seen.add(nt);out.push(b);if(out.length>=8)break}
@@ -5555,6 +5562,14 @@ $("#luckGo").addEventListener("click",giftOpenFx);$("#gTile").innerHTML=`<img sr
 $("#colScroll").addEventListener("scroll",()=>{document.body.classList.toggle("topoff",$("#colScroll").scrollTop>16)},{passive:true});
 {const qi=$("#shQ"),qx=$("#shQx");if(qi){let qt=0;qi.addEventListener("input",()=>{clearTimeout(qt);qt=setTimeout(()=>{SHQ=qi.value.trim();qx.hidden=!SHQ;drawCol(true)},150)});qi.addEventListener("keydown",e=>{if(e.key==="Enter")qi.blur()});qx.addEventListener("click",()=>{qi.value="";SHQ="";qx.hidden=true;drawCol(true)})}}
 $("#shS").addEventListener("click",()=>{const l=$("#shqL"),i=$("#shQ");tgHaptic();if(l.hidden){l.hidden=false;setTimeout(()=>{try{i.focus()}catch(e){}},50)}else if(!i.value){l.hidden=true}else i.focus()});
+// долгое нажатие на свою полку в подразделах - появляется корзина
+{let lp=null,lpDone=false;const TRASH='<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
+  const clr=()=>{clearTimeout(lp);lp=null};
+  document.addEventListener("pointerdown",e=>{const b=e.target.closest("#ushRow [data-f^='u:'],#ushRow .ush-cur");if(!b)return;lpDone=false;clr();lp=setTimeout(()=>{lpDone=true;const id=b.dataset.f?b.dataset.f.slice(2):colF.slice(2);const r=$("#ushRow");r.querySelectorAll(".ush-del").forEach(x=>x.remove());b.insertAdjacentHTML("afterend",`<button class="ush-del" data-ushdel="${id}" aria-label="Удалить полку">${TRASH}</button>`);b.classList.add("shake");tgHaptic("medium")},500)},true);
+  ["pointerup","pointercancel","pointerleave","scroll"].forEach(t=>document.addEventListener(t,clr,true));
+  document.addEventListener("click",e=>{if(lpDone&&e.target.closest("#ushRow [data-f^='u:'],#ushRow .ush-cur")){e.stopPropagation();e.preventDefault();lpDone=false;return}
+    const d=e.target.closest("[data-ushdel]");if(d){e.stopPropagation();const s2=USH.find(z=>z.id===d.dataset.ushdel);if(!s2)return;USH=USH.filter(z=>z!==s2);ushSave();if(colF==="u:"+s2.id)colF="want";tgHaptic("success");drawCol(true);toast("Полка «"+s2.n+"» удалена");return}
+    if(!e.target.closest("#ushRow")){const r=$("#ushRow");if(r&&r.querySelector(".ush-del")){r.querySelectorAll(".ush-del").forEach(x=>x.remove());r.querySelectorAll(".shake").forEach(x=>x.classList.remove("shake"))}}},true)}
 document.addEventListener("click",e=>{const r=e.target.closest("#ushRow");if(!r)return;if(e.target.closest("[data-ushnew]")){tgHaptic();ushNew();return}if(e.target.closest("[data-ushed]")){const s=ushOf(colF);if(s){tgHaptic();ushEdit(s)}return}const b=e.target.closest("[data-f]");if(b&&colF!==b.dataset.f){colF=b.dataset.f;drawCol(true);tgHaptic()}});
 $("#pills").addEventListener("click",e=>{if(e.target.closest("[data-ushnew]")){tgHaptic();ushNew();return}if(e.target.closest("[data-ushlist]")){tgHaptic();ushList();return}const b=e.target.closest("[data-f]");if(b){if(colF===b.dataset.f)return;colF=b.dataset.f;drawCol(true);tgHaptic()}});
 // ---------- виды полки: обложки, полки по странам, лента веков, карта, авторы (из первой Норы) ----------
@@ -7443,7 +7458,7 @@ wrEl.addEventListener("click",e=>{if(!WR)return;if(e.target.closest("[data-wrimg
 document.addEventListener("click",e=>{if(e.target.closest("[data-wropen]"))wrOpen()});
 // вход - карточка наверху «Статистики»
 // итоги года видны только в сезон: с 1 декабря по 31 января (в январе - за прошлый год). Для проверки вне сезона: ?wr=1 в адресе
-const wrSeason=()=>{try{if(/[?&]wr=1/.test(location.search))sessionStorage.setItem("nora.wr","1");if(sessionStorage.getItem("nora.wr"))return true}catch(e){}const m=new Date().getMonth();return m===11||m===0};
+const wrSeason=()=>{try{if(/[?&]wr=1/.test(location.search))sessionStorage.setItem("nora.wr","1");if(sessionStorage.getItem("nora.wr"))return true}catch(e){}return LS.get("zal.who","")==="owner"};/* итоги года пока видит только владелица; для всех вернуть: const m=new Date().getMonth();return m===11||m===0 */
 // «Мой год» на полках: вместо общей статистики - только цель на год (и карточка итогов в сезон). Вся статистика - в итогах года
 function goalCard(){const Y=String(new Date().getFullYear()),goal=LS.get("zal.goal",24),r=DATA().read(),yr=r.filter(x=>String(x.rd||"").startsWith(Y)).length,pct=Math.min(1,yr/goal),C=2*Math.PI*52;
   const now=new Date(),day=(now-new Date(now.getFullYear(),0,1))/864e5+1,diff=Math.round(yr-goal*day/365),left=Math.max(0,goal-yr),perM=left?Math.ceil(left/(12-now.getMonth())):0;
@@ -7467,7 +7482,10 @@ if(isDesk()){document.body.classList.add("desk");$("#vsh").insertAdjacentHTML("a
 const statEl=document.createElement("div");statEl.id="statScr";statEl.className="stat-scr";statEl.innerHTML=`<div class="stat-top"><button class="shi shb" data-statx aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>Статистика</h2></div><div class="stat-in" id="statIn"></div>`;$("#app").appendChild(statEl);
 {const In=$("#statIn");[".stat-h","#bento","#sumMore"].forEach(q=>{const n=document.querySelector("#sumScroll "+q);if(n)In.appendChild(n)});const h=In.querySelector(".stat-h");if(h)h.hidden=true}
 function statOpen(){try{drawSum()}catch(e){}statEl.classList.add("on");statEl.scrollTop=0;tgHaptic()}
-function statClose(){statEl.classList.remove("on")}
+function statClose(){statEl.classList.remove("on");statEl.style.transform="";statEl.style.transition=""}
+{let x0=null,y0=0,dx=0,on=false;statEl.addEventListener("touchstart",e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;dx=0;on=false},{passive:true});
+  statEl.addEventListener("touchmove",e=>{if(x0==null)return;const t=e.touches[0],ddx=t.clientX-x0,ddy=t.clientY-y0;if(!on){if(Math.abs(ddx)<12&&Math.abs(ddy)<12)return;if(ddx>0&&Math.abs(ddx)>Math.abs(ddy)*1.3)on=true;else{x0=null;return}}dx=Math.max(0,ddx);statEl.style.transition="none";statEl.style.transform=`translateX(${dx}px)`},{passive:true});
+  statEl.addEventListener("touchend",()=>{if(!on){x0=null;return}statEl.style.transition="transform .22s ease";if(dx>innerWidth*.25){statEl.style.transform="translateX(100%)";tgHaptic();setTimeout(statClose,220)}else statEl.style.transform="";x0=null;on=false})}
 document.addEventListener("click",e=>{if(e.target.closest("[data-statopen]")){statOpen();return}if(e.target.closest("[data-statx]")){tgHaptic();statClose()}});
 {const da=drawAcc;drawAcc=function(){da.apply(this,arguments);try{const b=$("#accBox");if(b&&!VIEW&&!b.querySelector("[data-statopen]")){const h=b.querySelector(".ac-top")||b.querySelector("h1,h2");const html=`<button class="ac-stat" data-statopen><span><b>Статистика</b></span><i>›</i></button>`;if(h)h.insertAdjacentHTML("afterend",html);else b.insertAdjacentHTML("afterbegin",html)}}catch(e){}}}
 // в сезон - карточка итогов и наверху главной; открыть сразу: ссылка #wrap или запуск бота с параметром wrap
