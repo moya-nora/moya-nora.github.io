@@ -7715,14 +7715,12 @@ function cbReadHTML(){const d=CB.d,b=d.book,own=cbOwner();let h="";
 function cbAskHTML(){const b=CB.d.book;if(!b)return `<div class="cb-card"><p class="cb-note">Вопросы появятся, когда клуб выберет книгу.</p></div>`;
   const n=cbParts(),p=cbMyP();
   if(n===1){CB.qp=1;return `${cbQs(1).map(q=>`<div class="cb-q"><p>${esc(q.x)}</p><em${q.sh?` class="sh"`:""}>${q.sh?"Шуршуня":esc(q.n)}</em></div>`).join("")}
-    <div class="cb-in"><input id="cbOwnQ" type="text" maxlength="200" placeholder="Свой вопрос" aria-label="Свой вопрос" enterkeyhint="send"><button data-cb="addq" aria-label="Добавить вопрос">${CB_IC.plus}</button></div>
-    <button class="cb-b w" data-cb="sendq">Отправить в чат клуба</button>`}
+    <div class="cb-in"><input id="cbOwnQ" type="text" maxlength="200" placeholder="Свой вопрос" aria-label="Свой вопрос" enterkeyhint="send"><button data-cb="addq" aria-label="Добавить вопрос">${CB_IC.plus}</button></div>`}
   if(!p)return `<div class="cb-chips pq">${Array.from({length:n},(_,i)=>`<button disabled aria-label="Часть ${i+1}, откроется после отметки">${CB_IC.lock}${i+1}</button>`).join("")}</div><div class="cb-card"><p class="cb-note">Вопросы к части откроются, когда отметишь её прочитанной.</p></div>`;
   if(!CB.qp||CB.qp>p)CB.qp=p;const cur=CB.qp;
   return `<div class="cb-chips pq">${Array.from({length:n},(_,i)=>i<p?`<button data-cb="qp" data-p="${i+1}"${cur===i+1?` class="on"`:""}>${cur===i+1?"Часть ":""}${i+1}</button>`:`<button disabled aria-label="Часть ${i+1}, откроется после отметки">${CB_IC.lock}${i+1}</button>`).join("")}</div>
     ${cbQs(cur).map(q=>`<div class="cb-q"><p>${esc(q.x)}</p><em${q.sh?` class="sh"`:""}>${q.sh?"Шуршуня":esc(q.n)}</em></div>`).join("")}
-    <div class="cb-in"><input id="cbOwnQ" type="text" maxlength="200" placeholder="Свой вопрос" aria-label="Свой вопрос" enterkeyhint="send"><button data-cb="addq" aria-label="Добавить вопрос">${CB_IC.plus}</button></div>
-    <button class="cb-b w" data-cb="sendq">Отправить в чат клуба</button>`}
+    <div class="cb-in"><input id="cbOwnQ" type="text" maxlength="200" placeholder="Свой вопрос" aria-label="Свой вопрос" enterkeyhint="send"><button data-cb="addq" aria-label="Добавить вопрос">${CB_IC.plus}</button></div>`}
 function cbShelfHTML(){const S=CB.d.shelf||[],b=CB.d.book;if(!S.length&&!b)return `<div class="cb-card"><p class="cb-note">Здесь будут стоять книги, которые клуб прочитает вместе.</p></div>`;
   const R=S.filter(x=>x.r>0),avg=R.length?(R.reduce((s,x)=>s+x.r,0)/R.length).toFixed(1).replace(".",","):"-",mo=Math.max(1,Math.round((Date.now()-(CB.d.cr||Date.now()))/2592e6));
   return `<div class="cb-stats"><div><b>${S.length}</b><span>${cbPl(S.length,["книга","книги","книг"])}</span></div><div><b>${mo}</b><span>${cbPl(mo,["месяц","месяца","месяцев"])}</span></div><div><b>${avg}</b><span>оценка</span></div></div>
