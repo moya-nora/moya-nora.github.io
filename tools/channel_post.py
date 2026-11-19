@@ -51,7 +51,10 @@ if sys.argv[1:] == ["--next"]:
     if i >= len(Q):
         print("очередь закончилась"); sys.exit(0)
     p = Q[i]
-    if p.get("file"):
+    if p.get("poll"):  # опрос: работает без комментариев и реакций в канале
+        r = api("sendPoll", {"chat_id": CH, "question": p["poll"]["q"], "options": [{"text": o} for o in p["poll"]["o"]], "is_anonymous": True})
+        print("ok", r["ok"], r["result"]["message_id"])
+    elif p.get("file"):
         post(open(os.path.join(HERE, "channel", p["file"]), encoding="utf-8").read().strip())
     elif p.get("book"):
         post(p["text"], p.get("photo"), "Открыть в Норе", f"{BOT}?startapp=b_{p['book']}")
