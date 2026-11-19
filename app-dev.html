@@ -7438,7 +7438,7 @@ async function wrCards(D){await wrFonts();const S="NoraDisp, Georgia, serif",F="
   const SP=(x,v)=>{if("letterSpacing" in x)x.letterSpacing=v};
   const pool=[D.top[0]||D.last,...D.top.slice(1),...D.L.slice().reverse()].filter((b,i,a)=>b&&a.indexOf(b)===i).slice(0,5),ims=await Promise.all(pool.map(b=>wrCov(b).catch(()=>null)));
   const MIM=new Map(pool.map((b,k)=>[b,ims[k]])),hero=pool[0],imOf=b=>MIM.get(b)||null,st=b=>b&&b.r!=null?Math.max(1,Math.min(5,Math.round(b.r/2))):0,genre=D.gk.length?String(GEN[D.gk[0][0]]||""):"";
-  const ART={};await Promise.all(["main","book","pages","month","type"].map(async k=>{ART[k]=await wrLd("img/itogi/g-"+k+".webp?v=3")}));
+  const ART={};await Promise.all(["main","book","pages","month","type"].map(async k=>{ART[k]=await wrLd("img/itogi/g-"+k+".webp?v=4")}));
   const PAL=["#5B6B8C","#9A4A36","#6E8763","#7A5A86","#B08A3E"];
   const cover=(x,b,X,Y,w,h,i)=>{const im=imOf(b);x.save();x.shadowColor="rgba(43,36,64,.3)";x.shadowBlur=24;x.shadowOffsetY=10;x.fillStyle="#fff";x.fillRect(X,Y,w,h);x.restore();x.save();x.beginPath();x.rect(X,Y,w,h);x.clip();
     if(im){const s=Math.max(w/im.naturalWidth,h/im.naturalHeight),iw=im.naturalWidth*s,ih=im.naturalHeight*s;x.drawImage(im,X+(w-iw)/2,Y+(h-ih)/2,iw,ih)}
