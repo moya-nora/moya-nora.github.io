@@ -744,6 +744,16 @@ def WHO(b, sim):
     return f'<p class="who2">{out}</p>'
 
 
+# свой текст Шуршуни (books/notes.json): уникальный абзац на странице книги - его ценят поисковики и читатели
+NOTES = [((nk(k.split("|")[0]), nk(k.split("|")[1])), v) for k, v in json.load(open(os.path.join(ROOT, "books", "notes.json"), encoding="utf-8")).items() if "|" in k]
+def NOTE(b):
+    t_, a_ = nk(b["t"]), nk(b["a"])
+    for (t, s), v in NOTES:
+        if (t_ == t or t_.startswith(t)) and s in a_:
+            return f'<div class="note2"><h2>Шуршуня о книге</h2><p>{esc(v)}</p></div>'
+    return ""
+
+
 def VQLINK(b):
     return f'<p class="vql"><a href="/{VQ_URL[id(b)]}">Вопросы для обсуждения этой книги</a></p>' if id(b) in VQ_URL else ""
 
@@ -771,7 +781,7 @@ for b in cat_books:
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="{GEN_URL.get(b["g"], "/c/")}">{esc(GEN.get(b["g"], "Книги"))}</a></div>'
             f'<article class="book">{f"<div class=amb style=background-image:url({esc(u)})></div>" if u else ""}<div class="cvw">{cv(b, lazy=False)}</div><div>'
             f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>{f'<p class="gn">{esc(gname(b))}</p>' if gname(b) else ""}{RATE(b)}'
-            + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "") + WHO(b, sim)
+            + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "") + NOTE(b) + WHO(b, sim)
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
             + WHERE(b) + HOOK(b) + VQLINK(b) + RVS(b)
             + (f'<section class="like"><div class="shd"><h2>Похожие книги</h2><a class="all" data-sim href="/p/">Ещё похожие</a></div>{rail(sim, bare=True)}</section>' if sim else "")
