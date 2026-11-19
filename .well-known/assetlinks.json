@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "ru.norabooks.app",
+    "sha256_cert_fingerprints": [
+      "EF:E4:0C:8E:45:9D:6D:56:78:6D:68:78:BE:8B:5E:AF:5B:F9:48:A0:E9:94:9C:CE:28:1E:25:24:94:39:E1:F2"
+    ]
+  }
+}]

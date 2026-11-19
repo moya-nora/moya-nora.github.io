@@ -108,6 +108,19 @@ def main():
         check("приложение: разбор таблицы дневника", js("(()=>{const L=_nf.xlParse([['№','Название','Автор','Оценка','Формат'],[1,'Книга','Автор',5,'слушала']]);return L.length===1&&L[0].t==='Книга'&&L[0].r===10&&L[0].fmt==='аудио'})()"))
         check("приложение: нет ошибок в коде", not errs, errs)
 
+        # --- версия из Google Play / RuStore: без платных клубов и «Сотрудничества» ---
+        sp = ctx.new_page()
+        sp.goto(base + APP + "?app=1&src=android")
+        sp.wait_for_timeout(5000)
+        sp.evaluate("(document.getElementById('auX')||{click(){}}).click();document.querySelectorAll('.coach,.tour').forEach(e=>e.remove())")
+        sp.evaluate("document.querySelector('.dock [data-s=acc]').click()")
+        sp.wait_for_timeout(600)
+        check("приложение из магазина: нет «Сотрудничества»", sp.evaluate("!document.querySelector('#accBox [data-collab]')&&document.querySelector('#accBox').textContent.includes('Поддержка')"))
+        sp.evaluate("[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Клуб').click()")
+        sp.wait_for_timeout(1500)
+        check("приложение из магазина: нет клубов с ведущими", sp.evaluate("!!document.querySelector('#clBox .cb-seal')&&!document.querySelector('#clBox .hc-card')"))
+        sp.close()
+
         # --- сайт ---
         errs.clear()
         pg.goto(base + "index.html")

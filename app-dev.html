@@ -6369,7 +6369,7 @@ function drawAcc(){const box=$("#accBox");if(!box)return;if(!box._tap){box._tap=
      ${NS.email?`<div class="ac-row ac-st"><span>Вход</span><b>${esc(showId(NS.email))}</b></div>`:""}</div>
    <div class="ac-g"><a class="ac-row" href="https://t.me/Wonderbookworld_bot" data-ext target="_blank" rel="noopener"><span>Поддержка в Telegram</span><i>›</i></a>
      <a class="ac-row" href="mailto:nora.books@mail.ru" data-mail><span>Написать на почту</span><b>nora.books@mail.ru</b></a>
-     <button class="ac-row" data-collab><span>Сотрудничество</span><i>›</i></button>
+     ${STORE?"":`<button class="ac-row" data-collab><span>Сотрудничество</span><i>›</i></button>`}
      <a class="ac-row" href="https://nora-books.ru/privacy.html" data-ext target="_blank" rel="noopener"><span>Конфиденциальность</span><i>›</i></a>
      ${NS.email||(NS.key&&NS.key())?`<button class="ac-row ac-out" data-sy-out><span>Выйти</span></button>`:""}</div>`}
 // «Аккаунт» обрабатывает нажатия сам (не зависит от общих обработчиков страницы) и дальше их не пускает
@@ -7609,6 +7609,8 @@ function cbQs(p){const b=CB.d.book;if(!b)return [];const n=cbParts(),own=CBVQ&&C
 // ---------- клубы с ведущими (books/hosted.json, заполняет Нора). Вступление пока через бота: заявка -> владелица присылает оплату и приглашение ----------
 let HC=null,HCP=null;
 const HCDEV=/app-dev/.test(location.pathname);
+/* приложение из Google Play / RuStore: платные клубы не показываем (правила магазинов об оплате цифрового) */
+const STORE=(()=>{try{const ss=sessionStorage;if(/[?&]src=android/.test(location.search)||/^android-app:/.test(document.referrer))ss.setItem("nora.store","android");return ss.getItem("nora.store")||""}catch(e){return ""}})();
 function hcLoad(){if(HCP)return HCP;HCP=fetch("books/hosted.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{clubs:[]}).then(j=>{HC=(j.clubs||[]).filter(c=>HCDEV||!c.demo);if(SCREEN==="club"&&!CB.id)cbDraw()}).catch(()=>{HC=[]});return HCP}
 const hcDate=d=>{const t=new Date(d+"T12:00:00");return isNaN(t)?"":t.getDate()+" "+["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"][t.getMonth()]};
 const hcLeft=c=>Math.max(0,(c.seats||0)-(c.taken||0));
@@ -7616,10 +7618,10 @@ const hcHost=u=>{try{const x=new URL(u);return (x.host.replace(/^www\./,"")+x.pa
 const hcCov=(c,w)=>c.cov?`<img class="hc-cv" src="${esc(c.cov)}" alt="" style="width:${w}px;height:${Math.round(w*1.5)}px">`:cv({t:c.t,a:c.a},w);
 const HC_LINK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>';
 function hcPrice(c){return `${c.old&&c.old>c.price?`<s>${c.old} ₽</s>`:""}<b>${c.price} ₽</b>`}
-function hcBlock(){if(!HC||!HC.length)return "";
+function hcBlock(){if(STORE||!HC||!HC.length)return "";
   return `<h2 class="hc-h">Клубы с ведущими</h2><div class="hc-row">${HC.map(c=>`<button class="hc-card" data-hc="${esc(c.id)}">${hcCov(c,84)}<span class="hc-x"><b>${esc(c.t)}</b><span>${esc(c.a)}</span><em>ведёт ${esc(c.host&&c.host.n||"")}</em><span class="hc-m">старт ${hcDate(c.start)}${hcLeft(c)?` · мест: ${hcLeft(c)}`:" · мест нет"}</span><span class="hc-p">${hcPrice(c)}</span></span></button>`).join("")}</div>
    <p class="hc-note">Ведущий готовит заметки к каждой части и проводит эфир.</p>`}
-function hcOpen(id){const c=(HC||[]).find(x=>x.id===id);if(!c)return;const h=c.host||{},left=hcLeft(c);
+function hcOpen(id){if(STORE)return;const c=(HC||[]).find(x=>x.id===id);if(!c)return;const h=c.host||{},left=hcLeft(c);
   vOpen(`<div class="hc-pg"><div class="hc-hero">${hcCov(c,150)}</div>
     <p class="hc-sub">клуб с ведущим · ${c.weeks||4} ${cbPl(c.weeks||4,["неделя","недели","недель"])} · старт ${hcDate(c.start)}</p>
     <h3 class="hc-t">${esc(c.t)}</h3><p class="hc-a">${esc(c.a)}</p>

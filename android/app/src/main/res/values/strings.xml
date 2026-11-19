@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appName">Моя Нора</string>
+    <string name="launchUrl">https://nora-books.ru/app.html?app=1&amp;src=android</string>
+    <string name="providerAuthority">ru.norabooks.app.fileprovider</string>
+    <string name="assetStatements" translatable="false">[{\"relation\": [\"delegate_permission/common.handle_all_urls\"], \"target\": {\"namespace\": \"web\", \"site\": \"https://nora-books.ru\"}}]</string>
+</resources>
