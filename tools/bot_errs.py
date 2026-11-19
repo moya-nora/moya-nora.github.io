@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Сводка ошибок приложения - раз в день владелице в бот.
+"""Ошибки приложения - раз в день: печатает сводку и удаляет прочитанное (владелице в бот не шлёт - их разбирает Claude).
 
 Приложение при ошибке у человека пишет запись в errs/ (без личных данных: текст ошибки, место в коде, iOS/Android/ПК, Telegram или браузер).
 Бот входит в Firebase как nora-bot (секрет BOT_FB_PASS), читает errs, группирует одинаковые ошибки, присылает сводку и удаляет прочитанное.
@@ -71,11 +71,9 @@ def main():
     text = "\n".join(lines)
     print(text)
     save_list(groups, docs)
-    if DRY or not TOKEN or not owner:
+    if DRY:
         return
-    j, c = http(f"https://api.telegram.org/bot{TOKEN}/sendMessage", {"chat_id": owner, "text": text, "disable_web_page_preview": True})
-    if c != 200:
-        print("не отправилось:", c, str(j)[:200]); return
+    # владелице в бот больше не шлём: ошибки каждый день перед этим запуском разбирает и чинит Claude (ручной запуск = список без удаления)
     gone = 0
     for d in docs:
         _, c = http("https://firestore.googleapis.com/v1/" + d["name"], headers=H, method="DELETE")
