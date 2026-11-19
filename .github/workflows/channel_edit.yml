@@ -1,0 +1,22 @@
+name: channel_edit
+on:
+  push:
+    paths: [tools/channel/edits.json]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: channel, cancel-in-progress: false }
+jobs:
+  edit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/channel_edit.py
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      - name: Сохранить, что поправлено
+        run: |
+          git config user.name "Mayorov-Vlad"; git config user.email "vladislav15333@gmail.com"
+          git add tools/channel/edits_done.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Канал: пост поправлен"
+          git pull --rebase --autostash -q && git push
