@@ -18,6 +18,7 @@ jobs:
       - name: Слушать бота
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          BOT_FB_PASS: ${{ secrets.BOT_FB_PASS }}
           OWNER_USERNAME: ${{ vars.OWNER_USERNAME }}
           LOOP: "20700"
         run: python3 -u tools/bot_relay.py

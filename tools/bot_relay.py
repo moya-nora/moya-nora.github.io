@@ -8,6 +8,8 @@
 Владелица — тот, кто пишет боту /start с ником из OWNER_USERNAME (по умолчанию из настроек ниже).
 Её chat id хранится в tools/bot_state.json. Нужен секрет репозитория BOT_TOKEN."""
 import json, os, re, sys, time, urllib.request
+sys.path.insert(0, os.path.dirname(__file__))
+import bot_reqs  # noqa: E402
 
 TOKEN = os.environ.get("BOT_TOKEN", "").strip()
 OWNER = os.environ.get("OWNER_USERNAME", "").strip().lstrip("@").lower() or "stanislava_kurdina"
@@ -206,6 +208,10 @@ offset, n = None, 0
 while True:
     wait = 50 if time.time() < end - 60 else 0
     ups = api("getUpdates", offset=offset, timeout=wait, allowed_updates=["message", "pre_checkout_query"]) or []
+    try:
+        bot_reqs.tick(state, save)   # заявки в друзья и приглашения в клуб - раз в минуту
+    except Exception as e:  # noqa: BLE001
+        print("заявки: ошибка", str(e)[:200])
     stop = False
     for u in ups:
         if u.get("pre_checkout_query"):
