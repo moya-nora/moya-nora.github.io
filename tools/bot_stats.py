@@ -61,6 +61,102 @@ def arr(d, k):
         return []
 
 
+# журнал действий (ev/): что люди делают в приложении. Анонимно - только случайный номер устройства.
+EVL = {"open": "открыл Нору", "search": "открыл поиск", "q": "искал", "book": "карточка книги", "book_fr": "карточка книги друга",
+       "want": "в «Хочу прочитать»", "read": "отметил прочитанной", "diary": "запись в дневнике", "reviews": "открыл отзывы",
+       "where": "«Где прочитать»", "where_go": "ушёл в магазин", "luck": "подарок Шуршуни", "invite": "пригласил в клуб",
+       "ask_friend": "спросил друга", "club_where": "«Где взять книгу» в клубе", "hc_join": "клуб с ведущим: вступить",
+       "hs_web": "клуб с ведущим на сайте", "signup_done": "зарегистрировался", "wrap": "итоги года", "wrap_share": "поделился итогами"}
+SHOP = {"ya": "Яндекс Книги", "litres": "ЛитРес", "ozon": "Ozon", "chitai": "Читай-город", "bukvoed": "Буквоед", "gbooks": "Google Книги"}
+SCR = {"col": "главная", "club": "Клуб", "sum": "Полки", "acc": "Аккаунт", "feed": "Лента", "fr": "Полки друзей"}
+
+
+def evlabel(c, x=""):
+    if c == "scr":
+        return SCR.get(x, x)
+    if c.startswith("wrap_share"):
+        c = "wrap_share"
+    lb = EVL.get(c, c)
+    if c == "where_go":
+        x = SHOP.get(x, x)
+    if c in ("q", "book", "book_fr"):
+        return f"{lb} «{x}»" if x else lb
+    return f"{lb}: {x}" if x else lb
+
+
+def evstats(H, now, today, day):
+    """Собирает ev/ в сводку: действия за 7 дней, поиск, книги, сеансы по дням и последние визиты. Старше 30 дней - удаляет."""
+    docs = listall("ev", H)
+    if docs is None:
+        return None
+    S, old = {}, []
+    for d in docs:
+        f = d.get("fields", {})
+        t = ts(d.get("createTime"))
+        if t and t < now - dt.timedelta(days=30):
+            old.append(d["name"])
+            continue
+        if val(f, "v") or val(f, "o"):  # тестовая версия и сама владелица не считаются
+            continue
+        k = val(f, "k") or d["name"]
+        try:
+            e = json.loads(val(f, "e") or "[]")
+        except Exception:  # noqa: BLE001
+            e = []
+        x = S.setdefault(k, {"d": val(f, "d") or "", "w": val(f, "w") or "", "p": val(f, "p") or "", "n": bool(val(f, "n")),
+                             "s": int(val(f, "s") or 0), "e": []})
+        x["e"] += [z for z in e if isinstance(z, list) and len(z) >= 2]
+    for nm in old[:400]:
+        http("https://firestore.googleapis.com/v1/" + nm, headers=H, method="DELETE")
+    ses = sorted(S.values(), key=lambda z: z["s"])
+    for z in ses:
+        z["e"].sort(key=lambda q: q[0])
+        z["day"] = day(dt.datetime.fromtimestamp(z["s"] / 1000, MSK)) if z["s"] else today
+    days30 = [(today - dt.timedelta(days=i)) for i in range(29, -1, -1)]
+    lim7 = today - dt.timedelta(days=6)
+    w7 = [z for z in ses if z["day"] >= lim7]
+    acts, who, qs, bk, shop, scr, where, devdays = Counter(), {}, Counter(), Counter(), Counter(), Counter(), Counter(), {}
+    for z in w7:
+        devdays.setdefault(z["d"], set()).add(z["day"])
+        where[z["w"] + ", " + z["p"]] += 1
+        seen = set()
+        for q in z["e"]:
+            c, x = q[1], (q[2] if len(q) > 2 else "")
+            if c == "scr":
+                if x not in seen:
+                    scr[SCR.get(x, x)] += 1
+                seen.add(x)
+                continue
+            if c == "open":
+                continue
+            cc = "wrap_share" if c.startswith("wrap_share") else c
+            acts[cc] += 1
+            who.setdefault(cc, set()).add(z["d"])
+            if c == "q":
+                qs[x.lower()] += 1
+            elif c in ("book", "book_fr"):
+                bk[x] += 1
+            elif c == "where_go":
+                shop[SHOP.get(x, x)] += 1
+    per = Counter(z["day"] for z in ses)
+    ppl = {}
+    for z in ses:
+        ppl.setdefault(z["day"], set()).add(z["d"])
+    newd = Counter(z["day"] for z in ses if z["n"])
+    stories = []
+    for z in reversed(ses[-30:]):
+        st = dt.datetime.fromtimestamp(z["s"] / 1000, MSK) if z["s"] else now
+        steps = [evlabel(q[1], q[2] if len(q) > 2 else "") for q in z["e"] if q[1] != "open"]
+        dur = z["e"][-1][0] if z["e"] else 0
+        stories.append({"t": st.strftime("%d.%m %H:%M"), "w": z["w"], "p": z["p"], "n": z["n"], "m": max(1, round(dur / 60)) if dur else 0,
+                        "s": steps[:40], "more": max(0, len(steps) - 40), "id": z["d"][-4:]})
+    return {"ses": [[d.isoformat(), per.get(d, 0), len(ppl.get(d, ())), newd.get(d, 0)] for d in days30],
+            "ses7": len(w7), "ppl7": len(devdays), "back7": sum(1 for v in devdays.values() if len(v) >= 2),
+            "acts": [[EVL.get(c, c), n, len(who[c])] for c, n in acts.most_common()],
+            "scr": scr.most_common(), "q": qs.most_common(15), "bk": bk.most_common(10), "shop": shop.most_common(),
+            "where": where.most_common(), "stories": stories}
+
+
 def main():
     pw = os.environ.get("BOT_FB_PASS", "").strip()
     if not pw:
@@ -83,6 +179,10 @@ def main():
     users = listall("users", H) or []
     vaults = listall("vaults", H) or []
     notify = listall("notify", H, ["u"]) or []
+    try:
+        EVS = evstats(H, now, today, day)
+    except Exception as e:  # noqa: BLE001
+        print("журнал действий не посчитан:", e); EVS = None
 
     reg = Counter(day(ts(u["createTime"])) for u in users if u.get("createTime"))
     vnew = Counter(day(ts(v["createTime"])) for v in vaults if v.get("createTime"))
@@ -129,12 +229,19 @@ def main():
            "dev7": since(vnew, 7), "a1": snap["a1"], "a7": snap["a7"], "a30": snap["a30"], "read": read_n, "want": want_n,
            "regs": [[d.isoformat(), reg.get(d, 0)] for d in days30], "devs": [[d.isoformat(), vnew.get(d, 0)] for d in days30],
            "top": [[t, a, n] for (t, a), n in books.most_common(10)], "hist": hist}
+    if EVS:
+        out["ev"] = EVS
 
     text = (f"📊 Нора за вчера\n"
             f"Новых аккаунтов: {out['regY']} (за 7 дней: {out['reg7']})\n"
             f"Заходили за сутки: {out['a1']}, за неделю: {out['a7']}\n"
             f"Всего аккаунтов: {out['accounts']}, устройств с полками: {out['devices']}\n"
             f"Книг на полках: прочитано {read_n}, хотят прочитать {want_n}")
+    if EVS:
+        yd = next((z for z in EVS["ses"] if z[0] == y.isoformat()), None)
+        top3 = ", ".join(f"{a} {n}" for a, n, _ in EVS["acts"][:3])
+        text += (f"\nВизитов вчера: {yd[1] if yd else 0}, людей: {yd[2] if yd else 0}"
+                 f"\nЗа неделю {EVS['ppl7']} человек, вернулись снова {EVS['back7']}" + (f"\nЧаще всего: {top3}" if top3 else ""))
     print(text)
     print("top:", out["top"][:5])
     if DRY:

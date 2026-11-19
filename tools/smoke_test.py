@@ -46,6 +46,9 @@ def main():
         pg.on("pageerror", lambda e: errs.append(str(e)[:200]))
         js = pg.evaluate
 
+        evs = []  # журнал действий: ловим отправку в ev/, в настоящую базу не пишем
+        pg.route("**/documents/ev?**", lambda r: (evs.append(r.request.post_data or ""), r.fulfill(status=200, body="{}")))
+
         # --- приложение ---
         pg.goto(base + APP + "?app=1")
         pg.wait_for_timeout(6000)
@@ -106,6 +109,11 @@ def main():
         pg.wait_for_timeout(600)
         check("приложение: своя полка создаётся", js("[...document.querySelectorAll('#pills button,#ushRow button')].some(b=>b.textContent.trim()==='Тест')"))
         check("приложение: разбор таблицы дневника", js("(()=>{const L=_nf.xlParse([['№','Название','Автор','Оценка','Формат'],[1,'Книга','Автор',5,'слушала']]);return L.length===1&&L[0].t==='Книга'&&L[0].r===10&&L[0].fmt==='аудио'})()"))
+        js("_ev.flush()")
+        pg.wait_for_timeout(800)
+        ev = "".join(evs)
+        check("приложение: журнал действий уходит", all(k in ev for k in ('\\"open\\"', '\\"q\\"', '\\"book\\"', '\\"scr\\"', '\\"search\\"')), ev[:200])
+        check("приложение: в журнале нет ника и почты", "@" not in ev and "nick" not in ev)
         check("приложение: нет ошибок в коде", not errs, errs)
 
         # --- версия из Google Play / RuStore: без платных клубов и «Сотрудничества» ---
