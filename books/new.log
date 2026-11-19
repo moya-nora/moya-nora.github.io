@@ -88,7 +88,6 @@
    кандидатов: 1049
 2. Подробности произведений
    0/1049
-  https://api.fantlab.ru/work/1788360/responses?page=1&sort=rating: TimeoutError('The read operation timed out'), повтор
    100/1049
    200/1049
    400/1049
