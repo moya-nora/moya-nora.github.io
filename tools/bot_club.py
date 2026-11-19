@@ -85,6 +85,7 @@ def club_msgs(name, d, members, uid, now):
     opts = {t for t in (d.get("mopts") or []) if t > now}
     for mu, x in members.items():   # время предлагает любой участник
         opts |= {t for t in (x.get("mo") or []) if t > now}
+    opts -= set(d.get("mhide") or [])   # убранные администратором
     votes = lambda t: sum(1 for x in members.values() if t in (x.get("mv") or []))
     mx = d.get("mcx") or 0
     if mx > now and not (d.get("meet") or {}).get("ts"):
