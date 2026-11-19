@@ -1060,7 +1060,10 @@ urls.append(page("privacy.html", "Политика конфиденциальн�
 get = lambda p: next((L for q, _, _, L in coll_data if q == p), [])
 hero = [b for b in get("romantezi") if img_of(b)][:2] or get("romantezi")[:2] or cat_books[:2]
 show = [p for p in ("romantezi", "dark-roman", "lyubovnye-romany", "young-adult", "zhanr-fantasy", "zahvatyvayuschie", "uyutnye", "zhanr-detective") if get(p)]
-TG_REDIRECT = """<script>(function(){try{var s=location.search,h=location.hash,sa=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;
+# в приложение с главной уводим только: из Telegram, с иконки на экране «Домой» и по ссылке ?app=1. В обычном Safari/Chrome - всегда сайт.
+# На iPhone «с иконки» - только navigator.standalone (matchMedia в Safari иногда отвечает «да»); ?site=1 - никогда не уводить
+TG_REDIRECT = """<script>(function(){try{var s=location.search,h=location.hash,ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1),
+sa=ios?navigator.standalone===true:!!(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);if(/[?&]site=1/.test(s))return;
 if(/tgWebApp/.test(h+s)||sa||/[?&]app(=|&|$)/.test(s)||/^#.*=/.test(h)){location.replace("app.html?v="+Math.floor(Date.now()/6e5)+(s?"&"+s.slice(1):"")+h)}}catch(e){}})()</script>"""
 FEATS = [("cam", "Шкаф — за одно фото", "Сфотографируй полку, и Нора узнает книги по корешкам. Фото не уходят с телефона."),
          ("imp", "Всё в одном месте", "Перенеси прочитанное из Литрес, Яндекс Книг и LiveLib — и бумажные книги туда же."),
