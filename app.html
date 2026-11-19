@@ -687,7 +687,7 @@ body.films #app .seg i:not(.L *){transform:translateX(100%)}
 #app .rb.w svg:not(.L *){stroke:#0B0B10;stroke-width:2.2}
 #app .rb:disabled:not(.L *){opacity:.3}
 #app .slide.done [data-skip]:not(.L *),#app .slide.done [data-want]:not(.L *){opacity:.3;pointer-events:none}
-#app .st:not(.L *){height:0;overflow:hidden;text-align:center;font-size:13px;color:var(--ink2);transition:height .3s,margin .3s}
+#app .st:not(.L *):not(#vshBody *){height:0;overflow:hidden;text-align:center;font-size:13px;color:var(--ink2);transition:height .3s,margin .3s}
 #app .slide.done .st:not(.L *){height:18px;margin-top:10px}
 #app .slide:not(.L *){touch-action:pan-y}
 #app .wrap:not(.L *){position:absolute;left:10px;right:10px;top:calc(66px + var(--sat,env(safe-area-inset-top,0px)));bottom:calc(94px + env(safe-area-inset-bottom,0px))}
