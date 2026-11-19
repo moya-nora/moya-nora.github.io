@@ -8,3 +8,6 @@ jobs:
       - name: Проверка
         env: {BOT_FB_PASS: "${{ secrets.BOT_FB_PASS }}"}
         run: python3 -u tools/cloud_check.py
+      - name: Публичный ключ веб-пушей
+        env: {BOT_FB_PASS: "${{ secrets.BOT_FB_PASS }}"}
+        run: pip install -q cryptography && python3 -u tools/vapid.py
