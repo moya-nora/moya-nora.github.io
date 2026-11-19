@@ -766,6 +766,35 @@ def HOOK(b):
             f'<div class="ctas"><a class="btn" href="{href}" {go}>Хочу прочитать</a><a class="btn ghost" href="{href}" {go}>Уже прочитано</a></div></div>')
 
 
+# на странице книги: в каких подборках Норы она есть и другие книги автора - живые ссылки и уникальный текст для поисковиков
+_bk = lambda b: nk(b["t"]) + "|" + nk(str(b["a"] or "").split(" ")[-1])
+IN_COLL = {}
+for p_, t_, _, L_ in coll_data:
+    for b_ in L_:
+        l_ = IN_COLL.setdefault(_bk(b_), [])
+        if p_ not in [x for x, _ in l_]:
+            l_.append((p_, t_.split(":")[0]))
+BY_AUTH = {}
+for b_ in cat_books:
+    a_ = nk(str(b_["a"] or "")).strip()
+    if a_ and id(b_) in BOOK_URL and all(_bk(x) != _bk(b_) for x in BY_AUTH.get(a_, [])):
+        BY_AUTH.setdefault(a_, []).append(b_)
+
+
+def COLLS(b):
+    l_ = [(p_, t_) for p_, t_ in IN_COLL.get(_bk(b), []) if p_ not in GIFT or curate_ok(b, p_)][:8]
+    if not l_:
+        return ""
+    return ('<div class="incoll"><h2>Есть в подборках Норы</h2><p>' + ", ".join(f'<a href="/c/{p_}.html">{esc(t_)}</a>' for p_, t_ in l_) + ".</p></div>")
+
+
+def AUTH(b):
+    o_ = sorted((x for x in BY_AUTH.get(nk(str(b["a"] or "")).strip(), []) if _bk(x) != _bk(b)), key=lambda x: -(x["q"] or 0))[:6]
+    if not o_:
+        return ""
+    return (f'<div class="incoll"><h2>Другие книги автора</h2><p>' + ", ".join(f'<a href="/{BOOK_URL[id(x)]}">«{esc(x["t"])}»</a>' + (f' ({x["y"]})' if x["y"] and x["y"] > 0 else "") for x in o_) + ".</p></div>")
+
+
 pool = {}
 for b in cat_books:
     pool.setdefault(b["g"], []).append(b)
@@ -783,7 +812,7 @@ for b in cat_books:
             f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>{f'<p class="gn">{esc(gname(b))}</p>' if gname(b) else ""}{RATE(b)}'
             + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "") + NOTE(b) + WHO(b, sim)
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
-            + WHERE(b) + HOOK(b) + VQLINK(b) + RVS(b)
+            + WHERE(b) + HOOK(b) + COLLS(b) + AUTH(b) + VQLINK(b) + RVS(b)
             + (f'<section class="like"><div class="shd"><h2>Похожие книги</h2><a class="all" data-sim href="/p/">Ещё похожие</a></div>{rail(sim, bare=True)}</section>' if sim else "")
             + "</div></article>" + REVIEWS_JS
             + "</div>")
