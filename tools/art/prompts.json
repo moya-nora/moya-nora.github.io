@@ -99,6 +99,71 @@
    "p": "A single horizontal group isolated on a perfectly flat solid pure green background (#00FF00, chroma key, no gradient, no shadow on the background, no ground): a sleeping calico cat (white, orange and black patches) curled up lying on its side, calm closed eyes, and around it a few flowers - two sprigs of lavender, three small white daisies and one peach wild rose with sage leaves - growing up from behind the cat. The bottom edge of the group is flat and straight, as if lying on a shelf edge. No text.",
    "style": "Modern flat editorial illustration with subtle shading, visible fine grain and risograph-like texture, saturated warm palette: lavender, peach, terracotta, mustard, sage green, cream, plum. Crisp clean edges against the green background.",
    "size": "1536x1024"
+  },
+  "cv_peyton": {
+   "p": "A worn black clergyman's hat and an old wooden walking stick lying at the edge of a red-earth country road; the road winds down through green rolling Natal hills toward a distant hazy city with mine dumps. Calm, sorrowful, hopeful. Composition: objects in the lower third, the upper half is a wide plain warm sky. No text, no letters, no title, no watermark.",
+   "style": "Flat editorial illustration, warm ochre, red earth, sage green and dusty blue, subtle grain.",
+   "size": "1024x1536"
+  },
+  "cv_stulya": {
+   "p": "One single ornate 19th-century walnut armchair with curved legs and floral upholstery, a tiny diamond glinting through a slit in the seat, isolated in the center on a plain flat mustard-yellow background, nothing else. No text, no letters, no title, no watermark.",
+   "style": "Playful flat vector-like illustration, crisp shapes, limited palette: mustard, burgundy, cream, black.",
+   "size": "1024x1536"
+  },
+  "cv_kukla": {
+   "p": "A Warsaw haberdashery shop window in the 1870s at dusk: a porcelain doll in a lace dress, kid gloves and ribbons behind the glass, a gas lamp outside. No text, no letters, no title, no watermark.",
+   "style": "Fine 19th-century steel engraving style, cross-hatching, sepia ink on cream paper with a single touch of rose color.",
+   "size": "1024x1536"
+  },
+  "cv_beguny": {
+   "p": "Seamless repeating pattern of small icons: airplanes, suitcases, train tickets, compasses, anatomical hearts and folded maps, evenly spaced. No text, no letters, no title, no watermark.",
+   "style": "Flat two-colour screen print, cobalt blue and coral on off-white, modern.",
+   "size": "1024x1536"
+  },
+  "cv_zhit": {
+   "p": "An old Chinese peasant leading an old water buffalo across a terraced rice field at sunset, a straw hat, a single thin tree, quiet and dignified. Wide sky in the upper half. No text, no letters, no title, no watermark.",
+   "style": "Contemporary Chinese ink-and-wash painting with soft color, warm amber and jade green.",
+   "size": "1024x1536"
+  },
+  "cv_charli": {
+   "p": "A golden ticket sticking out of a half-unwrapped chocolate bar on a table, behind it through a window a fantastical candy factory with striped chimneys and a chocolate river. No text, no letters, no title, no watermark.",
+   "style": "Whimsical children's book gouache illustration, bright and cheerful, chocolate brown, gold, candy pink and mint.",
+   "size": "1024x1536"
+  },
+  "cv_vedmy": {
+   "p": "A small white mouse sitting proudly on a big old brass hotel room key on a plain lilac background, a tiny shadow, simple and witty. No text, no letters, no title, no watermark.",
+   "style": "Children's book gouache illustration with playful lines, lots of empty space.",
+   "size": "1024x1536"
+  },
+  "cv_shkid": {
+   "p": "1920s Soviet constructivist poster composition: bold red diagonal, a school desk, a stack of books, a boy's flat cap and a piece of chalk, geometric shapes. No text, no letters, no title, no watermark.",
+   "style": "Constructivist lithograph poster style, red, black and cream, strong geometry, no letters.",
+   "size": "1024x1536"
+  },
+  "cv_godunov": {
+   "p": "A golden Russian tsar's crown with fur trim resting on a red velvet cushion, onion domes of the Kremlin faint behind, a single candle. No text, no letters, no title, no watermark.",
+   "style": "Old Russian icon painting style, gold leaf, deep red and dark green, ornamental.",
+   "size": "1024x1536"
+  },
+  "cv_obmen": {
+   "p": "A single old apartment door key on a plain warm beige background, its shadow shaped like a small window of a Moscow khrushchev building. No text, no letters, no title, no watermark.",
+   "style": "Minimal conceptual illustration, one object, lots of empty space, subtle paper texture.",
+   "size": "1024x1536"
+  },
+  "cv_kopperhed": {
+   "p": "A red-haired boy walks along a dirt road in the green Appalachian mountains past a small trailer home, morning mist in the valleys, resilient mood. Upper half is sky and mountains. No text, no letters, no title, no watermark.",
+   "style": "Contemporary editorial illustration, textured flat colors, forest green, rust red, morning gold.",
+   "size": "1024x1536"
+  },
+  "cv_dyuna": {
+   "p": "A colossal sandworm rising from orange desert dunes under two pale moons, a tiny figure standing on a dune ridge. No text, no letters, no title, no watermark.",
+   "style": "Bold retro sci-fi poster illustration, geometric forms, burnt orange, spice gold and deep indigo.",
+   "size": "1024x1536"
+  },
+  "cv_egipet": {
+   "p": "A large weathered wooden signpost shaped like a T-cross standing alone at a snowy American crossroads, a black crow on top, long evening shadows. No text, no letters, no title, no watermark.",
+   "style": "Graphic noir illustration, strong shadows, white snow, black and one signal-red accent.",
+   "size": "1024x1536"
   }
  }
 }
