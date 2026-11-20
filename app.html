@@ -7586,28 +7586,33 @@ async function wrCards(D){
       if(dy){x.drawImage(a,0,0,a.naturalWidth,4,(1080-w)/2,0,w,dy+2)}x.drawImage(a,(1080-w)/2,1920-h+dy,w,h)}
     const g=x.createLinearGradient(0,0,0,980);g.addColorStop(0,"rgba(8,10,18,.62)");g.addColorStop(.6,"rgba(8,10,18,.25)");g.addColorStop(1,"rgba(8,10,18,0)");x.fillStyle=g;x.fillRect(0,0,1080,980);
     const g2=x.createLinearGradient(0,1700,0,1920);g2.addColorStop(0,"rgba(8,10,18,0)");g2.addColorStop(1,"rgba(8,10,18,.6)");x.fillStyle=g2;x.fillRect(0,1700,1080,220);
-    x.font=`500 30px ${FF}`;x.fillStyle="rgba(244,236,220,.72)";x.textAlign="center";x.fillText("Нора     nora-books.ru",540,1862);x.textAlign="left";return [c,x]};
+    x.font=`500 30px ${FF}`;x.fillStyle="rgba(244,236,220,.72)";x.textAlign="center";x.fillText("nora-books.ru",540,1862);x.textAlign="left";return [c,x]};
   const stars=(x,k,y)=>{if(!k)return y;x.save();x.fillStyle=GOLD;for(let j=0;j<k;j++){const cx=540+(j-(k-1)/2)*66,cy=y+30,R=24;x.beginPath();for(let q=0;q<10;q++){const r=q%2?R*.42:R,an=-Math.PI/2+q*Math.PI/5;x.lineTo(cx+Math.cos(an)*r,cy+Math.sin(an)*r)}x.closePath();x.fill()}x.restore();return y+70};
-  // 1. с чего начался год
-  {const f=D.first||hero,[c,x]=mk(1);let y=label(x,`Мой ${D.Y} в книгах начался с`,250);y=txt(x,"«"+f.t+"»",y+10,{font:serif,size:104,min:54,lines:2,w:940});txt(x,auN(f.a),y+4,{font:sans,size:40,min:28,color:MUTE,w:900});out.push(c)}
-  // 2. книга года
-  {const [c,x]=mk(2);let y=label(x,D.top[0]?"Моя книга года":"Последняя книга года",250);y=txt(x,"«"+hero.t+"»",y+10,{font:serif,size:108,min:54,lines:2,w:940});y=txt(x,auN(hero.a),y+4,{font:sans,size:40,min:28,color:MUTE,w:900});stars(x,st(hero),y+14);out.push(c)}
-  // 3. время с книгой: часы (45 страниц в час) и перелёты Москва - Владивосток (8 часов)
-  {const [c,x]=mk(3,150),h=Math.round((D.pg||0)/45);let y=label(x,"Время с книгой",250);
-    if(h>=2){y=txt(x,`${h.toLocaleString("ru-RU")} ${plural(h,"час","часа","часов")}`,y+10,{font:num,size:190,min:90,w:960});y=txt(x,"примерно, если читать в обычном темпе",y-6,{font:sans,size:32,color:MUTE});const fl=Math.floor(h/8);
-      y=txt(x,`${D.pg.toLocaleString("ru-RU")} ${plural(D.pg,"страница","страницы","страниц")}`+(fl>=1?` - как ${fl} ${plural(fl,"перелёт","перелёта","перелётов")}`:""),y+6,{font:sans,size:38,min:26,color:MUTE,w:900});if(fl>=1)txt(x,"Москва - Владивосток",y,{font:sans,size:38,color:MUTE})}
-    else{y=txt(x,`${n} ${plural(n,"книга","книги","книг")}`,y+10,{font:num,size:190,min:90,w:960});txt(x,"за этот год",y+6,{font:sans,size:38,color:MUTE})}
-    out.push(c)}
-  // 4. автор года или самая толстая книга
-  {const A=D.au[0];if(A&&A[1]>=2){const [c,x]=mk(4);let y=label(x,"Автор года",250);y=txt(x,auN(A[0]),y+10,{font:serif,size:112,min:54,lines:2,w:940});txt(x,`${A[1]} ${plural(A[1],"книга","книги","книг")} за год`,y+8,{font:sansB,size:46,color:GOLD});out.push(c)}
-    else if(D.long&&D.long.pg){const L=D.long,[c,x]=mk(4);let y=label(x,"Самая толстая книга",250);y=txt(x,"«"+L.t+"»",y+10,{font:serif,size:100,min:50,lines:2,w:940});y=txt(x,`${L.pg.toLocaleString("ru-RU")} ${plural(L.pg,"страница","страницы","страниц")}`,y+8,{font:sansB,size:46,color:GOLD});txt(x,auN(L.a),y+4,{font:sans,size:38,min:26,color:MUTE,w:900});out.push(c)}}
   // номинация года (нужна на 5-м и на итоговом листе)
   const NOM=(()=>{const L=D.L,tg=b=>(catOf(b)||b).tags||[],sh=f=>L.filter(f).length/n,rt=L.filter(b=>b.r!=null),av=rt.length?rt.reduce((s,b)=>s+b.r/2,0)/rt.length:0,bigB=L.filter(b=>(b.pg||0)>=500).length,mx=Math.max(...D.mon);
     const N=[[sh(b=>tg(b).some(t=>/любов|ромэнтези/.test(t)))>=.4,"Я всё ещё верю в любовь","Больше всего книг о любви"],[sh(b=>tg(b).some(t=>/триллер|хоррор|жутковат|мрачн/.test(t)))>=.4,"Тёмная душа","Больше всего триллеров и мрачных историй"],[bigB>=3&&bigB/n>=.4,"Коллекционер кирпичей","Больше всего книг от 500 страниц"],[sh(b=>b.g==="classic")>=.4,"Вечный студент","Больше всего классики"],[D.au[0]&&D.au[0][1]>=3,"Один автор - одна любовь",D.au[0]?`${D.au[0][1]} ${plural(D.au[0][1],"книга","книги","книг")} - ${auN(D.au[0][0])}`:""],[rt.length>=5&&av>=4.5,"Книжный сноб наоборот","Почти всё на пятёрку"],[rt.length>=5&&av<=3,"Критик года","Пятёрки нужно заслужить"],[mx>=5,"Работать не хочу, читать хочу",`${mx} ${plural(mx,"книга","книги","книг")} за один месяц`],[new Set(L.map(b=>b.g)).size>=5,"Читаю всё подряд","Больше пяти разных жанров"],[true,"Своя волна","Год, не похожий ни на чей другой"]];return N.find(z=>z[0])})();
+  // листы 1-5 в одном плакатном строе: мелкая тема сверху, крупная фраза по левому краю, короткая подпись; текст живёт в небе над картинкой
+  const PM=80,PW=1080-2*PM,pSP=(x,v)=>{if("letterSpacing" in x)x.letterSpacing=v};
+  const pPut=(x,t,font,X,Y,col,ls)=>{x.font=font;x.fillStyle=col;pSP(x,ls||"0px");x.shadowColor="rgba(0,0,0,.6)";x.shadowBlur=18;x.fillText(t,X,Y);x.shadowBlur=0;x.shadowColor="transparent";pSP(x,"0px")};
+  // o: {label, head, col, f0, lines, subs:[[текст, цвет, жирный]], stars, bottom}
+  const poster=(x,o)=>{let y=180;pPut(x,o.label,`500 32px ${FF}`,PM,y,MUTE);const subsH=(o.subs||[]).length*52+(o.stars?70:0),avail=(o.bottom||600)-y-40-subsH;
+    let f0=o.f0||128,q;do{q=fitT(x,o.head,num,PW,o.lines||3,f0,48);f0-=8}while(q.L.length*q.f*1.1>avail&&f0>48);
+    y+=40;q.L.forEach((l,i)=>pPut(x,l,num(q.f),PM-3,y+q.f*.78+i*q.f*1.1,o.col||CREAM,q.f>90?"-3px":"-1px"));y+=q.L.length*q.f*1.1+18;
+    (o.subs||[]).forEach(([t,col,b])=>{const {f,L}=fitT(x,t,b?sansB:sans,o.sw||PW,2,40,30);L.forEach(l=>{y+=46;pPut(x,l,(b?sansB:sans)(f),PM,y,col||CREAM)});y+=8});
+    if(o.stars){y+=28;x.fillStyle=GOLD;for(let j=0;j<o.stars;j++){const cx=PM+26+j*64,cy=y+16,R=24;x.beginPath();for(let k=0;k<10;k++){const r=k%2?R*.42:R,an=-Math.PI/2+k*Math.PI/5;x.lineTo(cx+Math.cos(an)*r,cy+Math.sin(an)*r)}x.closePath();x.fill()}}};
+  // 1. с чего начался год
+  {const f=D.first||hero,[c,x]=mk(1,40);poster(x,{label:`Мой ${D.Y} начался с книги`,head:"«"+f.t+"»",subs:[[auN(f.a),MUTE]],bottom:680});out.push(c)}
+  // 2. книга года
+  {const [c,x]=mk(2,150);poster(x,{label:D.top[0]?"Книга года":"Последняя книга года",head:"«"+hero.t+"»",subs:[[auN(hero.a),MUTE]],stars:st(hero),bottom:700});out.push(c)}
+  // 3. время с книгой: оценка, 45 страниц в час; перелёт Москва - Владивосток - 8 часов
+  {const [c,x]=mk(3,200),h=Math.round((D.pg||0)/45),fl=Math.floor(h/8);
+    if(h>=2)poster(x,{label:"Время с книгой, примерно",head:`${h.toLocaleString("ru-RU")} ${plural(h,"час","часа","часов")}`,col:GOLD,f0:190,lines:2,subs:fl>=1?[[`Это ${fl} ${plural(fl,"перелёт","перелёта","перелётов")} Москва - Владивосток`,CREAM]]:[[`${D.pg.toLocaleString("ru-RU")} ${plural(D.pg,"страница","страницы","страниц")}`,CREAM]],bottom:720});
+    else poster(x,{label:"Мой год с книгой",head:`${n} ${plural(n,"книга","книги","книг")}`,col:GOLD,f0:190,lines:2,bottom:720});out.push(c)}
+  // 4. автор года или самая толстая книга
+  {const A=D.au[0];if(A&&A[1]>=2){const [c,x]=mk(4,150);poster(x,{label:"Автор года",head:auN(A[0]),subs:[[`${A[1]} ${plural(A[1],"книга","книги","книг")} за год`,GOLD,1]],bottom:700});out.push(c)}
+    else if(D.long&&D.long.pg){const L=D.long,[c,x]=mk(4,150);poster(x,{label:"Самая толстая книга",head:"«"+L.t+"»",subs:[[`${L.pg.toLocaleString("ru-RU")} ${plural(L.pg,"страница","страницы","страниц")}`,GOLD,1],[auN(L.a),MUTE]],bottom:700});out.push(c)}}
   // 5. номинация года и читательский тип
-  {const w=NOM;
-    const [c,x]=mk(5,110);let y=label(x,"Номинация года",230);y=txt(x,"«"+w[1]+"»",y+10,{font:serif,size:96,min:48,lines:2,w:940});y=txt(x,w[2],y+4,{font:sans,size:38,min:26,lines:2,color:MUTE,w:900});
-    y=txt(x,"мой читательский тип",y+40,{font:sansB,size:34,color:GOLD});txt(x,D.type[0],y,{font:serif,size:68,min:40,lines:2,w:900});out.push(c)}
+  {const [c,x]=mk(5,230);poster(x,{label:"Номинация года",head:"«"+NOM[1]+"»",f0:104,subs:[[NOM[2],MUTE],["Мой читательский тип - "+D.type[0].toLowerCase(),GOLD,1]],sw:560,bottom:820});out.push(c)}
   // 6. итог в духе русской плакатной типографики: одна фраза-плакат гигантским набором («2000 / страниц / в 5 книгах») прижата к верху,
   // короткая справка (месяц, жанр, номинация) стоит на якоре у горизонта картинки. Крупное - очень крупное, мелкое - мелкое, середины нет.
   {const [c,x]=mk(6);const M=80,FW=1080-2*M,G=48,CW=(FW-G)/2,C2=M+CW+G,TOP=180,BOT=1180,SPc=v=>{if("letterSpacing" in x)x.letterSpacing=v};
