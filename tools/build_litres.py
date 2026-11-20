@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 """Современные книги из ЛитРес (включая «Черновики» — самиздат) — books/litres.json, формат как books/new.json
 плюс две колонки: обложка и короткая аннотация. Берём самые популярные книги в нужных жанрах ЛитРес
-и переводим их жанры в жанры и метки Норы (ромэнтези, любовный роман, young adult, тропы…). 18+ не берём."""
+и переводим их жанры в жанры и метки Норы (ромэнтези, любовный роман, young adult, тропы…).
+Книги 18+ тоже берём (с 21.11.2026): у них метка «18+», в приложении - значок на обложке, в ленту новичкам они не попадают.
+Средняя оценка ЛитРес - последняя колонка (×10), её видно на обложке в списках."""
 import json, os, re, sys, time, urllib.request
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 OUT = os.path.join(ROOT, "books", "litres.json")
 API = "https://api.litres.ru/foundation/api/"
 H = {"User-Agent": "moya-nora-books/1.0 (https://moya-nora.github.io)", "Accept": "application/json"}
-PER = int(os.environ.get("PER_GENRE", "300"))
+PER = int(os.environ.get("PER_GENRE", "500"))
 
 # жанр ЛитРес (часть названия) → (жанр Норы, метки Норы)
 # сколько книг брать из жанра: в ромэнтези, любовных романах и young adult — намного больше (это их главная аудитория)
-BIG = int(os.environ.get("PER_BIG", "1200"))
+BIG = int(os.environ.get("PER_BIG", "2000"))
 MAP = [
     (r"^магические академии", "fantasy", ["любовное фэнтези", "троп:academy", "школа и университет"]),
     (r"^фэнтези про драконов", "fantasy", ["троп:dragons", "драконы"]),
@@ -104,8 +106,9 @@ for gid, gname, ng, tags in pick:
         if not L:
             break
         for x in L:
-            if x.get("is_adult_content") or (x.get("min_age") or 0) >= 18 or x.get("art_type") not in (0, None):
+            if x.get("art_type") not in (0, None):
                 continue
+            adult = bool(x.get("is_adult_content") or (x.get("min_age") or 0) >= 18)
             au = next((p.get("full_name") for p in x.get("persons") or [] if p.get("role") == "author"), "")
             if not au or not x.get("title"):
                 continue
@@ -114,6 +117,8 @@ for gid, gname, ng, tags in pick:
             b = books.setdefault(k, {"id": x["id"], "t": x["title"].strip(), "a": au.strip(), "g": ng, "tags": [], "n": rt.get("rated_total_count") or 0,
                                      "r": rt.get("rated_avg") or 0, "y": int(str(x.get("date_written_at") or x.get("available_from") or "0")[:4] or 0),
                                      "cv": x.get("cover_url") or "", "pg": round((x.get("symbols_count") or 0) / 2000) or 0, "dr": 1 if x.get("is_draft") else 0})
+            if adult and "18+" not in b["tags"]:
+                b["tags"].append("18+")
             for t in tags:
                 if t not in b["tags"]:
                     b["tags"].append(t)
@@ -176,7 +181,7 @@ for b in L:
     if b["dr"]:
         b["tags"].append("самиздат")
     rows.append(["l" + str(b["id"]), b["t"], ai_[b["a"]], b["y"] or 0, G_.index(b["g"]), [ti(t) for t in b["tags"]], q, b["n"], -1, [], b["pg"], 0, 0,
-                 ("https://www.litres.ru" + b["cv"]) if b["cv"] else "", b.get("d") or ""])
+                 ("https://www.litres.ru" + b["cv"]) if b["cv"] else "", b.get("d") or "", round((b["r"] or 0) * 10) if b["n"] >= 5 else 0])
 json.dump({"meta": {"source": "ЛитРес", "built": time.strftime("%Y-%m-%d"), "n": len(rows)}, "c": [], "g": G_, "tg": TG, "aw": [], "a": A, "b": rows},
           open(OUT, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 json.dump(DRUG, open(os.path.join(os.path.dirname(OUT), "drugmark.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))

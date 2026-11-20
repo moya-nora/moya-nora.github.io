@@ -94,6 +94,8 @@ for name in ("books.json", "new.json", "litres.json"):
         im, an = (row[13], row[14]) if len(row) > 14 else ("", "")
         a = d["a"][ai]
         tags = [d["tg"][j] for j in tg]
+        if "18+" in tags:  # книги 18+ есть в приложении (с отметкой), а страниц сайта для них не делаем
+            continue
         e = tagsx["m"].get(str(w))
         if e and len(e) > 2:
             tags += [tagsx["tg"][j] for j in e[2] if j < len(tagsx["tg"])]

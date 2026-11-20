@@ -100,7 +100,9 @@ def catalog_rows(fn):
     except FileNotFoundError:
         return []
     A = d.get("a") or []
-    return [{"t": r[1], "a": (A[r[2]][0] if r[2] < len(A) else ""), "y": r[3] or 0} for r in d.get("b") or []]
+    T = d.get("tg") or []
+    # книги 18+ в письмах бота не советуем
+    return [{"t": r[1], "a": (A[r[2]][0] if r[2] < len(A) else ""), "y": r[3] or 0} for r in d.get("b") or [] if not any(T[j] == "18+" for j in (r[5] or []) if j < len(T))]
 
 
 FRESH = [b for b in catalog_rows("new.json") + catalog_rows("litres.json") if b["y"] >= YNOW - 1]

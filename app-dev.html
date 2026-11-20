@@ -1548,6 +1548,10 @@ html[data-theme="light"] .covsw button.on{background:#14151B;color:#F3F1EC}
 #app .imp-row input{margin-top:3px;width:18px;height:18px;accent-color:#fff}
 #app .imp-row small{display:block;color:var(--ink3);font-size:12px;margin-top:2px}
 #app [data-imp-add]{width:100%;margin-top:12px}
+#app .cv .rtb{position:absolute;left:5px;top:5px;z-index:3;padding:2px 6px;border-radius:7px;background:rgba(20,20,24,.82);color:#fff;font:700 11px/1.35 var(--f,system-ui);font-style:normal;letter-spacing:.01em;pointer-events:none}
+#app .cv .rtb.hi{background:#3BA55C}#app .cv .rtb.lo{background:rgba(120,120,128,.9)}
+#app .fr .cv .rtb{left:3px;top:3px;padding:1px 4px;font-size:9.5px;border-radius:5px}
+#app .fr .ac em.myr{background:#3BA55C;color:#fff;border-radius:999px;padding:3px 9px;font-style:normal;font-weight:700;font-size:12.5px}
 #app .emp-acts{grid-column:1/-1;display:flex;flex-direction:column;gap:10px;margin:0 auto;width:100%;max-width:300px}#app #grid .emp-acts .btn,#app .emp-acts .btn{width:100%;height:48px;flex:none;display:flex;align-items:center;justify-content:center;padding:0 20px;aspect-ratio:auto;font-size:15px;white-space:nowrap}
 .legacy-over .imp-link{display:block;width:100%;margin:10px 0 4px;padding:12px;border-radius:12px;border:1px dashed var(--line);background:none;color:var(--ink-2);font:inherit;font-size:14px}
 html[data-theme="light"] #app .imp-step{background:rgba(20,21,27,.04)}
@@ -3584,6 +3588,8 @@ const hydrate=list=>list.map(x=>typeof x==="string"?(LIB[x]?{...LIB[x],id:x}:nul
 const compact=()=>want.map(s=>LIB[s.id]&&!s.from?s.id:(LIB[s.id]?{id:s.id,from:s.from,...LIB[s.id]}:s));
 let want=hydrate(LS.get(KEY,null)||(GUEST?[]:Object.keys(WANT)));
 const TG=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initData?window.Telegram.WebApp:null;
+// кнопка «Назад» Telegram: обработчики из разных частей кода не регистрируем по отдельности - в конце файла один общий (backTop)
+try{if(TG&&TG.BackButton){const _bon=TG.BackButton.onClick.bind(TG.BackButton);TG.BackButton.onClick=()=>TG.BackButton;window.__noraBackOn=_bon}}catch(e){}
 /* приложение из Google Play / RuStore / App Store: платные клубы не показываем (правила магазинов об оплате цифрового) */
 const STORE=(()=>{try{const ss=sessionStorage,m=location.search.match(/[?&]src=(android|ios)/);if(m)ss.setItem("nora.store",m[1]);else if(/^android-app:/.test(document.referrer))ss.setItem("nora.store","android");return ss.getItem("nora.store")||""}catch(e){return ""}})();
 function saveWant(){
@@ -4978,12 +4984,12 @@ function bigBuild(d,rest){return new Promise(res=>{
     const arr=(cache,ix,src)=>{if(!ix||!ix.length)return E;const k=ix.join(",");let v=cache.get(k);if(!v){v=ix.map(j=>src[j]).filter(Boolean);cache.set(k,v)}return v};
     const CYR=/[а-яё]/i,HV2=new Set(["мрачное","война","хоррор","грустное","жутковатое","антиутопия","постапокалипсис"]),HV0=new Set(["юмор","смешное","сказка","уют","светлое","тёплое"]);
     const step=()=>{const end=Math.min(R.length,i+1500);
-      for(;i<end;i++){const [w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o,im,an]=R[i],au=A[ai]||["",-1],a=au[0],n=norm(t);
+      for(;i<end;i++){const [w,t,ai,y,gi,tg,q,sl,ci,aw,pg,rw,o,im,an,rt]=R[i],au=A[ai]||["",-1],a=au[0],n=norm(t);
         const ex=CATT[n];if(ex&&(rest||i>=NB||!ex.big)&&(!ex.a||norm(ex.a).includes(norm(String(a).split(" ").slice(-1)[0])))){if(im&&!ex.img&&i>=NB)ex.img=im===1?"https://www.litres.ru/pub/c/cover/"+String(w).slice(1)+".jpg":im;continue}
         const tags=arr(tc,tg,TGS),g=G[gi]||"modern",p=PAL[hsh(t)%PAL.length];
         const b={id:"q"+w,t,a,c:ci>=0?C[ci]:(au[1]>=0?C[au[1]]:""),y:y||null,g,tags,heavy:g==="kids"||tags.some(x=>HV0.has(x))?0:tags.some(x=>HV2.has(x))?2:1,
           len:pg?(pg<260?"short":pg>520?"long":"mid"):undefined,q,acclaim:arr(ac,aw,AW),ann:"",when:"",f:E,big:1,sl,bg:p[0],fg:p[1]};
-        if(pg)b.pg=pg;if(rw)b.rw=rw;if(o)b.o=o;if(im)b.img=im===1?"https://www.litres.ru/pub/c/cover/"+String(w).slice(1)+".jpg":im;if(an){b.ann=fixEll(an);if(/…$/.test(an)&&/^l\d+$/.test(String(w)))b.annCut=String(w)}if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
+        if(pg)b.pg=pg;if(rw)b.rw=rw;if(rt)b.rt=rt/20;if(o)b.o=o;if(im)b.img=im===1?"https://www.litres.ru/pub/c/cover/"+String(w).slice(1)+".jpg":im;if(an){b.ann=fixEll(an);if(/…$/.test(an)&&/^l\d+$/.test(String(w)))b.annCut=String(w)}if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
       if(i<R.length){setTimeout(step,0);return}res(out)};setTimeout(step,0)})}
 let BIGTAGS=null;
 // основная часть каталога (известные книги) + новинки + ЛитРес - сразу; малоизвестные (books.rest.json) - при первом поиске
@@ -5040,13 +5046,16 @@ window.NORA_IMGOK=function(img){const w=img.naturalWidth,h=img.naturalHeight,r=h
 // книги 18+ (откровенные сцены, тяжёлое) - пометка «18+» на обложке, как в книжных магазинах; на общих полках главной их нет.
 // ЛГБТ-линии - не показываем на общих полках. Списки - books/curate.json (обновлять вместе).
 const ADULT18=new Set(["лолита", "академиязодиак", "верити", "всезакончитсянанас", "гипотезалюбви", "городженщин", "девушкавпоезде", "девушкастатуировкойдракона", "дневникбриджитджонс", "домвкотором", "домземлиикрови", "железноепламя", "изкровиипепла", "империявампиров", "имярозы", "исчезнувшая", "квартиранадвоих", "королевство", "королевствосеребряногопламени", "королевствошиповироз", "людикоторыхмывстречаемвотпуске", "малибувогне", "метель", "молчаниеягнят", "мятнаясказка", "неночь", "нормальныелюди", "ониксовыйшторм", "петровывгриппеивокругнего", "пляжноечтение", "поосколкамтвоегосердца", "поправки", "поющиевтерновнике", "прекрасныймиргдежеты", "притворисьмоимнарождество", "пятьдесятоттенковсерого", "рыцарьимотылек", "симон", "столетодиночества", "тайнаяистория", "твоесердцебудетразбито", "теньветра", "уродливаялюбовь", "урокихимии", "цирцея", "четвертоекрыло", "шантарам", "этонашконец"]),NOALL=new Set(["беззвездноеморе", "девушкаженщинаиная", "дейзиджонсиthesix", "дневникикиллербота", "домвлазурномморе", "домнакраюлазурногоморя", "железнаявдова", "завтразавтразавтра", "легендыилатте", "лишькраткиймигземноймывсепрекрасны", "маленькаяжизнь", "медвежийугол", "незримаяжизньаддиларю", "обительапельсиновогодерева", "песньахилла", "подшепчущейдверью", "рана", "семьмужейэвелинхьюго", "тачтосталасолнцем", "тревожныелюди", "хорошобытьтихоней"]);
-const is18=x=>!!x&&!!x.t&&ADULT18.has(x._n||norm(x.t)),okAll=b=>{const n=b._n||norm(b.t);return !ADULT18.has(n)&&!NOALL.has(n)};
-function cv(x,w){const k=ikey(x),u=imgOf(x);let inner="";
+const has18=b=>!!b&&(b.tags||[]).includes("18+"),is18=x=>!!x&&!!x.t&&(ADULT18.has(x._n||norm(x.t))||has18(x.src)||has18(x)),okAll=b=>{const n=b._n||norm(b.t);return !ADULT18.has(n)&&!NOALL.has(n)&&!has18(b)};
+// оценка книги на обложке в списках: ЛитРес (из каталога) или Фантлаб/ЛитРес, если карточку уже открывали
+function ratOf(x){try{const c=(x.src&&x.src.rt)?x.src:catOf(x)||x;if(c&&c.rt)return c.rt;const m=typeof META!=="undefined"&&META[ikey(x)];if(m&&m.r&&m.v>=5)return m.r/2}catch(e){}return 0}
+const rtBadge=x=>{const r=ratOf(x);return r?`<i class="rtb${r>=4?" hi":r<3.3?" lo":""}">${r.toFixed(1).replace(".",",")}</i>`:""};
+function cv(x,w,rb){const k=ikey(x),u=imgOf(x);let inner="";
   if(x._f)inner=`<span class="L">${poster({...(x.src||{}),id:x.id||x.t,t:x.t,y:x.y,g:x.g||0},w||120)}</span>`;
   else{const s=x.src&&x.src.bg?x.src:null,c=catOf(x),p=palOf(x.t),b=s||{id:x.id||x.t,t:x.t,a:x.a||"",g:x.g||(c&&c.g)||"modern",bg:(c&&c.bg)||p[0],fg:(c&&c.fg)||p[1],tags:c&&c.tags};
     inner=`<span class="L">${cover({...b,a:b.a||""},w||120)}</span>`}
   if(x.t&&!(u&&u.indexOf("img/ai/")<0))wantImg(x);
-  return `<div class="cv lg" data-ik="${esc(k)}" style="--lw:${w||120}px">${inner}${u?imgTag(u):""}${is18(x)?'<i class="a18">18+</i>':""}</div>`}
+  return `<div class="cv lg" data-ik="${esc(k)}" style="--lw:${w||120}px">${inner}${u?imgTag(u):""}${is18(x)?'<i class="a18">18+</i>':""}${rb?rtBadge(x):""}</div>`}
 // картинка не загрузилась (сеть) — пробуем ещё раз с паузой; после 4 неудач ищем обложку заново
 const IERR={};
 window.NORA_IMGERR=function(img){const box=img.closest("[data-ik]"),k=box&&box.dataset.ik,u=img.getAttribute("src");img.remove();if(!k)return;
@@ -5386,7 +5395,7 @@ function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>
   const W=wantNorms(),seen=new Set(),out=[];for(const b of ALLB()){if(!b.y||b.y<YNOW-1||!b.a||!fav.has(norm(b.a)))continue;const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt)||seen.has(nt)||dismissed.has(b.id))continue;seen.add(nt);out.push(b);if(out.length>=8)break}
   return out.sort((a,b)=>(b.y||0)-(a.y||0)).map(b=>bItem(b,"rec"))}
 function drawNewAu(){const el=$("#newAu");if(!el)return;const L=[];/* раздел «Новое от твоих авторов» убран по просьбе владелицы (18.11.2026) */el.hidden=!L.length;if(!L.length){el.innerHTML="";return}el._l=L;
-  el.innerHTML=`<h3 class="shelf-h">Новое от твоих авторов</h3><div class="na-row">${L.map((x,i)=>`<button data-na="${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a).split(" ").slice(-1)[0])} · ${x.y}</em></button>`).join("")}</div>`}
+  el.innerHTML=`<h3 class="shelf-h">Новое от твоих авторов</h3><div class="na-row">${L.map((x,i)=>`<button data-na="${i}">${cv(x,96,1)}<small>${esc(x.t)}</small><em>${esc(String(x.a).split(" ").slice(-1)[0])} · ${x.y}</em></button>`).join("")}</div>`}
 $("#newAu").addEventListener("click",e=>{const b=e.target.closest("[data-na]");if(!b)return;const x=$("#newAu")._l[+b.dataset.na];if(x){tgHaptic();bkcOpen(x,"rec")}});
 // «В тренде сейчас»: о чём говорят сейчас - вперемешку громкие книги года (премии, экранизации, бестселлеры) и хиты буктока, примерно 3 к 2 (список обновляется раз в месяц). Книги ищем в каталоге по названию и фамилии автора
 const TREND="Последнее дело майора Чистова|Водолазкин;Полночная библиотека|Хейг;Голландский дом|Пэтчетт;Невьянская башня|Иванов;Йеллоуфейс|Куанг;Джеймс|Эверетт;Хамнет|О'Фаррелл;Демон Копперхед|Кингсолвер;Тео из Голдена|Леви;По орбите|Харви;Проект «Аве Мария»|Вейер;Мастер и Маргарита|Булгаков;Чагин|Водолазкин;Птицеед|Пехов".split(";").map(s=>s.split("|"));
@@ -5463,10 +5472,10 @@ function simTo(b){if(!BOOKS.length)return null;const tg=(b.tags||[]).filter(t=>!
   return bs>=2.5?best:null}
 function drawTrend(){const el=$("#trend");if(!el)return;const S=shelvesCalc();el._s=S;
   el.innerHTML=S.map(([k,h,sub,L],j)=>{
-    if(k==="trend")return `<section class="hshelf hs-big"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,140)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`;
-    if(k==="like")return `<section class="hshelf"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.slice(0,12).map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,110)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`;
+    if(k==="trend")return `<section class="hshelf hs-big"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,140,1)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`;
+    if(k==="like")return `<section class="hshelf"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.slice(0,12).map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,110,1)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`;
     if(k==="mand"){const MO=MAND_L.map(p=>norm(p[0])),ix=x=>{const n=norm(x.t);const k=MO.findIndex(m=>n.startsWith(m));return k<0?99:k},F=L.filter(x=>imgOf(x)).sort((a,b)=>ix(a)-ix(b)).slice(0,4);return `<section class="hshelf"><div class="hm2" role="button" tabindex="0" data-trmore="${j}"><span class="hm2-t"><b>${h}</b><small>${esc(sub)}</small><em>Смотреть подборку</em></span><span class="hm2-f">${(F.length>=3?F:L).slice(0,3).map((x,i)=>`<i style="--i:${i}">${cv(x,84)}</i>`).join("")}</span></div></section>`}
-    return `<section class="hshelf"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`}).join("")}
+    return `<section class="hshelf"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96,1)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`}).join("")}
 $("#trend").addEventListener("click",e=>{const m=e.target.closest("[data-trmore]");if(m){e.stopPropagation();shelfOpen(+m.dataset.trmore);return}const gm=e.target.closest("[data-giftm]");if(gm){const r=($("#trend")._s||[])[+gm.dataset.giftm];if(r){const W=wantNorms(),P=r[3].filter(x=>!READ.has(norm(x.t))&&!W.has(norm(x.t))),Q=P.filter(x=>imgOf(x)),pool=Q.length?Q:P;if(pool.length)giftOpenFx(pool[Math.floor(Math.random()*pool.length)])}return}const a=e.target.closest("[data-trall]");if(!a)return;const S=$("#trend")._s,r=S&&S[+a.dataset.trall];if(r){tgHaptic();listSheet(r[1],r[2],r[3])}});
 $("#trend").addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(!b)return;const [j,i]=b.dataset.tr.split(":").map(Number),S=$("#trend")._s,x=S&&S[j]&&S[j][3][i];if(x){tgHaptic();bkcOpen(x,"rec")}});
 addEventListener("bigcat",()=>{TRK=-1;HSV=null;AUIX=null;if(SCREEN==="col"){drawTrend();layoutFlow(true)}});
@@ -5703,7 +5712,8 @@ const sxHas=x=>(SX.k==="films"?FM:BK).has(x);
 function hl(t,q){const s=String(t||""),nq=String(q||"").trim().toLowerCase().replace(/ё/g,"е");if(nq.length<2)return esc(s);const i=s.toLowerCase().replace(/ё/g,"е").indexOf(nq);
   return i<0?esc(s):esc(s.slice(0,i))+"<mark>"+esc(s.slice(i,i+nq.length))+"</mark>"+esc(s.slice(i+nq.length))}
 function sxRow(x,i){const st=sxHas(x),F=SX.k==="films";
-  return `<div class="fr" data-i="${i}">${cv(x,48)}<div class="tx"><b>${hl(x.t,SX.q)}</b><span>${hl([x.a,F?x.y:"",x.s?"сериал":"",F&&x.src&&x.src.hr===0?"не выходил в РФ":""].filter(Boolean).join(" · "),SX.q)}</span></div><div class="ac">${st?`<em>${st==="read"?(F?"Просмотрено":"Прочитано"):"Хочу прочитать"}</em>`:""}</div></div>`}
+  const my=st==="read"&&!F?(BK.read().find(y=>norm(y.t)===norm(x.t))||{}).r:null;
+  return `<div class="fr" data-i="${i}">${cv(x,48,!F)}<div class="tx"><b>${hl(x.t,SX.q)}</b><span>${hl([x.a,F?x.y:"",x.s?"сериал":"",F&&x.src&&x.src.hr===0?"не выходил в РФ":""].filter(Boolean).join(" · "),SX.q)}</span></div><div class="ac">${my!=null&&my!==undefined?`<em class="myr">★ ${r5(my)}</em>`:st?`<em>${st==="read"?(F?"Просмотрено":"Прочитано"):"Хочу прочитать"}</em>`:""}</div></div>`}
 const POPF=[["Интерстеллар",2014],["Во все тяжкие",2008,1],["Друзья",1994,1],["Форрест Гамп",1994],["Побег из Шоушенка",1994],["Шерлок",2010,1],["Зелёная миля",1999],["Начало",2010],["Игра престолов",2011,1],["Титаник",1997],
   ["Бойцовский клуб",1999],["Чернобыль",2019,1],["Криминальное чтиво",1994],["Матрица",1999],["Очень странные дела",2016,1],["1+1",2011],["Амели",2001],["Унесённые призраками",2001],["Паразиты",2019],["Ла-Ла Ленд",2016],
   ["Остров проклятых",2010],["Тьма",2017,1],["Брат",1997],["Москва слезам не верит",1979],["Король Лев",1994],["Аркейн",2021,1],["Властелин колец: Братство Кольца",2001],["Отступники",2006],["Джентльмены",2019],["Иван Васильевич меняет профессию",1973],["Достучаться до небес",1997],["Амадей",1984]];
@@ -8124,6 +8134,37 @@ let cbOvT=0,cbOv=false;
   if(TG&&TG.BackButton&&SCREEN==="club"&&CB.view!=="main")TG.BackButton.show()}catch(e){}}}
 if(TG&&TG.BackButton)try{TG.BackButton.onClick(()=>{if(SCREEN!=="club"||CB.view==="main"||cbOv||Date.now()-cbOvT<400)return;CB.view="main";cbDraw();$("#clScroll").scrollTop=0})}catch(e){}
 window.NCLUB={state:CB,load:cbLoad,cand:cbCand,invite:cbJoinFlow};
+// ---------- шаг назад отовсюду ----------
+// Один порядок для кнопки «Назад» Telegram, кнопки/жеста «Назад» в браузере и на Android: закрываем самое верхнее окно,
+// потом подраздел клуба, потом возвращаемся на главную. Если открыто ничего нет - браузер уходит назад как обычно.
+const BACKL=[
+  ()=>{const e=$("#sxSpot");if(e){e.remove();return 1}},
+  ()=>{if($("#rm").classList.contains("on")){rmClose();return 1}},
+  ()=>{const L=document.getElementById("luck");if(L&&L.classList.contains("on")){luckClose();return 1}},
+  ()=>{if(typeof WR!=="undefined"&&WR){wrClose();return 1}},
+  ()=>{if(tevScope){closeTev();return 1}},
+  ()=>{if(disc){closeDisc();return 1}},
+  ()=>{if(story){closeStories();return 1}},
+  ()=>{if(sheetOpen){closeSheet();return 1}},
+  // карточка книги и нижнее окно могут лежать друг на друге - закрываем то, что открыли позже
+  ()=>{const v=$("#vsheet"),b=bkcEl,vo=v.classList.contains("on"),bo=b&&b.classList.contains("on");if(!vo&&!bo)return;if(vo&&(!bo||(v._ot||0)>=(b._ot||0)))vClose();else bkcClose();return 1},
+  ()=>{const a=$("#auth");if(a&&a.classList.contains("on")){const x=$("#auX");if(x)x.click();else a.classList.remove("on");return 1}},
+  ()=>{const o=$("#onb");if(o&&o.classList.contains("on")){o.classList.remove("on");return 1}},
+  ()=>{const i=$("#intro");if(i&&i.classList.contains("on")){i.classList.remove("on");return 1}},
+  ()=>{const st=$("#statScr");if(st&&st.classList.contains("on")){statClose();return 1}},
+  ()=>{if(SCREEN==="club"&&CB.view!=="main"){CB.view="main";cbDraw();$("#clScroll").scrollTop=0;return 1}},
+  ()=>{if(SCREEN!=="col"&&!VIEW){show("col");return 1}}];
+const backDepth=()=>{try{return !!(($("#sxSpot"))||$("#rm").classList.contains("on")||document.querySelector("#luck.on,#vsheet.on,#bkc.on,#auth.on,#onb.on,#intro.on,#statScr.on")||(typeof WR!=="undefined"&&WR)||tevScope||disc||story||sheetOpen||(SCREEN==="club"&&CB.view!=="main")||(SCREEN!=="col"&&!VIEW))}catch(e){return false}};
+function backTop(){for(const f of BACKL){try{if(f()){tgHaptic();return true}}catch(e){}}return false}
+// Telegram: кнопка видна, когда есть куда возвращаться
+if(window.__noraBackOn)try{window.__noraBackOn(()=>{backTop();setTimeout(backSync,60)})}catch(e){}
+// браузер и Android: одна запись в истории, пока что-то открыто; жест «Назад» закрывает верхнее окно
+let backArm=false,backIgn=false;
+function backSync(){const d=backDepth();try{if(TG&&TG.BackButton){d?TG.BackButton.show():TG.BackButton.hide()}}catch(e){}
+  if(TG)return;try{if(d&&!backArm){history.pushState({nora:1},"");backArm=true}else if(!d&&backArm&&history.state&&history.state.nora){backArm=false;backIgn=true;history.back()}}catch(e){}}
+addEventListener("popstate",()=>{if(TG)return;if(backIgn){backIgn=false;return}backArm=false;if(backTop())setTimeout(()=>{if(backDepth()){try{history.pushState({nora:1},"");backArm=true}catch(e){}}},60)});
+{const sb=syncBack;syncBack=function(){try{sb()}catch(e){}backSync()}}
+{const ob=new MutationObserver(M=>{M.forEach(m=>{const e=m.target,o=e.classList.contains("on");if(o&&!e._on)e._ot=Date.now();e._on=o});backSync()});const watch=()=>["#vsheet","#bkc","#auth","#onb","#intro","#rm","#statScr","#luck","#sheet","#scrim"].forEach(q=>{const e=$(q);if(e&&!e._bw){e._bw=1;ob.observe(e,{attributes:true,attributeFilter:["class"]})}});watch();setTimeout(watch,3000);setInterval(backSync,1500)}
 // ---------- /книжный клуб ----------
 
 })();
