@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><style>
+/* обложки Норы v3: рисунок по сюжету + один из 7 макетов, как у настоящих изданий (сцена, небо, символ, шрифт, узор, плакат, гравюра) */
+@font-face{font-family:Cormorant;font-weight:600;src:url(../fonts/cormorant-garamond-cyrillic-600-normal.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Cormorant;font-weight:600;src:url(../fonts/cormorant-garamond-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:Unb;font-weight:600;src:url(../fonts/unbounded-cyrillic-600-normal.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Unb;font-weight:600;src:url(../fonts/unbounded-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:Onest;font-weight:400;src:url(../fonts/onest-cyrillic-400-normal.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Onest;font-weight:600;src:url(../fonts/onest-cyrillic-600-normal.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Forum;src:url(../fonts/forum-cyrillic-400-normal.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Lit;src:url(../fonts/literata-cyrillic-wght-normal.woff2) format('woff2');unicode-range:U+0400-04FF;font-weight:300 900}
+@font-face{font-family:Lit;font-style:italic;src:url(../fonts/literata-cyrillic-wght-italic.woff2) format('woff2');unicode-range:U+0400-04FF;font-weight:300 900}
+html,body{margin:0;width:600px;height:900px;overflow:hidden;background:#111}
+#c{position:relative;width:600px;height:900px;overflow:hidden;background:var(--bg,#222);color:var(--ink,#fff)}
+.img{position:absolute;inset:0;background-size:cover;background-position:center}
+.a,.t{position:absolute;left:44px;right:44px}
+/* 1. сцена: рисунок на весь лист, название внизу */
+.scene .img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,.7) 100%)}
+.scene .a{top:40px;text-align:center;font:400 21px Onest;letter-spacing:.3em;text-transform:uppercase;text-shadow:0 1px 10px rgba(0,0,0,.6)}
+.scene .t{bottom:56px;text-align:center;font:600 66px/1 Cormorant;text-shadow:0 2px 20px rgba(0,0,0,.6)}
+/* 2. небо: название крупно наверху, на спокойном небе рисунка */
+.sky .a{bottom:40px;text-align:center;font:600 22px Onest;letter-spacing:.06em;color:var(--ink2,#fff);text-shadow:0 1px 10px rgba(0,0,0,.45)}
+.sky .t{top:70px;text-align:center;font:400 78px/.98 Forum;color:var(--ink,#2B2440)}
+/* 3. символ: один предмет на однотонном фоне, название сверху, автор внизу */
+.symbol .a{bottom:44px;text-align:center;font:600 24px Onest;letter-spacing:.14em;text-transform:uppercase;color:var(--ink,#111)}
+.symbol .t{top:40px;text-align:center;font:italic 700 70px/1 Lit;color:var(--ink,#111)}
+/* 4. шрифт: огромное название на цвете, рисунок в круге */
+.type .img{inset:auto;width:330px;height:330px;right:40px;bottom:96px;border-radius:50%;background-size:cover}
+.type .t{top:52px;text-align:left;font:600 96px/.95 Unb;letter-spacing:-.02em;color:var(--ink,#111);word-break:break-word}
+.type .a{bottom:44px;text-align:left;font:600 24px Onest;color:var(--ink,#111)}
+/* 5. узор: рисунок-узор, название на светлой плашке */
+.pattern .box{position:absolute;left:70px;right:70px;top:50%;transform:translateY(-50%);background:#FFFBF4;padding:46px 34px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.18)}
+.pattern .t{position:static;font:600 60px/1.02 Cormorant;color:#1E1B2A}
+.pattern .a{position:static;margin-top:22px;font:400 20px Onest;letter-spacing:.24em;text-transform:uppercase;color:#6A5F55}
+.pattern .box::before{content:"";display:block;width:50px;height:2px;margin:0 auto 26px;background:var(--acc,#B4553F)}
+/* 6. плакат: название вертикально вдоль края */
+.poster .t{left:auto;right:auto;top:auto;bottom:36px;left:40px;width:820px;transform-origin:0 100%;transform:rotate(-90deg) translateY(100%);font:600 92px/.9 Unb;color:var(--ink,#fff);text-shadow:0 2px 24px rgba(0,0,0,.35)}
+.poster .a{top:40px;left:auto;right:40px;text-align:right;font:600 22px Onest;letter-spacing:.1em;text-transform:uppercase;color:var(--ink,#fff);text-shadow:0 1px 10px rgba(0,0,0,.5)}
+/* 7. гравюра: кремовая книга с рамкой, рисунок в окне */
+#c.engr{background:#F3EBDD;color:#2A2118}
+.engr .img{inset:auto;left:60px;right:60px;top:250px;height:470px;border:2px solid #2A2118}
+.engr .fr{position:absolute;inset:22px;border:1.5px solid #2A2118}.engr .fr::after{content:"";position:absolute;inset:8px;border:.75px solid #2A2118}
+.engr .t{top:74px;text-align:center;font:500 54px/1.04 Lit;color:#2A2118}
+.engr .a{bottom:66px;text-align:center;font:400 22px Onest;letter-spacing:.28em;text-transform:uppercase;color:#5A4A3A}
+.engr .t::after{content:"";display:block;width:60px;height:1.5px;margin:22px auto 0;background:var(--acc,#8E3F2E)}
+</style></head><body><div id="c"></div>
+<script>
+const q=JSON.parse(decodeURIComponent(location.hash.slice(1))),c=document.getElementById("c"),m=q.mode||"scene";
+c.className=m;for(const [k,v] of Object.entries(q.vars||{}))c.style.setProperty("--"+k,v);
+const img=`<div class="img" style="background-image:url('${q.img}')"></div>`;
+c.innerHTML=m==="pattern"?`${img}<div class="box"><div class="t"></div><div class="a"></div></div>`:m==="engr"?`<div class="fr"></div>${img}<div class="t"></div><div class="a"></div>`:`${img}<div class="t"></div><div class="a"></div>`;
+c.querySelector(".t").textContent=q.t;c.querySelector(".a").textContent=q.a;
+// название уменьшается, пока не поместится в свою область
+const t=c.querySelector(".t"),max={scene:300,sky:330,symbol:300,type:430,pattern:300,poster:150,engr:160}[m]||300;
+document.fonts.ready.then(()=>{let f=parseFloat(getComputedStyle(t).fontSize);
+  const fits=()=>m==="poster"?t.scrollWidth<=820&&t.offsetHeight<=max:t.offsetHeight<=max&&t.scrollWidth<=t.clientWidth+2;
+  while(f>22&&!fits()){f-=2;t.style.fontSize=f+"px"}document.body.dataset.ready=1});
+</script></body></html>
