@@ -7607,20 +7607,19 @@ async function wrCards(D){
   {const w=NOM;
     const [c,x]=mk(5,110);let y=label(x,"Номинация года",230);y=txt(x,"«"+w[1]+"»",y+10,{font:serif,size:96,min:48,lines:2,w:940});y=txt(x,w[2],y+4,{font:sans,size:38,min:26,lines:2,color:MUTE,w:900});
     y=txt(x,"мой читательский тип",y+40,{font:sansB,size:34,color:GOLD});txt(x,D.type[0],y,{font:serif,size:68,min:40,lines:2,w:900});out.push(c)}
-  // 6. итог: одна главная цифра (страницы), под ней две колонки, жанр и номинация в отдельной плашке
+  // 6. итог: левый край, три уровня - огромные страницы, крупно книги, мелкая таблица фактов, номинация акцентом внизу
   {const [c,x]=mk(6);const bm=D.mon[D.best]||0,love=D.L.filter(b=>((catOf(b)||b).tags||[]).some(t=>/ромэнтези/.test(t))).length,g0=(D.gk[0]||[])[0],gen=love>=Math.max(2,(D.gk[0]||[0,0])[1]*.6)?"ромэнтези":g0&&GEN[g0]?GEN[g0].toLowerCase():"";
-    const lab=(t,y,cx,w)=>txt(x,t,y,{font:sans,size:30,min:22,lines:2,color:MUTE,w:w||420,cx}),line=y=>{x.fillStyle="rgba(230,194,122,.35)";x.fillRect(340,y,400,2)};
-    let y=txt(x,`Мой ${D.Y} в цифрах`,250,{font:sansB,size:44,color:CREAM})+30;
-    if(D.pg){y=txt(x,D.pg.toLocaleString("ru-RU"),y,{font:num,size:180,min:100,w:920,color:GOLD});y=lab(plural(D.pg,"страница прочитана","страницы прочитано","страниц прочитано"),y-12,540,700)+44}
-    else{y=txt(x,String(n),y,{font:num,size:180,color:GOLD});y=lab(plural(n,"книга прочитана","книги прочитано","книг прочитано"),y-12,540,700)+44}
-    line(y-20);y+=24;
-    const L2=[];if(D.pg)L2.push([String(n),plural(n,"книга","книги","книг")]);if(bm>=2)L2.push([WR_MF[D.best],"самый читающий месяц"]);
-    if(L2.length===2){const ya=txt(x,L2[0][0],y,{font:num,size:76,w:420,cx:290}),yb=txt(x,L2[1][0],y+8,{font:num,size:60,min:40,w:440,cx:790});const y2=Math.max(ya,yb);lab(L2[0][1],y2-6,290);y=lab(L2[1][1],y2-6,790)+36}
-    else if(L2.length===1){y=txt(x,L2[0][0],y,{font:num,size:76,w:600});y=lab(L2[0][1],y-6,540)+36}
-    if(gen){y=lab("любимый жанр",y,540,700);y=txt(x,gen,y,{font:sansB,size:50,min:34,w:860})+30}
-    // номинация - в бумажной плашке
-    {const {f,L:TL}=fitT(x,"«"+NOM[1]+"»",serif,760,2,48,32),bh=78+TL.length*f*1.15+34,by=y+10;x.fillStyle="rgba(10,14,26,.62)";wrRR(x,140,by,800,bh,36);x.fill();x.strokeStyle="rgba(230,194,122,.5)";x.lineWidth=2;x.stroke();
-      x.font=sans(30);x.fillStyle=GOLD;x.textAlign="center";x.fillText("номинация года",540,by+56);x.font=serif(f);x.fillStyle=CREAM;TL.forEach((l,k)=>x.fillText(l,540,by+78+f*.9+k*f*1.15));x.textAlign="left"}
+    const X0=96,X1=984,put=(t,font,size,X,Y,col,al)=>{x.font=font(size);x.fillStyle=col;x.textAlign=al||"left";x.shadowColor="rgba(0,0,0,.5)";x.shadowBlur=16;x.fillText(t,X,Y);x.shadowBlur=0;x.shadowColor="transparent";x.textAlign="left"};
+    const fitW=(t,font,size,maxW,min)=>{let f=size;x.font=font(f);while(f>min&&x.measureText(t).width>maxW){f-=4;x.font=font(f)}return f};
+    let y=250;put(`Мой ${D.Y} в цифрах`,sans,40,X0,y,MUTE);
+    const big=D.pg?D.pg.toLocaleString("ru-RU"):String(n),bigL=D.pg?plural(D.pg,"страница","страницы","страниц"):plural(n,"книга","книги","книг");
+    {const f=fitW(big,num,240,X1-X0,120);y+=f*.95;put(big,num,f,X0-6,y,GOLD);y+=62;put(bigL+" за год",sans,42,X0,y,CREAM)}
+    if(D.pg){y+=170;const v=String(n),f=130;put(v,num,f,X0-4,y,CREAM);x.font=num(f);const w=x.measureText(v).width;put(plural(n,"книга","книги","книг"),sans,44,X0+w+24,y-8,CREAM)}
+    y+=60;const rows=[];if(bm>=2)rows.push(["самый читающий месяц",WR_MF[D.best]]);if(gen)rows.push(["любимый жанр",gen]);
+    rows.forEach(([l,v])=>{x.fillStyle="rgba(230,194,122,.4)";x.fillRect(X0,y,X1-X0,2);y+=62;put(l,sans,32,X0,y,MUTE);const f=fitW(v,sansB,40,520,26);put(v,sansB,f,X1,y,CREAM,"right");y+=36});
+    if(rows.length){x.fillStyle="rgba(230,194,122,.4)";x.fillRect(X0,y,X1-X0,2)}
+    y+=90;put("номинация года",sans,32,X0,y,GOLD);y+=18;
+    {const {f,L}=fitT(x,"«"+NOM[1]+"»",serif,X1-X0,2,64,38);L.forEach((l,k)=>put(l,serif,f,X0,y+f*.95+k*f*1.12,CREAM))}
     out.push(c)}
   return out}
 function wrFill(){if(WR&&WR.u&&!wrEl.querySelector(".wr-full"))wrDraw()}
