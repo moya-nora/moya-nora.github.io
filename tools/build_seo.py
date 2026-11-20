@@ -653,7 +653,8 @@ def curate_ok(b, path):
 # 5) у подборок про настроение - запрет на книги с противоположным настроением
 KIDS_OK = {"zhanr-kids", "young-adult", "kniga-v-podarok-podrostku", "knigi-dlya-zimnih-vecherov", "novogodnee-nastroenie", "chto-pochitat-na-novogodnie-kanikuly", "knigi-v-podarok-na-novyy-god", "uyutnye"}
 NF_OK = {"zhanr-nonfic", "zastavlyayut-zadumatsya", "s-premiyami", "kniga-v-podarok-muzhchine", "kniga-v-podarok-kollege", "knigi-v-podarok-na-novyy-god", "chitayut-seychas"}
-SAFE |= {"novogodnee-nastroenie", "smeshnye", "trogatelnye", "na-odin-vecher", "kniga-v-podarok-podrostku"}
+SAFE |= {"novogodnee-nastroenie", "kniga-v-podarok-podrostku"}
+SAFE -= {"knigi-dlya-zimnih-vecherov", "uyutnye", "smeshnye", "trogatelnye", "na-odin-vecher"}   # 18+ в эти подборки можно (решение Насти 20.11)
 MOOD_NO = {
     "uyutnye": ("мрачное", "жутковатое", "хоррор", "антиутопия", "постапокалипсис"),
     "novogodnee-nastroenie": ("мрачное", "жутковатое", "хоррор", "антиутопия", "постапокалипсис"),
@@ -680,6 +681,54 @@ def rule_why(b, path):
         if bad:
             return "настроение: " + bad[0]
     return ""
+# 8) в одной подборке - не больше одной книги из одной серии (или одного книжного мира)
+UNIV = {"голодные игры": ["голодные игры", "и вспыхнет пламя", "сойка-пересмешница", "баллада о змеях и певчих птицах", "рассвет жатвы"],
+        "гришаверс": ["тень и кость", "штурм и буря", "руин и восход", "шестёрка воронов", "продажное королевство", "король шрамов", "правление волков"],
+        "воздушный народ": ["жестокий принц", "злой король", "королева ничего"],
+        "сумерки": ["сумерки", "новолуние", "затмение", "рассвет"],
+        "дивергент": ["дивергент", "инсургент", "эллигент"],
+        "бегущий в лабиринте": ["бегущий в лабиринте", "испытание огнём", "лекарство от смерти"],
+        "средиземье": ["хоббит, или туда и обратно", "хоббит", "властелин колец", "братство кольца", "две крепости", "возвращение короля", "сильмариллион"],
+        "задача трёх тел": ["задача трёх тел", "тёмный лес", "вечная жизнь смерти"],
+        "дюна": ["дюна", "мессия дюны", "дети дюны"],
+        "тёмная башня": ["стрелок", "извлечение троицы", "бесплодные земли"],
+        "гарри квеберт": ["правда о деле гарри квеберта", "книга балтиморов", "дело аляски сандерс"],
+        "кровь и пепел": ["из крови и пепла", "королевство плоти и огня", "корона из позолоченных костей"],
+        "алая королева": ["алая королева", "стеклянный меч", "клетка короля"],
+        "мара и морок": ["мара и морок", "мара и морок. 500 лет назад", "мара и морок. особая весна"],
+        "эмили уайлд": ["энциклопедия фей эмили уайлд", "карта иных миров эмили уайлд"],
+        "эмпирей": ["четвёртое крыло", "железное пламя", "ониксовый шторм"],
+        "двор шипов и роз": ["королевство шипов и роз", "королевство гнева и тумана", "королевство тумана и ярости", "королевство крыльев и руин"],
+        "полумесяц": ["дом земли и крови", "дом неба и дыхания", "дом пламени и тени"],
+        "шесть алых журавлей": ["шесть алых журавлей", "клятва драконов"],
+        "однажды разбитое сердце": ["однажды разбитое сердце", "баллада о несчастливом конце"]}
+_U = {nk(t): k for k, L in UNIV.items() for t in L}
+_UO = {nk(t): i for k, L in UNIV.items() for i, t in enumerate(L)}   # номер книги в серии - оставляем самую раннюю
+def ser_key(b):
+    t = nk(b["t"])
+    if t in _U:
+        return _U[t]
+    m = re.match(r"(гарри поттер|перси джексон|хроники нарнии|ведьмак|плоский мир)", str(b["t"]).lower())
+    return m.group(1) if m else ""
+def one_per_series(L, path, seen=None, best=None):
+    """из каждой серии остаётся одна книга - та, что раньше по порядку серии (для «Гарри Поттера» и т.п. - первая в списке)"""
+    seen = set() if seen is None else seen
+    if best is None:
+        best = {}
+        for b in L:
+            k = ser_key(b)
+            if k and (k not in best or _UO.get(nk(b["t"]), 99) < _UO.get(nk(best[k]["t"]), 99)):
+                best[k] = b
+    out = []
+    for b in L:
+        k = ser_key(b)
+        if k and (k in seen or best.get(k) is not b):
+            _rdrop.setdefault(path, []).append(f"{b['t']} (та же серия)")
+            continue
+        if k:
+            seen.add(k)
+        out.append(b)
+    return out
 _rdrop = {}
 def rule_ok(b, path):
     w = rule_why(b, path)
@@ -689,6 +738,14 @@ def rule_ok(b, path):
 for _p in list(SECTS):
     SECTS[_p] = [(h_, sub_, [b for b in l_ if rule_ok(b, _p)]) for h_, sub_, l_ in SECTS[_p]]
 coll_data = [(p_, t_, l_, [b for b in L_ if rule_ok(b, p_)]) for p_, t_, l_, L_ in coll_data]
+for _p in list(SECTS):   # подборка с разделами - одна серия на всю страницу
+    _all = [b for _, _, l_ in SECTS[_p] for b in l_];_best = {}
+    for b in _all:
+        k = ser_key(b)
+        if k and (k not in _best or _UO.get(nk(b["t"]), 99) < _UO.get(nk(_best[k]["t"]), 99)):
+            _best[k] = b
+    _seen = set();SECTS[_p] = [(h_, sub_, one_per_series(l_, _p, _seen, _best)) for h_, sub_, l_ in SECTS[_p]]
+coll_data = [(p_, t_, l_, one_per_series(L_, p_)) for p_, t_, l_, L_ in coll_data]
 with open(os.path.join(ROOT, "tools", "coll_rules_report.txt"), "w", encoding="utf-8") as _f:
     for _p, _l in sorted(_rdrop.items()):
         _f.write(f"{_p}: убрано {len(set(_l))}\n" + "".join(f"  - {x}\n" for x in dict.fromkeys(_l)))
