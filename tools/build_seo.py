@@ -203,7 +203,7 @@ except FileNotFoundError:
 nk = lambda s: re.sub(r"[^0-9a-zа-я]+", "", str(s or "").lower().replace("ё", "е"))
 AIOK = set(json.load(open(os.path.join(ROOT, "books", "ai_ok.json"), encoding="utf-8"))) if os.path.exists(os.path.join(ROOT, "books", "ai_ok.json")) else set()
 try:
-    AIC = {k: v for k, v in json.load(open(os.path.join(ROOT, "books", "ai_covers.json"), encoding="utf-8"))["m"].items() if v and os.path.exists(os.path.join(ROOT, "img", "ai", v)) and (v in AIOK or v.endswith("v.webp"))}
+    AIC = {k: v for k, v in json.load(open(os.path.join(ROOT, "books", "ai_covers.json"), encoding="utf-8"))["m"].items() if v and os.path.exists(os.path.join(ROOT, "img", "ai", v)) and v in AIOK}   # только проверенные вручную: рисунок должен быть про саму книгу
 except (FileNotFoundError, KeyError):
     AIC = {}
 try:
