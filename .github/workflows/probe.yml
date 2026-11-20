@@ -4,25 +4,26 @@ jobs:
   p:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - run: |
           python3 - <<'PY'
           import json, urllib.request, urllib.parse
-          def g(p):
-              return json.load(urllib.request.urlopen(urllib.request.Request("https://api.fantlab.ru"+p, headers={"User-Agent":"nora-probe/1.0"}), timeout=30))
-          for q in ["Четвертое крыло", "Ветер и Правда"]:
-              s = g("/search-works?q="+urllib.parse.quote(q)+"&page=1&onlymatches=1")
-              w = (s if isinstance(s, list) else s.get("matches") or [])[0]
-              print("WORK", {k: w.get(k) for k in ("work_id","rusname","name","autor_rusname","year")})
-              e = g("/work/%s/extended" % w["work_id"])
-              print("TOP KEYS", list(e.keys()))
-              print("PARENTS", json.dumps(e.get("parents"), ensure_ascii=False)[:1500])
-              cyc = None
-              for grp in (e.get("parents") or {}).get("cycles") or []:
-                  for c in grp:
-                      cyc = cyc or c
-              if cyc:
-                  c = g("/work/%s/extended" % cyc["work_id"])
-                  ch = c.get("children") or []
-                  print("CYCLE KEYS", list(c.keys()))
-                  print("CHILDREN", len(ch), json.dumps(ch[:6], ensure_ascii=False)[:2500])
+          W = json.load(open("books/covers_want.json"))[:40]
+          ok = 0
+          for t, a in W:
+              sur = a.split()[-1] if a else ""
+              u = "https://www.googleapis.com/books/v1/volumes?q=" + urllib.parse.quote(f"intitle:{t}" + (f" inauthor:{sur}" if sur else "")) + "&langRestrict=ru&maxResults=10&printType=books"
+              try:
+                  it = json.load(urllib.request.urlopen(u, timeout=30)).get("items") or []
+              except Exception as e:
+                  print("ERR", t, e); continue
+              best = None
+              for v in it:
+                  vi = v["volumeInfo"]; il = vi.get("imageLinks") or {}
+                  y = int((vi.get("publishedDate") or "0")[:4] or 0)
+                  if il.get("thumbnail") and (not best or y > best[0]):
+                      best = (y, vi.get("publisher"), il.get("thumbnail"), vi.get("title"))
+              if best and best[0] >= 2015: ok += 1
+              print("GB", t, "|", best)
+          print("ИТОГ: современных (2015+) обложек", ok, "из", len(W))
           PY
