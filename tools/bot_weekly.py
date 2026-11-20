@@ -104,6 +104,65 @@ def catalog_rows(fn):
 
 
 FRESH = [b for b in catalog_rows("new.json") + catalog_rows("litres.json") if b["y"] >= YNOW - 1]
+# работы Фантлаба, вышедшие на русском недавно (раздел «Новинки издательств»): id «f123» -> 123
+try:
+    NEWRU = {int(r[0][1:]) for r in json.load(open(os.path.join(ROOT, "books", "new.json"), encoding="utf-8")).get("b") or [] if str(r[0]).startswith("f")}
+except Exception:  # noqa: BLE001
+    NEWRU = set()
+SERT = {"роман", "повесть", "сборник", "роман-эпопея", "антология"}
+CYC = {}
+
+
+def cycle(cid):
+    """Части серии с Фантлаба: [(id, название, опубликована, объявлена)], прямые части без рассказов."""
+    if cid in CYC:
+        return CYC[cid]
+    L = []
+    try:
+        req = urllib.request.Request(f"https://api.fantlab.ru/work/{int(cid)}/extended", headers={"User-Agent": "nora-bot/1.0 (nora-books.ru)"})
+        with urllib.request.urlopen(req, timeout=40) as r:
+            j = json.load(r)
+        for w in j.get("children") or []:
+            t = w.get("work_name") or w.get("work_name_orig") or ""
+            if int(w.get("deep") or 0) == 1 and str(w.get("work_type") or "").lower() in SERT and t:
+                L.append((int(w["work_id"]), t, int(w.get("work_published") or 0), int(w.get("work_preparing") or 0)))
+    except Exception as e:  # noqa: BLE001
+        print("серия", cid, "недоступна:", e)
+        L = None
+    time.sleep(0.4)
+    CYC[cid] = L
+    return L
+
+
+def series_news(nd, me, have, sentk):
+    """Серии, за которыми следят: вышла на русском, вышла в оригинале, объявлена новая часть.
+    Снимок серии храним у человека (me['sn']), в первый раз только запоминаем, не пишем."""
+    out, sn = [], me.setdefault("sn", {})
+    for f in (nd.get("fs") or [])[:30]:
+        cid, name = str(f.get("id")), f.get("n") or "серии"
+        L = cycle(cid)
+        if L is None:
+            continue
+        old = sn.get(cid)
+        for wid, t, pub, prep in L:
+            if norm(t) in have:
+                continue
+            k = f"sr:{wid}"
+            if wid in NEWRU and pub and k not in sentk:
+                out.append((k, f"📚 Вышла на русском новая книга серии «{name}»: «{t}»")); sentk.add(k); continue
+            if old is None:
+                continue
+            was = old.get(str(wid))
+            if was is None and (pub or prep):
+                k2 = f"sa:{wid}"
+                if k2 not in sentk:
+                    out.append((k2, f"🔔 В серии «{name}» " + (f"вышла новая книга: «{t}» (пока на языке оригинала)" if pub else f"объявлена новая книга: «{t}»"))); sentk.add(k2)
+            elif was and not was[0] and pub:
+                k2 = f"so:{wid}"
+                if k2 not in sentk:
+                    out.append((k2, f"🔔 Вышла новая книга серии «{name}»: «{t}» (пока на языке оригинала)")); sentk.add(k2)
+        sn[cid] = {str(wid): [pub, prep] for wid, t, pub, prep in L}
+    return out
 
 
 def litres_find(t, a):
@@ -129,6 +188,7 @@ def news_for(nd, me):
     want = {norm(w["t"]): w for w in nd.get("want") or []}
     have = set(want) | set(nd.get("read") or [])
     fav = {norm(x) for x in nd.get("fav") or []}
+    out += series_news(nd, me, have, sentk)
     for b in FRESH:
         k = "n:" + norm(b["t"])
         if norm(b["a"]) in fav and norm(b["t"]) not in have and k not in sentk:

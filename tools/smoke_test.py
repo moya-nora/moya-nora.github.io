@@ -65,6 +65,7 @@ def main():
         pg.wait_for_timeout(1500)
         check("приложение: карточка книги", "Шестёрка воронов" in (js("(document.querySelector('#bkc h2')||{}).textContent") or ""))
         check("приложение: описание в карточке", len(js("(document.querySelector('#bkcDs')||{textContent:''}).textContent")) > 40)
+        check("приложение: место для серии в карточке", js("!!document.getElementById('bkcSer')"))
         check("приложение: кнопки карточки", js("[...document.querySelectorAll('#bkc button')].filter(b=>b.offsetParent).length>=4"))
         js("window.__op=[];window.open=u=>{window.__op.push(u);return null}")
         js("(document.querySelector('[data-bkc=\"where\"]')||{click(){}}).click()")
