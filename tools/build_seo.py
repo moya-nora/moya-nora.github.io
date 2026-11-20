@@ -1353,7 +1353,11 @@ HOME_SHELVES = [(p, t) for p, t in HOME_SHELVES if get(p)]
 lead_of = lambda p: next(l for q, _, l, _ in coll_data if q == p)
 title_of = lambda p: next(t for q, t, _, _ in coll_data if q == p).split(":")[0]
 # книга дня: одна из сильных книг с обложкой, меняется каждый день (выбор - в браузере, по дате)
-_bod = [b for b in sorted(cat_books, key=rank) if img_of(b) and b["ann"] and id(b) in BOOK_URL and b["g"] != "kids"][:90]
+_bod0 = [b for b in sorted(cat_books, key=rank) if img_of(b) and b["ann"] and id(b) in BOOK_URL and b["g"] != "kids"]
+# книга дня - узнаваемая книга с обложкой ЛитРес (у обложек других изданий бывает другое название)
+_bod = [b for b in _bod0 if (b.get("q") or 0) >= 3 and "litres" in img_of(b)][:90]
+if len(_bod) < 40: _bod = _bod0[:90]
+print("book of day pool", len(_bod))
 BOD = ('<section class="bod gl" id="bod" hidden></section><script>(function(){var L=' + json.dumps([[b["t"], b["a"], "/" + BOOK_URL[id(b)], img_of(b), b["ann"]] for b in _bod], ensure_ascii=False)
        + r""",d=new Date(),r=L[Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5)%L.length],e=document.getElementById("bod"),x=function(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
 if(!r)return;e.innerHTML='<a class="bodc" href="'+r[2]+'"><img src="'+x(r[3])+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()"></a><div><span class="bodk">Книга дня</span><h2><a href="'+r[2]+'">'+x(r[0])+'</a></h2><p class="boda">'+x(r[1])+'</p><p>'+x(r[4])+'</p><div class="ctas"><a class="btn" href="/app.html?app=1&bk='+encodeURIComponent(r[0]+"|"+r[1])+'" onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}">На мою полку</a><a class="btn ghost" href="'+r[2]+'">О книге</a></div></div>';e.hidden=false})()</script>""")
