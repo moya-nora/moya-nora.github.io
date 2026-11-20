@@ -7295,7 +7295,8 @@ bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{c
   if(a==="ush"){ushPick(x);return}if(a==="now"){nowSet(x);toast("Читаешь «"+x.t+"»");bkcClose();refresh();return}if(a==="prog"){bkcClose();setTimeout(nowOpen,200);return}
   if(a==="rm"){BK.rmWant(x);if(USH.some(s=>ushHas(s,x))){USH.forEach(s=>{s.b=s.b.filter(z=>norm(z.t)!==norm(x.t))});ushSave()}vDirty=true;toast("Убрано из «Хочу прочитать»");bkcClose();return}
   if(a==="unread"){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Точно убрать? Нажми ещё раз";return}
-    const r=L==="read"?x:BK.read().find(y=>norm(y.t)===norm(x.t));if(r)BK.rmRead(r);vDirty=true;toast("Убрано с полки «Прочитано»");bkcClose();return}
+    // убираем все копии этой книги: если она стояла на полке дважды, вторая копия держала её в «Прочитано»
+     const sur=norm(String(x.a||"").split(" ").slice(-1)[0]),R=BK.read().filter(y=>norm(y.t)===norm(x.t)&&(!sur||!y.a||norm(y.a).includes(sur)));(R.length?R:L==="read"?[x]:[]).forEach(r=>BK.rmRead(r));vDirty=true;toast("Убрано с полки «Прочитано»");bkcClose();return}
   // поменять оценку прочитанной книги (или убрать её)
   // карандаш: всё, что человек вписал про книгу - оценка, впечатления, отзыв и заметки, цитаты
   if(a==="edit"){const ex=BOOKS.find(b=>norm(b.t)===norm(x.t));if(!ex)return;bkcClose();setTimeout(()=>dNew(ex),200);return}
