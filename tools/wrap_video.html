@@ -1,0 +1,77 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<!-- Ролик «Мой год в книгах»: золотая книга на тёмном фоне раскрывается, поднимается картонная сцена-гармошка, камера подлетает к цифрам.
+     Пробник: 7 секунд. ?t=секунда - один кадр; window.renderAt(t) - кадр для записи. Цифры - в адресе: #pg=2000&n=5 -->
+<style>html,body{margin:0;background:#07060b;overflow:hidden}canvas{display:block}</style></head><body>
+<script type="module">
+import * as THREE from "../vendor/three.module.min.js";
+const W=540,H=960,P=new URLSearchParams(location.hash.slice(1)),PG=+(P.get("pg")||2000),NB=+(P.get("n")||5);
+const R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});R.setPixelRatio(2);R.setSize(W,H);R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.05;document.body.appendChild(R.domElement);
+const S=new THREE.Scene();S.background=new THREE.Color(0x07060b);S.fog=new THREE.Fog(0x07060b,14,30);
+const cam=new THREE.PerspectiveCamera(34,W/H,.1,100);
+// свет: тёплый луч сверху и слабый холодный заполняющий
+S.add(new THREE.AmbientLight(0x6a5a8a,.55));
+const key=new THREE.SpotLight(0xffd9a0,90,40,Math.PI/5,.55,1.4);key.position.set(2.5,11,6);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-.0004;S.add(key);S.add(key.target);
+const rim=new THREE.PointLight(0xffb45a,8,12,2);rim.position.set(0,1.5,-3.5);S.add(rim);
+// бумага: текстура с волокнами
+const grain=(c,x,w,h,a)=>{const d=x.getImageData(0,0,w,h);for(let i=0;i<d.data.length;i+=4){if(!d.data[i+3])continue;const n=(Math.random()-.5)*a;d.data[i]+=n;d.data[i+1]+=n;d.data[i+2]+=n}x.putImageData(d,0,0)};
+const tex=(w,h,draw,gr=18)=>{const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");draw(x,w,h);grain(c,x,w,h,gr);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t};
+const paperMat=(t)=>new THREE.MeshStandardMaterial({map:t,transparent:false,alphaTest:.5,side:THREE.DoubleSide,roughness:.92,metalness:0});
+// поверхность стола
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60),new THREE.MeshStandardMaterial({color:0x120e18,roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=-.02;floor.receiveShadow=true;S.add(floor);
+// книга: задняя крышка, блок страниц, правая и левая страницы, передняя крышка на петле
+const BW=3.6,BD=5.2,gold=new THREE.MeshStandardMaterial({color:0xd8a24a,metalness:.85,roughness:.32,emissive:0x6a4510,emissiveIntensity:.6});
+const coverMat=new THREE.MeshStandardMaterial({map:tex(512,740,(x,w,h)=>{const g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,"#3a1e48");g.addColorStop(1,"#22112c");x.fillStyle=g;x.fillRect(0,0,w,h);
+  x.strokeStyle="#d8a24a";x.lineWidth=6;x.strokeRect(34,34,w-68,h-68);x.lineWidth=2;x.strokeRect(50,50,w-100,h-100);x.fillStyle="#e7bb6a";x.textAlign="center";x.font="600 58px Georgia";x.fillText("Мой год",w/2,h*.42);x.fillText("в книгах",w/2,h*.42+70);
+  x.beginPath();x.arc(w/2,h*.66,46,0,7);x.lineWidth=3;x.stroke();x.beginPath();x.moveTo(w/2-22,h*.66+20);x.lineTo(w/2-22,h*.66-6);x.arc(w/2,h*.66-6,22,Math.PI,0);x.lineTo(w/2+22,h*.66+20);x.stroke()},10),roughness:.6,metalness:.15});
+const pageMat=new THREE.MeshStandardMaterial({map:tex(512,740,(x,w,h)=>{x.fillStyle="#efe3cc";x.fillRect(0,0,w,h);x.strokeStyle="rgba(120,90,60,.18)";for(let y=90;y<h-60;y+=30){x.beginPath();x.moveTo(50,y);x.lineTo(w-50,y);x.stroke()}},14),roughness:.95});
+const edge=new THREE.MeshStandardMaterial({map:tex(512,64,(x,w,h)=>{x.fillStyle="#e6d2a8";x.fillRect(0,0,w,h);x.strokeStyle="rgba(150,110,60,.35)";for(let y=2;y<h;y+=3){x.beginPath();x.moveTo(0,y);x.lineTo(w,y);x.stroke()}},10),roughness:.85,emissive:0x3a2608,emissiveIntensity:.35});
+const book=new THREE.Group();S.add(book);
+const back=new THREE.Mesh(new THREE.BoxGeometry(BW*2+.25,.1,BD+.2),new THREE.MeshStandardMaterial({color:0x2a1534,roughness:.6}));back.position.y=.05;back.castShadow=back.receiveShadow=true;book.add(back);
+const block=new THREE.Mesh(new THREE.BoxGeometry(BW,.42,BD),[edge,gold,pageMat,gold,edge,edge]);block.position.set(BW/2+.05,.31,0);block.castShadow=block.receiveShadow=true;book.add(block);
+// левая половина разворота поднимается вместе с крышкой
+const hinge=new THREE.Group();hinge.position.set(0,.52,0);book.add(hinge);
+const lp=new THREE.Mesh(new THREE.BoxGeometry(BW,.42,BD),[edge,gold,gold,pageMat,edge,edge]);lp.position.set(BW/2+.05,-.21,0);
+const fc=new THREE.Mesh(new THREE.BoxGeometry(BW+.12,.08,BD+.2),[coverMat,coverMat,coverMat,coverMat,coverMat,coverMat]);fc.position.set(BW/2+.06,.04,0);fc.castShadow=true;
+// крышка лежит сверху (книга закрыта), при открытии петля поворачивается на -180° и левая половина ложится слева
+hinge.add(lp);hinge.add(fc);
+// золотое свечение по обрезу
+const glow=new THREE.Mesh(new THREE.PlaneGeometry(BW*2.6,BD*1.5),new THREE.MeshBasicMaterial({map:tex(256,256,(x,w,h)=>{const g=x.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);g.addColorStop(0,"rgba(255,190,90,.55)");g.addColorStop(1,"rgba(255,190,90,0)");x.fillStyle=g;x.fillRect(0,0,w,h)},0),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+glow.rotation.x=-Math.PI/2;glow.position.set(BW/2,.03,0);S.add(glow);
+// картонная сцена-гармошка: слои встают с разворота
+const layer=(w,h,draw)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),paperMat(tex(1024,Math.round(1024*h/w),draw)));m.castShadow=m.receiveShadow=true;m.geometry.translate(0,h/2,0);const g=new THREE.Group();g.add(m);return g};
+const hills=(x,w,h,col,base,amp,seed)=>{x.fillStyle=col;x.beginPath();x.moveTo(0,h);for(let i=0;i<=w;i+=8){x.lineTo(i,h*base-Math.sin(i/w*Math.PI*seed)*h*amp-Math.sin(i/w*Math.PI*seed*2.7)*h*amp*.35)}x.lineTo(w,h);x.closePath();x.fill();x.strokeStyle="rgba(60,30,20,.25)";x.lineWidth=3;x.stroke()};
+const L1=layer(7.2,3.6,(x,w,h)=>{hills(x,w,h,"#8d6aa8",.55,.16,2.2);x.fillStyle="#f3d9a4";x.beginPath();x.arc(w*.74,h*.22,h*.11,0,7);x.fill();for(let i=0;i<26;i++){x.fillStyle="#f6e6c4";x.beginPath();x.arc(Math.random()*w,Math.random()*h*.4,2+Math.random()*3,0,7);x.fill()}});
+const L2=layer(6.6,2.7,(x,w,h)=>{hills(x,w,h,"#5f7d5a",.62,.12,3.1);
+  const hx=w*.38,hy=h*.62;x.fillStyle="#e9cfa2";x.fillRect(hx-90,hy-120,180,140);x.fillStyle="#b4553f";x.beginPath();x.moveTo(hx-110,hy-110);x.lineTo(hx,hy-210);x.lineTo(hx+110,hy-110);x.fill();x.fillStyle="#ffd27a";x.fillRect(hx-50,hy-80,34,34);x.fillRect(hx+18,hy-80,34,34);
+  for(const tx of [w*.12,w*.2,w*.66,w*.82]){x.fillStyle="#3f5e44";x.beginPath();x.moveTo(tx,h*.2);x.lineTo(tx-60,h*.66);x.lineTo(tx+60,h*.66);x.fill();x.fillStyle="#5a3a2a";x.fillRect(tx-8,h*.66,16,40)}});
+const L3=layer(6.2,1.5,(x,w,h)=>{hills(x,w,h,"#c98d5e",.55,.18,4.2);for(let i=0;i<14;i++){const fx=Math.random()*w,fy=h*.45+Math.random()*h*.3;x.fillStyle=["#f6e6c4","#e8a48c","#f2c75c"][i%3];for(let k=0;k<5;k++){x.beginPath();x.ellipse(fx+Math.cos(k*1.26)*9,fy+Math.sin(k*1.26)*9,7,4,k*1.26,0,7);x.fill()}}});
+// табличка с числом страниц на палочке
+let signC,signX,signT;{signC=document.createElement("canvas");signC.width=1024;signC.height=640;signX=signC.getContext("2d");signT=new THREE.CanvasTexture(signC);signT.colorSpace=THREE.SRGBColorSpace;signT.anisotropy=8}
+const drawSign=v=>{const x=signX,w=1024,h=640;x.clearRect(0,0,w,h);x.fillStyle="#f2e2c2";x.beginPath();x.roundRect(20,20,w-40,h-40,46);x.fill();x.strokeStyle="#b4553f";x.lineWidth=10;x.beginPath();x.roundRect(50,50,w-100,h-100,34);x.stroke();
+  x.fillStyle="#2b1a3a";x.textAlign="center";x.font="700 250px Georgia";x.fillText(Math.round(v).toLocaleString("ru-RU"),w/2,h*.56);x.font="600 74px Georgia";x.fillStyle="#5a2f66";x.fillText("страниц прочитано",w/2,h*.8);signT.needsUpdate=true};
+drawSign(0);
+const sign=new THREE.Group();{const pl=new THREE.Mesh(new THREE.PlaneGeometry(1.9,1.19),new THREE.MeshStandardMaterial({map:signT,roughness:.9,side:THREE.DoubleSide}));pl.position.y=1.35;pl.castShadow=true;sign.add(pl);
+  const st=new THREE.Mesh(new THREE.BoxGeometry(.08,1.1,.04),new THREE.MeshStandardMaterial({color:0x8a5a3a,roughness:.9}));st.position.set(0,.5,-.04);st.castShadow=true;sign.add(st)}
+const pops=[[L1,-1.9,0],[L2,-.7,.06],[L3,.5,.12],[sign,1.3,.18]];
+for(const [g,z] of pops){g.position.set(0,.52,z);book.add(g)}
+// золотые пылинки
+const NP=420,pp=new Float32Array(NP*3),pv=[];for(let i=0;i<NP;i++){pp[i*3]=(Math.random()-.5)*12;pp[i*3+1]=Math.random()*7;pp[i*3+2]=(Math.random()-.5)*10;pv.push(Math.random())}
+const pg=new THREE.BufferGeometry();pg.setAttribute("position",new THREE.BufferAttribute(pp,3));
+const dust=new THREE.Points(pg,new THREE.PointsMaterial({size:.05,color:0xffd28a,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false}));S.add(dust);
+const ease=t=>t<0?0:t>1?1:t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,seg=(t,a,b)=>ease((t-a)/(b-a)),lerp=(a,b,k)=>a+(b-a)*k,v3=(a,b,k)=>new THREE.Vector3(lerp(a[0],b[0],k),lerp(a[1],b[1],k),lerp(a[2],b[2],k));
+// раскладка во времени (секунды)
+window.renderAt=t=>{const o=seg(t,1.4,3.6);                       // книга открывается
+  hinge.rotation.z=Math.PI*o;hinge.position.y=lerp(.52,.1,o);                                          // петля у корешка: левая половина уходит налево
+    glow.material.opacity=.6+.4*Math.sin(t*2.2)*(1-o*.5);glow.position.x=lerp(BW/2,0,o);glow.scale.x=1+o*.9;
+  pops.forEach(([g,z,dl],i)=>{const k=seg(t,2.4+dl*4,3.9+dl*4);g.rotation.x=lerp(-Math.PI/2,0,k);g.visible=k>0.001});
+  const pk=seg(t,4.6,6.4);drawSign(PG*pk);
+  // камера: сверху на закрытую книгу -> на разворот -> к табличке
+  const a=seg(t,0,3.6),b=seg(t,3.8,6.2);
+  const pos=b>0?v3([0,5.6,11],[0,2.55,6.9],b):v3([BW/2,12,9.5],[0,5.6,11],a),tg=b>0?v3([0,1.3,0],[0,1.95,1.3],b):v3([BW/2,0,0],[0,1.3,0],a);
+  cam.position.copy(pos);cam.lookAt(tg);
+  const p=pg.attributes.position.array;for(let i=0;i<NP;i++){p[i*3+1]=(pv[i]*7+t*.25*(.5+pv[i]))%7;p[i*3]+=Math.sin(t+i)*.0015}pg.attributes.position.needsUpdate=true;
+  R.render(S,cam)};
+const t0=+(new URLSearchParams(location.search).get("t")||0);window.renderAt(t0);document.body.dataset.ready=1;
+if(!new URLSearchParams(location.search).has("t")){const st=performance.now();const loop=()=>{window.renderAt(((performance.now()-st)/1000)%7.5);requestAnimationFrame(loop)};loop()}
+</script></body></html>
