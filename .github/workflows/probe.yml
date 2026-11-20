@@ -5,7 +5,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          K=AIzaSyD9yfazxfKpaEk1BNFDN61dEB3pfxT9cS4
-          B="https://firestore.googleapis.com/v1/projects/nora-ed429/databases/(default)/documents"
-          echo "errs:"; curl -sS -o /dev/null -w "%{http_code}\n" -X POST -H 'Content-Type: application/json' "$B/errs?key=$K" -d '{"fields":{"m":{"stringValue":"проверка: сводка ошибок работает"},"s":{"stringValue":"probe"},"l":{"integerValue":"0"},"p":{"stringValue":"/probe"},"v":{"stringValue":""},"u":{"stringValue":"ПК"},"t":{"timestampValue":"2026-11-18T00:00:00Z"}}}'
-          echo "collab:"; curl -sS -o /dev/null -w "%{http_code}\n" -X POST -H 'Content-Type: application/json' "$B/collab?key=$K" -d '{"fields":{"l":{"stringValue":"проверка - заявки работают"},"b":{"stringValue":"-"},"p":{"stringValue":"-"},"w":{"stringValue":"проверка Claude"},"t":{"timestampValue":"2026-11-18T00:00:00Z"}}}'
+          python3 - <<'PY'
+          import json, urllib.request, urllib.parse
+          def g(p):
+              return json.load(urllib.request.urlopen(urllib.request.Request("https://api.fantlab.ru"+p, headers={"User-Agent":"nora-probe/1.0"}), timeout=30))
+          for q in ["Четвертое крыло", "Ветер и Правда"]:
+              s = g("/search-works?q="+urllib.parse.quote(q)+"&page=1&onlymatches=1")
+              w = (s if isinstance(s, list) else s.get("matches") or [])[0]
+              print("WORK", {k: w.get(k) for k in ("work_id","rusname","name","autor_rusname","year")})
+              e = g("/work/%s/extended" % w["work_id"])
+              print("TOP KEYS", list(e.keys()))
+              print("PARENTS", json.dumps(e.get("parents"), ensure_ascii=False)[:1500])
+              cyc = None
+              for grp in (e.get("parents") or {}).get("cycles") or []:
+                  for c in grp:
+                      cyc = cyc or c
+              if cyc:
+                  c = g("/work/%s/extended" % cyc["work_id"])
+                  ch = c.get("children") or []
+                  print("CYCLE KEYS", list(c.keys()))
+                  print("CHILDREN", len(ch), json.dumps(ch[:6], ensure_ascii=False)[:2500])
+          PY
