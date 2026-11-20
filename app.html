@@ -5492,7 +5492,7 @@ const LKBACK=`<div class="lk-back"><svg viewBox="0 0 24 24"><path d="M4 20h16"/>
 function luckCards(){return LUCK.q.slice(0,3).map((x,i)=>`<div class="lk-c p${i}" data-k="${esc(ikey(x))}">${cv(x,240)}${i===0?LKBACK:""}</div>`).reverse().join("")}
 function luckStart(){luckFill();const x=LUCK.q[0];if(!x){toast("Шуршуня перебрал всю стопку - загляни попозже");return}LUCK.x=x;const u=imgOf(x);
   luckEl.innerHTML=`<div class="lk-bg">${u?`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer">`:""}</div><button class="lk-x" data-lk="x" aria-label="Закрыть">${IC2.x}</button>
-   <div class="lk-stage"><div class="lk-deck" id="lkDeck">${luckCards()}</div>${LS.get("zal.lkhint",0)?"":`<div class="lk-hint">смахни карточку - покажу другую</div>`}</div>
+   <div class="lk-stage"><div class="lk-deck" id="lkDeck">${luckCards()}</div></div>
    <div class="lk-info" id="lkInfo">${luckInfo(x)}</div>
    <div class="lk-acts"><button class="btn w" data-lk="want">Хочу прочитать</button><button class="btn" data-lk="more">Подробнее</button><button class="lk-again" data-lk="again" aria-label="Другую книгу"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></button></div>`;
   luckEl.classList.remove("done");luckEl.classList.add("on");syncBack();luckDesc(x);
@@ -5776,7 +5776,7 @@ function sxDraw(state){const box=$("#fres");if(!box)return;const q=SX.q,F=SX.k==
   if(norm(q).length<2&&sxFilt()&&!F&&SX.picks){const all=filterPicks(),L=all.slice(0,SX.fn||40).map(b=>bItem(b,"hit"));SX.list=L;
     h=`<div class="sx-h">Подобрано по фильтрам</div>`+(all.length?L.map(sxRow).join("")+(all.length>L.length?`<button class="sx-moref" data-sxmore>Показать ещё</button>`:""):`<p class="hint">С такими фильтрами ничего не нашлось.${(()=>{const d=bestDrop();return d?` Попробуй убрать «${esc(d[1])}».`:""})()}</p><button class="sx-moref" data-sxfreset>Сбросить фильтры</button>`);
     box.innerHTML=h;box._l=L;return}
-  if(norm(q).length<2){const rec=recentGet(),coach=!LS.get("zal.coachsx",0);SX.list=[];
+  if(norm(q).length<2){const rec=recentGet(),coach=false;SX.list=[];
     h=(coach?`<div class="sx-feat" id="sxFeat"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Здесь нет прочитанного.</b> Шуршуня помнит каждую книгу на твоей полке и не предлагает её снова — ни в поиске, ни в ленте.</span></div>`:"")+(rec.length?`<div class="sx-h">Недавние</div><div class="sx-rec">${rec.map(r=>`<button data-rq="${esc(r)}">${esc(r)}</button>`).join("")}</div>`:"")+(F?"":`<h3 class="sx-h2">Попроси Шуршуню</h3><div class="sx-askg">${MEAN_EX.map((r,i)=>`<button class="ask-c" data-rq="${esc(r)}" style="--ac:${ASKC_COL[i%ASKC_COL.length]}"><span>${esc(r)}</span><i class="ask-f" data-askf="${i}">${askCovers(i)}</i></button>`).join("")}</div>`)+
       `<div class="fwrap inl" id="fwrap">${filtersHTML()}</div>${filtersFoot(true)}`;box.innerHTML=h;box._l=[];if(coach)setTimeout(sxCoach,450);return}
   SX.st=state;let COLL=false;if((SX.brain||SX.mean)&&!F){const ld=SX.brain==="load",BL=Array.isArray(SX.brain)?SX.brain:[],M=SX.mean,seen=new Set(),L=[];
@@ -5937,7 +5937,7 @@ $("#addB").onclick=()=>{if(VIEW)return;tgHaptic();openAddBook((SCREEN==="col"||S
 $("#srchB").onclick=()=>openSearch();
 document.addEventListener("click",e=>{if(e.target.closest("[data-empfind]")){tgHaptic();openSearch();return}if(e.target.closest("[data-empimp]")){tgHaptic();importOpen()}});
 // подсветка «Здесь нет прочитанного» — один раз, при первом заходе в поиск
-function sxCoach(){const el=$("#sxFeat");if(!el||$("#sxSpot"))return;LS.set("zal.coachsx",1);document.activeElement&&document.activeElement.blur();
+function sxCoach(){return;const el=$("#sxFeat");if(!el||$("#sxSpot"))return;LS.set("zal.coachsx",1);document.activeElement&&document.activeElement.blur();
   const r=el.getBoundingClientRect(),sp=document.createElement("div");sp.id="sxSpot";sp.className="sx-spot";
   sp.innerHTML=`<div class="sx-spot-c" style="left:${r.left}px;top:${r.top}px;width:${r.width}px">${el.outerHTML.replace('id="sxFeat"',"")}</div><button class="btn w sx-spot-ok" style="top:${r.bottom+28}px">Понятно</button>`;
   $("#app").appendChild(sp);requestAnimationFrame(()=>sp.classList.add("on"));tgHaptic("medium");
@@ -6090,7 +6090,7 @@ function onbDraw(){const F=onbK==="films",list=onbList();onbPick={};onbStage="bo
   $("#onbStep").textContent=F?"2 из 2":"1 из 2";$("#onbH").textContent=F?"Выбери хотя бы два просмотренных фильма или сериала":"Выбери хотя бы две прочитанные книги";
   $("#onbP").textContent=F?"Нажми на фильм или сериал и поставь оценку.":"Нажми на книгу и поставь оценку.";
   $("#onbSkip").hidden=false;$("#onbSkip").textContent=F?"пропустить":"позже";$("#onbGrid").scrollTop=0;
-  $("#onbGrid").innerHTML=list.map((x,i)=>`<div class="op${i===0?" nudge":""}" data-i="${i}">${cv(x,110)}${i===0?`<span class="tip">Нажми</span>`:""}<span class="badge"></span><small>${esc(x.t)}${x.s?" · сериал":""}</small></div>`).join("");
+  $("#onbGrid").innerHTML=list.map((x,i)=>`<div class="op${i===0?" nudge":""}" data-i="${i}">${cv(x,110)}<span class="badge"></span><small>${esc(x.t)}${x.s?" · сериал":""}</small></div>`).join("");
   $("#onbGrid")._l=list;onbBtn()}
 function onbBtn(){const n=Object.keys(onbPick).length,b=$("#onbNext"),F=onbK==="films";b.disabled=n<2;b.textContent=n>=2?"Дальше":n?(F?"Выбери ещё один":"Выбери ещё одну"):(F?"Выбери хотя бы два":"Выбери хотя бы две")}
 $("#onbGrid").addEventListener("click",e=>{const op=e.target.closest(".op");if(!op)return;document.querySelectorAll("#onbGrid .nudge").forEach(o=>{o.classList.remove("nudge");const t=o.querySelector(".tip");t&&t.remove()});
@@ -6147,7 +6147,7 @@ function coDraw(){if(!CO)return;const R=coRect();if(!R){setTimeout(coDraw,300);r
   coEl.classList.add("on");coEl.dataset.step=CO.step}
 function coachNext(){if(!CO)return;CO.step++;if(CO.step>3){coachEnd(true);return}tgHaptic("medium");coEl.classList.remove("on");setTimeout(coDraw,280)}
 function coachEnd(done){CO=null;coEl.classList.remove("on");LS.set("zal.coach",1);}
-function coach(){if(LS.get("zal.coach",0)||!slides.length||VIEW||CO)return;CO={step:1,taps:[]};setTimeout(coDraw,500)}
+function coach(){return;if(LS.get("zal.coach",0)||!slides.length||VIEW||CO)return;CO={step:1,taps:[]};setTimeout(coDraw,500)}
 coEl.addEventListener("click",e=>{if(!CO||!e.target.classList.contains("co-b"))return;const now=Date.now();CO.taps=CO.taps.filter(t=>now-t<1500);CO.taps.push(now);
   coEl.classList.add("nudge");setTimeout(()=>coEl.classList.remove("nudge"),250);if(CO.taps.length>=3){tgHaptic();coachEnd(false)}});
 addEventListener("resize",()=>{if(CO)coDraw()});
@@ -6168,7 +6168,8 @@ const TOURS={
        ['.dock [data-s="sum"]',"Полки, дневник и клуб","Здесь твои книги, отзывы и дневник. Рядом - книжный клуб: читайте одну книгу с друзьями."]],
   fr:[[".fr-nick,.fr-add","Друзья","Скажи другу свой ник - он найдёт тебя за секунду. Или добавь его по нику, почте или ссылке: вы увидите полки, оценки и отзывы друг друга."]],
   sum:[]};
-function tour(name){let bk=null;try{bk=BKC}catch(e){}if(bk||document.querySelector("#bkc.on,#vsheet.on,#auth.on")){clearTimeout(tour._w);tour._w=setTimeout(()=>tour(name),5000);return}if(!tour._ok){(window.UIREADY||Promise.resolve()).then(()=>{tour._ok=1;tour(name)});return}if(VIEW||!LS.get("zal.onb",0)||(name!=="col"&&emptyAll())||LS.get("zal.tour2."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
+// подсказки-знакомства выключены (20.11, по просьбе Насти): тур по экранам не показываем
+function tour(name){return;let bk=null;try{bk=BKC}catch(e){}if(bk||document.querySelector("#bkc.on,#vsheet.on,#auth.on")){clearTimeout(tour._w);tour._w=setTimeout(()=>tour(name),5000);return}if(!tour._ok){(window.UIREADY||Promise.resolve()).then(()=>{tour._ok=1;tour(name)});return}if(VIEW||!LS.get("zal.onb",0)||(name!=="col"&&emptyAll())||LS.get("zal.tour2."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
   if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on"))return;LS.set("zal.tour2."+name,1);let k=0;
   const ov=document.createElement("div");ov.className="tour";$("#app").appendChild(ov);
   const draw=()=>{const [sel,h,txt]=steps[k],t=document.querySelector(sel);if(!t){next();return}t.scrollIntoView&&t.scrollIntoView({block:"nearest"});
