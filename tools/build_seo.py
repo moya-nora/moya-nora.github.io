@@ -871,11 +871,30 @@ def VQLINK(b):
     return f'<p class="vql"><a href="/{VQ_URL[id(b)]}">Вопросы для обсуждения этой книги</a></p>' if id(b) in VQ_URL else ""
 
 
+def NEXT3(b, sim):
+    """сразу под описанием: три книги «что читать после» и приглашение получить ещё - под свой вкус, в Норе"""
+    L = [x for x in sim if img_of(x) and id(x) in BOOK_URL][:3]
+    if len(L) < 3:
+        return ""
+    href = "/app.html?app=1&utm_source=site&utm_medium=next3&bk=" + urllib.parse.quote(b["t"] + "|" + b["a"])
+    go = 'onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\',{from:\'next3\'})}catch(e){}"'
+    cards = "".join(f'<a class="n3b" href="/{BOOK_URL[id(x)]}">{cv(x)}<b>{esc(x["t"])}</b><span>{esc(str(x["a"] or "").split(" ")[-1])}</span></a>' for x in L)
+    return (f'<section class="next3 gl"><h2>Что читать после «{esc(b["t"])}»</h2><div class="n3r">{cards}</div>'
+            f'<a class="btn n3go" href="{href}" {go}>Ещё 20 книг под мой вкус</a><p class="n3s">Бесплатно, без скачивания. Шуршуня запомнит прочитанное и не будет его советовать.</p></section>')
+
+
+STICKY = ('<div class="stk" id="stk" hidden><span>Поставь книгу на полку - Шуршуня подберёт похожие</span><a class="btn" id="stkA" href="/app.html?app=1">В Нору</a><button id="stkX" aria-label="Скрыть">×</button></div>'
+          '<script>(function(){try{if(sessionStorage.getItem("stkx"))return}catch(e){}var s=document.getElementById("stk"),h=document.querySelector(".hook .btn");if(!s)return;if(localStorage.getItem("zal.onb")){s.remove();return}var nd=document.getElementById("nad");if(nd)nd.remove();if(h)document.getElementById("stkA").href=h.href;'
+          'var on=function(){var nd=document.getElementById("nad");if(nd)nd.remove();var y=scrollY||0,v=h?h.getBoundingClientRect():null;s.hidden=!(y>420&&!(v&&v.top<innerHeight&&v.bottom>0))};addEventListener("scroll",on,{passive:true});'
+          'document.getElementById("stkA").onclick=function(){try{ym(114237349,"reachGoal","site_to_app",{from:"sticky"})}catch(e){}};'
+          'document.getElementById("stkX").onclick=function(){s.remove();try{sessionStorage.setItem("stkx","1")}catch(e){}}})()</script>')
+
+
 def HOOK(b):
     """приманка на странице книги: поставить эту книгу на свою полку в Норе (открывает приложение сразу на её карточке)"""
     href = "/app.html?app=1&bk=" + urllib.parse.quote(b["t"] + "|" + b["a"])
     go = 'onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}"'
-    return (f'<div class="hook gl"><div><b>Не потеряй эту книгу</b><p>Поставь её на свою полку в Норе - и Шуршуня подберёт похожие книги лично тебе. Бесплатно, прямо в браузере.</p></div>'
+    return (f'<div class="hook gl"><div><b>Не потеряй эту книгу</b><p>Поставь её на полку в Норе - и Шуршуня подберёт похожие книги лично тебе. Без регистрации, прямо в браузере.</p></div>'
             f'<div class="ctas"><a class="btn" href="{href}" {go}>Хочу прочитать</a><a class="btn ghost" href="{href}" {go}>Уже прочитано</a></div></div>')
 
 
@@ -923,11 +942,11 @@ for b in cat_books:
     body = (f'<div class="wrap"><div class="crumbs"><a href="/">Нора</a><span>/</span><a href="{GEN_URL.get(b["g"], "/c/")}">{esc(GEN.get(b["g"], "Книги"))}</a></div>'
             f'<article class="book">{f"<div class=amb style=background-image:url({esc(u)})></div>" if u else ""}<div class="cvw">{cv(b, lazy=False)}</div><div>'
             f'<h1>{esc(b["t"])}</h1><p class="by">{esc(b["a"])}</p>{f'<p class="gn">{esc(gname(b))}</p>' if gname(b) else ""}{RATE(b)}'
-            + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "") + NOTE(b) + WHO(b, sim)
+            + (f'<p class="ann">{esc(b["ann"])}</p>' if b["ann"] else "") + NOTE(b) + WHO(b, sim) + NEXT3(b, sim)
             + (f'<div class="fgrid">{"".join(f"<div class=\"fact gl\"><b>{esc(f[0])}</b><span>{esc(f[1])}</span></div>" for f in fl)}</div>' if fl else "")
             + WHERE(b) + HOOK(b) + COLLS(b) + AUTH(b) + VQLINK(b) + RVS(b)
             + (f'<section class="like"><div class="shd"><h2>Похожие книги</h2><a class="all" data-sim href="/p/">Ещё похожие</a></div>{rail(sim, bare=True)}</section>' if sim else "")
-            + "</div></article>" + REVIEWS_JS
+            + "</div></article>" + REVIEWS_JS + STICKY
             + "</div>")
     bld = {"@context": "https://schema.org", "@type": "Book", "name": b["t"], "author": {"@type": "Person", "name": b["a"]}, "inLanguage": "ru",
            "url": f"{SITE}/{BOOK_URL[id(b)]}", **({"description": b["ann"]} if b["ann"] else {}), **({"image": (SITE + u) if u.startswith("/") else u} if u else {}),

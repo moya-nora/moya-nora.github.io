@@ -6112,7 +6112,7 @@ function onbAsk(force){if(VIEW||LS.get("zal.onbAsk",0)&&!force)return;if(BOOKS.l
   vOpen(`<h3 class="vh">Подобрать книги под тебя?</h3><p class="sy-note">Отметь пару прочитанных книг и любимые жанры - Шуршуня станет советовать точнее. Это минута.</p><div class="sheet-btns" style="display:flex;flex-direction:column;gap:10px;margin-top:18px"><button class="btn w" data-onbgo>Отметить книги</button><button class="btn" data-onblater>Позже</button></div>`)}
 $("#vshBody").addEventListener("click",e=>{if(e.target.closest("[data-onbgo]")){e.stopPropagation();vClose();tgHaptic("medium");$("#onb").classList.add("on");onbDraw();return}if(e.target.closest("[data-onblater]")){e.stopPropagation();vClose()}},true);
 // аккаунт просим уже после выбора книг — когда есть что сохранять
-const onbDone=()=>{if(needAuth()){authMode="up";authShow(onbFinish,"onb")}else onbFinish()};
+const onbDone=()=>{onbFinish();if(needAuth())setTimeout(authNudge,12000)};
 function onbSave(){const list=$("#onbGrid")._l,D=onbK==="films"?FM:BK,cs=checkStamps;checkStamps=()=>{};try{Object.entries(onbPick).forEach(([i,n])=>{const x=list[+i];if(!D.has(x))D.markRead(x,n*2,true)})}finally{checkStamps=cs}checkStamps(true)}
 function onbFinish(){goal("signup_done");setTimeout(inviteCheck,1200);LS.set("zal.onb",1);$("#onb").classList.remove("on");setRealmUI("books");checkStamps(true);pickCol();fi=0;buildFeed();show("col");toast("Полки готовы")}
 // второй шаг: любимые жанры — лента и советы Шуршуни начнут с них
@@ -6168,7 +6168,7 @@ const TOURS={
        ['.dock [data-s="sum"]',"Полки, дневник и клуб","Здесь твои книги, отзывы и дневник. Рядом - книжный клуб: читайте одну книгу с друзьями."]],
   fr:[[".fr-nick,.fr-add","Друзья","Скажи другу свой ник - он найдёт тебя за секунду. Или добавь его по нику, почте или ссылке: вы увидите полки, оценки и отзывы друг друга."]],
   sum:[]};
-function tour(name){if(!tour._ok){(window.UIREADY||Promise.resolve()).then(()=>{tour._ok=1;tour(name)});return}if(VIEW||!LS.get("zal.onb",0)||(name!=="col"&&emptyAll())||LS.get("zal.tour2."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
+function tour(name){let bk=null;try{bk=BKC}catch(e){}if(bk||document.querySelector("#bkc.on,#vsheet.on,#auth.on")){clearTimeout(tour._w);tour._w=setTimeout(()=>tour(name),5000);return}if(!tour._ok){(window.UIREADY||Promise.resolve()).then(()=>{tour._ok=1;tour(name)});return}if(VIEW||!LS.get("zal.onb",0)||(name!=="col"&&emptyAll())||LS.get("zal.tour2."+name,0)||document.querySelector(".tour"))return;const steps=(TOURS[name]||[]).filter(t=>document.querySelector(t[0]));if(!steps.length)return;
   if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on"))return;LS.set("zal.tour2."+name,1);let k=0;
   const ov=document.createElement("div");ov.className="tour";$("#app").appendChild(ov);
   const draw=()=>{const [sel,h,txt]=steps[k],t=document.querySelector(sel);if(!t){next();return}t.scrollIntoView&&t.scrollIntoView({block:"nearest"});
@@ -6788,12 +6788,12 @@ function authDraw(){const up=authMode==="up";
   go.onclick=async()=>{let e=$("#auE").value.trim();const p=$("#auP").value;const nv="";if(!e||!p){msg.textContent="Впиши почту и пароль";return}try{e=authId(e,up).e}catch(x){msg.textContent=x.message;return}go.disabled=true;go.textContent=up?"Создаю…":"Вхожу…";msg.textContent="";
     
     try{if(up){try{await NS.signUp(e,p)}catch(x){if(/уже занят/.test(x.message)){try{await signInK(e,p)}catch(y){throw new Error(e.endsWith(LOGIN_DOM)?"Такой логин уже занят - придумай другой":"На эту почту уже есть Нора - войди с её паролем")}}else throw x}}else await signInK(e,p);
-      if(nv)LS.set("zal.name",nv.slice(0,40));else if(!LS.get("zal.name","")&&NS.getProfile){try{const pf=await Promise.race([NS.getProfile(NS.uid()),new Promise(r=>setTimeout(()=>r(null),5000))]);if(pf&&pf.n)LS.set("zal.name",String(pf.n).slice(0,40))}catch(x){}}authEl.classList.remove("on");tgHaptic("medium");toast(up?"Аккаунт создан":"Вход выполнен");if(up)LS.set("zal.hsup",1);const n=authNext;authNext=null;if(n)n();setTimeout(()=>{nickAuto();pubCheck();inviteCheck()},800)}
+      if(nv)LS.set("zal.name",nv.slice(0,40));else if(!LS.get("zal.name","")&&NS.getProfile){try{const pf=await Promise.race([NS.getProfile(NS.uid()),new Promise(r=>setTimeout(()=>r(null),5000))]);if(pf&&pf.n)LS.set("zal.name",String(pf.n).slice(0,40))}catch(x){}}authEl.classList.remove("on");tgHaptic("medium");toast(up?"Аккаунт создан":"Вход выполнен");if(up)goal("account");if(up)LS.set("zal.hsup",1);const n=authNext;authNext=null;if(n)n();setTimeout(()=>{nickAuto();pubCheck();inviteCheck()},800)}
     catch(x){msg.textContent=x.message;go.disabled=false;go.textContent=up?"Создать аккаунт":"Войти"}};
   $("#auP").onkeydown=e=>{if(e.key==="Enter")go.click()}}
 // книга из сообщения бота: app.html?bk=Название|Автор — сразу открываем её карточку
 function bkParam(){try{const v=new URLSearchParams(location.search).get("bk");if(!v)return;const [t,a]=v.split("|"),b=ALLB().find(b=>norm(b.t)===norm(t)&&(!a||norm(b.a||"").includes(norm(String(a).split(" ").slice(-1)[0]))));
-  if(b)bkcOpen(bItem(b,"rec"),"rec");history.replaceState(null,"",location.pathname+"?app=1")}catch(e){}}
+  if(b){if(document.querySelector(".tour")){document.querySelectorAll(".tour").forEach(e=>e.remove());LS.set("zal.tour2.col",0)}bkcOpen(bItem(b,"rec"),"rec");setTimeout(()=>tour("col"),4000)}history.replaceState(null,"",location.pathname+"?app=1")}catch(e){}}
 // разрешение боту писать раз в неделю: спрашиваем один раз, когда на полке уже есть книги
 function askWrite(){try{if(!TG||!TG.requestWriteAccess||LS.get("zal.wa",0)||!BOOKS.length)return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#bkc.on"))return setTimeout(askWrite,20000);
   LS.set("zal.wa",1);TG.requestWriteAccess(ok=>{if(ok&&localStorage.getItem("zal.ntf")==null){LS.set("zal.ntf",1);notifySync(true)}})}catch(e){}}
@@ -6815,7 +6815,7 @@ function ntfDefault(){try{const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;
 // работа без интернета: sw.js хранит копию приложения и каталога (сеть всегда первая)
 try{if("serviceWorker" in navigator&&window.isSecureContext&&/^https?:$/.test(location.protocol))addEventListener("load",()=>setTimeout(()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}),3000))}catch(e){}
 addEventListener("offline",()=>{try{toast("Нет интернета - полки и каталог работают, облако обновится позже")}catch(e){}});
-function afterSplash(){if(navigator.onLine===false)setTimeout(()=>{try{toast("Нет интернета - показываю то, что сохранено на телефоне")}catch(e){}},1500);setTimeout(ntfDefault,6000);setTimeout(wpCheck,20000);setTimeout(()=>{if(SCREEN==="col")tour("col")},2600);setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!emptyAll()&&!document.querySelector(".tour")&&!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&Date.now()-(+LS.get("zal.authskip",0)||0)>3*864e5)authShow()}
+function afterSplash(){try{if(/[?&](bk=|utm_source=site)/.test(location.search)&&!sessionStorage.getItem("nora.gs")){sessionStorage.setItem("nora.gs","1");goal("app_from_site")}}catch(e){}if(navigator.onLine===false)setTimeout(()=>{try{toast("Нет интернета - показываю то, что сохранено на телефоне")}catch(e){}},1500);setTimeout(ntfDefault,6000);setTimeout(wpCheck,20000);setTimeout(()=>{if(SCREEN==="col")tour("col")},2600);setTimeout(inviteCheck,300);setTimeout(bkParam,900);setTimeout(askWrite,30000);setTimeout(()=>{if(!emptyAll()&&!document.querySelector(".tour")&&!$("#auth").classList.contains("on")&&!$("#onb").classList.contains("on")&&!$("#intro").classList.contains("on")&&!$("#vsheet").classList.contains("on"))hsCheck()},4000);if(needAuth()&&!emptyAll()&&!$("#intro").classList.contains("on")&&!$("#onb").classList.contains("on")&&LS.get("zal.onb",0)&&Date.now()-(+LS.get("zal.authskip",0)||0)>3*864e5){LS.set("zal.authskip",Date.now());authNudge()}}
 
 
 // ---------- смена обложки вручную: фото / рисунок / другое издание ----------
@@ -7374,14 +7374,16 @@ window._ev=EV;
 {const b0=bkcOpen;bkcOpen=function(x,L){if(x&&!VIEW)EV.add(L==="friend"?"book_fr":"book",(x.t||"")+(x.a?" - "+x.a:""));return b0.apply(this,arguments)}}
 {const o0=openSearch;openSearch=function(){EV.add("search");return o0.apply(this,arguments)};const r0=sxRun;let qt=0;sxRun=function(){const r=r0.apply(this,arguments);clearTimeout(qt);qt=setTimeout(()=>{const q=($("#fq")||{}).value||"";if(q.trim().length>=3)EV.add("q",q)},1800);return r}}
 // аккаунт предлагаем сразу после первой книги на полке (и снова при следующем запуске, если вход слетел)
-function authNudge(){try{if(!needAuth()||sessionStorage.getItem("nora.an"))return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on,.tour")||BKC)return setTimeout(authNudge,6000);
+function authNudge(force){try{const nb=BOOKS.length+want.length+(nowBook?1:0);if(!needAuth()||sessionStorage.getItem("nora.an")||(!force&&nb<3&&!(NS.email||LS.get("zal.sync.was",0))))return;if(document.querySelector("#auth.on,#onb.on,#intro.on,#vsheet.on,#rm.on,.tour")||BKC)return setTimeout(authNudge,6000);
   sessionStorage.setItem("nora.an","1");const back=!!(NS.email||LS.get("zal.sync.was",0));
-  vOpen(`<h3 class="vh">${back?"Войди, чтобы полки не потерялись":"Сохранить твои полки?"}</h3><p class="sy-note">${back?"Вход слетел - войди снова, и книги, оценки и отзывы подтянутся из облака.":"Создай аккаунт - тогда книги не пропадут, их можно открыть с другого телефона и показать друзьям. Это полминуты."}</p><div style="display:flex;flex-direction:column;gap:10px;margin-top:18px"><button class="btn w" data-an-go>${back?"Войти":"Создать аккаунт"}</button><button class="btn" data-an-later>Позже</button></div>`)}catch(e){}}
+  vOpen(`<h3 class="vh">${back?"Войди, чтобы полки не потерялись":`На полке уже ${nb} ${plural(nb,"книга","книги","книг")} - сохранить?`}</h3><p class="sy-note">${back?"Вход слетел - войди снова, и книги, оценки и отзывы подтянутся из облака.":"Пока полка живёт только в этом браузере. С аккаунтом книги не пропадут, откроются на другом телефоне, и их увидят друзья. Это полминуты."}</p><div style="display:flex;flex-direction:column;gap:10px;margin-top:18px"><button class="btn w" data-an-go>${back?"Войти":"Создать аккаунт"}</button><button class="btn" data-an-later>Позже</button></div>`)}catch(e){}}
 $("#vshBody").addEventListener("click",e=>{if(e.target.closest("[data-an-go]")){e.stopPropagation();vClose();authMode=(NS.email||LS.get("zal.sync.was",0))?"in":"up";authShow();return}if(e.target.closest("[data-an-later]")){e.stopPropagation();vClose()}},true);
 setInterval(()=>{try{if(NS.hasTok&&NS.hasTok())LS.set("zal.sync.was",1)}catch(e){}},20000);
-{const _aw=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw.call(BK,x);if(!had){goal("want");setTimeout(()=>onbAsk(),2500);setTimeout(authNudge,5000)}}}
+// воронка в Метрике: первая книга и третья книга на полке
+const shelfGoal=()=>{const n=BOOKS.length+want.length;if(n>=1&&!LS.get("zal.g1",0)){LS.set("zal.g1",1);goal("book_first")}if(n>=3&&!LS.get("zal.g3",0)){LS.set("zal.g3",1);goal("book_3")}};
+{const _aw=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw.call(BK,x);if(!had){goal("want");shelfGoal();setTimeout(()=>onbAsk(),2500);setTimeout(authNudge,5000)}}}
 {const _fw=FM.addWant;FM.addWant=function(x){const had=FM.has(x);_fw.call(FM,x);if(!had)goal("want")}}
-{const _mr=BK.markRead;BK.markRead=function(x,r10,silent){const out=_mr.call(BK,x,r10,silent);if(!silent){goal("read");setTimeout(authNudge,5000)}if(!silent)setTimeout(()=>shelfAnim(x),120);return out}}
+{const _mr=BK.markRead;BK.markRead=function(x,r10,silent){const out=_mr.call(BK,x,r10,silent);if(!silent){goal("read");shelfGoal();setTimeout(authNudge,5000)}if(!silent)setTimeout(()=>shelfAnim(x),120);return out}}
 {const _aw2=BK.addWant;BK.addWant=function(x){const had=BK.has(x);_aw2.call(BK,x);if(!had&&BKC)setTimeout(()=>shelfAnim(x,"теперь в «Хочу прочитать»"),120)}}
 
 
