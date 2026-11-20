@@ -188,7 +188,6 @@ def news_for(nd, me):
     want = {norm(w["t"]): w for w in nd.get("want") or []}
     have = set(want) | set(nd.get("read") or [])
     fav = {norm(x) for x in nd.get("fav") or []}
-    out += series_news(nd, me, have, sentk)
     for b in FRESH:
         k = "n:" + norm(b["t"])
         if norm(b["a"]) in fav and norm(b["t"]) not in have and k not in sentk:

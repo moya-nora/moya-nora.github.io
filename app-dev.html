@@ -6457,7 +6457,7 @@ document.addEventListener("click",e=>{const t=e.target;
   const d2=t.closest("[data-acc-del2]");if(d2){FRIENDS=FRIENDS.filter(x=>x.uid!==d2.dataset.accDel2);frSave();vClose();drawAcc();toast("Удалено из друзей");return}
   const sh=t.closest("[data-sht]");if(sh){const v=sh.dataset.sht;if(v!==SCREEN){tgHaptic();show(v)}return}});
 // ---------- новости о книгах в Telegram (по согласию) ----------
-function notifyData(){const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(!u){const wp=LS.get("zal.wp",null);return wp&&wp.endpoint?{wp,n:myName()}:null}
+function notifyData(){const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(!u){const wp=LS.get("zal.wp",null);return wp&&wp.endpoint?{wp,n:myName(),read:BOOKS.slice(-400).map(b=>norm(b.t)),fs:Object.entries(LS.get("zal.fol",{})).slice(0,60).map(([id,v])=>({id:+id,n:v.n||""}))}:null}
   const fav=[...new Set(BOOKS.filter(b=>b.r!=null&&r5(b.r)>=4&&b.a&&b.a!=="Автор не указан").map(b=>b.a))].slice(0,60);
   return {tg:u.id,n:myName(),club:LS.get("zal.club","")||"",want:want.slice(0,200).map(w=>({t:w.t,a:w.a||""})),read:BOOKS.slice(-400).map(b=>norm(b.t)),fav,fr:FRIENDS.map(f=>f.uid).filter(Boolean).slice(0,100),fs:Object.entries(LS.get("zal.fol",{})).slice(0,60).map(([id,v])=>({id:+id,n:v.n||""}))}}
 function notifySync(force){if(!LS.get("zal.ntf",0)||!NS.notifyPut||!(NS.hasTok&&NS.hasTok()))return;const d=notifyData();if(!d)return;const sig=JSON.stringify(d);
@@ -6944,6 +6944,12 @@ async function serLoad(cid){const c=SERC[cid];if(c&&Date.now()-c.ts<7*864e5)retu
 // у старых записей META нет цикла - дозапрашиваем один раз
 const SERW={};async function serOfWork(k,wid){if(META[k]&&META[k].cy!==undefined)return META[k].cy;if(SERW[wid])return SERW[wid];
   return SERW[wid]=flj("/work/"+wid+"/extended").then(ex=>{const cy=serPick(ex)||0;if(META[k]){META[k].cy=cy;metaSave()}return cy})}
+function serNotifyOn(){try{
+  if(TG){if(!LS.get("zal.ntf",0)){LS.set("zal.ntf",1);try{TG.requestWriteAccess&&TG.requestWriteAccess(()=>notifySync(true))}catch(er){}}notifySync(true);return}
+  if(!(NS.hasTok&&NS.hasTok())){toast("Войди в аккаунт - и Нора напишет, когда выйдет новая книга");setTimeout(()=>{authMode="up";authShow()},900);return}
+  if(wpOK()){if(Notification.permission==="granted"){if(LS.get("zal.wp",null))notifySync(true);else wpSub().catch(()=>{})}else if(Notification.permission==="default")wpOn();else toast("Уведомления выключены в настройках браузера");return}
+  if(/iPhone|iPad|iPod/.test(navigator.userAgent)&&!navigator.standalone){toast("Чтобы приходили уведомления, поставь Нору на экран «Домой»");return}
+  toast("Этот браузер не умеет присылать уведомления")}catch(e){}}
 function serRedraw(x){if(BKC&&BKC.x===x){const el=$("#bkcSer");if(el)el.innerHTML=bkcSer(x)}}
 function bkcSer(x){if(!x||x._f)return "";const k=ikey(x),m=META[k];
   if(m===undefined){wantMeta(x,()=>serRedraw(x));return ""}
@@ -6958,8 +6964,8 @@ function bkcSer(x){if(!x||x._f)return "";const k=ikey(x),m=META[k];
    <div class="bkc-ser-l">${L.map((w,i)=>`<button data-serb="${cid}:${i}" class="${w[0]===m.w?"me":rd.has(norm(w[1]))?"rd":!w[3]?"soon":""}"><i>${i+1}</i>${esc(w[1])}${!w[3]?" <small>скоро</small>":""}</button>`).join("")}</div>
    <button class="bkc-ser-f${fol?" on":""}" data-serfol="${cid}">${fol?"Слежу за серией - напишу, когда выйдет новая книга":"Сообщить, когда выйдет новая книга"}</button></div>`}
 document.addEventListener("click",e=>{const f=e.target.closest("[data-serfol]");if(f){e.preventDefault();e.stopPropagation();const cid=f.dataset.serfol,c=SERC[cid]||{};tgHaptic("medium");
-    if(FOL[cid])delete FOL[cid];else{FOL[cid]={n:c.n||"",a:c.a||""};if(!LS.get("zal.ntf",0)){LS.set("zal.ntf",1);try{TG&&TG.requestWriteAccess&&TG.requestWriteAccess(()=>{})}catch(er){}}}
-    folSave();if(BKC)serRedraw(BKC.x);return}
+    if(FOL[cid]){delete FOL[cid];folSave();if(BKC)serRedraw(BKC.x);return}
+    FOL[cid]={n:c.n||"",a:c.a||""};folSave();if(BKC)serRedraw(BKC.x);serNotifyOn();return}
   const b=e.target.closest("[data-serb]");if(!b||!BKC)return;e.preventDefault();e.stopPropagation();const [cid,i]=b.dataset.serb.split(":"),c=SERC[cid],w=c&&c.L.filter(w=>w[3]||w[4])[+i];if(!w)return;tgHaptic();
   const sur=norm(String(c.a||BKC.x.a||"").split(" ").slice(-1)[0]),hit=ALLB().find(z=>norm(z.t)===norm(w[1])&&(!sur||norm(z.a||"").includes(sur)));
   if(hit){bkcOpen(bItem(hit,BK.has(hit)||"rec"),BK.has(hit)||"rec");return}

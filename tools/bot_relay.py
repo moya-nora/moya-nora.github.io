@@ -10,6 +10,7 @@
 import json, os, re, sys, time, urllib.request
 sys.path.insert(0, os.path.dirname(__file__))
 import bot_reqs  # noqa: E402
+import bot_series  # noqa: E402
 
 TOKEN = os.environ.get("BOT_TOKEN", "").strip()
 OWNER = os.environ.get("OWNER_USERNAME", "").strip().lstrip("@").lower() or "stanislava_kurdina"
@@ -212,6 +213,10 @@ while True:
         bot_reqs.tick(state, save)   # заявки в друзья и приглашения в клуб - раз в минуту
     except Exception as e:  # noqa: BLE001
         print("заявки: ошибка", str(e)[:200])
+    try:
+        bot_series.tick(state, save)   # новые книги серий, за которыми следят - раз в 3 часа
+    except Exception as e:  # noqa: BLE001
+        print("серии: ошибка", str(e)[:200])
     stop = False
     for u in ups:
         if u.get("pre_checkout_query"):
