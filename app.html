@@ -2495,7 +2495,7 @@ body.sum #app #top,body.frs #app #top{background:none!important}
 #app .cb-mt{margin:2px 0 0;font-size:14px;color:rgba(247,241,230,.85)}
 #app .cb-loc{margin:4px 0 0;font-size:14px;color:rgba(247,241,230,.7)}
 #app .cb-lnk{border:0;background:none;padding:0;color:#F3D19A;font:inherit;text-decoration:underline;text-underline-offset:3px}
-#app .cb-who{display:block;font-size:12px;color:rgba(247,241,230,.55);margin-top:2px}
+#app .cb-fin{margin:10px 0 0;overflow-wrap:anywhere}#app .cb-who{display:block;font-size:12px;color:rgba(247,241,230,.55);margin-top:2px}
 #app .cb-cal{margin-top:8px}
 #app .cb-fmt{margin:4px 0 8px}
 #app .wr-pk{justify-content:flex-end;padding-bottom:calc(30px + env(safe-area-inset-bottom,0px))}
@@ -7170,7 +7170,7 @@ function nickSheet(){if(needAuth()){authShow();return}const cur=LS.get("zal.nick
 document.addEventListener("click",e=>{if(e.target.closest("[data-nick]")){tgHaptic();nickSheet()}});
 // ник выдаём сам: из имени (Настя → nastya), а если занят - nastya2, nastya3…; поменять можно в «Друзьях»
 const TRL={а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"e",ж:"zh",з:"z",и:"i",й:"y",к:"k",л:"l",м:"m",н:"n",о:"o",п:"p",р:"r",с:"s",т:"t",у:"u",ф:"f",х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sch",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya"};
-const nickBase=()=>{const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;let b=(u&&u.username)||myName()||(NS.email&&String(NS.email).endsWith(LOGIN_DOM)?String(NS.email).split("@")[0]:"");// часть почты в ник не берём: ник видят другие
+const nickBase=()=>{const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;let b=(u&&u.username)||myName()||(NS.email?String(NS.email).split("@")[0]:"");
   b=String(b).toLowerCase().split("").map(c=>TRL[c]!=null?TRL[c]:c).join("").replace(/[^a-z0-9._-]+/g,"").replace(/^[._-]+/,"").slice(0,18);return b.length>=3?b:(b+"reader").slice(0,18)};
 let NICKBUSY=false;
 async function nickAuto(){if(NICKBUSY||VIEW||LS.get("zal.nick","")||needAuth()||!NS.nickGet||!(NS.uid&&NS.uid()))return;NICKBUSY=true;
@@ -7783,9 +7783,12 @@ function cbCand(){const taken=cbTaken(),out=[],seen=new Set();
   const base=[...(CB.d.shelf||[]),...(CB.d.book?[CB.d.book]:[])],tw={},gs={};
   base.forEach(b=>{const c=catOf(b);if(!c)return;gs[c.g]=(gs[c.g]||0)+1;(c.tags||[]).forEach(t=>{if(!SIMSKIP.has(t)&&!/век|страна/.test(t))tw[t]=(tw[t]||0)+1})});
   const seed=hsh(CB.id+":"+(CB.d.shelf||[]).length);
-  const sc=CAT.filter(b=>b.ann&&b.g!=="kids"&&!(b.tags||[]).includes("самиздат")&&!taken.has(cbK(b.t,b.a))&&!seen.has(cbK(b.t,b.a))).map(b=>{let s=(gs[b.g]||0)*1.5;(b.tags||[]).forEach(t=>{if(tw[t])s+=tw[t]});
+  const curA=CB.d.book&&CB.d.book.a;const sc=CAT.filter(b=>b.ann&&b.g!=="kids"&&okAll(b)&&!isBan(b)&&!(curA&&sameAu(b.a,curA))&&!(b.tags||[]).includes("самиздат")&&!taken.has(cbK(b.t,b.a))&&!seen.has(cbK(b.t,b.a))).map(b=>{let s=(gs[b.g]||0)*1.5;(b.tags||[]).forEach(t=>{if(tw[t])s+=tw[t]});
     s+=(imgOf(b)?2:0)+((b.y||0)>=2010?1.5:0)+(b.q||0)*.5+(hsh(b.t+seed)%1000)/400;return [s,b]}).sort((a,b)=>b[0]-a[0]);
-  const au={};for(const [,b] of sc){if(out.filter(x=>x.rec).length>=3)break;if(au[b.a])continue;au[b.a]=1;out.push({k:cbK(b.t,b.a),t:b.t,a:b.a,rec:1})}
+  // советы Норы для клуба не меняются от раза к разу: запоминаем тройку для этой полки клуба
+  const mk="zal.cbrec."+CB.id,mem=LS.get(mk,null);let R=mem&&mem.s===seed?mem.L.filter(x=>!taken.has(x.k)&&!seen.has(x.k)):null;
+  if(!R||R.length<3){R=[];const au={};for(const [,b] of sc){if(R.length>=3)break;if(au[b.a])continue;au[b.a]=1;R.push({k:cbK(b.t,b.a),t:b.t,a:b.a,rec:1})}if(CB.id)LS.set(mk,{s:seed,L:R})}
+  R.forEach(x=>out.push({...x,rec:1}));
   out.forEach(x=>x.v=cbVotes(x.k));out.sort((a,b)=>b.v-a.v||(a.rec||0)-(b.rec||0));return CB.cand=out}
 const CB_Q={first:["Что зацепило тебя на первых страницах?","Кому из героев ты веришь, а кому пока нет?","Какой ты ждёшь эту историю дальше?","Что в мире этой книги удивило больше всего?"],
   mid:["Чей поступок в этой части трудно оправдать?","Что изменилось в твоём отношении к главному герою?","Какая сцена запомнилась сильнее всего?","Какой совет хочется дать герою прямо сейчас?"],
@@ -7855,7 +7858,7 @@ function cbReadHTML(){const d=CB.d,b=d.book,own=cbOwner();let h="";
   if(b){const n=cbParts(),p=cbMyP(),my=cbMyD().r[b.k]||0;
     h+=`<div class="cb-book"><button class="cb-cvw" data-cb="book" aria-label="Открыть книгу">${cv(cbBook(b),128)}${cbSeal("",46)}</button><div class="cb-bx"><b>${esc(b.t)}</b><span>${esc(b.a)}</span>
       ${p<n?`<div class="cb-part">${n===1?"Читаем целиком":`Часть ${p+1} из ${n}`}</div><div class="cb-due">до ${cbDay(cbDue(p+1))}</div>`:`<div class="cb-part">Книга прочитана</div>`}</div></div>
-     ${p<n?`<button class="cb-where" data-cb="where">${IC2.pin}<span>Где взять книгу</span></button>`:""}
+     ${(()=>{const M=CB.mem||[];if(M.length<2)return "";const D=M.filter(m=>((m.x&&m.x.p&&m.x.p[b.k])||0)>=n);if(!D.length)return `<p class="cb-note cb-fin">Пока никто не дочитал</p>`;const nm=D.slice(0,3).map(m=>m._id===cbUid()?"ты":esc(m.n||"участник")).join(", ");return `<p class="cb-note cb-fin">Дочитали ${D.length} из ${M.length}: ${nm}${D.length>3?" и ещё "+(D.length-3):""}</p>`})()}${p<n?`<button class="cb-where" data-cb="where">${IC2.pin}<span>Где взять книгу</span></button>`:""}
      ${n>1?`<button class="cb-bars" data-cb="parts" aria-label="Прочитано частей: ${p} из ${n}. Изменить">${Array.from({length:n},(_,i)=>`<i${i<p?` class="on"`:""}></i>`).join("")}</button>`:""}`;
     h+=p<n?`<button class="cb-b w" data-cb="part">${n===1?"Книга прочитана":`Часть ${p+1} прочитана`}</button>`:`<div class="cb-card"><div class="cb-ch"><h2>Твоя оценка</h2></div><div class="cb-stars">${[1,2,3,4,5].map(i=>`<button data-cb="rate" data-r="${i}" aria-label="Оценка ${i}"${i<=my?` class="on"`:""}>★</button>`).join("")}</div></div>${n===1?`<button class="cb-link" data-cb="setp" data-p="0">Ещё читаю</button>`:""}`;
     if(cbCan())h+=`<button class="cb-b" data-cb="finish">Клуб дочитал книгу</button>`}
