@@ -164,6 +164,31 @@
    "p": "A large weathered wooden signpost shaped like a T-cross standing alone at a snowy American crossroads, a black crow on top, long evening shadows. No text, no letters, no title, no watermark.",
    "style": "Graphic noir illustration, strong shadows, white snow, black and one signal-red accent.",
    "size": "1024x1536"
+  },
+  "fair1": {
+   "p": "Far background layer: a snowy night skyline of a small old European winter town on a hill - many tall narrow houses with steep roofs, a church with an onion dome, a clock tower without a clock face, chimneys with curling smoke, tiny lit windows, snowy rooftops, a crescent moon and a few paper stars above. Silhouette occupies the lower 70% of the image.",
+   "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm night palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "fair2": {
+   "p": "Middle layer: a row of cozy winter fair houses and shops with snow on roofs, string lights and garlands between them, a small carousel with wooden horses, a bakery window, a bookshop with a bay window, a lantern-lit lane, people walking in coats and scarves, a man carrying a christmas tree, a child on a father's shoulders. Silhouette occupies the lower 75% of the image.",
+   "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm night palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "fair3": {
+   "p": "Skating rink layer: an oval frozen ice rink seen from the side with a low wooden fence, many tiny skaters - a couple holding hands, a child learning with a penguin helper, a girl spinning, a grandpa with a scarf, a dog sliding on the ice - and a tall empty wooden scoreboard frame on two posts at the left side of the rink (the scoreboard panel is blank cream paper). Silhouette occupies the lower 60% of the image.",
+   "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm night palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "fair4": {
+   "p": "Market stalls layer: three wooden christmas market stalls with striped awnings and garlands: a hot cocoa stall with steaming cups, a gingerbread stall, and a book stall with a blank cream signboard on top and an empty wooden counter; people buying things, a woman with a basket, kids with mittens, a dachshund in a sweater, a big decorated christmas tree with paper ornaments between the stalls. Silhouette occupies the lower 75% of the image.",
+   "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm night palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "fair5": {
+   "p": "Foreground layer: snowdrifts along the bottom edge, a wooden sled with a stack of books tied on it, a ginger cat sitting on a snowy bench, a red mailbox, a street lamp with a warm light, a snowman with a scarf, fir branches and holly at the corners, a fox peeking from behind a drift. Silhouette occupies the lower 45% of the image, the top is empty green.",
+   "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm night palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
+   "size": "1536x1024"
   }
  }
 }
