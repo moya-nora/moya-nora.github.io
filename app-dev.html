@@ -7607,28 +7607,29 @@ async function wrCards(D){
   {const w=NOM;
     const [c,x]=mk(5,110);let y=label(x,"Номинация года",230);y=txt(x,"«"+w[1]+"»",y+10,{font:serif,size:96,min:48,lines:2,w:940});y=txt(x,w[2],y+4,{font:sans,size:38,min:26,lines:2,color:MUTE,w:900});
     y=txt(x,"мой читательский тип",y+40,{font:sansB,size:34,color:GOLD});txt(x,D.type[0],y,{font:serif,size:68,min:40,lines:2,w:900});out.push(c)}
-  // 6. итог: картинка на весь лист, текст по схеме итоговых карточек (заголовок, две колонки списков, две цифры) - весь в небе над картинкой;
-  // названия не обрезаются: переносятся на 2-3 строки, а если всё вместе не помещается - весь текст равномерно уменьшается
-  {const [c,x]=mk(6);const M=88,G=40,CW=(1080-2*M-G)/2,C2=M+CW+G,TOP=150,BOT=1190,SPc=v=>{if("letterSpacing" in x)x.letterSpacing=v};
+  // 6. итог: картинка на весь лист; текст - пять блоков в одной сетке из двух колонок (заголовок, две главные цифры, факты 2×2, любимые книги, номинация).
+  // Блоки занимают всё небо над картинкой: размер текста подбирается под содержимое, свободное место делится между блоками поровну. Ничего не обрезается.
+  {const [c,x]=mk(6);const M=88,G=48,CW=(1080-2*M-G)/2,C2=M+CW+G,FW=1080-2*M,TOP=185,BOT=1185,SPc=v=>{if("letterSpacing" in x)x.letterSpacing=v};
     const put=(t,font,X,Y,col,ls)=>{x.font=font;x.fillStyle=col;SPc(ls||"0px");x.shadowColor="rgba(0,0,0,.45)";x.shadowBlur=12;x.fillText(t,X,Y);x.shadowBlur=0;x.shadowColor="transparent";SPc("0px")};
-    const wrapW=(t,font,w)=>{x.font=font;const W=String(t||"").replace(/(^|[ ])(в|и|с|к|о|у|а|я|не|на|по|за|из|от|до|без|для)[ ]/gi,"$1$2 ").split(/[ ]+/).filter(Boolean),L=[];let cur="";for(const wd of W){const tt=cur?cur+" "+wd:wd;if(x.measureText(tt).width>w&&cur){L.push(cur);cur=wd}else cur=tt}if(cur)L.push(cur);return L};
-    const books=D.L.slice().sort((a,b)=>(b.r??-1)-(a.r??-1)||String(b.rd).localeCompare(String(a.rd))).slice(0,5).map(b=>b.t),aus=(D.au||[]).slice(0,5).map(a=>auN(a[0]));
-    const right=aus.length>=2?aus:(D.gk||[]).slice(0,5).map(g=>GEN[g[0]]||"").filter(Boolean),rLab=aus.length>=2?"Любимые авторы":"Жанры года";
-    const big=D.pg?String(D.pg):String(n);
-    const plan=k=>{const t=Math.round(64*k),lb=Math.round(30*k),it=Math.round(34*k),lh=it*1.18,gap=Math.round(22*k),nb=Math.round(130*k),nm=Math.round(44*k);
-      const col=L=>L.map(s=>{let f=it,LL=wrapW(s,`600 ${f}px ${FF}`,CW-it*1.6);while(LL.length>2&&f>it*.8){f-=2;LL=wrapW(s,`600 ${f}px ${FF}`,CW-it*1.6)}return {f,LL}});
-      const A=col(books),B=col(right),hc=C=>C.reduce((s,q)=>s+q.LL.length*q.f*1.18+gap,0);
-      const NL=wrapW(NOM[1],`600 ${nm}px ${FF}`,CW);const hTitle=t*1.9,hLists=lb+30+Math.max(hc(A),hc(B)),hNums=lb+20+Math.max(nb*.95+lb*2,NL.length*nm*1.15),sp=Math.round(70*k);
-      return {t,lb,it,gap,nb,nm,A,B,NL,h:hTitle+sp+hLists+sp+hNums,sp}};
-    let k=1,P=plan(k);while(P.h>BOT-TOP&&k>.62){k-=.03;P=plan(k)}
-    const free=Math.max(0,BOT-TOP-P.h),sp=P.sp+free/3;let y=TOP+P.t;
-    put(`Мой ${D.Y}`,`600 ${P.t}px ${SR}`,M,y,CREAM,"-2px");y+=P.t*.75;put("в книгах",`500 ${P.lb+4}px ${FF}`,M+2,y+6,CREAM);y+=P.t*.15+sp;
-    put("Любимые книги",`500 ${P.lb}px ${FF}`,M,y,MUTE);put(rLab,`500 ${P.lb}px ${FF}`,C2,y,MUTE);y+=30;
-    const draw=(C,X)=>{let yy=y;C.forEach((q,i)=>{yy+=q.f*1.0;put(String(i+1),`600 ${q.f}px ${SR}`,X,yy,GOLD);q.LL.forEach((l,j)=>put(l,`600 ${q.f}px ${FF}`,X+P.it*1.6,yy+j*q.f*1.18,CREAM));yy+=(q.LL.length-1)*q.f*1.18+q.f*.18+P.gap});return yy};
-    y=Math.max(draw(P.A,M),draw(P.B,C2))+sp;
-    put("Страниц",`500 ${P.lb}px ${FF}`,M,y,MUTE);put("Номинация года",`500 ${P.lb}px ${FF}`,C2,y,MUTE);
-    {let f=P.nb;x.font=`600 ${f}px ${SR}`;SPc("-4px");while(f>50&&x.measureText(big).width>CW){f-=4;x.font=`600 ${f}px ${SR}`}SPc("0px");put(big,`600 ${f}px ${SR}`,M-4,y+20+f*.95,GOLD,"-4px");put(`${n} ${plural(n,"книга","книги","книг")}`,`500 ${P.lb+2}px ${FF}`,M,y+20+f*.95+P.lb*1.8,CREAM)}
-    P.NL.forEach((l,i)=>put(l,`600 ${P.nm}px ${FF}`,C2,y+20+P.nm+i*P.nm*1.15,CREAM));
+    const hrs=Math.round((D.pg||0)/45),bm=D.mon[D.best]||0,love=D.L.filter(b=>((catOf(b)||b).tags||[]).some(t=>/ромэнтези/.test(t))).length,g0=(D.gk[0]||[])[0],gen=love>=Math.max(2,(D.gk[0]||[0,0])[1]*.6)?"ромэнтези":g0&&GEN[g0]?GEN[g0].toLowerCase():"";
+    const facts=[];if(hrs>=2)facts.push(["время с книгой","≈ "+hrs.toLocaleString("ru-RU")+" "+plural(hrs,"час","часа","часов")]);if(bm>=2)facts.push(["самый читающий месяц",WR_MF[D.best]]);if(gen)facts.push(["любимый жанр",gen]);
+    {const A=D.au[0];if(A&&A[1]>=2)facts.push(["автор года",auN(A[0])]);else if(D.long&&D.long.pg&&n>1)facts.push(["самая толстая книга",D.long.t])}
+    const books=D.L.slice().sort((a,b)=>(b.r??-1)-(a.r??-1)||String(b.rd).localeCompare(String(a.rd))).slice(0,3).map(b=>b.t);
+    const heroes=D.pg?[[String(D.pg),plural(D.pg,"страница","страницы","страниц"),GOLD],[String(n),plural(n,"книга","книги","книг"),CREAM]]:[[String(n),plural(n,"книга","книги","книг"),GOLD]];
+    const val=f=>`600 ${f}px ${FF}`;
+    const plan=k=>{const T=Math.round(56*k),LB=Math.round(28*k),V=Math.round(44*k),IT=Math.round(40*k),lab=`400 ${LB}px ${FF}`,B=[];
+      B.push({h:T*.74,draw:y=>put(`Мой ${D.Y} в книгах`,`600 ${T}px ${SR}`,M,y+T*.74,CREAM,"-1px")});
+      {let f=Math.round(170*k);SPc("-5px");for(const [v] of heroes){x.font=num(f);while(f>60&&x.measureText(v).width>CW){f-=4;x.font=num(f)}}SPc("0px");
+        B.push({h:f*.74+LB*1.7,draw:y=>heroes.forEach(([v,l,col],i)=>{const X=i?C2:M;put(v,num(f),X-4,y+f*.74,col,"-5px");put(l,`500 ${Math.round(LB*1.15)}px ${FF}`,X,y+f*.74+LB*1.6,CREAM)})})}
+      if(facts.length){const rows=[];for(let i=0;i<facts.length;i+=2)rows.push(facts.slice(i,i+2));const RG=Math.round(26*k);
+        const R=rows.map(row=>{const cells=row.map(([l,v])=>{const {f,L}=fitT(x,v,val,row.length>1?CW:FW,2,V,Math.round(V*.7));return {l,f,L}});return {cells,h:LB+16*k+Math.max(...cells.map(q=>q.L.length*q.f*1.15))}});
+        B.push({h:R.reduce((s,r)=>s+r.h,0)+RG*(R.length-1),draw:y=>R.forEach(r=>{r.cells.forEach((q,i)=>{const X=i?C2:M;put(q.l,lab,X,y+LB*.8,MUTE);q.L.forEach((s,j)=>put(s,val(q.f),X,y+LB+16*k+q.f*.8+j*q.f*1.15,CREAM))});y+=r.h+RG})})}
+      {const IG=Math.round(12*k),I=books.map(t=>fitT(x,t,val,CW-IT*1.4,3,IT,Math.round(IT*.75))),NQ=fitT(x,"«"+NOM[1]+"»",val,CW,4,V,Math.round(V*.7)),hd=LB+18*k;
+        B.push({h:hd+Math.max(I.reduce((s,q)=>s+q.L.length*q.f*1.18,0)+IG*(I.length-1),NQ.L.length*NQ.f*1.18),draw:y=>{put(books.length>1?"любимые книги":"любимая книга",lab,M,y+LB*.8,MUTE);put("номинация года",lab,C2,y+LB*.8,GOLD);y+=hd;
+          NQ.L.forEach((s,j)=>put(s,val(NQ.f),C2,y+NQ.f*.8+j*NQ.f*1.18,CREAM));I.forEach((q,i)=>{put(String(i+1),num(q.f),M,y+q.f*.8,GOLD);q.L.forEach((s,j)=>put(s,val(q.f),M+IT*1.4,y+q.f*.8+j*q.f*1.18,CREAM));y+=q.L.length*q.f*1.18+IG})}})}
+      return {B,h:B.reduce((s,b)=>s+b.h,0)}};
+    let k=1.3,P=plan(k);while(k>.6&&P.h+(P.B.length-1)*96>BOT-TOP){k-=.02;P=plan(k)}
+    const gap=(BOT-TOP-P.h)/(P.B.length-1);let y=TOP;P.B.forEach(b=>{b.draw(y);y+=b.h+gap});
     out.push(c)}
   return out}
 function wrFill(){if(WR&&WR.u&&!wrEl.querySelector(".wr-full"))wrDraw()}
