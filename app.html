@@ -7615,7 +7615,7 @@ async function wrCards(D){
   {const [c,x]=mk(5,230);poster(x,{label:"Номинация года",head:"«"+NOM[1]+"»",f0:104,subs:[[NOM[2],MUTE],["Мой читательский тип - "+D.type[0].toLowerCase(),GOLD,1]],sw:560,bottom:820});out.push(c)}
   // 6. итог в духе русской плакатной типографики: одна фраза-плакат гигантским набором («2000 / страниц / в 5 книгах») прижата к верху,
   // короткая справка (месяц, жанр, номинация) стоит на якоре у горизонта картинки. Крупное - очень крупное, мелкое - мелкое, середины нет.
-  {const [c,x]=mk(6);const M=80,FW=1080-2*M,G=48,CW=(FW-G)/2,C2=M+CW+G,TOP=180,BOT=1180,SPc=v=>{if("letterSpacing" in x)x.letterSpacing=v};
+  {const [c,x]=mk(6);const M=80,FW=1080-2*M,G=48,CW=(FW-G)/2,C2=M+CW+G,TOP=310,BOT=1235,SPc=v=>{if("letterSpacing" in x)x.letterSpacing=v};
     const put=(t,font,X,Y,col,ls)=>{x.font=font;x.fillStyle=col;SPc(ls||"0px");x.shadowColor="rgba(0,0,0,.45)";x.shadowBlur=12;x.fillText(t,X,Y);x.shadowBlur=0;x.shadowColor="transparent";SPc("0px")};
     const fit=(t,f,ls,w)=>{SPc(ls);x.font=num(f);while(f>50&&x.measureText(t).width>w){f-=4;x.font=num(f)}SPc("0px");return f};
     const val=f=>`600 ${f}px ${FF}`,bm=D.mon[D.best]||0,love=D.L.filter(b=>((catOf(b)||b).tags||[]).some(t=>/ромэнтези/.test(t))).length,g0=(D.gk[0]||[])[0],gen=love>=Math.max(2,(D.gk[0]||[0,0])[1]*.6)?"ромэнтези":g0&&GEN[g0]?GEN[g0].toLowerCase():"";
