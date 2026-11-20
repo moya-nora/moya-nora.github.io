@@ -7670,7 +7670,7 @@ function goalCard(){const Y=String(new Date().getFullYear()),goal=LS.get("zal.go
     <div class="sc gl st-gen"><h3>В общих чертах</h3><div class="st-g"><div><b>${n}</b><span>${plural(n,"книга","книги","книг")}</span></div><div><b>${pg.toLocaleString("ru-RU")}</b><span>${plural(pg,"страница","страницы","страниц")}</span></div><div><b>${Math.round(pg/n)}</b><span>страниц в среднем</span></div>${mons?`<div><b>${(Math.round(ds.length/mons*10)/10).toLocaleString("ru-RU")}</b><span>книг в месяц</span></div>`:""}${au[0]&&au[0][1]>=2?`<div class="w"><b>${esc(au[0][0])}</b><span>автор, которого больше всего</span></div>`:""}${lng?`<div class="w"><b>${esc(lng.t)}</b><span>самая длинная - ${lng.pg} стр.</span></div>`:""}</div></div>`;
     const gl=m.querySelector(".lv-goal");if(gl)gl.insertAdjacentHTML("afterend",card);else m.insertAdjacentHTML("afterbegin",card)}}
   const D=wrSeason()&&wrData();
-  if(D)m.insertAdjacentHTML("afterbegin",`<button class="wr-open" data-wropen><div><b>Итоги ${D.Y} года</b><span>Твой год в книгах - листай и делись</span></div><em>${D.L.length}</em></button>`)}catch(e){}}}
+  if(D)m.insertAdjacentHTML("afterbegin",`<button class="wr-open wr-home" data-wropen aria-label="Итоги года ${D.Y}"><div><b>Итоги года<i>${D.Y}</i></b></div></button>`)}catch(e){}}}
 // компьютер: у окон снизу крестик (смахнуть мышкой нельзя), Esc закрывает окно
 if(isDesk()){document.body.classList.add("desk");$("#vsh").insertAdjacentHTML("afterbegin",`<button class="sh-x" data-close aria-label="Закрыть">${IC2.x}</button>`);
   document.addEventListener("click",e=>{if(e.target.closest("[data-sclose]"))closeSheet()});
