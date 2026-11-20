@@ -6968,13 +6968,8 @@ function bkcDraw(){const {x,L}=BKC;
   bkcEl.innerHTML=`<button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button>${!x._f&&L!=="friend"&&BK.has(x)==="read"?`<button class="bkc-pen" data-bkc="edit" aria-label="Изменить оценку, отзыв и заметки"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>`:""}<div class="bkc-in">
    <div class="bkc-cv">${cv(x,200)}<button class="bkc-cov" data-bkc="cov" aria-label="Сменить обложку">${IC2.cov}<span>сменить обложку</span></button></div>
    <div class="bkc-covsw" hidden>${covRow(x)}</div>
-<<<<<<< HEAD
-   <h2>${esc(x.t)}</h2>${x.a&&x.a!=="Автор не указан"&&!x._f?`<button class="bkc-a bkc-al" data-bkc-au>${esc(x.a)}</button>`:`<div class="bkc-a">${esc(x.a||"")}</div>`}${(()=>{const fn=x.src&&x.src.fan;if(fn)return `<div class="bkc-gn">${esc(fn==="фанфик"?"Фанфик":"Фанфик · "+fn)}</div>`;const g=genreLabel(x);return g?`<div class="bkc-gn">${esc(g)}</div>`:""})()}
-   <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div><div id="bkcSer">${bkcSer(x)}</div>${bkcTropes(x,L)}
-=======
    <h2>${esc(x.t)}</h2>${x.a&&x.a!=="Автор не указан"&&!x._f?`<button class="bkc-a bkc-al" data-bkc-au>${esc(x.a)}</button>`:`<div class="bkc-a">${esc(x.a||"")}</div>`}${(()=>{const fn=x.src&&x.src.fan;if(fn)return `<div class="bkc-gn">${esc(fn==="фанфик"?"Фанфик":"Фанфик · "+fn)}</div>`;const g=genreLabel(x),c=catOf(x)||x,yy=c.y||x.y,pp=c.pg||x.pg,ln=[g,yy&&yy>0?yy+" г.":"",pp?pp+" стр.":""].filter(Boolean).join(" · ");return ln?`<div class="bkc-gn">${esc(ln)}</div>`:""})()}
-   <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div>${bkcTropes(x,L)}
->>>>>>> 26f7cd24 (Статистика: слова и цифры не рвутся, итоги года в стиле главной, 5 карточек; поиск по настроению и «как X», «Хочу прочитать», «Только мне», пустые полки, 18+ в ленте, ЛитРес вторым шагом)
+   <div class="bkc-facts" id="bkcFacts">${bkcFacts(x)}</div><div id="bkcSer">${bkcSer(x)}</div>${bkcTropes(x,L)}
    <div class="bkc-tools"><button data-bkc="where">${IC2.pin}<span>Где прочитать</span></button>${(x._f||!SHOW_VIDS)?"":`<button data-bkc="vid">${IC2.play}<span>Обзоры</span></button>`}${bkcSec(x,L)}</div>
    <div class="bkc-dw" id="bkcDw"><p class="bkc-ds" id="bkcDs">${dsLinks(x,descOf(x))}</p></div>
    ${bkcRv(x,L)}${drugIs(x)?`<p class="bkc-law">${DRUG_TXT}</p>`:""}</div>
