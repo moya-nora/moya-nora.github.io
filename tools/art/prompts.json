@@ -189,6 +189,31 @@
    "p": "Foreground layer: snowdrifts along the bottom edge, a wooden sled with a stack of books tied on it, a ginger cat sitting on a snowy bench, a red mailbox, a street lamp with a warm light, a snowman with a scarf, fir branches and holly at the corners, a fox peeking from behind a drift. Silhouette occupies the lower 45% of the image, the top is empty green.",
    "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm night palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
    "size": "1536x1024"
+  },
+  "city1": {
+   "p": "Far background layer: the skyline of a whimsical old book town at golden hour - rooftops shaped like stacked books and open books, crooked tall houses, a library dome, hot air balloon, birds, and in the center a tall slender clock tower with a very large perfectly round blank cream clock face (no numbers, no hands, empty paper circle). Silhouette occupies the lower 85% of the image.",
+   "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm golden-hour evening palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "city2": {
+   "p": "Middle layer: a lively street of narrow old houses with balconies, flower boxes and lit windows, a small theater with columns and a large blank cream poster frame on its facade (the poster is empty paper), people on balconies reading, a cat on a windowsill, a man with an umbrella, string lights. Silhouette occupies the lower 75% of the image.",
+   "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm golden-hour evening palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "city3": {
+   "p": "Tram street layer: a vintage red-and-cream tram on rails crossing the scene, passengers reading books in the windows, two ornate street lamps holding a long empty blank cream paper banner stretched across the street between them high above the tram (banner is empty), pigeons, a cyclist, a newspaper kiosk. Silhouette occupies the lower 70% of the image.",
+   "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm golden-hour evening palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "city4": {
+   "p": "Shops layer: a cozy bookshop with a big bay window full of books and a cat sleeping inside, in front of it a blank wooden chalkboard sandwich sign with an empty dark green board; next to it a café with outdoor tables where people read and drink coffee, a flower stall with buckets of flowers, a bakery, a woman walking a corgi. Silhouette occupies the lower 75% of the image.",
+   "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm golden-hour evening palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "city5": {
+   "p": "Foreground layer: cobblestone pavement along the bottom edge, a bicycle with a basket full of books, a girl reading on a wooden bench, two cats playing with a ball of yarn, potted plants and flowers, a fire hydrant, a stack of old books with a teacup on top, ivy and leaves at the corners. Silhouette occupies the lower 45% of the image, the top is empty green.",
+   "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm golden-hour evening palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
+   "size": "1536x1024"
   }
  }
 }
