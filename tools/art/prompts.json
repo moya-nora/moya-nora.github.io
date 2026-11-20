@@ -214,6 +214,61 @@
    "p": "Foreground layer: cobblestone pavement along the bottom edge, a bicycle with a basket full of books, a girl reading on a wooden bench, two cats playing with a ball of yarn, potted plants and flowers, a fire hydrant, a stack of old books with a teacup on top, ivy and leaves at the corners. Silhouette occupies the lower 45% of the image, the top is empty green.",
    "style": "Style: a single layer of a luxury handmade pop-up book, die-cut layered cardstock paper craft, visible paper thickness and soft paper grain, tiny intricate laser-cut details, warm golden-hour evening palette: deep plum, terracotta, cream, muted gold, pine green, warm window light. The cut-out paper layer stands isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadows on the background, no green inside the artwork, the silhouette edge is crisp. Wide horizontal strip, artwork fills the full width edge to edge, no text, no letters, no numbers.",
    "size": "1536x1024"
+  },
+  "ny_sky": {
+   "p": "Back panel: a wide deep midnight-blue night sky with stylized round snowflakes and stars, a big yellow moon, and along the bottom a bright skyline of a snowy New Year town - colorful houses with glowing windows, a tower with a pointed roof, garlands. The panel is a wide rectangle with a wavy top edge.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "ny_town": {
+   "p": "A row of five bright colorful festive houses (red, turquoise, yellow, pink, green) with snowy roofs, glowing windows with people inside, wreaths on doors, garlands of lights strung between them, chimneys with smoke puffs. Silhouette fills the lower 80%.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "ny_tree": {
+   "p": "A tall New Year fir tree covered with bright ornaments, glowing garlands, candy canes, a big golden star on top, wrapped gifts piled at its base, two kids holding hands dancing around it.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1024x1536"
+  },
+  "ny_rink": {
+   "p": "A small oval skating rink with turquoise ice and a white fence, happy skaters in bright knitted hats - a couple, a kid with a penguin helper, a dog on the ice - and on the left a tall wooden scoreboard on two posts with a large completely blank white panel.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1536x1024"
+  },
+  "ny_carousel": {
+   "p": "A bright festive carousel with a striped red-white dome roof topped with a star, colorful horses and a reindeer, string lights, kids riding.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1024x1024"
+  },
+  "ny_books": {
+   "p": "A cozy New Year market stall selling books: striped red-white awning with garlands, shelves of colorful books, a smiling seller in a knitted hat, two customers, and on top of the awning a large completely blank white signboard.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1024x1024"
+  },
+  "ny_cocoa": {
+   "p": "A New Year market stall with hot cocoa and gingerbread: turquoise roof with snow, steaming cups, gingerbread houses, a seller and a family with a child holding a balloon.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1024x1024"
+  },
+  "ny_ded": {
+   "p": "Ded Moroz (Russian Father Frost) in a bright red-and-white fur coat with a staff, and Snegurochka in a turquoise coat, standing next to a big red sack overflowing with colorful books instead of presents; a small white rabbit beside them.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1024x1024"
+  },
+  "ny_sled": {
+   "p": "A red wooden sled with a tall stack of colorful books tied with a ribbon, a fluffy ginger cat sitting on top of the books, a corgi in a red scarf next to the sled.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1024x1024"
+  },
+  "ny_snow": {
+   "p": "A cheerful snowman with a red bucket hat and a striped scarf, two kids building a smaller snowman next to him, a bird on the snowman's arm.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1024x1024"
+  },
+  "ny_front": {
+   "p": "Foreground border: a row of white snowdrifts along the bottom edge with fir branches, red berries, small wrapped gifts, a fox and a hare peeking out. Silhouette fills only the lower 40%, the top is empty green.",
+   "style": "Style: one die-cut piece from a bright modern premium pop-up book for children and adults, crisp contemporary picture-book illustration printed on thick white cardstock, clean bold shapes, flat vivid colors with subtle printed gradients, tiny playful details, bright saturated New Year palette: cherry red, emerald green, turquoise, sunny yellow, hot pink accents, snow white, deep midnight blue, warm glowing windows. NOT vintage, NOT sepia, NOT a retro postcard, no brown aged tones. A thin white paper edge runs around the whole cut-out silhouette. The piece is isolated on a perfectly flat solid pure chroma green background (#00FF00), no shadow on the background, no green inside the artwork. No text, no letters, no numbers.",
+   "size": "1536x1024"
   }
  }
 }
