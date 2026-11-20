@@ -894,7 +894,7 @@ def HOOK(b):
     """приманка на странице книги: поставить эту книгу на свою полку в Норе (открывает приложение сразу на её карточке)"""
     href = "/app.html?app=1&bk=" + urllib.parse.quote(b["t"] + "|" + b["a"])
     go = 'onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}"'
-    return (f'<div class="hook gl"><div><b>Не потеряй эту книгу</b><p>Поставь её на полку в Норе - и Шуршуня подберёт похожие книги лично тебе. Без регистрации, прямо в браузере.</p></div>'
+    return (f'<div class="hook gl"><div><b>Не потеряй эту книгу</b><p>Поставь её на полку в Норе - и Шуршуня подберёт похожие книги лично тебе. Бесплатно, прямо в браузере.</p></div>'
             f'<div class="ctas"><a class="btn" href="{href}" {go}>Хочу прочитать</a><a class="btn ghost" href="{href}" {go}>Уже прочитано</a></div></div>')
 
 
@@ -1289,7 +1289,7 @@ function res(){if(!D){S.innerHTML='<p class="tn">Подбираю…</p>';return
  S.innerHTML='<h2>Тебе подойдут эти книги</h2><div class="grid">'+L.map(card).join("")+'</div><div class="hook gl"><div><b>Сохрани подборку</b><p>Поставь книги на свою полку в Норе - и Шуршуня будет подбирать такие же каждый день, уже зная твой вкус.</p></div><div class="ctas"><a class="btn" href="/app.html?app=1'+bk+'" onclick="try{ym(114237349,\'reachGoal\',\'site_to_app\')}catch(e){}">Открыть в Норе</a><button class="btn ghost" id="tagain">Пройти ещё раз</button></div></div>';
  document.getElementById("tagain").onclick=function(){i=0;A={};step()}}
 fetch("/books/filter.json").then(function(r){return r.json()}).then(function(d){D=d});step()})()</script>"""
-urls.append(page("test.html", "Тест: какая книга тебе сейчас подойдёт", "Три вопроса - и подборка книг под твоё настроение: смешные, уютные, захватывающие, про любовь. Без регистрации.",
+urls.append(page("test.html", "Тест: какая книга тебе сейчас подойдёт", "Три вопроса - и подборка книг под твоё настроение: смешные, уютные, захватывающие, про любовь.",
                  '<div class="wrap"><div class="crumbs"><a href="/">Нора</a></div><div class="ph"><div><h1>Какая книга тебе сейчас подойдёт</h1><p class="lead">Три вопроса - и подборка под твоё настроение.</p></div></div>'
                  '<div class="tst gl" id="tst"></div></div>' + TEST_JS, full_title="Тест: какую книгу почитать - подбор по настроению — Нора"))
 
