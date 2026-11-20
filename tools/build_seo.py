@@ -357,7 +357,7 @@ def footer(colls):
          (APP, "Открыть в браузере"), (BOT, "Открыть в Telegram")]
     return (f'<footer class="ft ft2"><div class="wrap"><div class="ft2-in"><a class="logo" href="/"><img src="/icons/icon-192.png?v=5" alt="">Нора</a>'
             '<nav>' + "".join(f'<a href="{u}">{t}</a>' for u, t in L) + '</nav></div>'
-            f'<div class="ft2-b"><span>© {YNOW} Нора</span><a href="mailto:{MAIL}">{MAIL}</a><a href="/privacy.html">Конфиденциальность</a></div></div></footer>')
+            f'<div class="ft2-b"><span>© {YNOW} Нора · Nora Books</span><a href="mailto:{MAIL}">{MAIL}</a><a href="/privacy.html">Конфиденциальность</a></div></div></footer>')
 
 
 FOOT = ""
@@ -1388,13 +1388,13 @@ home = (f'<div class="wrap"><section class="hero2" id="poisk"><h1>Найди с�
         + '<a class="morec" href="/c/">Посмотреть все подборки</a><a class="morec mtest" href="/test.html"><span>Тест: какая книга тебе подойдёт</span><small>3 вопроса - и Шуршуня подберёт книги под настроение</small></a><a class="morec" href="/poryadok/">В каком порядке читать серии</a>'
         + '<a class="morec" href="/knizhnyy-klub.html">Книжный клуб с друзьями</a>'
         + f'{FINAL}</div>' + SEARCH_JS)
-HOME_LD = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Нора", "alternateName": ["Моя Нора", "Нора — книжный советник", "Нора книги", "moya-nora"],
+HOME_LD = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Нора", "alternateName": ["Nora Books", "Nora", "Моя Нора", "Нора — книжный советник", "Нора книги", "nora-books.ru"],
             "url": SITE + "/", "inLanguage": "ru", "potentialAction": {"@type": "SearchAction", "target": SITE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
-           {"@context": "https://schema.org", "@type": "Organization", "name": "Нора", "alternateName": "Моя Нора", "url": SITE + "/", "logo": SITE + "/icons/icon-512.png",
+           {"@context": "https://schema.org", "@type": "Organization", "name": "Нора", "alternateName": ["Nora Books", "Моя Нора"], "url": SITE + "/", "logo": SITE + "/icons/icon-512.png",
             "sameAs": [BOT]}]
 home_path = page("index.html", "Нора — что почитать", "Что почитать: подборки книг по настроению, новинки, книги, похожие на любимые, — ромэнтези, дарк роман, любовные романы, фэнтези, детективы. "
                  "А Шуршуня подберёт книги лично тебе.", home,
-                 full_title="Нора (Моя Нора) — книжный советник: что почитать, подборки и похожие книги", ld=HOME_LD)
+                 full_title="Нора (Nora Books) — книжный советник: что почитать, подборки и похожие книги", ld=HOME_LD)
 idx = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
 idx = idx.replace('<meta charset="utf-8">', '<meta charset="utf-8"><script src="/ym.js"></script><meta name="google-site-verification" content="s2CdXU7z22CJQ7fqwqJNwf2nyq4VN3Jk2UEHofqjoXc"><meta name="yandex-verification" content="6a85060ff8390b92"><meta name="yandex-verification" content="zy7yffs4ru1bcbt0">'
                   '<link rel="manifest" href="/manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Моя Нора">' + TG_REDIRECT, 1)
