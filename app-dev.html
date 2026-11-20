@@ -7607,20 +7607,22 @@ async function wrCards(D){
   {const w=NOM;
     const [c,x]=mk(5,110);let y=label(x,"Номинация года",230);y=txt(x,"«"+w[1]+"»",y+10,{font:serif,size:96,min:48,lines:2,w:940});y=txt(x,w[2],y+4,{font:sans,size:38,min:26,lines:2,color:MUTE,w:900});
     y=txt(x,"мой читательский тип",y+40,{font:sansB,size:34,color:GOLD});txt(x,D.type[0],y,{font:serif,size:68,min:40,lines:2,w:900});out.push(c)}
-  // 6. итог: по левому краю, группы разделены воздухом; в большом числе узкий пробел и плотная разрядка
+  // 6. итог как постер: три уровня (одна огромная цифра / значения / подписи), два шрифта (Unbounded только для цифры, Onest для всего остального),
+  // сетка 2 колонки с полями 96, между группами воздуха больше, чем внутри; цифра стоит на линии горизонта картинки
   {const [c,x]=mk(6);const bm=D.mon[D.best]||0,love=D.L.filter(b=>((catOf(b)||b).tags||[]).some(t=>/ромэнтези/.test(t))).length,g0=(D.gk[0]||[])[0],gen=love>=Math.max(2,(D.gk[0]||[0,0])[1]*.6)?"ромэнтези":g0&&GEN[g0]?GEN[g0].toLowerCase():"";
-    const X0=96,X1=984,SPc=v=>{if("letterSpacing" in x)x.letterSpacing=v},put=(t,font,size,X,Y,col,ls)=>{x.font=font(size);x.fillStyle=col;SPc(ls||"0px");x.shadowColor="rgba(0,0,0,.5)";x.shadowBlur=16;x.fillText(t,X,Y);x.shadowBlur=0;x.shadowColor="transparent";SPc("0px")};
-    const nb=v=>v.toLocaleString("ru-RU").replace(/\s/g," ");
-    const fitW=(t,font,size,maxW,min,ls)=>{let f=size;SPc(ls||"0px");x.font=font(f);while(f>min&&x.measureText(t).width>maxW){f-=4;x.font=font(f)}SPc("0px");return f};
-    let y=262;put(`Мой ${D.Y} в цифрах`,sans,38,X0,y,MUTE);
-    const big=D.pg?nb(D.pg):String(n),bigL=D.pg?plural(D.pg,"страница","страницы","страниц"):plural(n,"книга","книги","книг");
-    {const f=fitW(big,num,250,X1-X0,120,"-8px");y+=f*.98;put(big,num,f,X0-8,y,GOLD,"-8px");y+=64;put(bigL+" за год",sans,40,X0,y,CREAM)}
-    if(D.pg){y+=200;const v=String(n),f=120;put(v,num,f,X0-4,y,CREAM,"-4px");x.font=num(f);SPc("-4px");const w=x.measureText(v).width;SPc("0px");put(plural(n,"книга","книги","книг"),sans,40,X0+w+22,y,MUTE)}
-    // месяц и жанр - две колонки, подпись над значением
-    const cols=[];if(bm>=2)cols.push(["самый читающий месяц",WR_MF[D.best]]);if(gen)cols.push(["любимый жанр",gen]);
-    if(cols.length){y+=130;let yy=y;cols.forEach(([l,v],k)=>{const X=k?560:X0,W=k?X1-560:420;put(l,sans,28,X,y,MUTE);const {f,L}=fitT(x,v,sansB,W,2,44,30);x.textAlign="left";L.forEach((s,q)=>put(s,sansB,f,X,y+56+q*f*1.15,CREAM));yy=Math.max(yy,y+56+(L.length-1)*f*1.15)});y=yy}
-    y+=140;put("номинация года",sans,28,X0,y,GOLD);y+=20;
-    {const {f,L}=fitT(x,"«"+NOM[1]+"»",serif,X1-X0,2,60,38);L.forEach((l,k)=>put(l,serif,f,X0,y+f*.95+k*f*1.14,CREAM,"-1px"))}
+    const M=96,CW=424,C2=560,SPc=v=>{if("letterSpacing" in x)x.letterSpacing=v};
+    const put=(t,font,X,Y,col,ls)=>{x.font=font;x.fillStyle=col;SPc(ls||"0px");x.shadowColor="rgba(0,0,0,.45)";x.shadowBlur=14;x.fillText(t,X,Y);x.shadowBlur=0;x.shadowColor="transparent";SPc("0px")};
+    const L3=`400 30px ${FF}`,v2=f=>`600 ${f}px ${FF}`;
+    // уровень 3 сверху: что это за лист
+    put(`Мой ${D.Y} в книгах`,`500 34px ${FF}`,M,214,CREAM);
+    // сетка фактов 2×2: подпись (ур.3) над значением (ур.2)
+    // строки сетки: короткие факты по две в ряд, длинные (жанр, номинация) - на всю ширину
+    const pair=[];if(D.pg)pair.push(["книг прочитано",String(n)]);if(bm>=2)pair.push(["самый читающий месяц",WR_MF[D.best]]);
+    const rows=[];if(pair.length)rows.push(pair);if(gen)rows.push([["любимый жанр",gen]]);rows.push([["номинация года","«"+NOM[1]+"»"]]);
+    let y=340;rows.forEach(row=>{let h=0;row.forEach((cl,k)=>{const X=k?C2:M,Wd=row.length>1?CW:1080-2*M;put(cl[0],L3,X,y,MUTE);const {f,L}=fitT(x,cl[1],v2,Wd,2,60,38);L.forEach((s,q)=>put(s,v2(f),X,y+68+q*f*1.12,CREAM));h=Math.max(h,68+(L.length-1)*f*1.12)});y+=h+112});
+    // уровень 1: одна огромная цифра на горизонте
+    {const big=D.pg?String(D.pg):String(n),lab=D.pg?plural(D.pg,"страница","страницы","страниц")+" за год":plural(n,"книга","книги","книг")+" за год";let f=330;SPc("-10px");x.font=`600 ${f}px ${SR}`;while(f>150&&x.measureText(big).width>1080-2*M+20){f-=10;x.font=`600 ${f}px ${SR}`}SPc("0px");
+      const by=Math.max(y+f*.78,1250);put(big,`600 ${f}px ${SR}`,M-10,by,GOLD,"-10px");put(lab,`500 36px ${FF}`,M,by+64,CREAM)}
     out.push(c)}
   return out}
 function wrFill(){if(WR&&WR.u&&!wrEl.querySelector(".wr-full"))wrDraw()}
