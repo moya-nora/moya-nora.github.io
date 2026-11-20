@@ -1,0 +1,143 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<!-- Ролик «Мой год в книгах», новогодняя ярмарка в книжке-раскладушке.
+     Пока книга закрыта, видна только она. Фигурки сложены на страницах и раскрываются вместе с разворотом.
+     Камера: салют со страницами -> табло катка (месяц) -> вывеска книжной палатки (жанр) -> бирка на санках (книги) -> общий план.
+     Цифры: #y=2026&pg=2340&n=17&m=Март&mn=5&g=Фэнтези ; ?t=сек - один кадр; window.renderAt(t), window.DUR -->
+<style>html,body{margin:0;background:#0a0f24;overflow:hidden}canvas{display:block}</style></head><body>
+<script type="module">
+import * as THREE from "../vendor/three.module.min.js";
+const W=540,H=960,P=new URLSearchParams(decodeURIComponent(location.hash.slice(1)));
+const Y=P.get("y")||"2026",PG=+(P.get("pg")||2340),NB=+(P.get("n")||17),MON=P.get("m")||"Март",MN=+(P.get("mn")||5),GEN=P.get("g")||"Фэнтези";
+const DUR=window.DUR=19;
+const fonts=[["NH","unbounded-cyrillic-800-normal","800"],["NH","unbounded-latin-800-normal","800"],["NM","unbounded-cyrillic-600-normal","600"],["NM","unbounded-latin-600-normal","600"],["NS","onest-cyrillic-600-normal","600"],["NS","onest-latin-600-normal","600"]];
+await Promise.all(fonts.map(([f,u,w])=>new FontFace(f,`url(../fonts/${u}.woff2)`,{weight:w}).load().then(x=>document.fonts.add(x)).catch(()=>{})));
+const ru=n=>Math.round(n).toLocaleString("ru-RU").replace(/ /g," ");
+const plural=(n,a,b,c)=>{n=Math.abs(n)%100;const m=n%10;return n>10&&n<20?c:m==1?a:m>1&&m<5?b:c};
+const R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});R.setPixelRatio(2);R.setSize(W,H);R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.12;document.body.appendChild(R.domElement);
+const BG=0x0a0f24;const S=new THREE.Scene();S.background=new THREE.Color(BG);S.fog=new THREE.Fog(BG,26,55);
+const cam=new THREE.PerspectiveCamera(40,W/H,.05,120);
+S.add(new THREE.HemisphereLight(0xdfe8ff,0x2a2050,1.25));
+const key=new THREE.SpotLight(0xfff0d8,300,60,Math.PI/4.4,.55,1.3);key.position.set(3,15,11);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-.0004;S.add(key);key.target.position.set(0,1.5,0);S.add(key.target);
+const warm=new THREE.PointLight(0xffc27a,10,12,2);warm.position.set(0,3.5,3.5);S.add(warm);
+const grain=(x,w,h,a)=>{const d=x.getImageData(0,0,w,h);for(let i=0;i<d.data.length;i+=4){if(!d.data[i+3])continue;const n=(Math.random()-.5)*a;d.data[i]+=n;d.data[i+1]+=n;d.data[i+2]+=n}x.putImageData(d,0,0)};
+const canv=(w,h)=>{const c=document.createElement("canvas");c.width=w;c.height=h;return [c,c.getContext("2d")]};
+const tex=(w,h,draw,gr=10)=>{const [c,x]=canv(w,h);draw(x,w,h);if(gr)grain(x,w,h,gr);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t};
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(120,120),new THREE.MeshStandardMaterial({color:0x0d1330,roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=-.02;floor.receiveShadow=true;S.add(floor);
+// ---------- книга ----------
+const BW=3.7,BD=5.4,gold=new THREE.MeshStandardMaterial({color:0xe8b04a,metalness:.8,roughness:.3,emissive:0x7a5010,emissiveIntensity:.7});
+const coverMat=new THREE.MeshStandardMaterial({map:tex(600,880,(x,w,h)=>{x.fillStyle="#16245c";x.fillRect(0,0,w,h);
+  x.fillStyle="rgba(255,255,255,.9)";for(let i=0;i<46;i++){const cx=(i*137)%w,cy=(i*251)%h,r=4+(i%4)*3;x.beginPath();x.arc(cx,cy,r,0,7);x.fill()}
+  x.fillStyle="#e63946";x.fillRect(0,h*.6,w,h*.4);x.fillStyle="#fff";x.beginPath();for(let i=0;i<=w;i+=30)x.arc(i,h*.6,22,Math.PI,0);x.fill();
+  x.fillStyle="#fff";x.textAlign="center";x.font="800 64px NH";x.fillText("Мой год",w/2,h*.28);x.fillText("в книгах",w/2,h*.28+78);
+  x.fillStyle="#ffd23f";x.font="800 120px NH";x.fillText(Y,w/2,h*.82);x.fillStyle="#fff";x.font="600 34px NS";x.fillText("Нора",w/2,h*.93)},6),roughness:.55});
+const pageMat=new THREE.MeshStandardMaterial({map:tex(512,740,(x,w,h)=>{x.fillStyle="#fbf6ec";x.fillRect(0,0,w,h)},8),roughness:.95});
+const edge=new THREE.MeshStandardMaterial({map:tex(512,64,(x,w,h)=>{x.fillStyle="#f3ead8";x.fillRect(0,0,w,h);x.strokeStyle="rgba(160,140,110,.3)";for(let y=2;y<h;y+=3){x.beginPath();x.moveTo(0,y);x.lineTo(w,y);x.stroke()}},6),roughness:.85,emissive:0x2a2008,emissiveIntensity:.3});
+const book=new THREE.Group();S.add(book);
+const back=new THREE.Mesh(new THREE.BoxGeometry(BW*2+.25,.1,BD+.2),new THREE.MeshStandardMaterial({color:0x16245c,roughness:.6}));back.position.y=.05;back.castShadow=back.receiveShadow=true;book.add(back);
+const block=new THREE.Mesh(new THREE.BoxGeometry(BW,.42,BD),[edge,gold,pageMat,gold,edge,edge]);block.position.set(BW/2+.05,.31,0);block.castShadow=block.receiveShadow=true;book.add(block);
+const hinge=new THREE.Group();hinge.position.set(0,.52,0);book.add(hinge);
+const lp=new THREE.Mesh(new THREE.BoxGeometry(BW,.42,BD),[edge,gold,gold,pageMat,edge,edge]);lp.position.set(BW/2+.05,-.21,0);lp.receiveShadow=true;
+const fc=new THREE.Mesh(new THREE.BoxGeometry(BW+.12,.08,BD+.2),coverMat);fc.position.set(BW/2+.06,.04,0);fc.castShadow=true;hinge.add(lp);hinge.add(fc);
+const glowT=tex(256,256,(x,w,h)=>{const g=x.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);g.addColorStop(0,"rgba(255,200,110,.6)");g.addColorStop(1,"rgba(255,200,110,0)");x.fillStyle=g;x.fillRect(0,0,w,h)},0);
+const glow=new THREE.Mesh(new THREE.PlaneGeometry(BW*2.6,BD*1.5),new THREE.MeshBasicMaterial({map:glowT,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));glow.rotation.x=-Math.PI/2;glow.position.set(BW/2,.03,0);S.add(glow);
+// ---------- фигурки раскладушки ----------
+const TL=new THREE.TextureLoader(),ld=u=>new Promise(r=>TL.load(u,t=>{t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;r(t)}));
+const NAMES=["sky","town","tree","rink","carousel","books","cocoa","ded","sled","snow","front"];
+const T={};await Promise.all(NAMES.map(k=>ld(`../img/ny/${k}.webp?v=1`).then(t=>T[k]=t)));
+const PAGE=.52;
+// половинка картинки: u0..u1 текстуры
+const half=(t,w,h,u0,u1)=>{const g=new THREE.PlaneGeometry(w*(u1-u0),h);const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setX(i,u0+uv.getX(i)*(u1-u0));
+  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({map:t,alphaTest:.45,side:THREE.DoubleSide,roughness:.85}));
+  m.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:t,alphaTest:.45});m.castShadow=m.receiveShadow=true;return m};
+// фигурка: встаёт со страницы и раскрывается из сгиба посередине (как разворот раскладушки)
+const pieces=[];
+const piece=(k,w,x,z,delay,fold=1.25,lift=0)=>{const t=T[k],h=w*t.image.height/t.image.width,g=new THREE.Group();g.position.set(x,PAGE,z);
+  const L=new THREE.Group(),Rr=new THREE.Group();const ml=half(t,w,h,0,.5),mr=half(t,w,h,.5,1);ml.position.set(-w/4,lift+h/2,0);mr.position.set(w/4,lift+h/2,0);L.add(ml);Rr.add(mr);g.add(L,Rr);
+  if(lift>0){const s=new THREE.Mesh(new THREE.PlaneGeometry(w*.9,lift),new THREE.MeshStandardMaterial({color:0xf3ead8,roughness:.9,side:THREE.DoubleSide}));s.position.set(0,lift/2,-.01);g.add(s)}
+  g.userData={w,h,x,z,delay,fold,lift,L,R:Rr};book.add(g);pieces.push(g);return g};
+const P_={};
+P_.sky=piece("sky",7.1,0,-2.45,0,.9,0);
+P_.town=piece("town",6.3,0,-1.75,.06,1.0,.2);
+P_.carousel=piece("carousel",2.1,2.35,-.95,.14,1.2);
+P_.tree=piece("tree",2.3,.05,-1.0,.1,1.3);
+P_.rink=piece("rink",3.4,-1.85,-.35,.18,1.1);
+P_.books=piece("books",2.0,2.35,.35,.24,1.25);
+P_.cocoa=piece("cocoa",1.55,-.75,.55,.28,1.3);
+P_.ded=piece("ded",1.65,.75,1.1,.32,1.3);
+P_.snow=piece("snow",1.4,-2.55,1.55,.36,1.3);
+P_.sled=piece("sled",1.35,2.1,1.75,.4,1.3);
+P_.front=piece("front",3.6,-.75,2.55,.44,.8);
+const at=(G,u,v,dz=.012)=>{const d=G.userData;return new THREE.Vector3((u-.5)*d.w,d.lift+(1-v)*d.h,dz)};
+const wpos=(G,u,v)=>{const p=at(G,u,v,0);return new THREE.Vector3(p.x+G.position.x,p.y+PAGE,p.z+G.position.z)};
+// надписи, вписанные в сцену; появляются, когда фигурка уже раскрылась
+const ovl=(G,u0,v0,u1,v1,draw,px=900)=>{const d=G.userData,w=(u1-u0)*d.w,h=(v1-v0)*d.h,ch=Math.round(px*h/w);
+  const [c,x]=canv(px,ch);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:t,transparent:true,roughness:.9,depthWrite:false}));
+  m.position.copy(at(G,(u0+u1)/2,(v0+v1)/2));G.add(m);const o={m,last:null};o.set=k=>{if(k===o.last)return;o.last=k;x.clearRect(0,0,px,ch);draw(x,px,ch,k);t.needsUpdate=true};o.set(0);return o};
+const INK="#16245c",RED="#e63946";
+const fit=(x,txt,font,size,maxw)=>{let s=size;x.font=`${font.replace("#",s)}`;while(x.measureText(txt).width>maxw&&s>8){s-=2;x.font=font.replace("#",s)}};
+const CF={board:[.085,.11,.38,.37],sign:[.25,.045,.75,.19]};
+const board=ovl(P_.rink,...CF.board,(x,w,h,k)=>{x.textAlign="center";x.fillStyle=RED;fit(x,"самый читающий месяц","600 #px NS",h*.15,w*.86);x.fillText("самый читающий месяц",w/2,h*.24);
+  x.globalAlpha=k;x.fillStyle=INK;fit(x,MON,"800 #px NH",h*.34,w*.86);x.fillText(MON,w/2,h*.64);x.fillStyle=RED;x.font=`600 ${h*.15}px NS`;x.fillText(`${MN} ${plural(MN,"книга","книги","книг")}`,w/2,h*.87);x.globalAlpha=1});
+const sign=ovl(P_.books,...CF.sign,(x,w,h,k)=>{x.textAlign="center";x.fillStyle=RED;x.font=`600 ${h*.22}px NS`;x.fillText("любимый жанр",w/2,h*.32);
+  x.globalAlpha=k;x.fillStyle=INK;fit(x,GEN,"800 #px NH",h*.4,w*.88);x.fillText(GEN,w/2,h*.8);x.globalAlpha=1});
+// бирка на санках
+const sp0=wpos(P_.sled,.2,.72);const tagG=new THREE.Group();tagG.position.set(sp0.x-.15,sp0.y+.05,P_.sled.position.z+.3);
+const [tc,tx]=canv(640,420),tagT=new THREE.CanvasTexture(tc);tagT.colorSpace=THREE.SRGBColorSpace;tagT.anisotropy=8;
+const drawTag=v=>{const x=tx,w=640,h=420;x.clearRect(0,0,w,h);x.fillStyle="#fff";x.beginPath();x.moveTo(110,16);x.lineTo(w-16,16);x.lineTo(w-16,h-16);x.lineTo(110,h-16);x.lineTo(16,h/2);x.closePath();x.fill();
+  x.fillStyle=RED;x.fillRect(110,16,w-126,58);x.fillStyle="#fff";x.font="600 38px NS";x.textAlign="center";x.fillText("за год",w/2+48,58);
+  x.fillStyle="#16245c";x.beginPath();x.arc(70,h/2,18,0,7);x.fill();x.fillStyle=INK;x.font="800 170px NH";x.fillText(ru(v),w/2+48,h*.7);
+  x.fillStyle=RED;x.font="600 56px NS";x.fillText(plural(NB,"книга","книги","книг"),w/2+48,h*.9);tagT.needsUpdate=true};drawTag(0);
+{const m=new THREE.Mesh(new THREE.PlaneGeometry(.66,.43),new THREE.MeshStandardMaterial({map:tagT,transparent:true,alphaTest:.3,roughness:.9,side:THREE.DoubleSide}));m.castShadow=true;tagG.add(m);
+ const str=new THREE.Mesh(new THREE.CylinderGeometry(.006,.006,.36),new THREE.MeshStandardMaterial({color:0xe63946}));str.rotation.z=-1.1;str.position.set(.44,-.1,0);tagG.add(str)}
+S.add(tagG);
+// ---------- салют ----------
+const sampleText=(lines,wpx)=>{const [c,x]=canv(wpx,Math.round(wpx*.62));x.fillStyle="#fff";x.textAlign="center";let y=0;
+  for(const [txt,sz,f] of lines){y+=sz;x.font=`${f} ${sz}px ${f=="800"?"NH":"NS"}`;x.fillText(txt,wpx/2,y);y+=sz*.25}
+  const d=x.getImageData(0,0,c.width,c.height).data,pts=[];for(let j=0;j<c.height;j+=3)for(let i=0;i<c.width;i+=3)if(d[(j*c.width+i)*4+3]>140)pts.push([i/c.width-.5,-(j/c.width)]);return pts};
+const NF=6000,fp=new Float32Array(NF*3),fcol=new Float32Array(NF*3),fg=new THREE.BufferGeometry();fg.setAttribute("position",new THREE.BufferAttribute(fp,3));fg.setAttribute("color",new THREE.BufferAttribute(fcol,3));
+const sparkT=tex(64,64,(x,w,h)=>{const g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,"rgba(255,255,255,1)");g.addColorStop(.3,"rgba(255,255,255,.7)");g.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=g;x.fillRect(0,0,w,h)},0);
+const fw=new THREE.Points(fg,new THREE.PointsMaterial({size:.1,map:sparkT,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,fog:false}));fw.frustumCulled=false;S.add(fw);
+const rnd=(()=>{let s=11;return()=>(s=(s*16807)%2147483647)/2147483647})();
+const PAL=[[1,.82,.25],[1,.35,.4],[.35,.9,.85],[1,1,1],[1,.55,.8]];
+const mkShow=(lines,center,width,t0,launch)=>{const pts=sampleText(lines,1400),o=[];for(let i=0;i<NF;i++){const p=pts[Math.floor(rnd()*pts.length)]||[0,0],L=launch[i%launch.length],th=rnd()*6.283,ph=Math.acos(2*rnd()-1),sp=1.3+rnd()*2.2;
+  o.push({tx:center.x+p[0]*width,ty:center.y+p[1]*width,tz:center.z,lx:L[0],ly:L[1],lz:center.z,vx:Math.sin(ph)*Math.cos(th)*sp,vy:Math.cos(ph)*sp,vz:Math.sin(ph)*Math.sin(th)*sp*.4,dl:rnd()*.35,tw:rnd()*6.28,c:PAL[i%launch.length%PAL.length],c2:PAL[(i*7)%PAL.length]})}return {o,t0}};
+const show=(sh,t,fade)=>{for(let i=0;i<NF;i++){const q=sh.o[i],lt=t-sh.t0-q.dl;let x=0,y=-50,z=0,b=0,c=q.c;
+  if(lt>=0&&lt<.55){const k=lt/.55;x=q.lx;y=lerp(q.ly-3.5,q.ly,1-Math.pow(1-k,2));z=q.lz;b=.35}
+  else if(lt>=.55){const e=lt-.55,k=Math.min(1,e/1.3),bx=q.lx+q.vx*Math.min(e,.5)*1.6,by=q.ly+q.vy*Math.min(e,.5)*1.6-e*e*.4,bz=q.lz+q.vz*Math.min(e,.5);
+    const m=k<.25?0:(k-.25)/.75,mm=m*m*(3-2*m);x=lerp(bx,q.tx,mm);y=lerp(by,q.ty,mm);z=lerp(bz,q.tz,mm);b=1-.3*(k<.6?k:0)+.3*Math.sin(t*9+q.tw)*(k>=1?1:0);
+    c=[lerp(q.c[0],1,mm),lerp(q.c[1],.62,mm),lerp(q.c[2],.16,mm)];b*=lerp(1,.62,mm)}
+  b*=fade;fp[i*3]=x;fp[i*3+1]=y;fp[i*3+2]=z;fcol[i*3]=c[0]*b;fcol[i*3+1]=c[1]*b;fcol[i*3+2]=c[2]*b}fg.attributes.position.needsUpdate=fg.attributes.color.needsUpdate=true};
+// ---------- снег ----------
+const NS=900,snp=new Float32Array(NS*3),sv=[];for(let i=0;i<NS;i++)sv.push([(rnd()-.5)*16,rnd()*14,(rnd()-.5)*10-1,rnd()]);
+const sg=new THREE.BufferGeometry();sg.setAttribute("position",new THREE.BufferAttribute(snp,3));
+const snow=new THREE.Points(sg,new THREE.PointsMaterial({size:.06,map:sparkT,color:0xffffff,transparent:true,opacity:0,depthWrite:false}));snow.frustumCulled=false;S.add(snow);
+// ---------- время ----------
+const ease=t=>t<0?0:t>1?1:t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,seg=(t,a,b)=>ease((t-a)/(b-a)),lerp=(a,b,k)=>a+(b-a)*k,cl=t=>t<0?0:t>1?1:t,V=(x,y,z)=>new THREE.Vector3(x,y,z);
+const back1=t=>{t=cl(t);const c=1.6;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2)};   // подъём с лёгким «пружинящим» перехлёстом
+const skyTop=P_.sky.userData.h+PAGE;
+const show1=mkShow([[ru(PG),300,"800"],["страниц за год",110,"600"]],V(0,skyTop+2.4,-2.4),5.0,6.3,[[-1.8,skyTop+1.4],[0,skyTop+1.9],[1.8,skyTop+1.3]]);
+const show2=mkShow([["Мой "+Y,220,"800"],["в книгах",140,"600"]],V(0,skyTop+3.0,-2.4),6.6,15.7,[[-1.6,skyTop+2.2],[1.6,skyTop+2.2]]);
+const bp=wpos(P_.rink,(CF.board[0]+CF.board[2])/2,(CF.board[1]+CF.board[3])/2),sgp=wpos(P_.books,(CF.sign[0]+CF.sign[2])/2,(CF.sign[1]+CF.sign[3])/2),tg=tagG.position.clone();
+const K=[[0,V(1.85,10.5,8.5),V(1.85,0,0),38],[1.6,V(1.85,9.8,8.2),V(1.85,0,0),38],[3.4,V(.4,8.8,10.5),V(.2,1,0),40],[5.6,V(0,7.4,12.8),V(0,2.3,0),40],
+  [7.2,V(0,skyTop+1.6,7),V(0,skyTop+1.6,-2.4),44],[8.9,V(0,skyTop+1.5,6.6),V(0,skyTop+1.55,-2.4),44],
+  [10.3,V(bp.x+.25,bp.y+.1,bp.z+2.2),bp,48],[11.5,V(bp.x+.1,bp.y+.05,bp.z+2.0),bp,48],
+  [12.7,V(sgp.x-.2,sgp.y+.1,sgp.z+2.1),V(sgp.x,sgp.y-.15,sgp.z),48],[13.8,V(sgp.x-.1,sgp.y+.05,sgp.z+1.95),V(sgp.x,sgp.y-.15,sgp.z),48],
+  [15.0,V(tg.x+.12,tg.y+.35,tg.z+2.1),V(tg.x+.08,tg.y,tg.z),46],[15.9,V(tg.x+.1,tg.y+.3,tg.z+1.95),V(tg.x+.08,tg.y,tg.z),46],
+  [17.4,V(0,7.8,15),V(0,3.6,0),42],[19,V(0,7.9,15.6),V(0,3.7,0),42]];
+const camAt=t=>{let i=0;while(i<K.length-2&&t>K[i+1][0])i++;const [ta,pa,ga,fa]=K[i],[tb,pb,gb,fb]=K[i+1],k=seg(t,ta,tb);return [pa.clone().lerp(pb,k),ga.clone().lerp(gb,k),lerp(fa,fb,k)]};
+window.renderAt=t=>{const o=seg(t,1.6,4.2);hinge.rotation.z=Math.PI*o;hinge.position.y=lerp(.52,.1,o);
+  glow.material.opacity=(.6+.4*Math.sin(t*2.2))*(1-o*.6);glow.position.x=lerp(BW/2,0,o);glow.scale.set(1+o*.9,1,1);
+  // фигурки раскрываются вместе с разворотом: пока крышка не поднялась выше ~70°, они лежат сложенными
+  for(const g of pieces){const d=g.userData,s=cl((o-.3-d.delay*.5)/.45),st=back1(s);g.visible=s>.001;
+    g.rotation.x=-Math.PI/2*(1-st);const f=d.fold*Math.pow(1-cl(s*1.15),1.4);d.L.rotation.y=f;d.R.rotation.y=-f}
+  const done=g=>cl((o-.3-g.userData.delay*.5)/.45)>=1;
+  board.m.visible=done(P_.rink);sign.m.visible=done(P_.books);tagG.visible=done(P_.sled)&&t>14.2;tagG.rotation.z=Math.sin(t*1.7)*.07;
+  board.set(Math.round(seg(t,9.9,10.9)*20)/20);sign.set(Math.round(seg(t,12.3,13.3)*20)/20);drawTag(NB*seg(t,14.6,15.6));
+  if(t<15.6)show(show1,t,t<15.1?1:1-(t-15.1)/.5);else show(show2,t,1);
+  snow.material.opacity=.85*seg(t,4,5.5);for(let i=0;i<NS;i++){const s=sv[i];snp[i*3]=s[0]+Math.sin(t*.7+i)*.25;snp[i*3+1]=14-((14-s[1]+t*(.35+s[3]*.4))%14);snp[i*3+2]=s[2]}sg.attributes.position.needsUpdate=true;
+  const [p,g,f]=camAt(t);cam.fov=f;cam.updateProjectionMatrix();cam.position.copy(p);cam.lookAt(g);R.render(S,cam)};
+const q=new URLSearchParams(location.search);window.renderAt(+(q.get("t")||0));document.body.dataset.ready=1;
+if(!q.has("t")){const st=performance.now();const loop=()=>{window.renderAt(((performance.now()-st)/1000)%DUR);requestAnimationFrame(loop)};loop()}
+</script></body></html>
