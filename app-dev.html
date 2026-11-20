@@ -7607,26 +7607,28 @@ async function wrCards(D){
   {const w=NOM;
     const [c,x]=mk(5,110);let y=label(x,"Номинация года",230);y=txt(x,"«"+w[1]+"»",y+10,{font:serif,size:96,min:48,lines:2,w:940});y=txt(x,w[2],y+4,{font:sans,size:38,min:26,lines:2,color:MUTE,w:900});
     y=txt(x,"мой читательский тип",y+40,{font:sansB,size:34,color:GOLD});txt(x,D.type[0],y,{font:serif,size:68,min:40,lines:2,w:900});out.push(c)}
-  // 6. итог по схеме итоговых карточек Spotify Wrapped и Letterboxd: картинка - отдельным блоком сверху, ниже две колонки личных списков, внизу две крупные цифры
-  {const c=document.createElement("canvas");c.width=1080;c.height=1920;const x=c.getContext("2d");x.textBaseline="alphabetic";x.fillStyle="#0E1422";x.fillRect(0,0,1080,1920);
-    const M=80,SPc=v=>{if("letterSpacing" in x)x.letterSpacing=v};
-    const put=(t,font,X,Y,col,ls)=>{x.font=font;x.fillStyle=col;SPc(ls||"0px");x.fillText(t,X,Y);SPc("0px")};
-    const clip=(t,font,w)=>{x.font=font;t=String(t||"");if(x.measureText(t).width<=w)return t;while(t.length>1&&x.measureText(t+"…").width>w)t=t.slice(0,-1);return t.trimEnd()+"…"};
-    // картинка - блоком с полями и скруглением
-    {const a=ART[5],bx=M,by=M,bw=1080-2*M,bh=800;x.save();wrRR(x,bx,by,bw,bh,36);x.clip();if(a){const s=Math.max(bw/a.naturalWidth,bh/a.naturalHeight),w=a.naturalWidth*s,h=a.naturalHeight*s;x.drawImage(a,bx+(bw-w)/2,by+bh-h,w,h)}x.restore();
-      put(`Мой ${D.Y}`,`600 64px ${SR}`,bx+44,by+110,CREAM,"-2px");put("в книгах",`500 34px ${FF}`,bx+48,by+162,CREAM)}
-    // две колонки списков
-    const books=D.L.slice().sort((a,b)=>(b.r??-1)-(a.r??-1)||String(b.rd).localeCompare(String(a.rd))).slice(0,5),aus=(D.au||[]).slice(0,5);
-    let y=1000;const CW=(1080-2*M-40)/2,C2=M+CW+40;
-    put("Любимые книги",`500 30px ${FF}`,M,y,MUTE);put(aus.length>=2?"Любимые авторы":"Жанры года",`500 30px ${FF}`,C2,y,MUTE);
-    const right=aus.length>=2?aus.map(a=>auN(a[0])):(D.gk||[]).slice(0,5).map(g=>GEN[g[0]]||"").filter(Boolean);
-    books.forEach((b,i)=>{const yy=y+70+i*62;put(String(i+1),`600 34px ${SR}`,M,yy,GOLD);put(clip(b.t,`600 34px ${FF}`,CW-52),`600 34px ${FF}`,M+52,yy,CREAM)});
-    right.slice(0,5).forEach((t,i)=>{const yy=y+70+i*62;put(String(i+1),`600 34px ${SR}`,C2,yy,GOLD);put(clip(t,`600 34px ${FF}`,CW-52),`600 34px ${FF}`,C2+52,yy,CREAM)});
-    // внизу две цифры
-    y=1440;put("Страниц",`500 30px ${FF}`,M,y,MUTE);put("Номинация года",`500 30px ${FF}`,C2,y,MUTE);
-    {const v=D.pg?String(D.pg):String(n);let f=120;x.font=`600 ${f}px ${SR}`;while(f>60&&x.measureText(v).width>CW){f-=6;x.font=`600 ${f}px ${SR}`}put(v,`600 ${f}px ${SR}`,M-4,y+f*.95,GOLD,"-4px");put(`${n} ${plural(n,"книга","книги","книг")}`,`500 32px ${FF}`,M,y+f*.95+56,CREAM)}
-    {const {f,L}=fitT(x,NOM[1],f=>`600 ${f}px ${FF}`,CW,3,46,30);L.forEach((s,i)=>put(s,`600 ${f}px ${FF}`,C2,y+16+f+i*f*1.15,CREAM))}
-    x.font=`500 30px ${FF}`;x.fillStyle="rgba(244,236,220,.6)";x.textAlign="center";x.fillText("Нора     nora-books.ru",540,1850);x.textAlign="left";
+  // 6. итог: картинка на весь лист, текст по схеме итоговых карточек (заголовок, две колонки списков, две цифры) - весь в небе над картинкой;
+  // названия не обрезаются: переносятся на 2-3 строки, а если всё вместе не помещается - весь текст равномерно уменьшается
+  {const [c,x]=mk(6);const M=88,G=40,CW=(1080-2*M-G)/2,C2=M+CW+G,TOP=150,BOT=1190,SPc=v=>{if("letterSpacing" in x)x.letterSpacing=v};
+    const put=(t,font,X,Y,col,ls)=>{x.font=font;x.fillStyle=col;SPc(ls||"0px");x.shadowColor="rgba(0,0,0,.45)";x.shadowBlur=12;x.fillText(t,X,Y);x.shadowBlur=0;x.shadowColor="transparent";SPc("0px")};
+    const wrapW=(t,font,w)=>{x.font=font;const W=String(t||"").replace(/(^|[ ])(в|и|с|к|о|у|а|я|не|на|по|за|из|от|до|без|для)[ ]/gi,"$1$2 ").split(/[ ]+/).filter(Boolean),L=[];let cur="";for(const wd of W){const tt=cur?cur+" "+wd:wd;if(x.measureText(tt).width>w&&cur){L.push(cur);cur=wd}else cur=tt}if(cur)L.push(cur);return L};
+    const books=D.L.slice().sort((a,b)=>(b.r??-1)-(a.r??-1)||String(b.rd).localeCompare(String(a.rd))).slice(0,5).map(b=>b.t),aus=(D.au||[]).slice(0,5).map(a=>auN(a[0]));
+    const right=aus.length>=2?aus:(D.gk||[]).slice(0,5).map(g=>GEN[g[0]]||"").filter(Boolean),rLab=aus.length>=2?"Любимые авторы":"Жанры года";
+    const big=D.pg?String(D.pg):String(n);
+    const plan=k=>{const t=Math.round(64*k),lb=Math.round(30*k),it=Math.round(34*k),lh=it*1.18,gap=Math.round(22*k),nb=Math.round(130*k),nm=Math.round(44*k);
+      const col=L=>L.map(s=>{let f=it,LL=wrapW(s,`600 ${f}px ${FF}`,CW-it*1.6);while(LL.length>2&&f>it*.8){f-=2;LL=wrapW(s,`600 ${f}px ${FF}`,CW-it*1.6)}return {f,LL}});
+      const A=col(books),B=col(right),hc=C=>C.reduce((s,q)=>s+q.LL.length*q.f*1.18+gap,0);
+      const NL=wrapW(NOM[1],`600 ${nm}px ${FF}`,CW);const hTitle=t*1.9,hLists=lb+30+Math.max(hc(A),hc(B)),hNums=lb+20+Math.max(nb*.95+lb*2,NL.length*nm*1.15),sp=Math.round(70*k);
+      return {t,lb,it,gap,nb,nm,A,B,NL,h:hTitle+sp+hLists+sp+hNums,sp}};
+    let k=1,P=plan(k);while(P.h>BOT-TOP&&k>.62){k-=.03;P=plan(k)}
+    const free=Math.max(0,BOT-TOP-P.h),sp=P.sp+free/3;let y=TOP+P.t;
+    put(`Мой ${D.Y}`,`600 ${P.t}px ${SR}`,M,y,CREAM,"-2px");y+=P.t*.75;put("в книгах",`500 ${P.lb+4}px ${FF}`,M+2,y+6,CREAM);y+=P.t*.15+sp;
+    put("Любимые книги",`500 ${P.lb}px ${FF}`,M,y,MUTE);put(rLab,`500 ${P.lb}px ${FF}`,C2,y,MUTE);y+=30;
+    const draw=(C,X)=>{let yy=y;C.forEach((q,i)=>{yy+=q.f*1.0;put(String(i+1),`600 ${q.f}px ${SR}`,X,yy,GOLD);q.LL.forEach((l,j)=>put(l,`600 ${q.f}px ${FF}`,X+P.it*1.6,yy+j*q.f*1.18,CREAM));yy+=(q.LL.length-1)*q.f*1.18+q.f*.18+P.gap});return yy};
+    y=Math.max(draw(P.A,M),draw(P.B,C2))+sp;
+    put("Страниц",`500 ${P.lb}px ${FF}`,M,y,MUTE);put("Номинация года",`500 ${P.lb}px ${FF}`,C2,y,MUTE);
+    {let f=P.nb;x.font=`600 ${f}px ${SR}`;SPc("-4px");while(f>50&&x.measureText(big).width>CW){f-=4;x.font=`600 ${f}px ${SR}`}SPc("0px");put(big,`600 ${f}px ${SR}`,M-4,y+20+f*.95,GOLD,"-4px");put(`${n} ${plural(n,"книга","книги","книг")}`,`500 ${P.lb+2}px ${FF}`,M,y+20+f*.95+P.lb*1.8,CREAM)}
+    P.NL.forEach((l,i)=>put(l,`600 ${P.nm}px ${FF}`,C2,y+20+P.nm+i*P.nm*1.15,CREAM));
     out.push(c)}
   return out}
 function wrFill(){if(WR&&WR.u&&!wrEl.querySelector(".wr-full"))wrDraw()}
