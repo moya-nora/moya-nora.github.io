@@ -4,7 +4,7 @@
 и переводим их жанры в жанры и метки Норы (ромэнтези, любовный роман, young adult, тропы…).
 Книги 18+ тоже берём (с 21.11.2026): у них метка «18+», в приложении - значок на обложке, в ленту новичкам они не попадают.
 Средняя оценка ЛитРес - последняя колонка (×10), её видно на обложке в списках."""
-import json, os, re, sys, time, urllib.request
+import json, os, re, sys, time, urllib.parse, urllib.request
 START = time.time()
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -100,6 +100,29 @@ for g in G:
 print("жанров ЛитРес:", len(G), "берём:", [(p[1], p[0]) for p in pick], flush=True)
 
 books = {}
+
+
+def add(x, ng, tags):
+    """книга из ответа ЛитРес -> в каталог; True, если подошла"""
+    if x.get("art_type") not in (0, None):
+        return False
+    adult = bool(x.get("is_adult_content") or (x.get("min_age") or 0) >= 18)
+    au = next((p.get("full_name") for p in x.get("persons") or [] if p.get("role") == "author"), "")
+    if not au or not x.get("title") or not x.get("id"):
+        return False
+    k = re.sub(r"[^0-9a-zа-я]", "", (x["title"] + au).lower())
+    rt = x.get("rating") or {}
+    b = books.setdefault(k, {"id": x["id"], "t": x["title"].strip(), "a": au.strip(), "g": ng, "tags": [], "n": rt.get("rated_total_count") or 0,
+                             "r": rt.get("rated_avg") or 0, "y": int(str(x.get("date_written_at") or x.get("available_from") or "0")[:4] or 0),
+                             "cv": x.get("cover_url") or "", "pg": round((x.get("symbols_count") or 0) / 2000) or 0, "dr": 1 if x.get("is_draft") else 0})
+    if adult and "18+" not in b["tags"]:
+        b["tags"].append("18+")
+    for t in tags:
+        if t not in b["tags"]:
+            b["tags"].append(t)
+    return True
+
+
 for gid, gname, ng, tags in pick:
     got = 0
     per = BIG if BIGRX.search(gname) else PER
@@ -109,25 +132,37 @@ for gid, gname, ng, tags in pick:
         if not L:
             break
         for x in L:
-            if x.get("art_type") not in (0, None):
-                continue
-            adult = bool(x.get("is_adult_content") or (x.get("min_age") or 0) >= 18)
-            au = next((p.get("full_name") for p in x.get("persons") or [] if p.get("role") == "author"), "")
-            if not au or not x.get("title"):
-                continue
-            k = re.sub(r"[^0-9a-zа-я]", "", (x["title"] + au).lower())
-            rt = x.get("rating") or {}
-            b = books.setdefault(k, {"id": x["id"], "t": x["title"].strip(), "a": au.strip(), "g": ng, "tags": [], "n": rt.get("rated_total_count") or 0,
-                                     "r": rt.get("rated_avg") or 0, "y": int(str(x.get("date_written_at") or x.get("available_from") or "0")[:4] or 0),
-                                     "cv": x.get("cover_url") or "", "pg": round((x.get("symbols_count") or 0) / 2000) or 0, "dr": 1 if x.get("is_draft") else 0})
-            if adult and "18+" not in b["tags"]:
-                b["tags"].append("18+")
-            for t in tags:
-                if t not in b["tags"]:
-                    b["tags"].append(t)
-            got += 1
+            got += add(x, ng, tags)
         time.sleep(0.4)
     print(f"  {gname}: {got}", flush=True)
+
+# все книги популярных авторов: в популярных по жанру попадает только часть (у Мари Милас было 7 книг из ~15).
+# Ищем по имени автора, берём книги, где он автор, - жанр и метки как у его книги, которая уже есть.
+_byau = {}
+for b in books.values():
+    _byau.setdefault(b["a"], []).append(b)
+AUS = sorted(_byau, key=lambda a: -sum(x["n"] for x in _byau[a]))[:int(os.environ.get("AUTHORS", "3000"))]
+_added = 0
+for i, a in enumerate(AUS):
+    if time.time() - START > 2.6 * 3600:
+        print("  авторы: не успели, остановились на", i, flush=True); break
+    ref = max(_byau[a], key=lambda x: x["n"])
+    tags = [t for t in ref["tags"] if t not in ("18+", "самиздат") and not t.startswith("троп:")]
+    for off in (0, 50):
+        d = get("search?q=" + urllib.parse.quote(a) + f"&types=text_book&limit=50&offset={off}")
+        L = ((d or {}).get("payload") or {}).get("data") or []
+        n0 = len(books)
+        for it in L:
+            x = it.get("instance") or it
+            if any(p.get("role") == "author" and (p.get("full_name") or "").strip() == a for p in x.get("persons") or []):
+                add(x, ref["g"], tags)
+        _added += len(books) - n0
+        time.sleep(0.3)
+        if len(L) < 50:
+            break
+    if i % 300 == 0:
+        print("  авторы:", i, "/", len(AUS), "добавлено книг:", _added, flush=True)
+print("  книг авторов добавлено:", _added, flush=True)
 
 DRUG = []
 # прошлые аннотации и тропы берём из прежнего файла - заново запрашиваем только новые книги (иначе не успеваем за 5,5 часа)
