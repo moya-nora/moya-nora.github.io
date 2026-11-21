@@ -94,7 +94,9 @@ def crawl(part, parts):
                                   1 if (x.get("is_adult_content") or (x.get("min_age") or 0) >= 18) else 0, round((x.get("symbols_count") or 0) / 2000) or 0]
                 got += 1
             off += 50
-            if len(data) < 50:
+            # страница бывает короче 50 (ЛитРес отсекает аудио и черновики уже после выборки) - это не конец списка;
+            # конец - пустая страница или номер дальше, чем книг в жанре
+            if total and off > int(total) + 100:
                 break
             time.sleep(0.25)
         stat.append([gid, path, got, total])
