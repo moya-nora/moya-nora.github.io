@@ -1,7 +1,7 @@
 name: Книги ЛитРес
 on:
   workflow_dispatch:
-  schedule: [{cron: "23 3 10 * *"}]
+  schedule: [{cron: "23 3 * * 3"}]   # каждую среду: книг много, аннотации догружаются по частям
 permissions: {contents: write}
 jobs:
   build:
@@ -13,5 +13,5 @@ jobs:
       - run: python3 -u tools/litres_lite.py   # лёгкая копия каталога для приложения + полные аннотации по частям
       - run: |
           git config user.email noreply@anthropic.com; git config user.name Claude
-          git add books/litres.json books/litres.lite.json books/ann books/drugmark.json && git commit -qm "Книги ЛитРес: обновление" || exit 0
+          git add books/litres.json books/litres.lite.json books/litres.rest.json books/ann books/drugmark.json && git commit -qm "Книги ЛитРес: обновление" || exit 0
           git pull -q --rebase --autostash -X theirs && git push

@@ -1552,6 +1552,14 @@ html[data-theme="light"] .covsw button.on{background:#14151B;color:#F3F1EC}
 #app .cv .rtb.hi{background:#3BA55C}#app .cv .rtb.lo{background:rgba(120,120,128,.9)}
 #app .fr .cv .rtb{left:3px;top:3px;padding:1px 4px;font-size:9.5px;border-radius:5px}
 #app .fr .ac em.myr{background:#3BA55C;color:#fff;border-radius:999px;padding:3px 9px;font-style:normal;font-weight:700;font-size:12.5px}
+#app .bkc-bk{position:absolute;top:calc(12px + var(--sat,env(safe-area-inset-top,0px)));left:14px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1);z-index:2}
+#app .bkc-bk svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#app .tl-more{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin:16px 0 8px}
+#app .tl-grid .tg-rd{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(10,8,16,.72);color:#fff;font-style:normal;font-size:13px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);z-index:4}
+#app .tl-grid .tg-done{opacity:.45}
+#app #trend [data-tr]{position:relative}#app #trend .hrd{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(10,8,16,.72);color:#fff;font-style:normal;font-size:13px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);z-index:4}
+#app #trend .cv .a18,#app .tl-grid .cv .a18{top:auto;bottom:5px}
+#app #trend .hr-done{opacity:.4;transition:opacity .3s}
 #app .emp-acts{grid-column:1/-1;display:flex;flex-direction:column;gap:10px;margin:0 auto;width:100%;max-width:300px}#app #grid .emp-acts .btn,#app .emp-acts .btn{width:100%;height:48px;flex:none;display:flex;align-items:center;justify-content:center;padding:0 20px;aspect-ratio:auto;font-size:15px;white-space:nowrap}
 .legacy-over .imp-link{display:block;width:100%;margin:10px 0 4px;padding:12px;border-radius:12px;border:1px dashed var(--line);background:none;color:var(--ink-2);font:inherit;font-size:14px}
 html[data-theme="light"] #app .imp-step{background:rgba(20,21,27,.04)}
@@ -5002,7 +5010,9 @@ function loadBig(){if(BIGP)return BIGP;
   BIGP.catch(()=>{BIGP=null});return BIGP}
 let BIGRP=null;
 function bigRest(){if(BIGRP)return BIGRP;BIGRP=(BIGP||loadBig()).then(()=>fetch("books/books.rest.json")).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
-  .then(d=>(BIGTAGS||Promise.resolve(null)).then(t=>tagMerge(d,t))).then(d=>bigBuild(d,1)).then(out=>{BIGL=BIGL.concat(out);_allb=null;BIGK=null;try{dispatchEvent(new Event("bigcat"))}catch(e){}return out});
+  .then(d=>(BIGTAGS||Promise.resolve(null)).then(t=>tagMerge(d,t))).then(d=>bigBuild(d,1)).then(out=>{BIGL=BIGL.concat(out);_allb=null;BIGK=null;try{dispatchEvent(new Event("bigcat"))}catch(e){}
+    // остальной ЛитРес (менее читаемые книги) - следом, тоже при первом поиске
+    fetch("books/litres.rest.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(n=>n&&Array.isArray(n.b)&&n.b.length?bigBuild(n,2):[]).then(o2=>{if(!o2.length)return;BIGL=BIGL.concat(o2);_allb=null;BIGK=null;AUIX=null;try{dispatchEvent(new Event("bigcat"))}catch(e){}}).catch(()=>{});return out});
   BIGRP.catch(()=>{BIGRP=null});return BIGRP}
 // быстрый поиск по большому каталогу (ключи считаются один раз)
 let BIGK=null;
@@ -5395,7 +5405,7 @@ function newAuList(){if(isF()||VIEW)return [];const fav=new Set(BOOKS.filter(b=>
   const W=wantNorms(),seen=new Set(),out=[];for(const b of ALLB()){if(!b.y||b.y<YNOW-1||!b.a||!fav.has(norm(b.a)))continue;const nt=b._n||norm(b.t);if(READ.has(nt)||W.has(nt)||seen.has(nt)||dismissed.has(b.id))continue;seen.add(nt);out.push(b);if(out.length>=8)break}
   return out.sort((a,b)=>(b.y||0)-(a.y||0)).map(b=>bItem(b,"rec"))}
 function drawNewAu(){const el=$("#newAu");if(!el)return;const L=[];/* раздел «Новое от твоих авторов» убран по просьбе владелицы (18.11.2026) */el.hidden=!L.length;if(!L.length){el.innerHTML="";return}el._l=L;
-  el.innerHTML=`<h3 class="shelf-h">Новое от твоих авторов</h3><div class="na-row">${L.map((x,i)=>`<button data-na="${i}">${cv(x,96,1)}<small>${esc(x.t)}</small><em>${esc(String(x.a).split(" ").slice(-1)[0])} · ${x.y}</em></button>`).join("")}</div>`}
+  el.innerHTML=`<h3 class="shelf-h">Новое от твоих авторов</h3><div class="na-row">${L.map((x,i)=>`<button data-na="${i}">${cv(x,96,1)}<i class="hrd" data-hrd="${j}:${i}" role="button" aria-label="Уже читала">✓</i><small>${esc(x.t)}</small><em>${esc(String(x.a).split(" ").slice(-1)[0])} · ${x.y}</em></button>`).join("")}</div>`}
 $("#newAu").addEventListener("click",e=>{const b=e.target.closest("[data-na]");if(!b)return;const x=$("#newAu")._l[+b.dataset.na];if(x){tgHaptic();bkcOpen(x,"rec")}});
 // «В тренде сейчас»: о чём говорят сейчас - вперемешку громкие книги года (премии, экранизации, бестселлеры) и хиты буктока, примерно 3 к 2 (список обновляется раз в месяц). Книги ищем в каталоге по названию и фамилии автора
 const TREND="Последнее дело майора Чистова|Водолазкин;Полночная библиотека|Хейг;Голландский дом|Пэтчетт;Невьянская башня|Иванов;Йеллоуфейс|Куанг;Джеймс|Эверетт;Хамнет|О'Фаррелл;Демон Копперхед|Кингсолвер;Тео из Голдена|Леви;По орбите|Харви;Проект «Аве Мария»|Вейер;Мастер и Маргарита|Булгаков;Чагин|Водолазкин;Птицеед|Пехов".split(";").map(s=>s.split("|"));
@@ -5458,12 +5468,14 @@ function shelfMore(k){const L=ALLB(),W=wantNorms(),seeds=shelfSeeds(k),used=new 
   seeds.forEach(b=>{if(ok(b))put(b)});if(k==="like")return out;
   const tw={},gs=new Set();seeds.forEach(b=>{const c=catOf(b)||b;if(c.g)gs.add(c.g);(c.tags||[]).forEach(t=>{if(SIMSKIP.has(t)||/век|страна|^автор/.test(t))return;tw[t]=(tw[t]||0)+1})});
   const n=Math.max(seeds.length,1),fresh=k==="newlove";
-  const sc=b=>{if(!ok(b)||b.g==="kids"||!gs.has(b.g)||(b.tags||[]).includes("самиздат"))return null;if(fresh&&(b.y||0)<YNOW-2)return null;
+  const sc=b=>{if(!ok(b)||b.g==="kids"||!gs.has(b.g)||(b.tags||[]).includes("самиздат")||!okAll(b))return null;if(fresh&&(b.y||0)<YNOW-2)return null;
+    // «в тренде», буктоку и ночным триллерам классику и старые книги в добор не берём: их и так все знают
+    if((k==="trend"||k==="booktok"||k==="night")&&(b.g==="classic"||(b.y||0)<YNOW-15))return null;
     let s=0;for(const t of b.tags||[])if(tw[t])s+=tw[t]/n*(t.startsWith("троп:")?1.3:1);if(s<.35)return null;
     return s+Math.log10((b.sl||0)+10)*.25+(imgOf(b)?.4:0)};
   const au={};topK(L,240,sc).forEach(z=>{const a=z.b.a||"";if((au[a]=(au[a]||0)+1)>2)return;if(out.length<90)put(z.b)});
   return out}
-function shelfOpen(j){const S=$("#trend")._s,r=S&&S[j];if(!r)return;tgHaptic();listSheet(r[1],r[2],shelfMore(r[0]).slice(0,20),1);
+function shelfOpen(j){const S=$("#trend")._s,r=S&&S[j];if(!r)return;tgHaptic();{const A=shelfMore(r[0]);listSheet(r[1],r[2],A.slice(0,TL_PAGE),1,A,TL_PAGE)}
   }
 // на главной у каждой подборки свой вид: тренд - крупные обложки, «Тебе понравится» - список с подсказкой, мандарины - тёплый блок
 const SIMSKIP=new Set(["классика","современная проза","роман","зарубежная проза","русская проза"]);
@@ -5472,11 +5484,14 @@ function simTo(b){if(!BOOKS.length)return null;const tg=(b.tags||[]).filter(t=>!
   return bs>=2.5?best:null}
 function drawTrend(){const el=$("#trend");if(!el)return;const S=shelvesCalc();el._s=S;
   el.innerHTML=S.map(([k,h,sub,L],j)=>{
-    if(k==="trend")return `<section class="hshelf hs-big"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,140,1)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`;
-    if(k==="like")return `<section class="hshelf"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.slice(0,12).map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,110,1)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`;
+    if(k==="trend")return `<section class="hshelf hs-big"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,140,1)}<i class="hrd" data-hrd="${j}:${i}" role="button" aria-label="Уже читала">✓</i><small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`;
+    if(k==="like")return `<section class="hshelf"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.slice(0,12).map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,110,1)}<i class="hrd" data-hrd="${j}:${i}" role="button" aria-label="Уже читала">✓</i><small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`;
     if(k==="mand"){const MO=MAND_L.map(p=>norm(p[0])),ix=x=>{const n=norm(x.t);const k=MO.findIndex(m=>n.startsWith(m));return k<0?99:k},F=L.filter(x=>imgOf(x)).sort((a,b)=>ix(a)-ix(b)).slice(0,4);return `<section class="hshelf"><div class="hm2" role="button" tabindex="0" data-trmore="${j}"><span class="hm2-t"><b>${h}</b><small>${esc(sub)}</small><em>Смотреть подборку</em></span><span class="hm2-f">${(F.length>=3?F:L).slice(0,3).map((x,i)=>`<i style="--i:${i}">${cv(x,84)}</i>`).join("")}</span></div></section>`}
-    return `<section class="hshelf"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96,1)}<small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`}).join("")}
+    return `<section class="hshelf"><h3 class="shelf-h" data-trmore="${j}">${h}<button class="sh-more" data-trmore="${j}">Ещё</button></h3><div class="na-row">${L.map((x,i)=>`<button data-tr="${j}:${i}">${cv(x,96,1)}<i class="hrd" data-hrd="${j}:${i}" role="button" aria-label="Уже читала">✓</i><small>${esc(x.t)}</small><em>${esc(String(x.a||"").split(" ").slice(-1)[0])}</em></button>`).join("")}<button class="na-more" data-trmore="${j}"><span>Смотреть ещё</span></button></div></section>`}).join("")}
 $("#trend").addEventListener("click",e=>{const m=e.target.closest("[data-trmore]");if(m){e.stopPropagation();shelfOpen(+m.dataset.trmore);return}const gm=e.target.closest("[data-giftm]");if(gm){const r=($("#trend")._s||[])[+gm.dataset.giftm];if(r){const W=wantNorms(),P=r[3].filter(x=>!READ.has(norm(x.t))&&!W.has(norm(x.t))),Q=P.filter(x=>imgOf(x)),pool=Q.length?Q:P;if(pool.length)giftOpenFx(pool[Math.floor(Math.random()*pool.length)])}return}const a=e.target.closest("[data-trall]");if(!a)return;const S=$("#trend")._s,r=S&&S[+a.dataset.trall];if(r){tgHaptic();listSheet(r[1],r[2],r[3])}});
+// «✓» на обложке в полке главной: «уже читала» - книга уходит на полку «Прочитано», на её место встанет другая
+$("#trend").addEventListener("click",e=>{const h=e.target.closest("[data-hrd]");if(!h)return;e.stopPropagation();e.preventDefault();const [j,i]=h.dataset.hrd.split(":").map(Number),S=$("#trend")._s,x=S&&S[j]&&S[j][3][i];if(!x||BK.has(x))return;
+  BK.markRead(x,null,true);tgHaptic("success");const card=h.closest("[data-tr]");if(card)card.classList.add("hr-done");h.remove();toast("Отмечено: прочитано");vDirty=true},true);
 $("#trend").addEventListener("click",e=>{const b=e.target.closest("[data-tr]");if(!b)return;const [j,i]=b.dataset.tr.split(":").map(Number),S=$("#trend")._s,x=S&&S[j]&&S[j][3][i];if(x){tgHaptic();bkcOpen(x,"rec")}});
 addEventListener("bigcat",()=>{TRK=-1;HSV=null;AUIX=null;if(SCREEN==="col"){drawTrend();layoutFlow(true)}});
 // ---------- «Книга для тебя»: книги разлетаются вихрем, одна прилетает и переворачивается ----------
@@ -6116,7 +6131,7 @@ $("#introGo").onclick=()=>{$("#intro").classList.remove("on");$("#onb").classLis
 // предложение настроить вкус — не на входе, а когда человек уже посмотрел несколько книг или что-то добавил
 function onbAsk(force){if(VIEW||LS.get("zal.onbAsk",0)&&!force)return;if(BOOKS.length>=2&&!force)return;
   if(!force&&(+LS.get("zal.cards",0)||0)<4&&!want.length&&!BOOKS.length)return;
-  if(!force&&(document.querySelector(".tour")||$("#auth").classList.contains("on")||$("#vsheet").classList.contains("on")||$("#rm").classList.contains("on")||BKC))return;
+  if(!force&&(sheetOpen||document.querySelector(".tour")||$("#auth").classList.contains("on")||$("#vsheet").classList.contains("on")||$("#rm").classList.contains("on")||BKC))return;
   LS.set("zal.onbAsk",1);
   vOpen(`<h3 class="vh">Подобрать книги под тебя?</h3><p class="sy-note">Отметь пару прочитанных книг и любимые жанры - Шуршуня станет советовать точнее. Это минута.</p><div class="sheet-btns" style="display:flex;flex-direction:column;gap:10px;margin-top:18px"><button class="btn w" data-onbgo>Отметить книги</button><button class="btn" data-onblater>Позже</button></div>`)}
 $("#vshBody").addEventListener("click",e=>{if(e.target.closest("[data-onbgo]")){e.stopPropagation();vClose();tgHaptic("medium");$("#onb").classList.add("on");onbDraw();return}if(e.target.closest("[data-onblater]")){e.stopPropagation();vClose()}},true);
@@ -6929,9 +6944,19 @@ function bkcTropes(x,Lk){if(x._f)return "";const c0=catOf(x)||x,tg=c0.tags||x.ta
 function tagBooks(t,x){const seen=new Set([x._n||norm(x.t)]),out=[];for(const b of ALLB()){if(!(b.tags||[]).includes(t)||dismissed.has(b.id))continue;const n=b._n||norm(b.t);if(seen.has(n))continue;seen.add(n);out.push(b)}
   return topK(out,60,b=>popOf(b)*2+(imgOf(b)?2:0)+(b.q||0)+Math.random()*.5).map(z=>z.b)}
 function tlWhy(b){const c=catOf(b)||b,m=[GEN[c.g]&&c.g!=="unknown"?GEN[c.g]:"",c.y?String(c.y):""].filter(Boolean).join(" · ");let a=String(c.ann||"").replace(/\s+/g," ").trim();if(a.length>140){a=a.slice(0,140);a=a.slice(0,Math.max(a.lastIndexOf(" "),90))+"…"}return (m?`<i>${esc(m)}</i>`:"")+(a?`<small>${esc(a)}</small>`:"")}
-function listSheet(title,sub,L,why){vOpen(`<h3 class="vh">${esc(title)}</h3><div class="tl-grid">${L.map((b,i)=>{const st=BK.has(b);return `<button class="tg" data-tl="${i}">${cv(b,110)}${st?`<i class="tg-st">${st==="read"?"✓":"♥"}</i>`:""}<small>${esc(b.t)}</small><em>${esc(String(b.a||"").split(" ").slice(-1)[0])}</em></button>`}).join("")||`<p class="sy-note">Пока ничего не нашлось.</p>`}</div>`,true);
-  $("#vsheet").classList.add("ontop");$("#vshBody")._tl=L}
-$("#vshBody").addEventListener("click",e=>{const r=e.target.closest("[data-tl]");if(!r||!$("#vshBody")._tl)return;const b=$("#vshBody")._tl[+r.dataset.tl];if(!b)return;e.stopPropagation();vClose();tgHaptic();setTimeout(()=>bkcOpen(bItem(b,"rec"),"rec"),180)},true);
+// подборка списком: по 20 книг, «Показать ещё» добавляет следующие; на каждой обложке «✓» - «уже читала», книга уходит на полку
+const TL_PAGE=20;
+function tlCard(b,i){const st=BK.has(b);return `<button class="tg" data-tl="${i}">${cv(b,110,1)}${st?`<i class="tg-st">${st==="read"?"✓":"♥"}</i>`:`<i class="tg-rd" data-tlrd="${i}" role="button" aria-label="Уже читала">✓</i>`}<small>${esc(b.t)}</small><em>${esc(String(b.a||"").split(" ").slice(-1)[0])}</em></button>`}
+function listSheet(title,sub,L,why,all,n,sc){const A=all||L,N=n||Math.max(L.length,TL_PAGE),V=A.slice(0,N);
+  vOpen(`<h3 class="vh">${esc(title)}</h3><div class="tl-grid">${V.map(tlCard).join("")||`<p class="sy-note">Пока ничего не нашлось.</p>`}</div>${A.length>V.length?`<button class="btn tl-more" data-tlmore>Показать ещё</button>`:""}`,true);
+  $("#vsheet").classList.add("ontop");const bd=$("#vshBody");bd._tl=A;bd._tlm={title,sub,why,all:A,n:V.length};if(sc!=null)requestAnimationFrame(()=>{const sh=$("#vsheet");(sh.querySelector(".vsh-in")||sh).scrollTop=sc;bd.scrollTop=sc})}
+$("#vshBody").addEventListener("click",e=>{const bd=$("#vshBody");if(e.target.closest("[data-tlmore]")&&bd._tlm){e.stopPropagation();tgHaptic();const m=bd._tlm,g=bd.querySelector(".tl-grid"),from=m.n,to=Math.min(m.all.length,from+TL_PAGE);
+    g.insertAdjacentHTML("beforeend",m.all.slice(from,to).map((b,k)=>tlCard(b,from+k)).join(""));m.n=to;if(to>=m.all.length)e.target.closest("[data-tlmore]").remove();return}
+  const rd=e.target.closest("[data-tlrd]");if(rd&&bd._tl){e.stopPropagation();e.preventDefault();const b=bd._tl[+rd.dataset.tlrd];if(!b||BK.has(b))return;BK.markRead(bItem(b,"rec"),null,true);vDirty=true;tgHaptic("success");
+    const card=rd.closest(".tg");rd.outerHTML=`<i class="tg-st">✓</i>`;if(card)card.classList.add("tg-done");toast("Отмечено: прочитано");return}},true);
+$("#vshBody").addEventListener("click",e=>{const r=e.target.closest("[data-tl]");if(!r||!$("#vshBody")._tl)return;const bd=$("#vshBody"),b=bd._tl[+r.dataset.tl];if(!b)return;e.stopPropagation();
+  // запоминаем подборку: из карточки можно вернуться в неё стрелкой «Назад» - на то же место
+  const m=bd._tlm,sh=$("#vsheet"),back=m?{...m,sc:(sh.querySelector(".vsh-in")||sh).scrollTop||bd.scrollTop}:null;vClose();tgHaptic();setTimeout(()=>{bkcOpen(bItem(b,"rec"),"rec");if(BKC&&back){BKC.back=back;bkcDraw()}},180)},true);
 // предупреждение о наркотиках: издательства обязаны ставить его с 1 марта 2026 года; показываем мелко внизу карточки, как того требует закон
 const DRUG_TXT="Незаконное потребление наркотических средств, психотропных веществ, их аналогов причиняет вред здоровью, их незаконный оборот запрещён и влечёт установленную законодательством ответственность";
 let DRUG=null;const drugKey=(t,a)=>norm(String(t||"").split(/[:.(]/)[0])+"|"+norm(String(a||"").split(/\s+/).slice(-1)[0]);
@@ -6984,7 +7009,7 @@ document.addEventListener("click",e=>{const f=e.target.closest("[data-serfol]");
   if(hit){bkcOpen(bItem(hit,BK.has(hit)||"rec"),BK.has(hit)||"rec");return}
   const nb={t:w[1],a:c.a||BKC.x.a||"",y:w[2]||null,_fl:w[0]};flEnrich(nb).then(()=>bkcOpen(bItem(nb,"rec"),"rec")).catch(()=>bkcOpen(bItem(nb,"rec"),"rec"))},true);
 function bkcDraw(){const {x,L}=BKC;
-  bkcEl.innerHTML=`<button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button>${!x._f&&L!=="friend"&&BK.has(x)==="read"?`<button class="bkc-pen" data-bkc="edit" aria-label="Изменить оценку, отзыв и заметки"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>`:""}<div class="bkc-in">
+  bkcEl.innerHTML=`${BKC.back||$("#vsheet").classList.contains("on")?`<button class="bkc-bk" data-bkc="back" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>`:""}<button class="bkc-x" data-bkc="close" aria-label="Закрыть">${IC2.x}</button>${!x._f&&L!=="friend"&&BK.has(x)==="read"?`<button class="bkc-pen" data-bkc="edit" aria-label="Изменить оценку, отзыв и заметки"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>`:""}<div class="bkc-in">
    <div class="bkc-cv">${cv(x,200)}<button class="bkc-cov" data-bkc="cov" aria-label="Сменить обложку">${IC2.cov}<span>сменить обложку</span></button></div>
    <div class="bkc-covsw" hidden>${covRow(x)}</div>
    <h2>${esc(x.t)}</h2>${x.a&&x.a!=="Автор не указан"&&!x._f?`<button class="bkc-a bkc-al" data-bkc-au>${esc(x.a)}</button>`:`<div class="bkc-a">${esc(x.a||"")}</div>`}${(()=>{const fn=x.src&&x.src.fan;if(fn)return `<div class="bkc-gn">${esc(fn==="фанфик"?"Фанфик":"Фанфик · "+fn)}</div>`;const g=genreLabel(x),c=catOf(x)||x,yy=c.y||x.y,pp=c.pg||x.pg,ln=[g,yy&&yy>0?yy+" г.":"",pp?pp+" стр.":""].filter(Boolean).join(" · ");return ln?`<div class="bkc-gn">${esc(ln)}</div>`:""})()}
@@ -7230,6 +7255,8 @@ function bkcFit(){}
 // жесты: если прокручиваемый блок упёрся в верх или низ, сдвигаем его на 1 пиксель - тогда движение пальца остаётся внутри Норы и Telegram не сворачивает приложение
 document.addEventListener("touchstart",e=>{let el=e.target;while(el&&el!==document.body){if(el.scrollHeight>el.clientHeight+1){const oy=getComputedStyle(el).overflowY;if(oy==="auto"||oy==="scroll"){if(el.scrollTop<=0)el.scrollTop=1;else if(el.scrollTop+el.clientHeight>=el.scrollHeight)el.scrollTop=el.scrollHeight-el.clientHeight-1;return}}el=el.parentElement}},{passive:true,capture:true});
 addEventListener("resize",()=>{if(BKC)bkcFit()});
+// шаг назад из карточки: в подборку, из которой её открыли (на то же место), или просто закрыть карточку над поиском
+function bkcBack(){const bk=BKC&&BKC.back;bkcClose();if(bk)setTimeout(()=>listSheet(bk.title,bk.sub,bk.all.slice(0,bk.n),bk.why,bk.all,bk.n,bk.sc),120)}
 function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();setTimeout(onbAsk,700);if(vDirty){vDirty=false;setTimeout(refresh,300)}}
 // отзывы читателей Фантлаба
 const rvClean=s=>String(s||"").replace(/\[(\/?)(b|i|u|s|p|q|spoiler|center|right|left)[^\]]*\]/gi,"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\r/g,"").replace(/\n{3,}/g,"\n\n").trim();
@@ -7293,7 +7320,8 @@ function whereOpen(x,mode){const q=encodeURIComponent(x.t+(x.a?" "+String(x.a).s
 bkcEl.addEventListener("click",e=>{const t=e.target,b=t.closest("[data-bkc]");{const g=t.closest("[data-bkc-tg]");if(g){const tg=g.dataset.bkcTg,L=tagBooks(tg,BKC.x);tgHaptic();listSheet(trLabel(tg),L.length?(tg.startsWith("троп:")?"Книги с тем же тропом":"Похожие книги"):"",L);return}}if(t.closest("[data-bkc-au]")){const L=auBooks(BKC.x);tgHaptic();listSheet(BKC.x.a||"Автор","Ещё у автора",L);return}if(t.closest("[data-bkc-rv]")){reviewsOpen(BKC.x);return}if(t.closest("[data-bkc-fr]")){const fr=frReaders(BKC.x);
     vOpen(`<h3 class="vh">Читали «${esc(BKC.x.t)}»</h3><div class="wh-l">${fr.map(({f,b})=>`<button data-fr-open="${esc(f.uid)}">${avatar(f.n,f.uid)}<b>${esc(f.n||"Друг")}</b><small>${b.r!=null?"★ "+r5(b.r):"без оценки"}</small>${b.rv?`<em class="frv">«${esc(b.rv)}»</em>`:""}<i>›</i></button>`).join("")}</div>`);$("#vsheet").classList.add("ontop");return}
   if(!b||!BKC)return;const {x,L}=BKC,a=b.dataset.bkc;tgHaptic();
-  if(a==="close"){bkcClose();return}
+  if(a==="close"){bkcClose();if($("#vsheet").classList.contains("on"))vClose();return}
+  if(a==="back"){bkcBack();return}
   if(a==="more"){const w=b.parentNode,d=$("#bkcDs");w.classList.add("open");d.style.webkitLineClamp="";d.style.maxHeight="";b.hidden=true;return}
   if(a==="cov"){const sw=bkcEl.querySelector(".bkc-covsw");sw.hidden=!sw.hidden;b.classList.toggle("on",!sw.hidden);return}
   if(a==="where"){goal("where");whereOpen(x,"");return}
@@ -8147,7 +8175,7 @@ const BACKL=[
   ()=>{if(story){closeStories();return 1}},
   ()=>{if(sheetOpen){closeSheet();return 1}},
   // карточка книги и нижнее окно могут лежать друг на друге - закрываем то, что открыли позже
-  ()=>{const v=$("#vsheet"),b=bkcEl,vo=v.classList.contains("on"),bo=b&&b.classList.contains("on");if(!vo&&!bo)return;if(vo&&(!bo||(v._ot||0)>=(b._ot||0)))vClose();else bkcClose();return 1},
+  ()=>{const v=$("#vsheet"),b=bkcEl,vo=v.classList.contains("on"),bo=b&&b.classList.contains("on");if(!vo&&!bo)return;if(vo&&(!bo||(v._ot||0)>=(b._ot||0)))vClose();else bkcBack();return 1},
   ()=>{const a=$("#auth");if(a&&a.classList.contains("on")){const x=$("#auX");if(x)x.click();else a.classList.remove("on");return 1}},
   ()=>{const o=$("#onb");if(o&&o.classList.contains("on")){o.classList.remove("on");return 1}},
   ()=>{const i=$("#intro");if(i&&i.classList.contains("on")){i.classList.remove("on");return 1}},

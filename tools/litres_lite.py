@@ -15,7 +15,7 @@ import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "books", "litres.json")
-CUT, SHARDS = 200, 64
+CUT, SHARDS, TOP = 200, 64, 40000
 
 
 def main():
@@ -34,9 +34,23 @@ def main():
             short = an[:CUT].rsplit(" ", 1)[0].rstrip(" ,.;:-–—")
             r[14] = short + "…"
         out.append(r)
+    # самые читаемые книги - в litres.lite.json (грузится при запуске), остальные - в litres.rest.json (при первом поиске),
+    # у них в файле только «…» вместо описания: полное описание лежит в books/ann/
+    out.sort(key=lambda r: -(r[7] or 0))
+    top, rest = out[:TOP], out[TOP:]
+    for r in rest:
+        w = str(r[0])
+        if r[14] and re.fullmatch(r"l\d+", w):
+            sh = shards[int(w[1:]) % SHARDS]
+            if w not in sh:
+                sh[w] = r[14]
+            r[14] = "…"
     lite = dict(d)
-    lite["b"] = out
+    lite["b"] = top
     json.dump(lite, open(os.path.join(ROOT, "books", "litres.lite.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+    lr = dict(d)
+    lr["b"] = rest
+    json.dump(lr, open(os.path.join(ROOT, "books", "litres.rest.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     os.makedirs(os.path.join(ROOT, "books", "ann"), exist_ok=True)
     for k, sh in enumerate(shards):
         json.dump(sh, open(os.path.join(ROOT, "books", "ann", f"{k}.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))

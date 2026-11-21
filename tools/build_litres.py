@@ -5,16 +5,17 @@
 Книги 18+ тоже берём (с 21.11.2026): у них метка «18+», в приложении - значок на обложке, в ленту новичкам они не попадают.
 Средняя оценка ЛитРес - последняя колонка (×10), её видно на обложке в списках."""
 import json, os, re, sys, time, urllib.request
+START = time.time()
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 OUT = os.path.join(ROOT, "books", "litres.json")
 API = "https://api.litres.ru/foundation/api/"
 H = {"User-Agent": "moya-nora-books/1.0 (https://moya-nora.github.io)", "Accept": "application/json"}
-PER = int(os.environ.get("PER_GENRE", "500"))
+PER = int(os.environ.get("PER_GENRE", "1500"))
 
 # жанр ЛитРес (часть названия) → (жанр Норы, метки Норы)
 # сколько книг брать из жанра: в ромэнтези, любовных романах и young adult — намного больше (это их главная аудитория)
-BIG = int(os.environ.get("PER_BIG", "2000"))
+BIG = int(os.environ.get("PER_BIG", "6000"))
 MAP = [
     (r"^магические академии", "fantasy", ["любовное фэнтези", "троп:academy", "школа и университет"]),
     (r"^фэнтези про драконов", "fantasy", ["троп:dragons", "драконы"]),
@@ -88,11 +89,13 @@ def clean(s):
 tree = (get("genres?limit=500") or {}).get("payload", {}).get("data", [])
 G = []
 walk(tree, G)
-pick = []
+pick, _seen = [], set()
 for g in G:
+    if g["id"] in _seen or re.search(r"\d+\s*класс|журнал|справочник", g.get("name", ""), re.I):  # школьные учебники и журналы не берём, жанр - один раз
+        continue
     for rx, ng, tags in MAP:
         if rx.search(g.get("name", "")):
-            pick.append((g["id"], g["name"], ng, tags))
+            pick.append((g["id"], g["name"], ng, tags)); _seen.add(g["id"])
             break
 print("жанров ЛитРес:", len(G), "берём:", [(p[1], p[0]) for p in pick], flush=True)
 
@@ -149,7 +152,7 @@ for i, b in enumerate(L):
             if tr not in b["tags"]:
                 b["tags"].append(tr)
         continue
-    if time.time() - T0 > 3.2 * 3600:  # не хватает времени - остальные книги без аннотации, допишутся в следующий раз
+    if time.time() - START > 4.9 * 3600:  # не хватает времени - остальные книги без аннотации, допишутся в следующий раз
         continue
     d = get(f"arts/{b['id']}")
     x = ((d or {}).get("payload") or {}).get("data") or {}
