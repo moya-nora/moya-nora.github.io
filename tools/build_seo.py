@@ -417,7 +417,7 @@ def WHERE(b):
     OFF = [("", "Книжные рядом", "https://yandex.ru/maps/?text=" + urllib.parse.quote("книжный магазин")), ("chitai-gorod.ru", "Читай-город", f"https://www.chitai-gorod.ru/search?phrase={qt}&partnerId=1006702&utm_source=affiliate&utm_medium=cpa&utm_campaign=1006702&sub_3=2W5zFJkZEDg&erid=2W5zFJkZEDg"),
            ("bookvoed.ru", "Буквоед", f"https://www.bookvoed.ru/search?q={qt}")]
     # переход в магазин - цель Метрики where_go с названием магазина (как в приложении)
-    a = lambda d, n, u: f'<a href="{u}" rel="nofollow noopener" target="_blank" onclick="try{{ym(114237349,\'reachGoal\',\'where_go\',{{store:\'{(d or "maps").split(".")[0]}\',from:\'site\'}})}}catch(e){{}}">{icon(d) if d else PIN}{n}</a>'
+    a = lambda d, n, u: f'<a href="{u}" rel="nofollow noopener" target="_blank" onclick="try{{ym(114237349,\'reachGoal\',\'where_go\',{{store:\'{ {"litres.ru":"litres","books.yandex.ru":"ya","ozon.ru":"ozon","chitai-gorod.ru":"chitai","bookvoed.ru":"bukvoed"}.get(d,"maps")}\',from:\'site\'}})}}catch(e){{}}">{icon(d) if d else PIN}{n}</a>'
     return ('<div class="whr"><b>Где прочитать</b><div>' + "".join(a(*x) for x in ON) + '</div><b class="w2">Купить в магазине</b><div>'
             + "".join(a(*x) for x in OFF) + '</div><small class="erid">Реклама · ООО ЛИТРЕС, ИНН 7719571260, erid: 2VfnxyNkZrY · Читай-город, erid: 2W5zFJkZEDg</small></div>')
 
