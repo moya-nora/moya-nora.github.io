@@ -4997,7 +4997,7 @@ function bigBuild(d,rest){return new Promise(res=>{
         const tags=arr(tc,tg,TGS),g=G[gi]||"modern",p=PAL[hsh(t)%PAL.length];
         const b={id:"q"+w,t,a,c:ci>=0?C[ci]:(au[1]>=0?C[au[1]]:""),y:y||null,g,tags,heavy:g==="kids"||tags.some(x=>HV0.has(x))?0:tags.some(x=>HV2.has(x))?2:1,
           len:pg?(pg<260?"short":pg>520?"long":"mid"):undefined,q,acclaim:arr(ac,aw,AW),ann:"",when:"",f:E,big:1,sl,bg:p[0],fg:p[1]};
-        if(pg)b.pg=pg;if(rw)b.rw=rw;if(rt)b.rt=rt/20;if(o)b.o=o;if(im)b.img=im===1?"https://www.litres.ru/pub/c/cover/"+String(w).slice(1)+".jpg":im;if(an){b.ann=fixEll(an);if(/…$/.test(an)&&/^l\d+$/.test(String(w)))b.annCut=String(w)}if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
+        if(pg)b.pg=pg;if(rw)b.rw=rw;if(rt)b.rt=rt/10;if(o)b.o=o;if(im)b.img=im===1?"https://www.litres.ru/pub/c/cover/"+String(w).slice(1)+".jpg":im;if(an){b.ann=fixEll(an);if(/…$/.test(an)&&/^l\d+$/.test(String(w)))b.annCut=String(w)}if(CYR.test(t))b.ru=1;Object.defineProperty(b,"_n",{value:n});out.push(b);if(!ex)CATT[n]=b}
       if(i<R.length){setTimeout(step,0);return}res(out)};setTimeout(step,0)})}
 let BIGTAGS=null;
 // основная часть каталога (известные книги) + новинки + ЛитРес - сразу; малоизвестные (books.rest.json) - при первом поиске
