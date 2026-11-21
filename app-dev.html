@@ -6126,8 +6126,10 @@ function sumLive(r,sts,got){const now=new Date(),Y=String(now.getFullYear()),M=n
   const [ct,ch,cf,cfl]=CH[now.getMonth()],done=mo.find(x=>cf(x,r));
   const chC=`<div class="sc gl lv-ch${done?" ok":""}"><i class="ic">${done?"✓":"★"}</i><div><small>Челлендж месяца</small><b>${ct}</b><span>${done?`Выполнено: «${esc(done.t)}»`:ch}</span></div>${!done&&cfl?`<button class="btn" data-chgo="${cfl}">Подобрать</button>`:""}</div>`;
   return goalC+chC+monthC+achC+tasteC}
-function goalOpen(){const g=LS.get("zal.goal",24);vOpen(`<h3 class="vh">Цель на год</h3><p class="sy-note">Сколько книг хочешь прочитать в ${new Date().getFullYear()} году?</p><div class="fgl">${[6,12,24,36,52,100].map(n=>`<button class="fgc${n===g?" on":""}" data-goalset="${n}">${n}</button>`).join("")}</div>`)}
-$("#vshBody").addEventListener("click",e=>{const b=e.target.closest("[data-goalset]");if(!b)return;LS.set("zal.goal",+b.dataset.goalset);tgHaptic("medium");vClose();drawSum()});
+function goalOpen(){const g=LS.get("zal.goal",24);vOpen(`<h3 class="vh">Цель на год</h3><p class="sy-note">Сколько книг хочешь прочитать в ${new Date().getFullYear()} году?</p><input class="sy-in" id="goalIn" type="number" inputmode="numeric" min="1" max="999" value="${g}" aria-label="Цель на год, книг"><div class="one"><button class="btn w" id="goalSave">Сохранить</button></div>`);$("#vsheet").classList.add("ontop");
+  const i=$("#goalIn"),save=()=>{const n=Math.round(+i.value);if(!(n>=1&&n<=999)){toast("Впиши число от 1 до 999");return}LS.set("zal.goal",n);tgHaptic("medium");vClose();try{drawSum()}catch(e){}try{document.querySelectorAll("#statIn .lv-goal").forEach(el=>{el.outerHTML=goalCard()})}catch(e){}};
+  $("#goalSave").onclick=save;i.onkeydown=e=>{if(e.key==="Enter")save()};setTimeout(()=>{try{i.focus();i.select()}catch(e){}},250)}
+document.addEventListener("click",e=>{if(e.target.closest("[data-goal]")&&!e.target.closest("#sumMore"))goalOpen()});
 $("#vshBody").addEventListener("click",e=>{const t=e.target;if(t.closest("[data-sy-out2],[data-sy-del2]"))syncClick(t)});
 $("#sumMore").addEventListener("click",e=>{const t=e.target;
   if(syncClick(t))return;
