@@ -1,0 +1,30 @@
+name: Весь ЛитРес для поиска
+on:
+  workflow_dispatch:
+  schedule: [{cron: "17 20 * * 5"}]   # каждую пятницу
+permissions: {contents: write}
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      matrix: {part: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -u tools/litres_all.py crawl ${{ matrix.part }} 12
+      - uses: actions/upload-artifact@v4
+        with: {name: "lr-part-${{ matrix.part }}", path: "books/lr/part-${{ matrix.part }}.json", retention-days: 3}
+  merge:
+    needs: crawl
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: {path: books/lr, pattern: "lr-part-*", merge-multiple: true}
+      - run: python3 -u tools/litres_all.py merge
+      - run: |
+          git config user.email noreply@anthropic.com; git config user.name Claude
+          git add books/lrall && git commit -qm "Весь ЛитРес для поиска: обновление" || exit 0
+          git pull -q --rebase --autostash -X theirs && git push

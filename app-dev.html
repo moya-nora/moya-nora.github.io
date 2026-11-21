@@ -5964,10 +5964,27 @@ function askCovers(i){const L=ASKC[i];if(!L){setTimeout(()=>{if(ASKC[i])return;t
   const el=document.querySelector(`[data-askf="${i}"]`);if(el)el.innerHTML=askCovers(i)},120+i*90);return ""}
   return L.map(u=>`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer" decoding="async" onerror="this.remove()">`).join("")}
 const MEAN_EX=["Книга на один вечер","Не оторваться","Уютная на осень","Сильная героиня","Как хороший сериал"];
+// весь ЛитРес для поиска (books/lrall, собирает tools/litres_all.py): при поиске скачиваем только кусочки
+// по первым буквам названия и фамилий из запроса и добавляем найденные книги в каталог
+let LRX=null;const LRK=new Set(),LRP={};
+const LRG=["classic","modern","detective","fantasy","scifi","kids","nonfic"];
+function lrBook(r){const [w,t,a,y,gi,rt,n,a18,pg]=r,p=PAL[hsh(t)%PAL.length],g=LRG[gi]||"modern";
+  const b={id:"ql"+w,t,a,c:"",y:y||null,g,tags:a18?["18+"]:[],heavy:1,q:n>=1000?3:n>=150?2:1,acclaim:[],ann:"",when:"",big:1,sl:n,bg:p[0],fg:p[1],img:"https://www.litres.ru/pub/c/cover/"+w+".jpg",lr:1};
+  if(rt)b.rt=rt/10;if(pg){b.pg=pg;b.len=pg<260?"short":pg>520?"long":"mid"}Object.defineProperty(b,"_n",{value:norm(t)});return b}
+async function lrallFor(q){try{const v=norm(q);if(v.length<3)return false;
+  if(!LRX)LRX=fetch("books/lrall/index.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);const X=await LRX;if(!X||!X.keys)return false;
+  const pick=(ns,w)=>{if(!w||w.length<2)return null;const k3=ns+"_"+w.slice(0,3),k2=ns+"_"+w.slice(0,2);return X.keys[k3]?k3:X.keys[k2]?k2:null};
+  const K=new Set([pick("t",v),...qWords(q).filter(w=>w.length>=3).slice(0,3).map(w=>pick("a",norm(w))),...qWords(q).filter(w=>w.length>=4).slice(0,2).map(w=>pick("t",norm(w)))].filter(Boolean));
+  const need=[...K].filter(k=>!LRK.has(k));if(!need.length)return false;
+  const got=await Promise.all(need.map(k=>LRP[k]||(LRP[k]=fetch("books/lrall/"+k+".json").then(r=>r.ok?r.json():[]).catch(()=>[]))));
+  need.forEach(k=>LRK.add(k));const have=new Set(ALLB().map(b=>b.id)),haveT=new Set(ALLB().map(b=>(b._n||norm(b.t))+"|"+norm(String(b.a||"").split(" ").slice(-1)[0]))),add=[];
+  for(const L of got)for(const r of L||[]){const id="ql"+r[0];if(have.has(id))continue;const k=norm(r[1])+"|"+norm(String(r[2]||"").split(" ").slice(-1)[0]);if(haveT.has(k))continue;have.add(id);haveT.add(k);const b=lrBook(r);if(!isBan(b))add.push(b)}
+  if(!add.length)return false;BIGL=BIGL.concat(add);_allb=null;BIGK=null;AUIX=null;return true}catch(e){return false}}
 function sxRun(){const q=$("#fq").value,my=++SX.seq;SX.q=q;SX.mode="q";clearTimeout(SX.t);$(".sx-clear").hidden=!q;
   {const h=SX.k!=="films"&&genreHit(q);if(h){const L=h[0]==="gen"?NF.gen:NF.trope;if(!L.includes(h[1]))L.push(h[1]);saveNF();SX.picks=true;SX.q="";$("#fq").value="";$(".sx-clear").hidden=true;
     const b=$("#sxf");if(b)b.innerHTML=sxFbar();SX.authors=[];sxDraw();tgHaptic();return}}
   annAll();if(norm(q).length<2){SX.authors=[];sxDraw();return}
+  if(SX.k!=="films")lrallFor(q).then(ch=>{if(ch&&my===SX.seq&&$("#fq")&&$("#fq").value===q)sxRun()});
   SX.list=localFind(q);SX.authors=[];SX.mean=null;SX.mn=12;const LK=SX.k!=="films"&&likeFind(q);if(LK)SX.mean=LK;else if(SX.k!=="films"&&moodWord(q)){const M=meanFind(q,40);if(M&&M.list.length)SX.mean=M}else if(SX.k!=="films"&&String(q).trim().split(/\s+/).length>=2&&/[а-яё]/i.test(q)&&(MEAN_EX.some(x=>norm(x)===norm(q))||/^\s*(про|о|об|что-то|что-нибудь|когда|хочу|хочется|посоветуй|книг[аи]|как)\s/i.test(q)||!SX.list.slice(0,4).some(x=>strongHit(x,q)))){const M=meanFind(q,40);if(M&&M.list.length&&(M.lab.length||!SX.list.length))SX.mean=M}sxDraw("load");SX.brain=null;const titleLike=SX.list.slice(0,3).some(x=>strongHit(x,q)||lev(norm(x.t||""),norm(q))<=2);if(SX.k!=="films"&&!titleLike&&String(q).trim().split(/\s+/).length>=3){SX.brain="load";brainAsk(q).then(L=>{if(my!==SX.seq)return;SX.brain=brainUnpack(L||[]);sxDraw(SX.st||"done")})}
   SX.t=setTimeout(async()=>{try{if(SX.k==="films")await loadFilms().catch(()=>{});if(my!==SX.seq)return;if(SX.k==="films")SX.list=localFind(q);
       const o=await (SX.k==="films"?onlineSeries(q):onlineBooks(q));if(my!==SX.seq)return;const seen=new Set(SX.list.map(x=>norm(x.t)+(x._f?x.y:"")));
