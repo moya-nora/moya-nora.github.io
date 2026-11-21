@@ -5458,6 +5458,24 @@ function shelvesCalc(){if(isF()||VIEW)return [];const L=ALLB(),key=[L.length,BOO
   res.push(["mand","Книги с запахом мандаринов","Тёплые истории для длинных вечеров - с пледом, чаем и чудом",take(mix(listBooks(MAND_L).filter(okAll)))]);
   HSV=res.filter(r=>r[3].length>=4).map(r=>[r[0],r[1],r[2],r[3].map(b=>bItem(b,"rec"))]);return HSV}
 // «Смотреть ещё»: сначала вся подборка целиком, дальше похожие книги каталога - по общим тегам и тем же жанрам, чем дальше, тем свободнее
+// ручные подборки показываем строго как есть, без «похожих» книг в доборе (21.11: в буктоке оказался Пелевин)
+const SHELF_STRICT=new Set(["trend","booktok","cozy","night","mand"]);
+// «Искать другие книги» в конце подборки: книги, которые сами подходят под тему подборки, а не просто похожи по меткам
+const RELW=/зим[аы]|зимн|снег|снеж|новогод|новый год|рождеств|мандарин|(^|[^а-яё])[её]лк|сочельник|метел/i;
+const ROMTG=t=>t==="ромэнтези"||t==="любовное фэнтези"||t==="young adult"||t==="дарк роман";
+const SHELF_REL={
+  booktok:b=>{const t=b.tags||[];return (b.y||0)>=2010&&(b.g==="fantasy"||b.g==="modern"||b.g==="kids")&&(t.some(x=>x==="ромэнтези"||x==="дарк роман")||(t.includes("любовное фэнтези")&&t.some(x=>x.startsWith("троп:")))||(t.includes("young adult")&&t.includes("любовь")))},
+  trend:b=>{const t=b.tags||[];return (b.y||0)>=YNOW-3&&(b.sl||0)>=1000&&(b.q||0)>=2&&b.g==="modern"&&!t.includes("детектив")&&!t.some(x=>ROMTG(x)||x==="любовный роман"||x.startsWith("троп:"))},
+  newlove:b=>{const t=b.tags||[],g=nlGenre();return (b.y||0)>=YNOW-1&&(b.sl||0)>=150&&genPass(b,g)&&(g==="romantasy"||g==="romance"||!t.some(x=>x==="любовное фэнтези"||x==="троп:popadan"||x==="любовный роман"))},
+  cozy:b=>{const t=b.tags||[];return b.g==="detective"&&t.includes("детектив")&&t.some(x=>x==="уют"||x==="смешное"||x==="юмор"||x==="деревня")&&!t.some(x=>x==="хоррор"||x==="мрачное"||x==="жутковатое"||ROMTG(x))},
+  night:b=>{const t=b.tags||[];return b.g!=="nonfic"&&(b.g==="detective"||t.includes("триллер"))&&t.some(x=>x==="триллер"||x==="напряжённое")&&(b.y||0)>=1990&&!t.some(ROMTG)},
+  mand:b=>{const t=b.tags||[];return t.some(x=>x==="уют"||x==="тёплое")&&(RELW.test(b.t||"")||(RELW.test((b.ann||"")+" "+(b.when||""))&&t.includes("уют")&&(b.y||0)>=1950))}};
+// авторы, которых метки каталога ошибочно записывают в триллеры и любовное фэнтези - в жанровые подборки их не берём
+const REL_NOAU=/пелевин|сорокин|лукьяненко|быков|водолазкин/i;
+function shelfRel(k){const f=SHELF_REL[k];if(!f)return [];const W=wantNorms(),seen=new Set(shelfSeeds(k).map(b=>b._n||norm(b.t))),au={};
+  return topK(ALLB(),300,b=>{const n=b._n||norm(b.t);if(READ.has(n)||W.has(n)||seen.has(n)||dismissed.has(b.id)||!okAll(b)||(k!=="trend"&&REL_NOAU.test(b.a||""))||(b.tags||[]).includes("самиздат")||b.g==="kids"&&k!=="booktok")return null;
+    if(/(книга|том|часть)\s*\d|[-–—]\s*\d+(\.|\s|$)/i.test(b.t||""))return null;try{if(!f(b))return null}catch(e){return null}
+    return Math.log10((b.sl||0)+10)+(b.q||0)*.4+(imgOf(b)?.8:0)+(b.rt?b.rt*.2:0)}).map(z=>z.b).filter(b=>{const a=b.a||"";return (au[a]=(au[a]||0)+1)<=2}).slice(0,90)}
 function shelfSeeds(k){try{
   if(k==="trend")return trendBooks();if(k==="newlove"){newLoved();return NLB.all||NLB}
   if(k==="booktok")return booktokBooks();if(k==="cozy")return listBooks(COZY_L);if(k==="night")return listBooks(NIGHT_L);if(k==="mand")return listBooks(MAND_L);
@@ -5465,7 +5483,7 @@ function shelfSeeds(k){try{
 function shelfMore(k){const L=ALLB(),W=wantNorms(),seeds=shelfSeeds(k),used=new Set(),out=[];
   const ok=b=>{const n=b._n||norm(b.t);return !READ.has(n)&&!W.has(n)&&!dismissed.has(b.id)&&!used.has(n)};
   const put=b=>{used.add(b._n||norm(b.t));out.push(b)};
-  seeds.forEach(b=>{if(ok(b))put(b)});if(k==="like")return out;
+  seeds.forEach(b=>{if(ok(b))put(b)});if(k==="like"||SHELF_STRICT.has(k))return out;
   const tw={},gs=new Set();seeds.forEach(b=>{const c=catOf(b)||b;if(c.g)gs.add(c.g);(c.tags||[]).forEach(t=>{if(SIMSKIP.has(t)||/век|страна|^автор/.test(t))return;tw[t]=(tw[t]||0)+1})});
   const n=Math.max(seeds.length,1),fresh=k==="newlove";
   const sc=b=>{if(!ok(b)||b.g==="kids"||!gs.has(b.g)||(b.tags||[]).includes("самиздат")||!okAll(b))return null;if(fresh&&(b.y||0)<YNOW-2)return null;
@@ -5475,7 +5493,7 @@ function shelfMore(k){const L=ALLB(),W=wantNorms(),seeds=shelfSeeds(k),used=new 
     return s+Math.log10((b.sl||0)+10)*.25+(imgOf(b)?.4:0)};
   const au={};topK(L,240,sc).forEach(z=>{const a=z.b.a||"";if((au[a]=(au[a]||0)+1)>2)return;if(out.length<90)put(z.b)});
   return out}
-function shelfOpen(j){const S=$("#trend")._s,r=S&&S[j];if(!r)return;tgHaptic();{const A=shelfMore(r[0]);listSheet(r[1],r[2],A.slice(0,TL_PAGE),1,A,TL_PAGE)}
+function shelfOpen(j){const S=$("#trend")._s,r=S&&S[j];if(!r)return;tgHaptic();{const A=shelfMore(r[0]);listSheet(r[1],r[2],A.slice(0,TL_PAGE),1,A,TL_PAGE,null,r[0])}
   }
 // на главной у каждой подборки свой вид: тренд - крупные обложки, «Тебе понравится» - список с подсказкой, мандарины - тёплый блок
 const SIMSKIP=new Set(["классика","современная проза","роман","зарубежная проза","русская проза"]);
@@ -6947,11 +6965,12 @@ function tlWhy(b){const c=catOf(b)||b,m=[GEN[c.g]&&c.g!=="unknown"?GEN[c.g]:"",c
 // подборка списком: по 20 книг, «Показать ещё» добавляет следующие; на каждой обложке «✓» - «уже читала», книга уходит на полку
 const TL_PAGE=20;
 function tlCard(b,i){const st=BK.has(b);return `<button class="tg" data-tl="${i}">${cv(b,110,1)}${st?`<i class="tg-st">${st==="read"?"✓":"♥"}</i>`:`<i class="tg-rd" data-tlrd="${i}" role="button" aria-label="Уже читала">✓</i>`}<small>${esc(b.t)}</small><em>${esc(String(b.a||"").split(" ").slice(-1)[0])}</em></button>`}
-function listSheet(title,sub,L,why,all,n,sc){const A=all||L,N=n||Math.max(L.length,TL_PAGE),V=A.slice(0,N);
-  vOpen(`<h3 class="vh">${esc(title)}</h3><div class="tl-grid">${V.map(tlCard).join("")||`<p class="sy-note">Пока ничего не нашлось.</p>`}</div>${A.length>V.length?`<button class="btn tl-more" data-tlmore>Показать ещё</button>`:""}`,true);
-  $("#vsheet").classList.add("ontop");const bd=$("#vshBody");bd._tl=A;bd._tlm={title,sub,why,all:A,n:V.length};if(sc!=null)requestAnimationFrame(()=>{const sh=$("#vsheet");(sh.querySelector(".vsh-in")||sh).scrollTop=sc;bd.scrollTop=sc})}
+function listSheet(title,sub,L,why,all,n,sc,key){const A=all||L,N=n||Math.max(L.length,TL_PAGE),V=A.slice(0,N);
+  vOpen(`<h3 class="vh">${esc(title)}</h3><div class="tl-grid">${V.map(tlCard).join("")||`<p class="sy-note">Пока ничего не нашлось.</p>`}</div>${A.length>V.length?`<button class="btn tl-more" data-tlmore>Показать ещё</button>`:""}${key&&SHELF_REL[key]?`<button class="btn w tl-more" data-tlrel="${key}">Искать другие книги</button>`:""}`,true);
+  $("#vsheet").classList.add("ontop");const bd=$("#vshBody");bd._tl=A;bd._tlm={title,sub,why,all:A,n:V.length,key};if(sc!=null)requestAnimationFrame(()=>{const sh=$("#vsheet");(sh.querySelector(".vsh-in")||sh).scrollTop=sc;bd.scrollTop=sc})}
 $("#vshBody").addEventListener("click",e=>{const bd=$("#vshBody");if(e.target.closest("[data-tlmore]")&&bd._tlm){e.stopPropagation();tgHaptic();const m=bd._tlm,g=bd.querySelector(".tl-grid"),from=m.n,to=Math.min(m.all.length,from+TL_PAGE);
     g.insertAdjacentHTML("beforeend",m.all.slice(from,to).map((b,k)=>tlCard(b,from+k)).join(""));m.n=to;if(to>=m.all.length)e.target.closest("[data-tlmore]").remove();return}
+  const rl=e.target.closest("[data-tlrel]");if(rl){e.stopPropagation();tgHaptic();const k=rl.dataset.tlrel,m=bd._tlm||{},R=shelfRel(k);listSheet("Ещё в духе «"+(m.title||"подборки")+"»","",R.slice(0,TL_PAGE),1,R,TL_PAGE);if(!R.length)toast("Шуршуня пока не нашёл других книг под эту подборку");return}
   const rd=e.target.closest("[data-tlrd]");if(rd&&bd._tl){e.stopPropagation();e.preventDefault();const b=bd._tl[+rd.dataset.tlrd];if(!b||BK.has(b))return;BK.markRead(bItem(b,"rec"),null,true);vDirty=true;tgHaptic("success");
     const card=rd.closest(".tg");rd.outerHTML=`<i class="tg-st">✓</i>`;if(card)card.classList.add("tg-done");toast("Отмечено: прочитано");return}},true);
 $("#vshBody").addEventListener("click",e=>{const r=e.target.closest("[data-tl]");if(!r||!$("#vshBody")._tl)return;const bd=$("#vshBody"),b=bd._tl[+r.dataset.tl];if(!b)return;e.stopPropagation();
@@ -7256,7 +7275,7 @@ function bkcFit(){}
 document.addEventListener("touchstart",e=>{let el=e.target;while(el&&el!==document.body){if(el.scrollHeight>el.clientHeight+1){const oy=getComputedStyle(el).overflowY;if(oy==="auto"||oy==="scroll"){if(el.scrollTop<=0)el.scrollTop=1;else if(el.scrollTop+el.clientHeight>=el.scrollHeight)el.scrollTop=el.scrollHeight-el.clientHeight-1;return}}el=el.parentElement}},{passive:true,capture:true});
 addEventListener("resize",()=>{if(BKC)bkcFit()});
 // шаг назад из карточки: в подборку, из которой её открыли (на то же место), или просто закрыть карточку над поиском
-function bkcBack(){const bk=BKC&&BKC.back;bkcClose();if(bk)setTimeout(()=>listSheet(bk.title,bk.sub,bk.all.slice(0,bk.n),bk.why,bk.all,bk.n,bk.sc),120)}
+function bkcBack(){const bk=BKC&&BKC.back;bkcClose();if(bk)setTimeout(()=>listSheet(bk.title,bk.sub,bk.all.slice(0,bk.n),bk.why,bk.all,bk.n,bk.sc,bk.key),120)}
 function bkcClose(){bkcEl.classList.remove("on");BKC=null;syncBack();setTimeout(onbAsk,700);if(vDirty){vDirty=false;setTimeout(refresh,300)}}
 // отзывы читателей Фантлаба
 const rvClean=s=>String(s||"").replace(/\[(\/?)(b|i|u|s|p|q|spoiler|center|right|left)[^\]]*\]/gi,"").replace(/\[[^\]]*\]/g,"").replace(/<[^>]+>/g,"").replace(/\r/g,"").replace(/\n{3,}/g,"\n\n").trim();
